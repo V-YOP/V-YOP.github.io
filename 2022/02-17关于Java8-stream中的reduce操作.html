@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在之前再次学习折叠操作的时候，我曾做了一些笔记，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner，可谓是“Java 特色 reduce 操作”（哈哈！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Java8 的 stream 中的 reduce 操作">
+<meta property="og:url" content="http://example.com/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="在之前再次学习折叠操作的时候，我曾做了一些笔记，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner，可谓是“Java 特色 reduce 操作”（哈哈！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-16T16:08:28.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.852Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>关于 Java8 的 stream 中的 reduce 操作 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于 Java8 的 stream 中的 reduce 操作
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-17 00:08:28" itemprop="dateCreated datePublished" datetime="2022-02-17T00:08:28+08:00">2022-02-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/02-17关于Java8-stream中的reduce操作.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/FP/" rel="tag"><i class="fa fa-tag"></i> FP</a>
+              <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在之前再次学习折叠操作的时候，我曾做了一些<a href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html" title="笔记">笔记</a>，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——<strong>为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner</strong>，可谓是“Java 特色 reduce 操作”（哈哈！）。</p>
+<p>最近学习 Hadoop 的   MapReduce 的时候，它的 Combiner 让我又回想起 java8-reduce 中的 Combiner（虽然其行为完全不是一回事就是了，MapReduce 中的 Combiner 的目的是预先进行一次本地的聚集，减少网络传输成本；java8-reduce 的 Combiner 的目的是归并各部分 reduce 的结果，得到最终值），因此这里又回过头来学习一波。</p>
+<blockquote>
+<p>咳咳，学过 MR 的 Combiner 后回过头来一看，发现它的行为（至少是接口）确实和 java8-reduce 的非常像，它们都需要保证输入和输出的签名是相同的以进行反复的 Combine。</p>
+</blockquote>
+<blockquote>
+<p>咳咳，学到 Spark 又回过头来看，发现 RDD 的 Aggregate 和 java8-stream 的并发版的 reduce 的签名是一致的，令人感叹。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>如果要说 java8-reduce 的最明显的特点，我认为有两个——</p>
+<p>首先，它非常合适同 Java 的可变集合一起工作（collect 方法），这在其他语言里是见不到的，这样既符合 java 传统的编程模式，也能保证足够的性能，甚至在并发情况下也能够应付。</p>
+<p>然后，它<strong>允许并发的 reduce 操作</strong>；java8-reduce 能把集合切分成多个部分，对每个部分并行地执行 reduce 操作，并通过所谓的 combiner 函数两两组合，得到最终结果；但显然使用并行的 reduce 操作时必须符合特定约束，以保证其能正确执行，无关切分情况或处理器核心数量。</p>
+<p>挨个点名！</p>
+<h2 id="The-easiest-way"><a href="#The-easiest-way" class="headerlink" title="The easiest way"></a>The easiest way</h2><p>最简单的 reduce 操作就是结果值和集合内的值同类型的 reduce 了，比如对集合求积，求和，Java 中干这事一样简单——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不给定初始值也可，此时返回类型会变成 Optional&lt;Integer&gt;，这点还挺酷的，很“纯”。</span></span><br><span class="line"><span class="keyword">int</span> sum = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).reduce(<span class="number">0</span>, (acc, x) -&gt; acc + x); <span class="comment">// or Integer::sum</span></span><br><span class="line">System.out.println(sum);</span><br></pre></td></tr></table></figure>
+
+<p>但 Java 未提供 reduceRight 方法，想必是认为其应用范围不广，事实也确实如此。</p>
+<h2 id="Parallel-Where-thing-goes-wrong"><a href="#Parallel-Where-thing-goes-wrong" class="headerlink" title="Parallel: Where thing goes wrong"></a>Parallel: Where thing goes wrong</h2><p>上面是串行流，它的行为同其它语言一致，但若是并行流呢？试试下面的代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sum = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>).parallel().reduce(<span class="number">1</span>, Integer::sum);</span><br><span class="line">System.out.println(sum);</span><br></pre></td></tr></table></figure>
+
+<p>结果是什么？如果是串行流的话，结果是肯定的——7，但这是并行流，我的电脑的结果是 9。也可以去尝试一下其它结果，最后会发现，只要 zero 参数（java 叫做 identity，这个名字兴许能给我们启发）不为 0，最后并行得到的结果和串行必然不一样。</p>
+<p>那么，并行流的 reduce 究竟是怎么跑的？</p>
+<p>我们知道，串行流的 reduce 可以描述成把集合中各元素通过一个二元操作符相连接，比如上面的求集合的和可以写成——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span> &gt;=&gt; <span class="number">1</span> &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>但是并行流显然不是这样干的，总的来说，并行流的 reduce 操作，会先把流切分成多个部分（具体切分数目由处理器核心数量决定），然后对每个部分各自并行执行 reduce 操作，然后<strong>再两两进行 Combine 操作</strong>，得到最终结果，这里的每个切分的部分，可以把它称作<code>ReduceTask</code>，比如对<code>[1,2,3,4,5].reduceParr(1, plus)</code>，它的计算过程可能是这样的——</p>
+<ol>
+<li>将<code>[1, 2, 3, 4, 5]</code>切分成四段，<code>[1]</code>，<code>[2]</code>，<code>[3]</code>，<code>[4, 5]</code></li>
+<li>对每一段，并行调用 reduce 方法，即<code>[1].reduce(1, plus)</code>，<code>[2].reduce(1, plus)</code>……得到<code>2</code>，<code>3</code>，<code>4</code>，<code>10</code>。</li>
+<li>对结果两两执行 combine 操作，<strong>这里的 combine 操作即 acc 操作</strong>，即 plus，<code>combine(combine(2, 3), combine(4, 10))</code></li>
+<li>得到结果——19。（实践好像是分了 5 段，因此结果是 20）</li>
+</ol>
+<p>具体流程是我们不应该关心的，我们只需要知道，<strong>各个部分会分别 reduce，然后会两两 combine，最终得到最终结果</strong>。这里的“两两 combine”不是说从左往右依次 combine（这不就又是一个串行的 reduce 嘛），想象一下归并排序的迭代版，它自底向上，每次 combine 的都是更“大”的值。</p>
+<p><strong>对于同类型的 reduce 操作，combine 函数同 acc 函数相同</strong>，所以<code>[1,2,3].reduce(0, Integer::sum)</code>也可以描述成<code>[1,2,3].reduce(0, Integer::sum, Integer::sum)</code>，表示它的合并和积累函数都是 sum。</p>
+<h2 id="非同类型的-reduce"><a href="#非同类型的-reduce" class="headerlink" title="非同类型的 reduce"></a>非同类型的 reduce</h2><p>只有在非同类型的 reduce 操作中，combine 才会明确显示出来——它需要用户主动去定义，但我们先来看看 Java 特色的 reduce 操作。</p>
+<p>非同类型的 reduce 操作有两个方法可用——</p>
+<ul>
+<li><p><code>reduce(identity : U, acc : (U, T) =&gt; U, combiner : (U, U) =&gt; U)</code></p>
+</li>
+<li><p><code>collect(supplier : () =&gt; U, acc : (U, T) =&gt; (), combiner : (U, U) =&gt; ())</code></p>
+</li>
+</ul>
+<p>前者（reduce）用于累积的类型是不可变值的情况；后者（collect）用于累积的类型是可变值的情况。</p>
+<h3 id="reduce-方法"><a href="#reduce-方法" class="headerlink" title="reduce 方法"></a>reduce 方法</h3><p>我们先来看看 reduce，下面的操作将集合反转——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; res = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>).boxed()</span><br><span class="line">    .reduce(<span class="keyword">new</span> LinkedList&lt;&gt;(), (acc, x) -&gt; &#123;</span><br><span class="line">        acc.addFirst(x);</span><br><span class="line">        <span class="keyword">return</span> acc;</span><br><span class="line">    &#125;, (a, b) -&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>在这里，第三个参数就是所谓的 combiner，这里因为是串行流，所以 combiner 不会被调用，可以直接返回 null。但 combiner 本身不能为 null，否则会抛空指针异常。</p>
+<p>但若是并行流呢？我们凭第一印象，大概会这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; res = IntStream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>).boxed().parallel()</span><br><span class="line">    .reduce(<span class="keyword">new</span> LinkedList&lt;&gt;(), (acc, x) -&gt; &#123;</span><br><span class="line">        acc.addFirst(x);</span><br><span class="line">        <span class="keyword">return</span> acc;</span><br><span class="line">    &#125;, (a, b) -&gt; &#123;</span><br><span class="line">        a.addAll(b);</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>但是这样是无法生效的，如果试图对该集合进行输出，它在输出时会抛出空指针异常！这说明它的结构被破坏了，我们遇到了线程安全问题！</p>
+<p>但为什么会这样呢？原来，<strong>reduce 方法中所使用的 identity，会被每一个 ReduceTask 都共用</strong>！并且我们在 acc 函数中原样返回了累积值，因此它会被持续使用下去，如果在 combiner 中试图判断<code>a == b</code>，它也将是 true，因为 a 和 b 是同一个对象！</p>
+<p>因此，reduce 方法只适合不可变对象，或者我们可以每次返回值都不改变原值，而是返回一个新的值，新的引用，但这对性能是极大的损耗，只有 string 这样的不可变类在 reduce 方法上才能得到运用。</p>
+<h3 id="collect-方法"><a href="#collect-方法" class="headerlink" title="collect 方法"></a>collect 方法</h3><p>这时，使用<code>collect</code>方法就是一个更好的选择，我们再看一看 collect 的签名——</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">U</span> collect(supplier : () =&gt; <span class="type">U</span>, acc : (<span class="type">U</span>, <span class="type">T</span>) =&gt; (), combiner : (<span class="type">U</span>, <span class="type">U</span>) =&gt; ())</span><br></pre></td></tr></table></figure>
+
+<p>这签名实际上把所有细节都描述出来了——<strong>我们通过一个 supplier，来让每一个 ReduceTask 都能拿到不一样的引用，从而避免共享数据问题；acc 和 combiner 都是没有返回值的，因此显然我们需要通过修改累积值来完成积累和合并操作</strong>。下面使用 collect 来进行一个 count 操作——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Integer&gt; count = Stream.of(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>, <span class="string">&quot;hello&quot;</span>, <span class="string">&quot;me&quot;</span>, <span class="string">&quot;hello&quot;</span>, <span class="string">&quot;yukina&quot;</span>, <span class="string">&quot;hello&quot;</span>, <span class="string">&quot;happy&quot;</span>, <span class="string">&quot;world&quot;</span>)</span><br><span class="line">    .parallel().collect(() -&gt; <span class="keyword">new</span> HashMap&lt;&gt;(),</span><br><span class="line">        (acc, x) -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (!acc.containsKey(x))</span><br><span class="line">                acc.put(x, <span class="number">0</span>);</span><br><span class="line">            acc.compute(x, (k, v) -&gt; v + <span class="number">1</span>);</span><br><span class="line">        &#125;, (a, b) -&gt; &#123;</span><br><span class="line">            <span class="comment">// combine 时必须把第二个值合并到第一个值</span></span><br><span class="line">            b.forEach((kb, vb) -&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (!a.containsKey(kb))</span><br><span class="line">                    a.put(kb, <span class="number">0</span>);</span><br><span class="line">                a.compute(kb, (ka, va) -&gt; va + vb);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>That’s it！了解这么多就足够了。<strong>使用原则是，当使用值类型，或不可变类型，如 String，Scala，Kotlin 的不可变集合，基本类型等的时候，使用 reduce 方法；使用引用类型，可变类型的时候，使用 collect 方法</strong>。虽然 combiner，acc，初始值的设置要遵循的一定的规律，但给出统一和容易理解的表述并不容易，具体问题具体分析吧。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.md" title="关于 Java8 的 stream 中的 reduce 操作">_posts/2022/02-17关于Java8-stream中的reduce操作.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02-10%E9%85%8D%E7%BD%AEdocker%E9%9B%86%E7%BE%A4%E4%BA%92%E7%9B%B8%E4%B9%8B%E9%97%B4%E7%9A%84ssh.html" rel="prev" title="配置 docker 集群互相之间的 ssh">
+      <i class="fa fa-chevron-left"></i> 配置 docker 集群互相之间的 ssh
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02-19MapReduce%E7%9A%84hello-world.html" rel="next" title="Hello, MapReduce——Word Count">
+      Hello, MapReduce——Word Count <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-easiest-way"><span class="nav-number">1.</span> <span class="nav-text">The easiest way</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Where-thing-goes-wrong"><span class="nav-number">2.</span> <span class="nav-text">Parallel: Where thing goes wrong</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84-reduce"><span class="nav-number">3.</span> <span class="nav-text">非同类型的 reduce</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#reduce-%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">reduce 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#collect-%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">collect 方法</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

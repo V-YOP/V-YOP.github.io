@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="感觉到的东西，我们不能立即去理解它，只有理解了的东西，我们才能更深刻地去感受它。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初涉并发编程 1——基本概念">
+<meta property="og:url" content="http://example.com/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="感觉到的东西，我们不能立即去理解它，只有理解了的东西，我们才能更深刻地去感受它。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/19/DxmSh9zpiRyNXju.png">
+<meta property="article:published_time" content="2020-12-18T11:50:36.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.838Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="并发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/19/DxmSh9zpiRyNXju.png">
+
+<link rel="canonical" href="http://example.com/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>初涉并发编程 1——基本概念 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初涉并发编程 1——基本概念
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-18 19:50:36" itemprop="dateCreated datePublished" datetime="2020-12-18T19:50:36+08:00">2020-12-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2020/12-20初涉并发编程1——基本概念.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">感觉到的东西，我们不能立即去理解它，只有理解了的东西，我们才能更深刻地去感受它。</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag"><i class="fa fa-tag"></i> 并发</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <!--Hello, Happy World-->
+
+<p>从这篇文章起，都是在 openSUSE 环境下，使用 vscode 编写的了～</p>
+<p>主要是按照《Java 并发编程实战（Java concurrency in practice）》来学习的，或许也会参考其他书籍。我目前仅有对多线程编程的一点非常粗糙的理解，需要大量的实践和理论学习来补足。</p>
+<p>一个必须要明确的问题是，看这本书，并非是要学习 java 中的并发编程，而是通过 Java 来学习并发编程的思想。在这里，思想才是真正的<strong>内容</strong>，语言只不过是这思想的表现<strong>形式</strong>而已。将来去学设计模式，也应该坚持这一点。</p>
+<h1 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h1><h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><p>简单来说，<strong>进程</strong>就是一个程序（存放在硬盘里的，静态的代码/机器码）的一次执行，或者说是一个程序的<strong>生命周期</strong>。而线程，则是进程所创建的“<strong>轻量级进程</strong>”。对于 Java 程序来说，JVM 就是 Java 程序的进程，它维护数个线程，如执行 main 方法的主线程，GC 线程等。</p>
+<p>就如之前所学习到的，各个进程之间一般上来说是相互隔离的，它们只能通过操作系统提供的一些方法来相互通信，如信号量，socket，共享内存，管道等。而进程下的各线程可以<strong>共享</strong>线程的资源。对于 Java 程序来说，各个线程都共享进程的方法区和堆，各个线程都私有栈和 PC。</p>
+<p><strong>线程是 CPU 调度的最小单位</strong>。进程间的上下文切换消耗很大，而线程间的切换则消耗相对较小（这里减少的消耗似乎主要来源于线程间共享的资源，即堆的资源，因为是共享的，所以内存缺页的情况会较少，更容易命中……之类的），所以线程也叫轻量级进程。</p>
+<h2 id="串行和并行"><a href="#串行和并行" class="headerlink" title="串行和并行"></a>串行和并行</h2><p>所谓串行，就是指一连串的操作依次进行，它们是有严格的顺序关系的，没有两个操作是同时进行的。</p>
+<p>而并行，则是说其中有部分（或全部）操作是（严格上来说）同时执行的。并行只有在多核 CPU 的计算机中才能进行。</p>
+<h2 id="同步和异步"><a href="#同步和异步" class="headerlink" title="同步和异步"></a>同步和异步</h2><p>TODO: 摸了</p>
+<h2 id="什么是并发"><a href="#什么是并发" class="headerlink" title="什么是并发"></a>什么是并发</h2><p>并发是指在<strong>宏观</strong>上来说，两个（或多个）操作是同时执行的。这时，计算机底层可能是串行的（所有操作可以都在一个所谓的主事件循环里进行，就如以前的 GUI 程序），也可能是并行的，可能是单线程的，也可能是多线程的。所以并发并不等于并行。</p>
+<h1 id="为什么要多线程？"><a href="#为什么要多线程？" class="headerlink" title="为什么要多线程？"></a>为什么要多线程？</h1><p>首先一个原因是，多线程让程序<strong>更容易维护</strong>（把原本互相并行的操作，分割成一个个串行的操作），<strong>降低开发的成本</strong>（好家伙，有什么比这一条更重要？）。同时，多线程也能够<strong>增加资源利用率</strong>，在进行某些需要等待的操作时（比如等待外界的输入输出），能够空出手来干其他事（即使对单核处理器也如此）；对于现代的多用户系统，多线程能够保证用户和程序的<strong>公平性</strong>。</p>
+<p>还有硬件上的原因。随着摩尔定律的失效，CPU 的频率遇到瓶颈，那些硬件厂商迫不得已，只能往 CPU 里塞更多的核心，为了利用好这些核心，多线程是必要的。比如说，单线程的程序跑在双核的计算机上，只能利用 50%性能，在 128 核的计算机上则只能利用不到 1%的性能。</p>
+<p>不过无论如何，多线程最香的一点在于它让建模简单了，<strong>它将复杂，异步的工作流分解为一组简单，同步的工作流</strong>——每个工作流在一个单独的线程中执行，并在特定的同步位置进行交互。它能够简化异步事件，让每一个组件都像是一个单线程程序。学习多线程，实际上就是学习如何让各线程间保持同步。</p>
+<blockquote>
+<p>这可能会让你以为，在单核处理器的情况下，编写并发代码是没有意义的。然而，有些情况下，并发模型会产生更简单的代码，光是为了这个目的就值得舍弃一些性能。——《On Java 8》</p>
+</blockquote>
+<h1 id="多线程带来的问题"><a href="#多线程带来的问题" class="headerlink" title="多线程带来的问题"></a>多线程带来的问题</h1><p>多线程要求开发者考虑三个问题——安全性，活跃性，以及性能问题。</p>
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>如果线程间没有采取适当的同步措施，多个线程之间<strong>不可预测的执行顺序</strong>可能会让程序出现错误。并且这种错误是难以发现的，间歇性出现的。</p>
+<h3 id="竞态条件（Race-Condition）"><a href="#竞态条件（Race-Condition）" class="headerlink" title="竞态条件（Race Condition）"></a>竞态条件（Race Condition）</h3><p>考虑这样的代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Counter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Counter</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">count</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> count++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Thread a = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++)</span><br><span class="line">                Counter.count();</span><br><span class="line">        &#125;);</span><br><span class="line">        Thread b = <span class="keyword">new</span> Thread(()-&gt;&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++)</span><br><span class="line">                Counter.count();</span><br><span class="line">        &#125;);</span><br><span class="line">        a.start();</span><br><span class="line">        b.start();</span><br><span class="line">        a.join();</span><br><span class="line">        b.join();</span><br><span class="line">        System.out.println(Counter.count()); <span class="comment">// 结果是不可预测的，可能是 1000 到 2000 的任何值</span></span><br><span class="line">        System.exit(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题发生在 count 方法里，count++并非是原子操作，查看 count 的字节码，可以看到，其字节码有 6 步，这里简化它有三步——get 值（到栈顶），计算，put 值。它是<strong>读取——修改——写入</strong>操作。</p>
+<blockquote>
+<p><del>原子操作指不可被打断的操作，也就是说，当一个线程在执行原子操作的时候，该操作（块）保证不会被其他线程执行，即使该线程被切换出去。通过一定的加锁机制能够给与一串操作以原子性</del>（不知道如何正确定义原子性…这里被删掉的定义的外延似乎不能包括那种真正不可再分的原子操作，比如下面所示的字节码的单行，因为这样的操作在多处理器环境下完全可以是并行的，而锁将不允许并行。或许是我脑子里没货导致的……但是这里其实并不需要纠结，在实践中是能够分辨出来的）</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static int count();</span><br><span class="line">Code:</span><br><span class="line">    0: getstatic   #2  // Field count:I</span><br><span class="line">    3: dup</span><br><span class="line">    4: iconst_1</span><br><span class="line">    5: iadd</span><br><span class="line">    6: putstatic   #2  // Field count:I</span><br><span class="line">    9: ireturn</span><br></pre></td></tr></table></figure>
+
+<p>要知道，线程可以在进行到任意一行时进行线程调度。考虑下面的情况——</p>
+<p><img src="https://i.loli.net/2020/12/19/DxmSh9zpiRyNXju.png" alt="image.png"></p>
+<p>经历了两次 count 操作，它们正常的情况应该是分别返回 9，10，而这里全部都返回了 9。count 在两次递增后值应当为 11, 但结果却为 10。可以说，有一次递增操作<strong>丢失</strong>了。这里显然，<strong>不恰当的运行时线程交替执行的顺序导致了错误的结果</strong>。这是没有充分同步造成的。</p>
+<p>上面描述的是一种常见的并发安全问题——<strong>竞态条件（Race Condition）</strong>中的“<strong>先检查后执行（Check-Then-Act）</strong>”。它是指<strong>结果的正确性取决于多个线程的交替执行时序</strong>这样的情况。或者说，结果的正确性取决于运气。（老实说，我觉得 condition 或许翻译成“情况”更好）</p>
+<p>大多数竞态条件的本质是“<strong>观察结果的失效</strong>”。<del>比如这里的 count 方法，当一个线程获取了 count 的值后，它实际上已经无法再知道它所持有的 count 的值是否还是原来的 count 的值，而它却要拿这种不确定的结果来进行运算。如果该结果自始至终都是未改变的，则不会出现问题。但若是有改变，这里就失效了。</del>（该方法属于读取——修改——写入操作，有一定的共通性，但也有其个性）。</p>
+<p>（单例模式的？）延迟初始化也是先检查后执行的一个常见例子。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (ins == <span class="keyword">null</span>) </span><br><span class="line">    <span class="keyword">return</span> ins = <span class="keyword">new</span> instance(); </span><br><span class="line"><span class="keyword">else</span> <span class="keyword">return</span> ins;</span><br></pre></td></tr></table></figure>
+
+<p>这里由于不一致的调用顺序，可能会导致多个线程执行该方法后返回不一样的实例。</p>
+<h2 id="活跃性"><a href="#活跃性" class="headerlink" title="活跃性"></a>活跃性</h2><p>安全性是指，“<strong>永远不发生糟糕的事情</strong>”，而活跃性则是指，“<strong>正确的事情终究会发生</strong>”。在这里，死锁，饥饿，活锁等会导致活跃性问题。（或许死锁和饥饿的区别在于，死锁和活锁时所有线程都无法执行，饥饿时只有一部分线程无法执行……但无论如何，这都是我们不想看到的）</p>
+<h2 id="性能问题"><a href="#性能问题" class="headerlink" title="性能问题"></a>性能问题</h2><p>我们不仅要求正确的事情终究要发生，也要求正确的事情尽快发生。多线程程序相较于单线程程序，引入了多余的运行时开销——<strong>线程间的上下文切换和对临界区操作时同步机制带来的开销</strong>。前者如处理不当，会导致 CPU 时间主要用于线程调度而非运行，后者往往会抑制编译器的性能优化，使内存缓冲区中数据无效。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.md" title="初涉并发编程 1——基本概念">_posts/2020/12-20初涉并发编程1——基本概念.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12-13%E5%AF%B9CSP%E7%9A%84%E5%A4%8D%E7%9B%98.html" rel="prev" title="对 CSP 的复盘">
+      <i class="fa fa-chevron-left"></i> 对 CSP 的复盘
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12-21SQL%E5%BF%AB%E9%80%9F%E5%A4%8D%E4%B9%A0.html" rel="next" title="SQL 语句快速复习">
+      SQL 语句快速复习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">进程和线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%92%8C%E5%B9%B6%E8%A1%8C"><span class="nav-number">1.2.</span> <span class="nav-text">串行和并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E5%92%8C%E5%BC%82%E6%AD%A5"><span class="nav-number">1.3.</span> <span class="nav-text">同步和异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%B9%B6%E5%8F%91"><span class="nav-number">1.4.</span> <span class="nav-text">什么是并发</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%A4%9A%E7%BA%BF%E7%A8%8B%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">为什么要多线程？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">多线程带来的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">3.1.</span> <span class="nav-text">安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%9E%E6%80%81%E6%9D%A1%E4%BB%B6%EF%BC%88Race-Condition%EF%BC%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">竞态条件（Race Condition）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B4%BB%E8%B7%83%E6%80%A7"><span class="nav-number">3.2.</span> <span class="nav-text">活跃性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98"><span class="nav-number">3.3.</span> <span class="nav-text">性能问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

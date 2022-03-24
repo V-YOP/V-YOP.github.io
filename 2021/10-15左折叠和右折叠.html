@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="fold 可以说是最通用的控制结构，对其进行特别了解是有意义的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="左折叠和右折叠">
+<meta property="og:url" content="http://example.com/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="fold 可以说是最通用的控制结构，对其进行特别了解是有意义的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211015234009.png">
+<meta property="article:published_time" content="2021-10-15T14:43:41.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.847Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211015234009.png">
+
+<link rel="canonical" href="http://example.com/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>左折叠和右折叠 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          左折叠和右折叠
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-15 22:43:41" itemprop="dateCreated datePublished" datetime="2021-10-15T22:43:41+08:00">2021-10-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/10-15左折叠和右折叠.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">fold 可以说是最通用的控制结构，对其进行特别了解是有意义的</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/FP/" rel="tag"><i class="fa fa-tag"></i> FP</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>写了半天，信誓旦旦以为 haskell 的 fold 的表现和 lisp 里的是一致的，结果被打脸了……尴尬。但终究是学习到了。</p>
+</blockquote>
+<p>fold 操作分为<code>foldl</code>和<code>foldr</code>，就理论上来说，它们的区别用一句话概括的话就是，<code>foldl</code>是尾递归，而<code>foldr</code>是递归。其中以 SICP 的语境来说，<code>foldl</code>是<strong>迭代</strong>操作，其状态改变维护在函数参数中，<code>foldr</code>是<strong>递归</strong>操作，参数被放到了栈中。</p>
+<p>下面是迭代和递归的求阶乘函数，其对求值过程进行了展开。可以明显看到它们的区别。</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">;;; 递归版</span></span><br><span class="line">(<span class="name"><span class="builtin-name">define</span></span> (<span class="name">factorial</span> n)</span><br><span class="line">  (<span class="name"><span class="builtin-name">if</span></span> (<span class="name"><span class="builtin-name">=</span></span> n <span class="number">1</span>) </span><br><span class="line">      <span class="number">1</span> </span><br><span class="line">      (<span class="name"><span class="builtin-name">*</span></span> n (<span class="name">factorial</span> (<span class="name"><span class="builtin-name">-</span></span> n <span class="number">1</span>)))))</span><br><span class="line"></span><br><span class="line">(<span class="name">factorial</span> <span class="number">6</span>)</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name">factorial</span> <span class="number">5</span>))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name">factorial</span> <span class="number">4</span>)))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">4</span> (<span class="name">factorial</span> <span class="number">3</span>))))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">4</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">3</span> (<span class="name">factorial</span> <span class="number">2</span>)))))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">4</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">3</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">2</span> (<span class="name">factorial</span> <span class="number">1</span>))))))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">4</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">3</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">2</span> <span class="number">1</span>)))))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">4</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">3</span> <span class="number">2</span>))))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">4</span> <span class="number">6</span>)))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> (<span class="name"><span class="builtin-name">*</span></span> <span class="number">5</span> <span class="number">24</span>))</span><br><span class="line">(<span class="name"><span class="builtin-name">*</span></span> <span class="number">6</span> <span class="number">120</span>)</span><br><span class="line"><span class="number">720</span></span><br><span class="line"></span><br><span class="line"><span class="comment">;;; 迭代版</span></span><br><span class="line">(<span class="name"><span class="builtin-name">define</span></span> (<span class="name">factorial</span> n)</span><br><span class="line">  (<span class="name"><span class="builtin-name">define</span></span> (<span class="name">helper</span> acc n)</span><br><span class="line">    (<span class="name"><span class="builtin-name">if</span></span> (<span class="name"><span class="builtin-name">=</span></span> n <span class="number">1</span>)</span><br><span class="line">        acc</span><br><span class="line">        (<span class="name">helper</span> (<span class="name"><span class="builtin-name">*</span></span> n acc) (<span class="name"><span class="builtin-name">-</span></span> n <span class="number">1</span>))))</span><br><span class="line">  (<span class="name">helper</span> <span class="number">1</span> n))</span><br><span class="line"></span><br><span class="line">(<span class="name">factorial</span> <span class="number">6</span>)</span><br><span class="line">(<span class="name">helper</span> <span class="number">1</span> <span class="number">6</span>)</span><br><span class="line">(<span class="name">helper</span> <span class="number">6</span> <span class="number">5</span>)</span><br><span class="line">(<span class="name">helper</span> <span class="number">30</span> <span class="number">4</span>)</span><br><span class="line">(<span class="name">helper</span> <span class="number">120</span> <span class="number">3</span>)</span><br><span class="line">(<span class="name">helper</span> <span class="number">360</span> <span class="number">2</span>)</span><br><span class="line">(<span class="name">helper</span> <span class="number">720</span> <span class="number">1</span>)</span><br><span class="line"><span class="number">720</span></span><br></pre></td></tr></table></figure>
+
+<p>显然可以看到，递归版的阶乘函数先展开成<code>1 * 2 * ... * n</code>的形式才开始进行运算，而迭代版的看不到这种展开——它已经被运算完，作为新的参数进行下一次迭代了。</p>
+<p>但是这是 lisp，haskell 由于其非严格求值的特性，表现和 lisp 不一样（<strong>甚至完全相反</strong>！）。</p>
+<p><code>foldr</code>表面上看起来无必要——既然都有尾递归操作了，为什么还要用浪费空间（可能还有时间）的普通递归操作呢？一个原因是，由于其参数被放到栈中，这意味着<strong>计算是被延迟了的</strong>，当它与 haskell 的非严格求值相结合，便导致了一个威力无比的特性——<strong>它能够处理无穷长度的列表</strong>。比如对一个<code>[1..]</code>，我们可以看做是<code>1:2:3:4:...</code>，这种结构显然是类似于那种递归结构的，如果我们构造出的结果符合这种形式，就可以利用 haskell 的特性进行部分取值。</p>
+<p>下面是一个自己的 foldr 的实现——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">myFoldr</span> f zero [] = zero</span><br><span class="line"><span class="title">myFoldr</span> f zero (x:xs) = f x $ myFoldr f zero xs</span><br></pre></td></tr></table></figure>
+
+<p>当我们使用<code>:</code>进行调用时——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">myFoldr</span> (:) [] [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span><br><span class="line"><span class="number">1</span>:(myFoldr (:) [] [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>])</span><br><span class="line"><span class="number">1</span>:(<span class="number">2</span>:(myFoldr (:) [] [<span class="number">3</span>, <span class="number">4</span>]))</span><br><span class="line"><span class="number">1</span>:(<span class="number">2</span>:(<span class="number">3</span>:(myFoldr (:) [] [<span class="number">4</span>])))</span><br><span class="line"><span class="number">1</span>:(<span class="number">2</span>:(<span class="number">3</span>:(<span class="number">4</span>:(myFoldr (:) [] []))))</span><br><span class="line"><span class="number">1</span>:(<span class="number">2</span>:(<span class="number">3</span>:(<span class="number">4</span>:[]))) <span class="comment">-- 这个括号形式很有意思</span></span><br><span class="line"><span class="number">1</span>:<span class="number">2</span>:<span class="number">3</span>:<span class="number">4</span>:[] <span class="comment">-- 考虑到：是右结合的，括号可以省略</span></span><br><span class="line">[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]  <span class="comment">-- 语法糖</span></span><br></pre></td></tr></table></figure>
+
+<p>bingo！容易认识到，无限的列表也能进行这种操作，因为 haskell 只要拿到需要的数据就 OK。</p>
+<p>下面是<code>foldl</code>的实现——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">myFoldl f zero [] = zero</span><br><span class="line">myFoldl f zero (x:xs) = myFoldl f (f zero x) xs</span><br><span class="line"></span><br><span class="line">myFoldl (-) 0 [1,2,3,4]</span><br><span class="line">myFoldl (-) (0 - 1) [2,3,4]</span><br><span class="line">myFoldl (-) ((0 - 1) - 2) [3, 4]</span><br><span class="line">myFoldl (-) (((0 - 1) - 2) - 3) [4]</span><br><span class="line">myFoldl (-) ((((0 - 1) - 2) - 3) - 4) []</span><br><span class="line">((((0 - 1) - 2) - 3) - 4) -- 为什么这样表示？因为在 haskell 里，恐怕就要导致这样的结果！</span><br><span class="line">-10</span><br></pre></td></tr></table></figure>
+
+<p>顺带一提，关于<code>foldl</code>和<code>foldr</code>的性质，下面这个实例很有趣，只消注意 zero 和括号的情况——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">foldl</span> (-) <span class="number">0</span> [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span><br><span class="line">((((<span class="number">0</span> - <span class="number">1</span>) - <span class="number">2</span>) - <span class="number">3</span>) - <span class="number">4</span>)</span><br><span class="line"><span class="number">-10</span></span><br><span class="line"></span><br><span class="line"><span class="title">foldr</span> (-) <span class="number">0</span> [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span><br><span class="line">(<span class="number">1</span> - (<span class="number">2</span> - (<span class="number">3</span> - (<span class="number">4</span> - <span class="number">0</span>))))</span><br><span class="line"><span class="number">-2</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>有趣的事情来了——<strong>在 haskell 里，<code>foldr</code>比<code>foldl</code>效率更高！</strong><code>foldl</code>的计算会被延迟（<code>foldl</code>：老子不是尾递归吗！），导致递归般的效率，而<code>foldr</code>反而能够保证一定的效率。而且 foldl 因此不能对无穷列表进行折叠，因为其最左边的先计算，导致如果要生成列表则必定是反转的（除非用<code>++</code>，但 haskell 表示不是<code>:</code>它不认），这让<code>foldl</code>无法处理无限长列表——无限的东西可没法反转。而具体细节…嗯哼。</p>
+<p>总之，在 haskell 中，对<code>fold</code>操作进行使用时，考虑遵循这些原则——</p>
+<ol>
+<li>如果要进行 reduce 操作（即生成一个“原子”的值），则使用严格求值的<code>foldl&#39;</code>。这是考虑到左折叠一般来说更易懂，更明显。</li>
+<li>否则，用<code>foldr</code>。</li>
+<li>不要使用<code>foldl</code>。</li>
+</ol>
+<p>对其他语言来说，当然还是考虑多使用左折叠了。</p>
+<p>Over~</p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211015234009.png" alt="image-20211015234009677"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.md" title="左折叠和右折叠">_posts/2021/10-15左折叠和右折叠.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10-09%E5%85%B3%E4%BA%8Elambda%E6%BC%94%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0.html" rel="prev" title="关于 lambda 演算">
+      <i class="fa fa-chevron-left"></i> 关于 lambda 演算
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10-25%E3%80%90%E7%BF%BB%E8%AF%91%E3%80%91Working-with-type-in-a-context.html" rel="next" title="【翻译】Working with type in a context">
+      【翻译】Working with type in a context <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

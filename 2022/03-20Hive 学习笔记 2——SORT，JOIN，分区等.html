@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="TODO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive 学习笔记 2——SORT，JOIN，分区等">
+<meta property="og:url" content="http://example.com/2022/03-20Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%202%E2%80%94%E2%80%94SORT%EF%BC%8CJOIN%EF%BC%8C%E5%88%86%E5%8C%BA%E7%AD%89.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="TODO">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-22T12:53:51.856Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.856Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/03-20Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%202%E2%80%94%E2%80%94SORT%EF%BC%8CJOIN%EF%BC%8C%E5%88%86%E5%8C%BA%E7%AD%89.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Hive 学习笔记 2——SORT，JOIN，分区等 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03-20Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%202%E2%80%94%E2%80%94SORT%EF%BC%8CJOIN%EF%BC%8C%E5%88%86%E5%8C%BA%E7%AD%89.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hive 学习笔记 2——SORT，JOIN，分区等
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-22 20:53:51" itemprop="dateCreated datePublished" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2022/03-20Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%202%E2%80%94%E2%80%94SORT%EF%BC%8CJOIN%EF%BC%8C%E5%88%86%E5%8C%BA%E7%AD%89.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/03-20Hive 学习笔记 2——SORT，JOIN，分区等.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">TODO</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/Hive/" rel="tag"><i class="fa fa-tag"></i> Hive</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>现在跟随《Hive 编程指南》进行学习，此书的翻译…我在序章已经看到两处明显错误了，中英对照着看吧。</p>
+</blockquote>
+<blockquote>
+<p>Hive 的一个问题在于，它的接口和传统的关系型数据库一致，但本质上 Hive 是反模式的，无法直接使用传统关系型数据库的模式，必须要考虑对 Hive 的抽象之下的一些东西。</p>
+</blockquote>
+<p>这里去学习一下 SELECT，Hive 最重要的部分。<strong>Hive 的 SELECT 相较于普通的关系型数据库，增加了内置的集合类型，因此各种操作，如函数，聚合，窗口函数等，都会有一些新东西，新模式可用，更别说还有新增的 UDTF 了</strong>；同时由于底层使用 MapReduce，因此<strong>分区</strong>等概念也需要体现在 SQL 中。这些地方需要特别学习。</p>
+<p>下面使用的示例仍旧通过尚硅谷的表和数据描述。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">表数据定义见此。</span></summary>
+        <blockquote><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">---- dept.sql ----</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS dept (</span><br><span class="line">	deptno INT,</span><br><span class="line">	dname STRING,</span><br><span class="line">	loc INT</span><br><span class="line">)</span><br><span class="line">ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;,&#x27;;</span><br><span class="line"></span><br><span class="line">---- dept.txt ----</span><br><span class="line"></span><br><span class="line">10,ACCOUNTING,1700</span><br><span class="line">20,RESEARCH,1800</span><br><span class="line">30,SALES,1900</span><br><span class="line">40,OPERATIONS,1700</span><br><span class="line"></span><br><span class="line">---- emp.sql ----</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS emp (</span><br><span class="line">	empno INT,</span><br><span class="line">	ename STRING,</span><br><span class="line">	job STRING,</span><br><span class="line">	mgr INT, -- 上级</span><br><span class="line">	hiredate STRING, -- 入职时间</span><br><span class="line">	sal DOUBLE, -- 薪水</span><br><span class="line">	comm DOUBLE, -- 奖金</span><br><span class="line">	deptno INT)</span><br><span class="line">ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;,&#x27;;</span><br><span class="line"></span><br><span class="line">---- emp.txt ----</span><br><span class="line"></span><br><span class="line">7369,SMITH,CLERK,7902,1980-12-17,800.00,,20</span><br><span class="line">7499,ALLEN,SALESMAN,7698,1981-2-20,1600.00,300.00,30</span><br><span class="line">7521,WARD,SALESMAN,7698,1981-2-22,1250.00,500.00,30</span><br><span class="line">7566,JONES,MANAGER,7839,1981-4-2,2975.00,,20</span><br><span class="line">7654,MARTIN,SALESMAN,7698,1981-9-28,1250.00,1400.00,30</span><br><span class="line">7698,BLAKE,MANAGER,7839,1981-5-1,2850,,30</span><br><span class="line">7782,CLARK,MANAGER,7839,1981-6-9,2450.00,,10</span><br><span class="line">7788,SCOTT,ANALYST,7566,1987-4-19,3000.00,,20</span><br><span class="line">7839,KING,PRESIDENT,,1981-11-17,5000.00,,10</span><br><span class="line">7844,TURNER,SALESMAN,7698,1981-9-8,1500.00,0.00,30</span><br><span class="line">7876,ADAMS,CLERK,7788,1987-5-23,1100.00,,20</span><br><span class="line">7900,JAMES,CLERK,7698,1981-12-3,950.00,,30</span><br><span class="line">7902,FORD,ANALYST,7566,1981-12-3,3000.00,,20</span><br><span class="line">7934,MILLER,CLERK,7782,1982-1-23,1300.00,,10</span><br></pre></td></tr></table></figure>
+</blockquote>
+        
+    </details>
+  
+<h1 id="表生成函数（UDTF）"><a href="#表生成函数（UDTF）" class="headerlink" title="表生成函数（UDTF）"></a>表生成函数（UDTF）</h1><p>聚合函数从多行数据生成单个数据，而表生成函数则反之——将单列数据扩展成多行多列数据，一个展平操作。</p>
+<p>最典型的表生成函数是 explode，它能够数组和哈希表展平成多列，使用如下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> explode(<span class="keyword">ARRAY</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>));</span><br><span class="line"><span class="operator">+</span><span class="comment">---+</span></span><br><span class="line"><span class="operator">|</span>col<span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---+</span></span><br><span class="line"><span class="operator">|</span><span class="number">1</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">2</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">3</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">2</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">1</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---+</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> explode(MAP(<span class="string">&#x27;yuuki&#x27;</span>, <span class="number">16</span>, <span class="string">&#x27;haruka&#x27;</span>, <span class="number">17</span>)) <span class="keyword">AS</span> (name, age);</span><br><span class="line"><span class="operator">+</span><span class="comment">------+---+</span></span><br><span class="line"><span class="operator">|</span>name  <span class="operator">|</span>age<span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+---+</span></span><br><span class="line"><span class="operator">|</span>yuuki <span class="operator">|</span><span class="number">16</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>haruka<span class="operator">|</span><span class="number">17</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">------+---+</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h1><p>关于 Hive 的连接操作，Hive 曾经只能支持等值连接（我用 MapReduce 也只会写等值连接），而现在已经能够支持非等值连接了，并且能够在 ON 中使用 OR 子句，所以现在和关系型数据库的 JOIN 操作已经看不出什么差别了。</p>
+<p>进行多表连接操作时，每次连接操作将产生一个 MapReduce 任务，从左到右依次执行，比如有<code>SELECT .. FROM a JOIN b ON a.id=b.id JOIN c ON b.id=c.id</code>，首先是 a 和 b 先进行连接，然后是连接后的输出表与 c 相连接。但在像这样的例子里，Hive 会进行优化——三个表都使用同一个键进行连接，因此可以同时将三个表进行输入，因此只需要一个 MR 任务。</p>
+<span style="color: #FF0000">应始终保证是小表 JOIN 大表</span>，即从左到右表的大小依次增加以保证性能（相信 Hive 同样做了优化）。
+
+<p>为了进行优化，可以在 JOIN 之前提前对各连接的表进行一定的筛选操作，<strong>该操作应当通过子查询来进行</strong>。</p>
+<h2 id="LEFT-SEMI-JOIN"><a href="#LEFT-SEMI-JOIN" class="headerlink" title="LEFT SEMI JOIN"></a>LEFT SEMI JOIN</h2><p>考虑这样的需求，我们想获取每个部门工资最高的员工的信息，如果是关系型数据库，我们有好几种解决方式，可能最经济的方式是首先获取每个部门的最高的工资，然后使用 IN，按部门和工资两个字段进行匹配，比如类似这样——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- Hive 下无法编译！</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> emp <span class="keyword">WHERE</span> (deptno, sal) <span class="keyword">IN</span> (<span class="keyword">SELECT</span> deptno, <span class="built_in">MAX</span>(sal) <span class="keyword">FROM</span> emp <span class="keyword">GROUP</span> <span class="keyword">BY</span> deptno);</span><br></pre></td></tr></table></figure>
+
+<p>但是，<span style="color: #FF0000">Hive 不支持非关联子查询</span>，这是符合逻辑的，因为若使用非关联子查询，这就说明我们需要将子查询执行并进行缓存和随机查询，这是愚蠢的。</p>
+<p>而对于关联子查询，Hive 足够聪明，能够将其转换为 JOIN 来执行，比如这样的 SQL 在 Hive 中就是合法的——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> emp <span class="keyword">AS</span> e1 <span class="keyword">WHERE</span> sal <span class="operator">=</span> (<span class="keyword">SELECT</span> <span class="built_in">MAX</span>(sal) <span class="keyword">FROM</span> emp <span class="keyword">AS</span> e2 <span class="keyword">WHERE</span> e1.deptno <span class="operator">=</span> e2.deptno);</span><br></pre></td></tr></table></figure>
+
+<p>Hive 也提供了一个额外的手段，称为左半连接 LEFT SEMI JOIN，以用于通过连接的语法表示该种操作并保证性能。<strong>左半连接是一种优化过的内连接</strong>，它的原理是在内连接的基础上，对左表的每一条记录，在右表上一旦找到满足 ON 的记录，就立刻返回，停止匹配操作。<strong>左半连接在 SELECT 和 WHERE 中只允许使用左边的字段</strong>。</p>
+<p>上面的操作使用左半连接进行表述则结果如下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> emp <span class="keyword">AS</span> e1</span><br><span class="line">  <span class="keyword">LEFT</span> SEMI <span class="keyword">JOIN</span> (<span class="keyword">SELECT</span> deptno, <span class="built_in">MAX</span>(sal) <span class="keyword">AS</span> maxSal <span class="keyword">FROM</span> emp <span class="keyword">GROUP</span> <span class="keyword">BY</span> deptno) <span class="keyword">AS</span> e2 </span><br><span class="line">  <span class="keyword">ON</span> e1.deptno <span class="operator">=</span> e2.deptno <span class="keyword">AND</span> e1.sal <span class="operator">=</span> e2.maxSal;</span><br></pre></td></tr></table></figure>
+
+<p>并不太清晰。</p>
+<h1 id="SORT-BY，DISTRIBUTE-BY，CLUSTER-BY"><a href="#SORT-BY，DISTRIBUTE-BY，CLUSTER-BY" class="headerlink" title="SORT BY，DISTRIBUTE BY，CLUSTER BY"></a>SORT BY，DISTRIBUTE BY，CLUSTER BY</h1><p>在之前学习到分布式排序时有提到，如果让结果数据全局有序的话，Reducer 必须只能有 1 个，这导致 reduce 的阶段的并行性完全丧失了。而 ORDER BY 这个保证数据全局有序的子句也会造成 Hive 的查询中只能使用一个 Reducer，因此 Hive 显然是不推荐使用 ORDER BY 的，以至于在严格模式里，ORDER BY 必须要和 LIMIT 子句配合。</p>
+<p>为此，Hive 提供了<code>SORT BY</code>，提供每个 Reducer 内部排序的功能，这样，每个 Reducer 生成的数据是有序的，而不同 Reducer 生成的数据之间仍旧是无序的。</p>
+<p>编写 MapReduce 应用的时候，我们可以自定义三个角色——Partitioner，SortComparator，GroupComparator，其中 GroupComparator 对应 GROUP BY，而 Partitioner 和 SortComparator 各有其对应者。</p>
+<p><strong>DISTRIBUTE BY 子句对应 Partitioner</strong>，其负责指定特定 Mapper 的数据要分发给哪个 Reducer。这在某些应用场景下比较有用，比如，我们希望每个 Reducer 处理特定年份的数据，如果不指定 DISTRIBUTE BY 的话，每个 Reducer 将都有每年的数据，很均匀，但也没有实践意义。</p>
+<p>比如，我们想获取每个部门的员工的信息，其中每个部门按工资倒序排序，分别使用和不使用 DISTRIBUTE BY 子句，查看对应执行结果——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 这里数据量太少，需要强制指定 reducer 个数</span></span><br><span class="line"><span class="comment">-- 为确保效果，让 reducer 的数量大于部门数量即可</span></span><br><span class="line"><span class="keyword">set</span> mapred.reduce.tasks <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> emp</span><br><span class="line">SORT <span class="keyword">BY</span> deptno, sal <span class="keyword">DESC</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+---------+----+----------+----+----+------+</span></span><br><span class="line"><span class="operator">|</span>empno<span class="operator">|</span>ename <span class="operator">|</span>job      <span class="operator">|</span>mgr <span class="operator">|</span>hiredate  <span class="operator">|</span>sal <span class="operator">|</span>comm<span class="operator">|</span>deptno<span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+---------+----+----------+----+----+------+</span></span><br><span class="line"><span class="operator">|</span><span class="number">7902</span> <span class="operator">|</span>FORD  <span class="operator">|</span>ANALYST  <span class="operator">|</span><span class="number">7566</span><span class="operator">|</span><span class="number">1981</span><span class="number">-12</span><span class="number">-3</span> <span class="operator">|</span><span class="number">3000</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7782</span> <span class="operator">|</span>CLARK <span class="operator">|</span>MANAGER  <span class="operator">|</span><span class="number">7839</span><span class="operator">|</span><span class="number">1981</span><span class="number">-6</span><span class="number">-9</span>  <span class="operator">|</span><span class="number">2450</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">10</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7369</span> <span class="operator">|</span>SMITH <span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7902</span><span class="operator">|</span><span class="number">1980</span><span class="number">-12</span><span class="number">-17</span><span class="operator">|</span><span class="number">800</span> <span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7654</span> <span class="operator">|</span>MARTIN<span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-9</span><span class="number">-28</span> <span class="operator">|</span><span class="number">1250</span><span class="operator">|</span><span class="number">1400</span><span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7839</span> <span class="operator">|</span>KING  <span class="operator">|</span>PRESIDENT<span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">1981</span><span class="number">-11</span><span class="number">-17</span><span class="operator">|</span><span class="number">5000</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">10</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7499</span> <span class="operator">|</span>ALLEN <span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-2</span><span class="number">-20</span> <span class="operator">|</span><span class="number">1600</span><span class="operator">|</span><span class="number">300</span> <span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7788</span> <span class="operator">|</span>SCOTT <span class="operator">|</span>ANALYST  <span class="operator">|</span><span class="number">7566</span><span class="operator">|</span><span class="number">1987</span><span class="number">-4</span><span class="number">-19</span> <span class="operator">|</span><span class="number">3000</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7876</span> <span class="operator">|</span>ADAMS <span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7788</span><span class="operator">|</span><span class="number">1987</span><span class="number">-5</span><span class="number">-23</span> <span class="operator">|</span><span class="number">1100</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7521</span> <span class="operator">|</span>WARD  <span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-2</span><span class="number">-22</span> <span class="operator">|</span><span class="number">1250</span><span class="operator">|</span><span class="number">500</span> <span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7934</span> <span class="operator">|</span>MILLER<span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7782</span><span class="operator">|</span><span class="number">1982</span><span class="number">-1</span><span class="number">-23</span> <span class="operator">|</span><span class="number">1300</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">10</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7900</span> <span class="operator">|</span>JAMES <span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-12</span><span class="number">-3</span> <span class="operator">|</span><span class="number">950</span> <span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7566</span> <span class="operator">|</span>JONES <span class="operator">|</span>MANAGER  <span class="operator">|</span><span class="number">7839</span><span class="operator">|</span><span class="number">1981</span><span class="number">-4</span><span class="number">-2</span>  <span class="operator">|</span><span class="number">2975</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7844</span> <span class="operator">|</span>TURNER<span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-9</span><span class="number">-8</span>  <span class="operator">|</span><span class="number">1500</span><span class="operator">|</span><span class="number">0</span>   <span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7698</span> <span class="operator">|</span>BLAKE <span class="operator">|</span>MANAGER  <span class="operator">|</span><span class="number">7839</span><span class="operator">|</span><span class="number">1981</span><span class="number">-5</span><span class="number">-1</span>  <span class="operator">|</span><span class="number">2850</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+---------+----+----------+----+----+------+</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> emp</span><br><span class="line">DISTRIBUTE <span class="keyword">BY</span> deptno</span><br><span class="line">SORT <span class="keyword">BY</span> deptno, sal <span class="keyword">DESC</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+---------+----+----------+----+----+------+</span></span><br><span class="line"><span class="operator">|</span>empno<span class="operator">|</span>ename <span class="operator">|</span>job      <span class="operator">|</span>mgr <span class="operator">|</span>hiredate  <span class="operator">|</span>sal <span class="operator">|</span>comm<span class="operator">|</span>deptno<span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+---------+----+----------+----+----+------+</span></span><br><span class="line"><span class="operator">|</span><span class="number">7839</span> <span class="operator">|</span>KING  <span class="operator">|</span>PRESIDENT<span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">1981</span><span class="number">-11</span><span class="number">-17</span><span class="operator">|</span><span class="number">5000</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">10</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7782</span> <span class="operator">|</span>CLARK <span class="operator">|</span>MANAGER  <span class="operator">|</span><span class="number">7839</span><span class="operator">|</span><span class="number">1981</span><span class="number">-6</span><span class="number">-9</span>  <span class="operator">|</span><span class="number">2450</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">10</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7934</span> <span class="operator">|</span>MILLER<span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7782</span><span class="operator">|</span><span class="number">1982</span><span class="number">-1</span><span class="number">-23</span> <span class="operator">|</span><span class="number">1300</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">10</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7788</span> <span class="operator">|</span>SCOTT <span class="operator">|</span>ANALYST  <span class="operator">|</span><span class="number">7566</span><span class="operator">|</span><span class="number">1987</span><span class="number">-4</span><span class="number">-19</span> <span class="operator">|</span><span class="number">3000</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7902</span> <span class="operator">|</span>FORD  <span class="operator">|</span>ANALYST  <span class="operator">|</span><span class="number">7566</span><span class="operator">|</span><span class="number">1981</span><span class="number">-12</span><span class="number">-3</span> <span class="operator">|</span><span class="number">3000</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7566</span> <span class="operator">|</span>JONES <span class="operator">|</span>MANAGER  <span class="operator">|</span><span class="number">7839</span><span class="operator">|</span><span class="number">1981</span><span class="number">-4</span><span class="number">-2</span>  <span class="operator">|</span><span class="number">2975</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7876</span> <span class="operator">|</span>ADAMS <span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7788</span><span class="operator">|</span><span class="number">1987</span><span class="number">-5</span><span class="number">-23</span> <span class="operator">|</span><span class="number">1100</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7369</span> <span class="operator">|</span>SMITH <span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7902</span><span class="operator">|</span><span class="number">1980</span><span class="number">-12</span><span class="number">-17</span><span class="operator">|</span><span class="number">800</span> <span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">20</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7698</span> <span class="operator">|</span>BLAKE <span class="operator">|</span>MANAGER  <span class="operator">|</span><span class="number">7839</span><span class="operator">|</span><span class="number">1981</span><span class="number">-5</span><span class="number">-1</span>  <span class="operator">|</span><span class="number">2850</span><span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7499</span> <span class="operator">|</span>ALLEN <span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-2</span><span class="number">-20</span> <span class="operator">|</span><span class="number">1600</span><span class="operator">|</span><span class="number">300</span> <span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7844</span> <span class="operator">|</span>TURNER<span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-9</span><span class="number">-8</span>  <span class="operator">|</span><span class="number">1500</span><span class="operator">|</span><span class="number">0</span>   <span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7654</span> <span class="operator">|</span>MARTIN<span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-9</span><span class="number">-28</span> <span class="operator">|</span><span class="number">1250</span><span class="operator">|</span><span class="number">1400</span><span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7521</span> <span class="operator">|</span>WARD  <span class="operator">|</span>SALESMAN <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-2</span><span class="number">-22</span> <span class="operator">|</span><span class="number">1250</span><span class="operator">|</span><span class="number">500</span> <span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span><span class="number">7900</span> <span class="operator">|</span>JAMES <span class="operator">|</span>CLERK    <span class="operator">|</span><span class="number">7698</span><span class="operator">|</span><span class="number">1981</span><span class="number">-12</span><span class="number">-3</span> <span class="operator">|</span><span class="number">950</span> <span class="operator">|</span><span class="keyword">NULL</span><span class="operator">|</span><span class="number">30</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----+------+---------+----+----------+----+----+------+</span></span><br></pre></td></tr></table></figure>
+
+<p>非常显然，指定分区后，每个 reducer 都处理更加“相关”的数据，因此最后生成的数据也更好看了。当然，这要以一定的数据倾斜作为代价。</p>
+<p>顺带一提，<strong>DISTRIBUTE BY 子句在使用 GROUP BY 子句的情况下，只能按用于分组的字段进行分区</strong>，这是符合逻辑的——如果分区的字段不是分组的字段的子集，则结果必然错误，之前在 MapReduce 中已经验证过了。使用 GROUP BY 时，Hive 默认会按分组的字段进行分区，因此结果必然正确（以至于我都不知道如何写出错误的使用方法）。</p>
+<p>CLUSTER BY 是 SORT BY 和 DISTRIBUTE BY 的结合——<strong>如果用于排序和用于分区的字段完全相同且排序均为升序，则可以使用 CLUSTER BY 子句来作为替代</strong>。</p>
+<p>结合使用 DISTRIBUTE BY 和 SORT BY，能够利用复数的 reducer 让结果全局有序，但这显然会导致一定的数据倾斜，降低并行性。<strong>一般如果要获取前 n 条数据，仍旧是使用一个 reducer 并使用 LIMIT</strong>，这样，每个 mapper 就只需要维护 n 条数据（使用大/小顶堆），而传递给 reducer 的就只有 n * mapper 数量的数据了，这代价仍旧是可以容忍的。</p>
+<h1 id="抽样查询"><a href="#抽样查询" class="headerlink" title="抽样查询"></a>抽样查询</h1><p>抽样是传统数据处理方法中的一个重要部分，在大数据时代，全量查询成为了主流（是这样吗 hhh 我不确定），但 Hive，以及 MapReduce 仍旧提供了对数据集进行抽样的功能。</p>
+<p>抽样分为分桶抽样和百分比抽样，<strong>分桶抽样就是将特定记录按某（些）字段进行哈希并按桶数取余，以放入特定的桶中，百分比抽样则是字面意思</strong>。</p>
+<p>抽样的语法如<code>SELECT * FROM emp TABLESAMPLE(BUCKET 1 OUT OF 10 ON deptno)</code>，这就是按 deptno 进行哈希并分到 10 个桶中，获取其中第一个桶；也可以使用 ON 语法来使用特定列或函数进行分桶。<strong>如果表本身没有分桶，则 ON 不能省略</strong>，如果表本身分桶且条件为用于分桶的字段，则其性能将会非常好，因为不需要扫描所有的记录了。</p>
+<p><strong>也可以使用 rand 函数进行分桶，其每次执行时都会得到不一样的结果</strong>。</p>
+<p>百分比抽样的语法为<code>SELECT * FROM emp TABLESAMPLE(50 PERCENT)</code>，这里是按 50%进行抽样。<strong>百分比抽样每次结果都是一致的</strong>，因为其是使用给定 seed，按随机数进行抽样的，因此多次执行结果相同。</p>
+<h1 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h1><p>关于 Hive 的视图，一个最重要（常不常用我不知道）的需求就是<strong>将一张物理表拆成多张逻辑表，以及进行预先的数据转换操作</strong>，它的重要性来源于 Hive 提供集合类型，因而破坏了第一范式。</p>
+<p>比如，我们有一个保存一些 HTTP 请求参数的文件——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name=haruka&amp;age=16&amp;clazz=765</span><br><span class="line">age=17&amp;name=chihaya&amp;height=162</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，每个记录都是 KV 对形式，但其出现顺序是不一定的，如何处理这样的数据？其实最好的手段是使用相关工具对其进行转换再进行后续建模，这能避免将来读取时解析的时间开销，但这里我们可以直接这样对它建模——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 只有一个字段，所以不用设置字段之间的分隔符</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> raw_t(cols MAP<span class="operator">&lt;</span>STRING,STRING<span class="operator">&gt;</span>)</span><br><span class="line"><span class="type">ROW</span> FORMAT DELIMITED </span><br><span class="line">COLLECTION ITEMS TERMINATED <span class="keyword">BY</span> <span class="string">&#x27;&amp;&#x27;</span> <span class="comment">-- 集合之间的元素的分隔</span></span><br><span class="line">MAP KEYS TERMINATED <span class="keyword">BY</span> <span class="string">&#x27;=&#x27;</span>;        <span class="comment">-- KV 之间的分隔</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 读取数据……</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> raw_t;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>cols                                        <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>&#123;&quot;name&quot;:&quot;haruka&quot;,&quot;age&quot;:&quot;16&quot;,&quot;clazz&quot;:&quot;765&quot;&#125;  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>&#123;&quot;age&quot;:&quot;17&quot;,&quot;name&quot;:&quot;chihaya&quot;,&quot;height&quot;:&quot;162&quot;&#125;<span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p>这样的数据用起来肯定是相当麻烦的，我们可以为它建立视图——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建 view 不需要给定类型！</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">VIEW</span> idol_t(</span><br><span class="line">    name,</span><br><span class="line">    age,</span><br><span class="line">    height,</span><br><span class="line">    clazz</span><br><span class="line">) <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    cols[<span class="string">&#x27;name&#x27;</span>],</span><br><span class="line">    <span class="built_in">CAST</span>(cols[<span class="string">&#x27;age&#x27;</span>] <span class="keyword">AS</span> <span class="type">INT</span>),</span><br><span class="line">    <span class="built_in">CAST</span>(cols[<span class="string">&#x27;height&#x27;</span>] <span class="keyword">AS</span> <span class="type">INT</span>),</span><br><span class="line">    cols[<span class="string">&#x27;clazz&#x27;</span>] <span class="keyword">FROM</span> raw_t;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> idol_t;</span><br><span class="line"><span class="operator">+</span><span class="comment">-------+---+------+-----+</span></span><br><span class="line"><span class="operator">|</span>name   <span class="operator">|</span>age<span class="operator">|</span>height<span class="operator">|</span>clazz<span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------+---+------+-----+</span></span><br><span class="line"><span class="operator">|</span>haruka <span class="operator">|</span><span class="number">16</span> <span class="operator">|</span><span class="keyword">NULL</span>  <span class="operator">|</span><span class="number">765</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>chihaya<span class="operator">|</span><span class="number">17</span> <span class="operator">|</span><span class="number">162</span>   <span class="operator">|</span><span class="keyword">NULL</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------+---+------+-----+</span></span><br></pre></td></tr></table></figure>
+
+<p>这样得到的结果和物理表无异！Hive当前也提供了物化视图。</p>
+<p>Hive 会尽量对视图查询进行优化，使外部查询语句和视图语句成为单条语句，但并非所有情况下都能进行这种优化。</p>
+<h1 id="关于类型转换"><a href="#关于类型转换" class="headerlink" title="关于类型转换"></a>关于类型转换</h1><p>Hive 的类型转换规则同 Java 的——范围更窄的类型能隐式转换成范围更广的类型，如 FLOAT 能转换成 DOUBLE，INT 能转换成 BIGINT，其它类型都能隐式转换成 STRING 等。</p>
+<p>CAST 关键字用于显式的类型转换，语法形如<code>CAST(1 AS STRING)</code>，AS 后跟随目标类型；CAST 能够将数字字符串转化为数字类型，将’TRUE’，’FALSE’转化为布尔类型等，因此它更像是 parse 而非是 cast，<strong>CAST 若解析失败，则返回 NULL</strong>。</p>
+<blockquote>
+<p>Hive 似乎有这样的哲学，就是尽全力保证操作的正常进行，不抛出运行时异常，比如在读取非法数据的时候，这里进行强制类型转换的时候，失败了是返回 NULL。</p>
+</blockquote>
+<p>一些场景不常使用 CAST，如浮点数转换为整型，一般使用 ROUND 函数。（Hive 权威指南居然说 cast 是函数，严肃反对，哪有函数有自己的特定语法的？当这是 lisp 或是某种 DSL 吗？）</p>
+<h1 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h1><p>分库分表是关系型数据库常用的优化方案，比如，我们可以按天划分表，这样如果查询的是单日的记录，就可以直接从该表进行查询，查询多日的记录就使用 UNION ALL，在多表中查询，这能够避免全表扫描，同时在更新操作的并发性上也能有所提升（Hive 执行分区也使能够避免一些同步问题）。</p>
+<p>Hive 的<strong>分区</strong>实际上进行的就是此种操作，且其是非常有意义的——Hive 的应用环境中，通常要进行全表扫描来满足查询，这时候数据若按查询条件进行分区，便能够减少查询的记录量，但若查询的条件并不在分区里，这反而会造成性能损失——毕竟每个文件对应一个 map task；并且这会造成数据倾斜。</p>
+<p><strong>分区字段和表的字段是分开定义的，且其数据只能通过文件夹名称确定，但其使用和普通字段相同</strong>。分区对应 PARTITION BY 子句，示例如下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> idols(</span><br><span class="line">    name STRING,</span><br><span class="line">    age <span class="type">INT</span>,</span><br><span class="line">    height <span class="type">INT</span></span><br><span class="line">)</span><br><span class="line">PARTITIONED <span class="keyword">BY</span> (clazz STRING);</span><br></pre></td></tr></table></figure>
+
+<p>使用 INSERT INTO 来插入数据的时候，分区字段放到表字段的后面。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> idols <span class="keyword">VALUES</span></span><br><span class="line">(&quot;haruka&quot;, <span class="number">17</span>, <span class="number">157</span>, <span class="string">&#x27;765&#x27;</span>),</span><br><span class="line">(&quot;hibiki&quot;, <span class="number">16</span>, <span class="number">161</span>, <span class="string">&#x27;961&#x27;</span>),</span><br><span class="line">(&quot;chihaya&quot;, <span class="number">17</span>, <span class="number">162</span>, <span class="string">&#x27;765&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>尝试查看一下 HDFS 中的数据，可以看到数据按 clazz 键进行分区了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hadoop fs -ls -R -C /user/hive/warehouse/idols </span><br><span class="line">/user/hive/warehouse/idols/clazz=765</span><br><span class="line">/user/hive/warehouse/idols/clazz=765/000000_0</span><br><span class="line">/user/hive/warehouse/idols/clazz=961</span><br><span class="line">/user/hive/warehouse/idols/clazz=961/000000_0</span><br></pre></td></tr></table></figure>
+
+<p>我们也可以使用<code>ALTER TABLE tb_name ADD PARTITION(field = val, ...) LOCATION &#39;path&#39;</code>来添加分区同时指定分区的位置，这在使用外部表，和其它工具交互时会比较有用，比如我们这个分区建立到另一个文件夹——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> idols <span class="keyword">ADD</span> <span class="keyword">PARTITION</span>(clazz<span class="operator">=</span><span class="string">&#x27;346&#x27;</span>) LOCATION <span class="string">&#x27;/idol/346&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>该路径甚至可以指向其它存储系统，如亚马逊 S3。</p>
+</blockquote>
+<p>对分区进行查询时，Hive 实际上并不关心文件夹存在与否，只是简单返回空结果，这也是 Hive 的设计哲学的结果。</p>
+<h1 id="EXPLAIN"><a href="#EXPLAIN" class="headerlink" title="EXPLAIN"></a>EXPLAIN</h1><p>调优在工厂实践中<span class="heimu">实际上更是在面试中 :)</span>是非常重要的，对其进行学习是必须的。</p>
+<p>要学习调优，就要先学习 EXPLAIN，知道 Hive 心里究竟有什么小九九。</p>
+<p>比如，要求它解释一下获取最高工资的语句——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="built_in">MAX</span>(sal) <span class="keyword">FROM</span> emp;</span><br><span class="line"></span><br><span class="line">STAGE DEPENDENCIES:</span><br><span class="line">  Stage<span class="number">-1</span> <span class="keyword">is</span> a root stage</span><br><span class="line">  Stage<span class="number">-0</span> depends <span class="keyword">on</span> stages: Stage<span class="number">-1</span></span><br><span class="line"></span><br><span class="line">STAGE PLANS:</span><br><span class="line">  Stage: Stage<span class="number">-1</span></span><br><span class="line">    Map Reduce</span><br><span class="line">      Map Operator Tree:</span><br><span class="line">          TableScan</span><br><span class="line">            alias: emp</span><br><span class="line">            Statistics: Num <span class="keyword">rows</span>: <span class="number">1</span> Data size: <span class="number">6540</span> Basic stats: COMPLETE <span class="keyword">Column</span> stats: <span class="keyword">NONE</span></span><br><span class="line">            <span class="keyword">Select</span> Operator</span><br><span class="line">              expressions: sal (type: <span class="keyword">double</span>)</span><br><span class="line">              outputColumnNames: sal</span><br><span class="line">              Statistics: Num <span class="keyword">rows</span>: <span class="number">1</span> Data size: <span class="number">6540</span> Basic stats: COMPLETE <span class="keyword">Column</span> stats: <span class="keyword">NONE</span></span><br><span class="line">              <span class="keyword">Group</span> <span class="keyword">By</span> Operator</span><br><span class="line">                aggregations: <span class="built_in">max</span>(sal)</span><br><span class="line">                mode: hash</span><br><span class="line">                outputColumnNames: _col0</span><br><span class="line">                Statistics: Num <span class="keyword">rows</span>: <span class="number">1</span> Data size: <span class="number">8</span> Basic stats: COMPLETE <span class="keyword">Column</span> stats: <span class="keyword">NONE</span></span><br><span class="line">                Reduce Output Operator</span><br><span class="line">                  sort <span class="keyword">order</span>: </span><br><span class="line">                  Statistics: Num <span class="keyword">rows</span>: <span class="number">1</span> Data size: <span class="number">8</span> Basic stats: COMPLETE <span class="keyword">Column</span> stats: <span class="keyword">NONE</span></span><br><span class="line">                  <span class="keyword">value</span> expressions: _col0 (type: <span class="keyword">double</span>)</span><br><span class="line">      Execution mode: vectorized</span><br><span class="line">      Reduce Operator Tree:</span><br><span class="line">        <span class="keyword">Group</span> <span class="keyword">By</span> Operator</span><br><span class="line">          aggregations: <span class="built_in">max</span>(VALUE._col0)</span><br><span class="line">          mode: mergepartial</span><br><span class="line">          outputColumnNames: _col0</span><br><span class="line">          Statistics: Num <span class="keyword">rows</span>: <span class="number">1</span> Data size: <span class="number">8</span> Basic stats: COMPLETE <span class="keyword">Column</span> stats: <span class="keyword">NONE</span></span><br><span class="line">          File Output Operator</span><br><span class="line">            compressed: <span class="literal">false</span></span><br><span class="line">            Statistics: Num <span class="keyword">rows</span>: <span class="number">1</span> Data size: <span class="number">8</span> Basic stats: COMPLETE <span class="keyword">Column</span> stats: <span class="keyword">NONE</span></span><br><span class="line">            <span class="keyword">table</span>:</span><br><span class="line">                input format: org.apache.hadoop.mapred.SequenceFileInputFormat</span><br><span class="line">                output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat</span><br><span class="line">                serde: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe</span><br><span class="line"></span><br><span class="line">  Stage: Stage<span class="number">-0</span></span><br><span class="line">    <span class="keyword">Fetch</span> Operator</span><br><span class="line">      limit: <span class="number">-1</span></span><br><span class="line">      Processor Tree:</span><br><span class="line">        ListSink</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，Stage-1 是一个 MapReduce 任务。一个 Hive 任务会有一个或多个 Stage，Stage 之间会有依赖关系。Stage 可能是 MapReduce 任务，也可能是抽样，归并，LIMIT 以及其它。</p>
+<p>比如使用<code>SELECT * FROM emp [TABLESAMPLE(30 PERCENT)]</code>，可以看到它们跑的都是所谓的<code>Fetch Operator</code>，并没有使用 MR 任务，所以性能较好。</p>
+<hr>
+<p>暂且告一段落，之后关于 Hive，还需要学习<strong>自定义 UDF，常用的函数，SerDe，调优</strong>等，以及给出更多示例，现在去学习 Spark，然后是数据仓库。</p>
+<p><strong>数据仓库将是重头戏，因为它直接关系到项目经验，相关的理论，方法论也都是岗位会直接用到的</strong>。因此，值得为它付出最大量的时间，当然，Hadoop，Hive，Spark等也是不能罔顾的，实际上可能还需要掌握一些flink，Spark Streaming这样的实时数仓所需要的技术。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2022/03-20Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%202%E2%80%94%E2%80%94SORT%EF%BC%8CJOIN%EF%BC%8C%E5%88%86%E5%8C%BA%E7%AD%89.md" title="Hive 学习笔记 2——SORT，JOIN，分区等">_posts/2022/03-20Hive 学习笔记 2——SORT，JOIN，分区等.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html" rel="prev" title="SQL 学习笔记——GROUP BY，JOIN，窗口函数">
+      <i class="fa fa-chevron-left"></i> SQL 学习笔记——GROUP BY，JOIN，窗口函数
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03-24Scala%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2%E4%B9%8B%E4%B8%80%E7%AA%A5.html" rel="next" title="Scala 隐式转换之一窥">
+      Scala 隐式转换之一窥 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A8%E7%94%9F%E6%88%90%E5%87%BD%E6%95%B0%EF%BC%88UDTF%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">表生成函数（UDTF）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JOIN"><span class="nav-number">2.</span> <span class="nav-text">JOIN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LEFT-SEMI-JOIN"><span class="nav-number">2.1.</span> <span class="nav-text">LEFT SEMI JOIN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SORT-BY%EF%BC%8CDISTRIBUTE-BY%EF%BC%8CCLUSTER-BY"><span class="nav-number">3.</span> <span class="nav-text">SORT BY，DISTRIBUTE BY，CLUSTER BY</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%BD%E6%A0%B7%E6%9F%A5%E8%AF%A2"><span class="nav-number">4.</span> <span class="nav-text">抽样查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE"><span class="nav-number">5.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">6.</span> <span class="nav-text">关于类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%8C%BA"><span class="nav-number">7.</span> <span class="nav-text">分区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EXPLAIN"><span class="nav-number">8.</span> <span class="nav-text">EXPLAIN</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

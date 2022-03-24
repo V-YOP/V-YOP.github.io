@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="GFW 封锁网络的几种常用方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【转载】GFW 的各种形式">
+<meta property="og:url" content="http://example.com/2021/03-23GFW%E7%9A%84%E5%90%84%E7%A7%8D%E5%BD%A2%E5%BC%8F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="GFW 封锁网络的几种常用方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-23T06:31:25.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.842Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/03-23GFW%E7%9A%84%E5%90%84%E7%A7%8D%E5%BD%A2%E5%BC%8F.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>【转载】GFW 的各种形式 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03-23GFW%E7%9A%84%E5%90%84%E7%A7%8D%E5%BD%A2%E5%BC%8F.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【转载】GFW 的各种形式
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-23 14:31:25" itemprop="dateCreated datePublished" datetime="2021-03-23T14:31:25+08:00">2021-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/03-23GFW%E7%9A%84%E5%90%84%E7%A7%8D%E5%BD%A2%E5%BC%8F.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/03-23GFW的各种形式.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">GFW 封锁网络的几种常用方法</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"><i class="fa fa-tag"></i> 转载</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这篇文章转载自新浪博客的 <a target="_blank" rel="noopener" href="http://blog.sina.com.cn/s/blog_44abafb201011txb.html">此篇文章</a>，文章编写时间为 2012 年，所以可能已经不符合实际情况。现在似乎最常用的是 SNI 审查。</p>
+<h1 id="DNS-劫持"><a href="#DNS-劫持" class="headerlink" title="DNS 劫持"></a>DNS 劫持</h1><p>DNS 劫持会导致我们访问了一些不存在的或不稳定的网站的时候，访问到的却是电信 114 搜索（详见月光博客《断网后互联星空的浏览器劫持》）或访问 Google 却显示了 Baidu 的主页（详见月光博客《Google 博客搜索摇身一变成百度》）。</p>
+<p>如果需要确认自己是否处在 DNS 劫持的环境中，我们可以在 Windows 命令行 cmd 中使用 Windows 自带的网络诊断工具 nslookup 查找一个不存在或不稳定的域名进行一下网络诊断：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;nslookup www.SomeRandomDomainName.com</span><br><span class="line"></span><br><span class="line">Server: ns-pd.online.sh.cn</span><br><span class="line"></span><br><span class="line">Address: 202.96.209.133</span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line"></span><br><span class="line">Name: www.SomeRandomDomainName.com</span><br><span class="line"></span><br><span class="line">Address: 218.83.175.155</span><br></pre></td></tr></table></figure>
+<p>我们看到，<a target="_blank" rel="noopener" href="http://www.somerandomdomainname.com/">www.SomeRandomDomainName.com</a> 本应该是一个不存在的域名，DNS 服务器应该告诉我们这个域名不存在，但我们却看到 DNS 服务器告诉我们这个域名的 IP 为 218.83.175.155（不同地区的 114 搜索的 IP 都不同，可能得到的 IP 并不是 218.83.175.155，而是自己所在地区的 114 搜索的服务器 IP 地址），而这个 IP 却是 114 搜索的 IP，导致我们在浏览器中访问这个网站时看到的是 114 搜索的网页。</p>
+<p>如果需要解决 DNS 劫持的问题，可以把自己的域名解析服务器换乘国外的，比如 OpenDNS（详见月光博客《使用 OpenDNS 解决 DNS 域名劫持》）或 Google DNS（详见月光博客《Google 推出免费 DNS 服务》）。</p>
+<p>解决之后我们再次使用 nslookup 查找一下这个网站：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;nslookup www.SomeRandomDomainName.com</span><br><span class="line"></span><br><span class="line">Server: google-public-dns-a.google.com</span><br><span class="line"></span><br><span class="line">Address: 8.8.8.8</span><br><span class="line"></span><br><span class="line">*** google-public-dns-a.google.com can&#x27;t find www.SomeRandomDomainName.com: Non-existent domain</span><br></pre></td></tr></table></figure>
+
+<p>我们看到 DNS 服务器正确的告诉了我们这个域名不存在，我们不会被劫持到 114 搜索了。</p>
+<p>不过，正如《使用 OpenDNS 解决 DNS 域名劫持》中最后一段所说的那样，”但是对于 DNS 污染的劫持，使用 OpenDNS 也无法解决问题”。那么接下来，我就介绍一下 DNS 污染。</p>
+<h1 id="DNS-污染"><a href="#DNS-污染" class="headerlink" title="DNS 污染"></a>DNS 污染</h1><p>由于 DNS 劫持可以通过把域名解析服务器更换为国外的来解决问题，所以系统需要使用 DNS 污染来封锁一些域名。这样，即使使用国外的域名服务器也得不到服务器的正确 IP，所以也就无法访问这些服务器了。比如现在著名的微博客始祖 twitter 主页就遭到了 DNS 污染。</p>
+<p>如果需要确认域名遭到了 DNS 污染而不是其他的故障，首先要了解，DNS 劫持是由国内的域名服务器完成的，所以我们把域名服务器换成国外的就可以解决问题；而 DNS 污染是由系统完成的，所以即使更换了域名服务器，系统仍旧可以发送伪造的域名解析结果替换正确的解析结果。所以我们可以通过使用一个不存在的国外 IP 作为我们的域名服务器进行诊断究竟是 DNS 劫持还是 DNS 污染。我们仍旧通过使用 nslookup 进行网络诊断，选一个不存在的国外 IP 为 144.223.234.234：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;nslookup twitter.com 144.223.234.234</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">*** Can&#x27;t find server name for address 144.223.234.234: Timed out</span><br><span class="line"></span><br><span class="line">Server: UnKnown</span><br><span class="line"></span><br><span class="line">Address: 144.223.234.234</span><br><span class="line"></span><br><span class="line">Name: twitter.com</span><br><span class="line"></span><br><span class="line">Address: 93.46.8.89</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，由于 144.223.234.234 不存在，理应没有任何返回。但我们却得到了一个错误的 IP：93.46.8.89。我们再测试一下刚才被 DNS 劫持的 IP 的情况：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;nslookup www.SomeRandomDomainName.com 144.223.234.234</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">*** Can&#x27;t find server name for address 144.223.234.234: Timed out</span><br><span class="line"></span><br><span class="line">Server: UnKnown</span><br><span class="line"></span><br><span class="line">Address: 144.223.234.234</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">*** Request to UnKnown timed-out</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，<a target="_blank" rel="noopener" href="http://www.somerandomdomainname.com/">www.SomeRandomDomainName.com</a> 没有返回结果，那么它没有被 DNS 污染。</p>
+<p>如果要解决 DNS 污染，我们只能使用各种加密代理进行远程 DNS 解析、VPN 或利用系统的漏洞了。</p>
+<h1 id="IP-封锁"><a href="#IP-封锁" class="headerlink" title="IP 封锁"></a>IP 封锁</h1><p>这里 IP 封锁指的是国内把国外服务器的 IP 加入了系统的黑名单，导致大部分地区甚至全国无法直接访问服务器。由于系统是分布式的，所以有可能出现部分地区可以访问，部分地区不能访问的情况。比如现在知名的云存储服务 Dropbox 的主页，就是遭到了 IP 封锁。</p>
+<p>首先我们把域名服务器设置为国外的，排除了 DNS 劫持的问题。之后我们诊断一下 dropbox 的域名是否遭到了 DNS 污染：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;nslookup www.dropbox.com 144.223.234.234</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">*** Can&#x27;t find server name for address 144.223.234.234: Timed out</span><br><span class="line"></span><br><span class="line">Server: UnKnown</span><br><span class="line"></span><br><span class="line">Address: 144.223.234.234</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">DNS request timed out.</span><br><span class="line"></span><br><span class="line">timeout was 2 seconds.</span><br><span class="line"></span><br><span class="line">*** Request to UnKnown timed-out</span><br></pre></td></tr></table></figure>
+
+<p>显然也没有遭到 DNS 污染。那么接下去我们可以在没有过滤 ICMP 协议的网络环境中（有些小区宽带和有些公司的内部网络过滤了 ICMP 协议，无法使用 tracert），我们可以在 Windows 命令行 cmd 中使用 Windows 自带的网络诊断工具 tracert 进行一下网络诊断是网站遭到了 IP 封锁还是其他的故障：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;tracert -d www.dropbox.com</span><br><span class="line"></span><br><span class="line">Tracing route to www.dropbox.com [174.36.30.70]</span><br><span class="line"></span><br><span class="line">over a maximum of 30 hops:</span><br><span class="line"></span><br><span class="line">1 18 ms 19 ms 26 ms 58.35.240.1</span><br><span class="line"></span><br><span class="line">2 15 ms 20 ms 29 ms 58.35.240.1</span><br><span class="line"></span><br><span class="line">3 13 ms 10 ms 14 ms 124.74.20.45</span><br><span class="line"></span><br><span class="line">4 14 ms 14 ms 15 ms 124.74.209.137</span><br><span class="line"></span><br><span class="line">5 10 ms 15 ms 14 ms 61.152.86.58</span><br><span class="line"></span><br><span class="line">6 * * * Request timed out.</span><br><span class="line"></span><br><span class="line">7 * * * Request timed out.</span><br><span class="line"></span><br><span class="line">8 * * * Request timed out.</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，最后一个 IP 为 61.152.86.58（不同地区的 IP 不一样），之后就不通了，显然在 61.152.86.58 附近遭到了 IP 封锁。那么我们打开 ip138 查一下 61.152.86.58 是谁在掌控：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">您查询的 IP:61.152.86.58</span><br><span class="line"></span><br><span class="line">* 本站主数据：上海市 电信</span><br><span class="line"></span><br><span class="line">* 参考数据一：上海市 电信</span><br><span class="line"></span><br><span class="line">* 参考数据二：上海市 电信</span><br></pre></td></tr></table></figure>
+
+<p>显然，问题在上海电信这里（其他地区可能是地区的本地电信），而不是 dropbox 服务器的问题。</p>
+<h1 id="服务器防火墙-IP-过滤和服务器宕机"><a href="#服务器防火墙-IP-过滤和服务器宕机" class="headerlink" title="服务器防火墙 IP 过滤和服务器宕机"></a>服务器防火墙 IP 过滤和服务器宕机</h1><p>把这两点放在一起写是因为这两种情况的对外表现是一样的。但和 IP 封锁却有很大区别。IP 封锁的最后一个可达 IP 是中国的，而服务器防火墙 IP 过滤和服务器当机时的最后一个可达 IP 却是国外的。比如我们拿 75.101.142.137 做试验，之前在上面部署过 alexa 的网站，现在这个 IP 上暂时没有服务器（可以看成服务器宕机）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;tracert -d 75.101.142.237</span><br><span class="line"></span><br><span class="line">Tracing route to 75.101.142.237 over a maximum of 30 hops</span><br><span class="line"></span><br><span class="line">1 25 ms 18 ms 18 ms 58.35.240.1</span><br><span class="line"></span><br><span class="line">2 25 ms 42 ms 27 ms 58.35.240.1</span><br><span class="line"></span><br><span class="line">3 10 ms 15 ms 14 ms 124.74.37.9</span><br><span class="line"></span><br><span class="line">4 49 ms 59 ms 12 ms 124.74.209.129</span><br><span class="line"></span><br><span class="line">5 14 ms 14 ms 14 ms 61.152.86.142</span><br><span class="line"></span><br><span class="line">6 10 ms 14 ms 15 ms 202.97.35.154</span><br><span class="line"></span><br><span class="line">7 14 ms 15 ms 14 ms 202.97.34.126</span><br><span class="line"></span><br><span class="line">8 194 ms 195 ms 194 ms 202.97.51.138</span><br><span class="line"></span><br><span class="line">9 171 ms 170 ms 173 ms 202.97.50.54</span><br><span class="line"></span><br><span class="line">10 215 ms 179 ms 175 ms 63.146.27.133</span><br><span class="line"></span><br><span class="line">11 279 ms 280 ms 278 ms 67.14.36.6</span><br><span class="line"></span><br><span class="line">12 * * * Request timed out.</span><br><span class="line"></span><br><span class="line">13 249 ms 249 ms 244 ms 72.21.199.40</span><br><span class="line"></span><br><span class="line">14 254 ms 254 ms 254 ms 72.21.222.157</span><br><span class="line"></span><br><span class="line">15 250 ms 250 ms 249 ms 216.182.232.53</span><br><span class="line"></span><br><span class="line">16 270 ms 270 ms 273 ms 216.182.224.22</span><br><span class="line"></span><br><span class="line">17 272 ms 269 ms 289 ms 75.101.160.35</span><br><span class="line"></span><br><span class="line">18 * * * Request timed out.</span><br><span class="line"></span><br><span class="line">19 * * * Request timed out.</span><br><span class="line"></span><br><span class="line">20 * * * Request timed out.</span><br></pre></td></tr></table></figure>
+
+<p>我们看到最后一个可达 IP 为 75.101.160.35，然后我们查一下这个 IP 是谁的呢：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">您查询的 IP:75.101.160.35</span><br><span class="line"></span><br><span class="line">* 本站主数据：美国</span><br><span class="line"></span><br><span class="line">* 参考数据一：美国</span><br><span class="line"></span><br><span class="line">* 参考数据二：美国 华盛顿州金县西雅图市亚马逊公司</span><br></pre></td></tr></table></figure>
+
+<p>显然，这个是服务器故障。</p>
+<p>如果要解决 IP 封锁，我们只能通过加密代理、VPN 或利用系统的漏洞进行访问这些网站了。</p>
+<h1 id="基于关键词的-TCP-连接重置"><a href="#基于关键词的-TCP-连接重置" class="headerlink" title="基于关键词的 TCP 连接重置"></a>基于关键词的 TCP 连接重置</h1><p>国内的系统在人们通过 http 协议访问国外网站时会记录所有的内容，一旦出现某些比较”敏感”的关键词时，就会强制断开 TCP 连接，记录双方 IP 并保留一段时间 （1 分钟左右），我们的浏览器也就会显示”连接被重置”。之后在这一段时间内（1 分钟左右），由于我们和服务器的 IP 被摄查系统记录，我们就无法再次访问这个网站了。我们必须停止访问这个网站，过了这段时间再次访问没有这些关键词的网页，就又能访问这个网站了。</p>
+<p>由于这些特征，我们判断是否遭到了基于关键词的 TCP 连接重置的情况也比较容易。如果浏览器显示”连接被重置”，并且在一段时间内无法再次访问这个网站，之后过了这段时间访问这个网站上没有这些关键词的网页又能访问的时候，我们就是遭到了基于关键词的 TCP 连接重置的故障。</p>
+<p>正是因为 http 协议是明文传输的，所以才能基于关键词进行 TCP 连接重置。所以如果网站支持 https 加密访问，我们可以通过 https 方式访问网站，从而解决这个问题。但如果网站不支持 https 方式访问，我们只能通过加密代理、VPN 或利用系统的漏洞进行访问了。而且国内的系统对付 https 也不是没有其他手段了。除了 IP 封锁外，还有无状态的 TCP 连接重置、SSL 证书过滤、SSL 劫持等手段，下面进行依次介绍。</p>
+<h1 id="无状态的-TCP-连接重置"><a href="#无状态的-TCP-连接重置" class="headerlink" title="无状态的 TCP 连接重置"></a>无状态的 TCP 连接重置</h1><p>由于 https 是加密传输数据的协议，系统无法知道通过 https 协议传输了什么内容，但又不允许民众使用 https 访问”有害信息”，所以系统只要监测到（系统只是知道访问了这个网站的 https 协议，并不知道其中传输的内容）访问了指定网站的 https 协议（比如 Google Docs 的 https 访问方式），就会强制断开 TCP 连接。这样，这些网站的 https 协议在国内就无法直接使用了，很多人被迫使用 http 协议，从而传输的所有内容被系统所记录。</p>
+<p>无状态的 TCP 连接重置的结果也是浏览器显示”连接被重置”，只不过无论访问这个服务器上的任何网页都会被重置。如果要解决这个问题，也只能依靠加密代理、VPN 或利用系统的漏洞了。</p>
+<h1 id="SSL-证书过滤"><a href="#SSL-证书过滤" class="headerlink" title="SSL 证书过滤"></a>SSL 证书过滤</h1><p>和无状态的 TCP 连接重置一样，由于 https 是加密传输数据的协议，系统无法知道通过 https 协议传输了什么内容，但又不允许民众使用 https 访问”有害信息”，除了域名污染和无状态的 TCP 连接重置防止无法审查内容外，还有 SSL 证书过滤的审查手段。由于 https 传输过程中，SSL 证书却是明文传输的，所以可以监测 SSL 证书是否掰发给指定域名的。如果确实如此，那么就强制断开 TCP 连接，浏览器也会显示”连接被重置”。SSL 证书过滤只发生在使用 https 访问网站的时候。</p>
+<p>SSL 证书过滤的情况比较少。如果需要解决这个问题，也只能依靠加密代理、VPN 或利用系统的漏洞了。</p>
+<h1 id="SSL-劫持"><a href="#SSL-劫持" class="headerlink" title="SSL 劫持"></a>SSL 劫持</h1><p>断开 https 连接虽然能阻止民众访问”有害信息”，但并不知道访问了什么有害信息。基于这一点，针对 https 的弱点（信任所有证书颁发机构 CA），CNNIC 申请成为了顶级证书颁发机构（Root CA），从而可以发假证书进行中间人攻击，从而破解 https 传输的内容。详见月光博客《破解 Google Gmail 的 https 新思路》。</p>
+<p>如果遭到了 SSL 劫持，很难发现。我们通过 https 访问国外网站的时候必须每次检查一下证书是否为国内的证书颁发机构颁发。如果为国内的证书颁发机构颁发，那么很可能遭到了 SSL 劫持，必须马上停止继续访问。</p>
+<p>如果要解决 SSL 劫持，我们可以去浏览器中禁止比如 CNNIC 那样的国内证书颁发机构的证书（比如《CNNIC，我不信任你》）。但这并不能完全解决问题，如果某一天一个不知名的国内证书颁发机构参与了 SSL 劫持就很难发现。最终我们还需要依赖加密代理或 VPN。</p>
+<h1 id="HTTP-会话劫持"><a href="#HTTP-会话劫持" class="headerlink" title="HTTP 会话劫持"></a>HTTP 会话劫持</h1><p>HTTP 会话劫持是修改正常的 http 返回结果，可以在其中加入广告，甚至是病毒木马。而一般上网被 http 会话劫持加入广告，很有可能认为是网站自己的广告。由于 http 协议是明文传输的，http 会话劫持也就可以做到。月光博客中《电信级的网络弹出广告》、《获取了电信恶意弹出广告的罪证》和《谁控制了我们的浏览器？》也有详细介绍 http 会话劫持。HTTP 会话劫持通常是 ISP 为了推送广告而实施的，但并不排除这一手段今后会被系统所利用。</p>
+<p>要解决 HTTP 会话劫持，月光博客中也提供了一种解决思路――《解除 ADSL 弹出广告的方法》。使用浏览器插件屏蔽广告能解决部分问题，也不能完全解决问题。如果要从技术手段解决 HTTP 会话劫持，一种办法是使用加密代理和 VPN 访问所有的网站，包括国内的，但也不能完全解决问题，如果 HTTP 会话劫持是在服务器附近的路由器上设置的，这种方法也无法解决；另一种办法是针对不同的 HTTP 会话劫持，我们通过刷路由器固件的方式再劫持回来（dd-wrt 和 tomato 路由器固件支持自定义，可能可以把 HTTP 会话再劫持回原来的数据），或者针对不同的 HTTP 会话劫持，使用不同的本地应用层代理服务器进行广告过滤。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/03-23GFW%E7%9A%84%E5%90%84%E7%A7%8D%E5%BD%A2%E5%BC%8F.md" title="【转载】GFW 的各种形式">_posts/2021/03-23GFW的各种形式.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03-06%E5%85%B3%E4%BA%8E%E6%9C%80%E5%90%8E%E4%B8%80%E5%AD%A6%E6%9C%9F%E7%9A%84%E8%AE%A1%E5%88%92.html" rel="prev" title="关于最后一学期的计划">
+      <i class="fa fa-chevron-left"></i> 关于最后一学期的计划
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03-25%E4%BB%8D%E6%97%A7%E6%98%AF%E5%85%B3%E4%BA%8E%E6%AF%95%E8%AE%BE.html" rel="next" title="仍旧是关于毕设">
+      仍旧是关于毕设 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DNS-%E5%8A%AB%E6%8C%81"><span class="nav-number">1.</span> <span class="nav-text">DNS 劫持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DNS-%E6%B1%A1%E6%9F%93"><span class="nav-number">2.</span> <span class="nav-text">DNS 污染</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP-%E5%B0%81%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">IP 封锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%98%B2%E7%81%AB%E5%A2%99-IP-%E8%BF%87%E6%BB%A4%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%AE%95%E6%9C%BA"><span class="nav-number">4.</span> <span class="nav-text">服务器防火墙 IP 过滤和服务器宕机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%85%B3%E9%94%AE%E8%AF%8D%E7%9A%84-TCP-%E8%BF%9E%E6%8E%A5%E9%87%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">基于关键词的 TCP 连接重置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A0%E7%8A%B6%E6%80%81%E7%9A%84-TCP-%E8%BF%9E%E6%8E%A5%E9%87%8D%E7%BD%AE"><span class="nav-number">6.</span> <span class="nav-text">无状态的 TCP 连接重置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SSL-%E8%AF%81%E4%B9%A6%E8%BF%87%E6%BB%A4"><span class="nav-number">7.</span> <span class="nav-text">SSL 证书过滤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SSL-%E5%8A%AB%E6%8C%81"><span class="nav-number">8.</span> <span class="nav-text">SSL 劫持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-%E4%BC%9A%E8%AF%9D%E5%8A%AB%E6%8C%81"><span class="nav-number">9.</span> <span class="nav-text">HTTP 会话劫持</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

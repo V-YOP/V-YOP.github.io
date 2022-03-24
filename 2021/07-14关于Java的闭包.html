@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="之前对 java 的闭包理解不深刻，现在进行一个学。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Java 的闭包">
+<meta property="og:url" content="http://example.com/2021/07-14%E5%85%B3%E4%BA%8EJava%E7%9A%84%E9%97%AD%E5%8C%85.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="之前对 java 的闭包理解不深刻，现在进行一个学。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-14T07:28:55.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.844Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07-14%E5%85%B3%E4%BA%8EJava%E7%9A%84%E9%97%AD%E5%8C%85.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>关于 Java 的闭包 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07-14%E5%85%B3%E4%BA%8EJava%E7%9A%84%E9%97%AD%E5%8C%85.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于 Java 的闭包
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-14 15:28:55" itemprop="dateCreated datePublished" datetime="2021-07-14T15:28:55+08:00">2021-07-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/07-14%E5%85%B3%E4%BA%8EJava%E7%9A%84%E9%97%AD%E5%8C%85.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/07-14关于Java的闭包.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">之前对 java 的闭包理解不深刻，现在进行一个学。</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <!--Hello, Happy World-->
+
+<p>之前未能理解 Java 对闭包的说明中“effective final”的意思，现在对其进行了一番针对性学习。</p>
+<p>这个词（实际上的 final）应当这样理解——在闭包中不能改变外界变量的“值”，这个“值”对基本类型来说是值，对引用类型来说是引用。这个问题的影响其实并不大——如果需要对变量的值进行改变，将其传入一个数组即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Supplier&lt;Integer&gt; <span class="title">Counter</span><span class="params">()</span> </span>&#123; <span class="comment">// 也可使用 IntSupplier</span></span><br><span class="line">  <span class="keyword">int</span>[] count = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">  <span class="keyword">return</span> () -&gt; &#123;</span><br><span class="line">    count[<span class="number">0</span>]++; <span class="comment">// 捕获</span></span><br><span class="line">    <span class="keyword">return</span> count[<span class="number">0</span>];</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">  Supplier&lt;Integer&gt; counter = Counter();</span><br><span class="line">  System.out.println(counter.getAsInt());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为什么不能改变外界变量的值？这里可以这样解释（事实上也大概就是如此）——Java 的闭包并非真正捕获外界变量（这种捕获是捕获了 C++风格的真正的<strong>引用</strong>，js，scheme 等语言的闭包都是如此，对这些语言来说，它们所定义的函数看待上层作用域中的变量，就像 if，for 块看待外层块作用域的时候一样），而是把对象的值<strong>复制</strong>（对基本类型是值，对对象来说是指针）并保存为自身的一个属性，所以如果原值改变，捕获值和原值就不同了，这就和闭包性质所要求的不一致了（这时候的性质类似函数调用，作为函数参数传入），因此禁止了被捕获对象的重新赋值。</p>
+<blockquote>
+<p>Java 中的 lambda 表达式是残废的——要使用它必须先定义相应函数式接口，而不能像 kotlin，ts 等语言有所谓函数类型，可以直接应用，且对其的应用（apply）必须要通过其方法，这是比较麻烦的。</p>
+<p>但是这些限制实际上影响不大——需要自定义接口的情况是较少的，Java 本身提供了比较丰富的接口定义可以直接使用，但是代价是增加理解成本；客户代码一般不会预先定义相关类型的变量并自己使用，而是直接通过 lambda 表达式构造相应实例并直接传递给相关方法中，将其的调用交由相关方法进行实现。</p>
+<p>而 Java 的 lambda 的最大缺陷在于——其只能抛出在签名中指明能够抛出的异常！也就是说，如果用户自定义的 lambda 表达式可能出现异常，他必须进行 try-catch！这是极为不便的，目前的解决方案唯有定义自己的函数式接口用于抛出异常！这可不是我们想要的答案——对集合类型的 map-filter-reduce 操作中如果有异常，就必须要 try-catch，无法改变！这是无法理喻的，特别是当我们在 Spring 环境下工作，依赖全局异常处理来进行异常的时候，或者说将异常当作一种别样的控制流来处理的时候。</p>
+</blockquote>
+<p>Java8 提供的<code>java.util.function</code>包包含了许多可以直接应用的函数式接口，可以应付绝大部分简单业务情况——（下表引用于网络）</p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th><strong>BiConsumer&lt;T,U&gt;</strong> 代表了一个接受两个输入参数的操作，并且不返回任何结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td><strong>BiFunction&lt;T,U,R&gt;</strong> 代表了一个接受两个输入参数的方法，并且返回一个结果</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>BinaryOperator<T></strong> 代表了一个作用于于两个同类型操作符的操作，并且返回了操作符同类型的结果</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>BiPredicate&lt;T,U&gt;</strong> 代表了一个两个参数的 boolean 值方法</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>BooleanSupplier</strong> 代表了 boolean 值结果的提供方</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Consumer<T></strong> 代表了接受一个输入参数并且无返回的操作</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>DoubleBinaryOperator</strong> 代表了作用于两个 double 值操作符的操作，并且返回了一个 double 值的结果。</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>DoubleConsumer</strong> 代表一个接受 double 值参数的操作，并且不返回结果。</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>DoubleFunction<R></strong> 代表接受一个 double 值参数的方法，并且返回结果</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>DoublePredicate</strong> 代表一个拥有 double 值参数的 boolean 值方法</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>DoubleSupplier</strong> 代表一个 double 值结构的提供方</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>DoubleToIntFunction</strong> 接受一个 double 类型输入，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>DoubleToLongFunction</strong> 接受一个 double 类型输入，返回一个 long 类型结果</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>DoubleUnaryOperator</strong> 接受一个参数同为类型 double, 返回值类型也为 double 。</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>Function&lt;T,R&gt;</strong> 接受一个输入参数，返回一个结果。</td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>IntBinaryOperator</strong> 接受两个参数同为类型 int, 返回值类型也为 int 。</td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>IntConsumer</strong> 接受一个 int 类型的输入参数，无返回值 。</td>
+</tr>
+<tr>
+<td>18</td>
+<td><strong>IntFunction<R></strong> 接受一个 int 类型输入参数，返回一个结果 。</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>IntPredicate</strong> ：接受一个 int 输入参数，返回一个布尔值的结果。</td>
+</tr>
+<tr>
+<td>20</td>
+<td><strong>IntSupplier</strong> 无参数，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>21</td>
+<td><strong>IntToDoubleFunction</strong> 接受一个 int 类型输入，返回一个 double 类型结果 。</td>
+</tr>
+<tr>
+<td>22</td>
+<td><strong>IntToLongFunction</strong> 接受一个 int 类型输入，返回一个 long 类型结果。</td>
+</tr>
+<tr>
+<td>23</td>
+<td><strong>IntUnaryOperator</strong> 接受一个参数同为类型 int, 返回值类型也为 int 。</td>
+</tr>
+<tr>
+<td>24</td>
+<td><strong>LongBinaryOperator</strong> 接受两个参数同为类型 long, 返回值类型也为 long。</td>
+</tr>
+<tr>
+<td>25</td>
+<td><strong>LongConsumer</strong> 接受一个 long 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>26</td>
+<td><strong>LongFunction<R></strong> 接受一个 long 类型输入参数，返回一个结果。</td>
+</tr>
+<tr>
+<td>27</td>
+<td><strong>LongPredicate</strong> R 接受一个 long 输入参数，返回一个布尔值类型结果。</td>
+</tr>
+<tr>
+<td>28</td>
+<td><strong>LongSupplier</strong> 无参数，返回一个结果 long 类型的值。</td>
+</tr>
+<tr>
+<td>29</td>
+<td><strong>LongToDoubleFunction</strong> 接受一个 long 类型输入，返回一个 double 类型结果。</td>
+</tr>
+<tr>
+<td>30</td>
+<td><strong>LongToIntFunction</strong> 接受一个 long 类型输入，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>31</td>
+<td><strong>LongUnaryOperator</strong> 接受一个参数同为类型 long, 返回值类型也为 long。</td>
+</tr>
+<tr>
+<td>32</td>
+<td><strong>ObjDoubleConsumer<T></strong> 接受一个 object 类型和一个 double 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>33</td>
+<td><strong>ObjIntConsumer<T></strong> 接受一个 object 类型和一个 int 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>34</td>
+<td><strong>ObjLongConsumer<T></strong> 接受一个 object 类型和一个 long 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>35</td>
+<td><strong>Predicate<T></strong> 接受一个输入参数，返回一个布尔值结果。</td>
+</tr>
+<tr>
+<td>36</td>
+<td><strong>Supplier<T></strong> 无参数，返回一个结果。</td>
+</tr>
+<tr>
+<td>37</td>
+<td><strong>ToDoubleBiFunction&lt;T,U&gt;</strong> 接受两个输入参数，返回一个 double 类型结果</td>
+</tr>
+<tr>
+<td>38</td>
+<td><strong>ToDoubleFunction<T></strong> 接受一个输入参数，返回一个 double 类型结果</td>
+</tr>
+<tr>
+<td>39</td>
+<td><strong>ToIntBiFunction&lt;T,U&gt;</strong> 接受两个输入参数，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>40</td>
+<td><strong>ToIntFunction<T></strong> 接受一个输入参数，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>41</td>
+<td><strong>ToLongBiFunction&lt;T,U&gt;</strong> 接受两个输入参数，返回一个 long 类型结果。</td>
+</tr>
+<tr>
+<td>42</td>
+<td><strong>ToLongFunction<T></strong> 接受一个输入参数，返回一个 long 类型结果。</td>
+</tr>
+<tr>
+<td>43</td>
+<td><strong>UnaryOperator<T></strong> 接受一个参数为类型 T, 返回值类型也为 T。</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/07-14%E5%85%B3%E4%BA%8EJava%E7%9A%84%E9%97%AD%E5%8C%85.md" title="关于 Java 的闭包">_posts/2021/07-14关于Java的闭包.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07-07%E5%85%B3%E4%BA%8Ejs%E7%9A%84promise.html" rel="prev" title="关于 js 的 promise">
+      <i class="fa fa-chevron-left"></i> 关于 js 的 promise
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07-15%E5%86%8D%E7%9C%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E5%92%8C%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95.html" rel="next" title="再看简单工厂和工厂方法">
+      再看简单工厂和工厂方法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

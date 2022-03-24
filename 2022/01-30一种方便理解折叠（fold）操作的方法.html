@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="虽然之前对折叠操作进行过一些了解（见此），但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一种方便理解折叠（fold）操作的方法">
+<meta property="og:url" content="http://example.com/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="虽然之前对折叠操作进行过一些了解（见此），但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-30T06:30:54.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.851Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一种方便理解折叠（fold）操作的方法 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一种方便理解折叠（fold）操作的方法
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-30 14:30:54" itemprop="dateCreated datePublished" datetime="2022-01-30T14:30:54+08:00">2022-01-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/01-30一种方便理解折叠（fold）操作的方法.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/FP/" rel="tag"><i class="fa fa-tag"></i> FP</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>虽然之前对折叠操作进行过一些了解<a href="/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html" title="（见此）">（见此）</a>，但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。</p>
+<span id="more"></span>
+
+<p>该方法似乎无法用来说明为何<code>foldr</code>能处理无穷列表。</p>
+<h2 id="啥子是折叠？"><a href="#啥子是折叠？" class="headerlink" title="啥子是折叠？"></a>啥子是折叠？</h2><p>对集合的操作，最常用的也就那三种——<code>map</code>，<code>filter</code>，<code>reduce</code>/<code>fold</code>（后面全部使用<code>fold</code>）。其中，<code>map</code>对集合的每一个元素进行相同的映射，返回一个映射后的新集合；<code>filter</code>对集合中的每一个元素进行判断，筛选出符合条件的元素组成返回的集合；而<code>fold</code>操作迭代一个集合，并将每个元素“积累”到同一个值中。</p>
+<p><code>fold</code>操作就是所谓的折叠操作。折叠操作是最<strong>原子</strong>的——<code>map</code>，<code>filter</code>，<code>flatMap</code>/<code>bind</code>操作都可以由它来实现；折叠操作也可以用于实现某些高层次的业务相关的操作，如 count，groupBy 等。</p>
+<p>所以，究竟什么是折叠？根据折叠操作的描述，我们可以认为那些签名为<code>[a] =&gt; b</code>的函数都是折叠操作，比如我们有个<code>sum</code>函数，它能够计算一个集合内所有元素的和，这就是一个折叠操作，它的函数签名为<code>[number] =&gt; number</code>。</p>
+<p>我们规定<code>sum(null) === 0, sum([]) === 0</code>，容易得到<code>sum</code>函数的递归实现——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sum : [number] =&gt; number</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params">lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (lst == <span class="literal">null</span> || lst.length === <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">  <span class="keyword">const</span> [x, ...xs] = lst</span><br><span class="line">  <span class="keyword">return</span> x + sum(xs)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再考虑一个<code>product</code>函数，它计算一个集合内所有元素的积，我们规定<code>product(null) === 1, product([]) === 1</code>，容易得到它的递归实现——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// product : [number] =&gt; number</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">product</span>(<span class="params">lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (lst == <span class="literal">null</span> || lst.length === <span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">  <span class="keyword">const</span> [x, ...xs] = lst</span><br><span class="line">  <span class="keyword">return</span> x * product(xs)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，这两个函数的形式基本一致，我们可以再抽象一层，整出一个所谓的<code>foldr</code>函数。在这里，参数<code>fn</code>就是上面的<code>sum</code>函数的<code>+</code>，<code>product</code>函数的<code>*</code>，我们乘其为折叠函数，init 就是初始值，对<code>sum</code>来说是 0，对<code>product</code>来说是 1。<code>foldr</code>是递归的折叠操作。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// foldr : ((a, b) =&gt; b, b, [a]) =&gt; b</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foldr</span>(<span class="params">fn, init, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (lst == <span class="literal">null</span> || lst.length === <span class="number">0</span>) <span class="keyword">return</span> init</span><br><span class="line">  <span class="keyword">const</span> [x, ...xs] = lst</span><br><span class="line">  <span class="keyword">return</span> fn(x, foldr(fn, init, xs))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>foldr 使用 Haskell 的中缀函数的形式会容易看许多——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">myFoldr</span> :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b</span><br><span class="line"><span class="title">myFoldr</span> _ init [] = init</span><br><span class="line"><span class="title">myFoldr</span> fn init (x : xs) = x `fn` myFoldr fn init xs</span><br></pre></td></tr></table></figure>
+
+<p>但我们也知道，这些函数也是能够写成尾递归的形式的，这些形式能够抽象成折叠操作吗？答案是 yes，这样尾递归形式（或者就 SICP 的语境上来说，迭代）的折叠操作，我们称为<code>foldl</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params">zero, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (lst == <span class="literal">null</span> || lst.length == <span class="number">0</span>) <span class="keyword">return</span> zero</span><br><span class="line">  <span class="keyword">const</span> [x, ...xs] = lst</span><br><span class="line">  <span class="keyword">return</span> sum(zero + x, xs)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">product</span>(<span class="params">zero, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (lst == <span class="literal">null</span> || lst.zero == <span class="number">0</span>) <span class="keyword">return</span> zero</span><br><span class="line">  <span class="keyword">const</span> [x, ...xs] = lst</span><br><span class="line">  <span class="keyword">return</span> product(zero + x, xs)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// foldl : ((b, a) =&gt; b, b, [a]) =&gt; b</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foldl</span>(<span class="params">fn, zero, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (lst == <span class="literal">null</span> || lst.length == <span class="number">0</span>) <span class="keyword">return</span> zero</span><br><span class="line">  <span class="keyword">const</span> [x, ...xs] = lst</span><br><span class="line">  <span class="keyword">return</span> foldl(fn, fn(zero, x), xs)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>显然，在一般的语言中，foldl 的性能会好于 foldr，因为前者是尾递归形式，能够被优化成循环。</p>
+</blockquote>
+<p>定义姑且是提出来了，但<code>foldl</code>和<code>foldr</code>的区别和对其的感性认识呢？Keep going。</p>
+<h2 id="形象表述"><a href="#形象表述" class="headerlink" title="形象表述"></a>形象表述</h2><p>一切折叠操作，都可以表示为<strong>数组中各元素连同初始值使用特定二元操作符两两连接</strong>的形式，而左折叠和右折叠会决定初始值的位置以及该二元操作符的结合性——<strong>对于左折叠来说，初始值在最左，该操作符左结合；对于右折叠来说，初始值在最右，该操作符右结合</strong>。下面展示一个示例。</p>
+<p>考虑一个<strong>左折叠</strong>操作，假设初始值为 100；折叠函数为<code>&gt;=&gt;</code>，我们可以叫它 fish，简称 f，<code>1 &gt;=&gt; 2</code>等价于<code>f(1, 2)</code>；要折叠的数组为<code>[1, 2, 3]</code>，我们可以这样描述这个折叠操作——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">100</span> &gt;=&gt; <span class="number">1</span> &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span></span><br><span class="line">=&gt; ((<span class="number">100</span> &gt;=&gt; <span class="number">1</span>) &gt;=&gt; <span class="number">2</span>) &gt;=&gt; <span class="number">3</span> # 左折叠，左结合</span><br><span class="line">=&gt; f(f(f(<span class="number">100</span>, <span class="number">1</span>), <span class="number">2</span>), <span class="number">3</span>)     # 转换成函数调用的形式</span><br><span class="line">=&gt; foldl(f, <span class="number">100</span>, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+
+<p>右折叠也是如此——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span> &gt;=&gt; <span class="number">100</span> </span><br><span class="line">=&gt; <span class="number">1</span> &gt;=&gt; (<span class="number">2</span> &gt;=&gt; (<span class="number">3</span> &gt;=&gt; <span class="number">100</span>))</span><br><span class="line">=&gt; f(<span class="number">1</span>, f(<span class="number">2</span>, f(<span class="number">3</span>, <span class="number">100</span>)))</span><br><span class="line">=&gt; foldr(f, <span class="number">100</span>, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>右折叠可以使用类似<code>&lt;=&lt;</code>的符号来描述，能很形象地表示运算顺序。</p>
+</blockquote>
+<p>这种形式如何进行推导呢？我们先将其转换为使用<code>&gt;=&gt;</code>（其他符号也行）进行连接的形式，根据结合性按顺序进行函数应用。举个小小的例子——考虑定义一个集合的除法操作，对集合<code>[2,3,4]</code>, 得到<code>1/2/3/4</code>，我们显然要使用左折叠——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">arrDiv</span>(<span class="params">lst</span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">div</span>(<span class="params">a, b</span>) </span>&#123; <span class="keyword">return</span> a / b &#125;</span><br><span class="line">  <span class="keyword">return</span> foldl(div, <span class="number">1</span>, lst)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">arrDiv([2,3,4])</span></span><br><span class="line"><span class="comment">=&gt; foldl(div, 1, [2,3,4])</span></span><br><span class="line"><span class="comment">=&gt; 1 &gt;=&gt; 2 &gt;=&gt; 3 &gt;=&gt; 4  # 用某种普遍形式进行表述</span></span><br><span class="line"><span class="comment">=&gt; 0.5 &gt;=&gt; 3 &gt;=&gt; 4 # 从左往右依次计算，这里计算 1 &gt;=&gt; 2 即 div(1, 2) 得到 0.5</span></span><br><span class="line"><span class="comment">=&gt; 0.16666 &gt;=&gt; 4 # 0.5 &gt;=&gt; 3 === 0.16666...</span></span><br><span class="line"><span class="comment">=&gt; 0.04166</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>但折叠操作可不止这点能耐！<strong>假如这里的二元操作符左右两边类型不同呢？</strong>考虑下面的代码——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">magic</span>(<span class="params">lst</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 返回一个新数组，该数组为旧数组 lst 头部加上元素 elem，如 addFirst([2,3,4], 1) === [1,2,3,4]</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">addFirst</span>(<span class="params">lst, elem</span>) </span>&#123; <span class="keyword">return</span> [elem, ...lst] &#125;</span><br><span class="line">  <span class="keyword">return</span> foldl(addFirst, [], lst)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>magic([1,2,3])</code>是什么结果？推导下便知。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">magic</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line">=&gt; foldl(addFirst, [], [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line">=&gt; [] &gt;=&gt; <span class="number">1</span> &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span></span><br><span class="line">=&gt; [<span class="number">1</span>] &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span></span><br><span class="line">=&gt; [<span class="number">2</span>, <span class="number">1</span>] &gt;=&gt; <span class="number">3</span></span><br><span class="line">=&gt; [<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<p>可以注意到，对于左折叠，结果的类型同折叠函数的第一个（左边的）参数相同，<strong>这个参数一般命名为 acc，意为累加</strong>；对于右折叠，结果的类型则同第二个相同了。折叠函数的参数顺序结合这里的表示方法是容易理解的。</p>
+<h2 id="js-中的折叠操作"><a href="#js-中的折叠操作" class="headerlink" title="js 中的折叠操作"></a>js 中的折叠操作</h2><p>js 中为数组（Array）提供了 reduce 和 reduceRight 方法，API 介绍可以看 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce">这里</a>，其中 reduce 代表左折叠，reduceRight 代表右折叠。</p>
+<p>同时，对这两个方法，初始值可以不给定，这时 js 会选择使用第一个或最后一个元素作为初始值。但是不给定初始值的折叠操作对于空数组会抛出异常，这在某些时候不是我们所期望的。<strong>而且如果不给定初始值，则返回值必须是该数组中的类型</strong>，<span class="heimu">但如果你想给其他程序员造成<em>惊喜</em>，也可以试着这么干！梗 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Principle_of_least_astonishment">见此</a></span>。</p>
+<p>需注意的是，reduceRight 方法接受的折叠函数的参数里，acc 在前，x 在后，同 reduce 方法一致，这和上面编写的 foldr 不同。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>上面的描述或许仍显抽象，唯一的方式是拿更多的例子来进行推导，在实践中出真知。下面的示例中一概使用 js 的 reduce 进行描述。</p>
+<h3 id="map-filter-flatMap"><a href="#map-filter-flatMap" class="headerlink" title="map, filter, flatMap"></a>map, filter, flatMap</h3><p>先来点开胃菜，通过 reduce 实现 map，filter，flatMap，这几个比较简单。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">map</span>(<span class="params">fn, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> lst.reduce(<span class="function">(<span class="params">acc, x</span>) =&gt;</span> [...acc, fn(x)], [])</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">filter</span>(<span class="params">predicate, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> lst.reduce(<span class="function">(<span class="params">acc, x</span>) =&gt;</span> predicate(x) ? [...acc, x] : acc, [])</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">flatMap</span>(<span class="params">fn, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> lst.reduce(<span class="function">(<span class="params">acc, x</span>) =&gt;</span> [...acc, ...fn(x)], [])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面仅推导一下 filter。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 检查是否奇数</span><br><span class="line"><span class="title">const</span> isOdd = x =&gt; x % <span class="number">2</span> === <span class="number">1</span></span><br><span class="line"><span class="title">filter</span>(isOdd, [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>])</span><br><span class="line">=&gt; [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>].reduce(..., [])</span><br><span class="line">=&gt; [] &gt;=&gt; <span class="number">1</span> &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span> &gt;=&gt; <span class="number">4</span></span><br><span class="line">=&gt; [<span class="number">1</span>] &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span> &gt;=&gt; <span class="number">4</span> // <span class="number">1</span> 是奇数，被添加到尾部</span><br><span class="line">=&gt; [<span class="number">1</span>] &gt;=&gt; <span class="number">3</span> &gt;=&gt; <span class="number">4</span> // <span class="number">2</span> 不是奇数，被省略</span><br><span class="line">=&gt; [<span class="number">1</span>, <span class="number">3</span>] &gt;=&gt; <span class="number">4</span></span><br><span class="line">=&gt; [<span class="number">1</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+
+<p>为什么 reduce 操作能构造 map，filter 等操作呢？因为 map，filter 等操作生成新集合，而 reduce 操作生成一个值——值这个概念显然是比集合更加广泛的。</p>
+<h3 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h3><p>groupBy 函数负责将元素按特定标识符进行分组，比如将一个学生列表按班级进行分组——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> studentList = </span><br><span class="line">  [&#123;<span class="string">&quot;name&quot;</span> : <span class="string">&quot;John&quot;</span>, <span class="string">&quot;clazz&quot;</span> : <span class="string">&quot;101&quot;</span>&#125;,</span><br><span class="line">   &#123;<span class="string">&quot;name&quot;</span> : <span class="string">&quot;Wick&quot;</span>, <span class="string">&quot;clazz&quot;</span> : <span class="string">&quot;102&quot;</span>&#125;,</span><br><span class="line">   &#123;<span class="string">&quot;name&quot;</span> : <span class="string">&quot;Neo&quot;</span>, <span class="string">&quot;clazz&quot;</span> : <span class="string">&quot;101&quot;</span>&#125;,</span><br><span class="line">   &#123;<span class="string">&quot;name&quot;</span> : <span class="string">&quot;Prophet&quot;</span>, <span class="string">&quot;clazz&quot;</span> : <span class="string">&quot;102&quot;</span>&#125;,</span><br><span class="line">   &#123;<span class="string">&quot;name&quot;</span> : <span class="string">&quot;Anderson&quot;</span>, <span class="string">&quot;clazz&quot;</span> : <span class="string">&quot;103&quot;</span>&#125;,</span><br><span class="line">   &#123;<span class="string">&quot;name&quot;</span> : <span class="string">&quot;Smith&quot;</span>, <span class="string">&quot;clazz&quot;</span> : <span class="string">&quot;101&quot;</span>&#125;]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">groupBy</span>(<span class="params">keyMapFn, lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> lst.reduce(<span class="function">(<span class="params">acc, x</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> key = keyMapFn(x)</span><br><span class="line">    <span class="keyword">if</span> (!acc.has(key)) acc.set(key, [])</span><br><span class="line">    acc.get(key).push(x)</span><br><span class="line">    <span class="keyword">return</span> acc <span class="comment">// 最“函数式”的方案不允许改变原 acc 的值，而是根据旧的 acc 构造新的 acc</span></span><br><span class="line">  &#125;, <span class="keyword">new</span> <span class="built_in">Map</span>())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(groupBy(<span class="function"><span class="params">stud</span>=&gt;</span>stud.clazz, studentList))</span><br></pre></td></tr></table></figure>
+
+<p>推导过程如下——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">groupBy</span>(stud=&gt;stud.clazz, studentList)</span><br><span class="line">=&gt; lst.reduce(..., new <span class="type">Map</span>())</span><br><span class="line">=&gt; &#123;&#125; &gt;=&gt; &#123;<span class="string">&quot;John&quot;</span> , <span class="string">&quot;101&quot;</span>&#125; &gt;=&gt; &#123;<span class="string">&quot;Wick&quot;</span>, <span class="string">&quot;102&quot;</span>&#125; &gt;=&gt; &#123;<span class="string">&quot;Neo&quot;</span>,<span class="string">&quot;101&quot;</span>&#125; &gt;=&gt; ...</span><br><span class="line">=&gt; &#123; <span class="number">101</span> -&gt; [&#123;<span class="string">&quot;John&quot;</span> , <span class="string">&quot;101&quot;</span>&#125;] &#125; &gt;=&gt; &#123;<span class="string">&quot;Wick&quot;</span>, <span class="string">&quot;102&quot;</span>&#125; &gt;=&gt; &#123;<span class="string">&quot;Neo&quot;</span>,<span class="string">&quot;101&quot;</span>&#125; &gt;=&gt; ...</span><br><span class="line">=&gt; &#123; <span class="number">101</span> -&gt; [&#123;<span class="string">&quot;John&quot;</span> , <span class="string">&quot;101&quot;</span>&#125;], <span class="number">102</span> -&gt; [&#123;<span class="string">&quot;Wick&quot;</span>, <span class="string">&quot;102&quot;</span>&#125;] &#125; &gt;=&gt; &#123;<span class="string">&quot;Neo&quot;</span>,<span class="string">&quot;101&quot;</span>&#125; &gt;=&gt; ...</span><br><span class="line">=&gt; &#123; <span class="number">101</span> -&gt; [&#123;<span class="string">&quot;John&quot;</span> , <span class="string">&quot;101&quot;</span>&#125;, &#123;<span class="string">&quot;Neo&quot;</span>,<span class="string">&quot;101&quot;</span>&#125;] , <span class="number">102</span> -&gt; [&#123;<span class="string">&quot;Wick&quot;</span>, <span class="string">&quot;102&quot;</span>&#125;] &#125; &gt;=&gt; ...</span><br><span class="line">// 写不下了！</span><br></pre></td></tr></table></figure>
+
+<h3 id="last-butLast"><a href="#last-butLast" class="headerlink" title="last, butLast"></a>last, butLast</h3><p>如同 last 这样的函数也能够通过 fold 实现。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 找到最后的元素</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">last</span>(<span class="params">lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> lst.reduce(<span class="function">(<span class="params">acc, x</span>) =&gt;</span> x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 找到倒数第二个元素，未找到则返回 null</span></span><br><span class="line"><span class="comment">// 方法是在 acc 中维护两个数组中的元素，到了头后第一个元素就是倒数第二个元素</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">butLast</span>(<span class="params">lst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> lst.reduce(<span class="function">(<span class="params">[a, b], x</span>) =&gt;</span> [b, x], [<span class="string">&quot;empty list&quot;</span>, <span class="string">&quot;singleton list&quot;</span>]) [<span class="number">0</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">butLast</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line">=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].reduce(..., [<span class="string">&quot;empty list&quot;</span>, <span class="string">&quot;singleton list&quot;</span>])[<span class="number">0</span>]</span><br><span class="line">=&gt; ([<span class="string">&quot;empty list&quot;</span>, <span class="string">&quot;singleton list&quot;</span>] &gt;=&gt; <span class="number">1</span> &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span>) [<span class="number">0</span>]</span><br><span class="line">=&gt; ([<span class="string">&quot;singleton list&quot;</span>, <span class="number">1</span>] &gt;=&gt; <span class="number">2</span> &gt;=&gt; <span class="number">3</span>) [<span class="number">0</span>]</span><br><span class="line">=&gt; ([<span class="number">1</span>, <span class="number">2</span>] &gt;=&gt; <span class="number">3</span>) [<span class="number">0</span>]</span><br><span class="line">=&gt; [<span class="number">2</span>, <span class="number">3</span>] [<span class="number">0</span>]</span><br><span class="line">=&gt; <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="compose"><a href="#compose" class="headerlink" title="compose"></a>compose</h3><p>将一个函数数组组合成一个函数，即类似这样<code>[f, g, h] -&gt; (x =&gt; f(g(h(x))))</code>，这种操作很 trick，只有弱类型语言才办得到。compose 函数要结合柯里化函数来使用才能发挥效果。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compose</span>(<span class="params">fnLst</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">input</span> =&gt;</span> fnLst.reduceRight(<span class="function">(<span class="params">acc, x</span>) =&gt;</span> x(acc), input)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">const</span> toUpper = str =&gt; str.toUpperCase()</span><br><span class="line"><span class="title">const</span> removeChar = removedChar =&gt; str =&gt; str.replaceAll(removedChar, <span class="string">&quot;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="title">compose</span>([toUpper, removeChar(<span class="string">&quot;h&quot;</span>)])(<span class="string">&quot;hello, happy world!&quot;</span>)</span><br><span class="line">=&gt; [toUpper, removeChar(<span class="string">&quot;h&quot;</span>)].reduceRight(..., <span class="string">&quot;hello, happy world!&quot;</span>)</span><br><span class="line">=&gt; toUpper &gt;=&gt; remoreChar(<span class="string">&quot;h&quot;</span>) &gt;=&gt; <span class="string">&quot;hello, happy world!&quot;</span></span><br><span class="line">=&gt; toUpper &gt;=&gt; <span class="string">&quot;ello, appy world&quot;</span></span><br><span class="line">=&gt; <span class="string">&quot;ELLO, APPY WORLD&quot;</span></span><br></pre></td></tr></table></figure>
+<hr>
+<p>总之，我认为这种形式对于理解和使用折叠操作都是有很大帮助的，将来必可活用于实践中。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.md" title="一种方便理解折叠（fold）操作的方法">_posts/2022/01-30一种方便理解折叠（fold）操作的方法.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01-16%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F%EF%BC%8C%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%EF%BC%8C%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F.html" rel="prev" title="设计模式笔记——命令模式，状态模式，访问者模式">
+      <i class="fa fa-chevron-left"></i> 设计模式笔记——命令模式，状态模式，访问者模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02-01%E4%B8%80%E4%B8%AA%E5%9C%A8OSX%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%B8%8B%E9%80%9A%E8%BF%87IP%E8%AE%BF%E9%97%AEDocker%E5%AE%B9%E5%99%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html" rel="next" title="一个在 OSX 环境下下通过 IP 访问 Docker 容器的解决方案">
+      一个在 OSX 环境下下通过 IP 访问 Docker 容器的解决方案 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%A5%E5%AD%90%E6%98%AF%E6%8A%98%E5%8F%A0%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">啥子是折叠？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%A2%E8%B1%A1%E8%A1%A8%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">形象表述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#js-%E4%B8%AD%E7%9A%84%E6%8A%98%E5%8F%A0%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">js 中的折叠操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#map-filter-flatMap"><span class="nav-number">4.1.</span> <span class="nav-text">map, filter, flatMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#groupBy"><span class="nav-number">4.2.</span> <span class="nav-text">groupBy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#last-butLast"><span class="nav-number">4.3.</span> <span class="nav-text">last, butLast</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compose"><span class="nav-number">4.4.</span> <span class="nav-text">compose</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

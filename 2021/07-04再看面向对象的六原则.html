@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="整了本好书，从头再学起。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="再看面向对象的六原则">
+<meta property="og:url" content="http://example.com/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="整了本好书，从头再学起。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-04T02:42:10.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.843Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>再看面向对象的六原则 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          再看面向对象的六原则
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-04 10:42:10" itemprop="dateCreated datePublished" datetime="2021-07-04T10:42:10+08:00">2021-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/07-04再看面向对象的六原则.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">整了本好书，从头再学起。</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"><i class="fa fa-tag"></i> 设计模式</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在学习 spring 的时候看到它利用了许多设计模式，如代理，单例，策略，原型等，感到有继续学习设计模式，并且联系实践的必要了。</p>
+<p>目前看《设计模式之禅》，这本书关于面向对象的六个原则提出了更加深刻和具有实践性的见解，颠覆了我以往的看法，这次跟着详细学习一次。目标不是学究似的抓准确定义，而是看对实践有无新的启迪。认识世界的目的终究是改造世界。</p>
+<h1 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h1><p>单一职责原则（Single Responsibility Principle），表面上看起来内涵并不多——好好分工，各司其职，从而保证维护性，扩展性，解耦嘛。但是这里有两个问题——它的主体是谁？也就是说，是谁要承担这里所谓的单一职责？是类，接口还是方法？另一个问题是，职责该如何划分？比如打电话是一个职责，它继续细分不是还能够分成电话的接通，通信，挂断吗？这些过程不是还能够分成更多部分吗？</p>
+<p>关于单一职责的主体问题，答案是均有，但是主要是接口和方法，在生产实践中，对类的设计<strong>通常</strong>是不强求满足单一职责原则的——如果每个类都只负责一个职责，那类的数量以及关系的复杂度将会严重上升，因此一般是让接口满足单一职责，面向接口（抽象层）编程嘛！至于方法的单一职责，这应当是无需强调的——对方法/函数的使用，要么是利用其返回值，要么利用其副作用，如若均有则会让代码不清晰，阅读困难，难以通过方法/函数名直接获取其作用等。</p>
+<p>职责的划分则是一个更重要的问题，我认为真正的单一“职责”只存在于编程语言的“原子”，即我们一般能接触到的最底层的形式——单行表达式（就本质来说，这职责还能够继续细分，划分成机器语言，微代码的执行等，乃至更加底层的物理领域，层层的抽象）。单一职责原则中所说的职责和前面所述的“职责”，显然是更加接近自然语言中所提到的“职责”的。</p>
+<p>因此，我认为对职责的划分是一个广泛和复杂的问题，问题领域（即代码所面临的场景），划分的根据，代码编写者的实践经验，语言限制，甚至硬件限制等都可能对职责的划分做出影响。并且任一职责一般来说都是非“单一”的，其应当能够继续细分，形成一个树状结构。比如上面所说的打电话，可分为接通，通信，挂断三个步骤，这是按次序或步骤进行职责划分，但是这里又可以看到，接通和挂断是和协议相关的，而通信则是和接通、挂断完全无关的——我说什么话和用电信还是联通没有任何关系，因此这里又可以将接通和挂断综合为一个职责……最终究竟采用何种抽象可能都能完成任务，只不过其的维护性，扩展性，抽象性等需要在实践中才能认知到了。但是一定的场景下一定有一个相应的最佳实践（当然，绝对和相对的关系），只不过归纳出一般论是困难的。</p>
+<p>单一职责原则原话的解释是<code>There should never be more than one reason for a class to change</code>。老实说难以理解，change 是什么意思？改变状态？副作用？？do something？但是这里也可以看到，其主体是类，这在生产实践中通常是难以遵守的。</p>
+<p>对单一职责原则，我认为这里仅需要认知的是，其一般适用于接口，设计接口时一定要满足单一职责原则，类则尽量进行满足。更加丰富的结论要在积累足够感性经验后才能获得。</p>
+<h1 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h1><blockquote>
+<p>下面所说的父类既可以是类，也可以是抽象类，接口，子类也同样如此。</p>
+</blockquote>
+<p>这个原则表面上仍然是容易理解的——能用父类的地方，其子类一定要能够<strong>透明地</strong>（对程序员不可见）使用且不产生问题。这仍旧是对现实关系的抽象——兔子是动物，要动物的地方可以给一个兔子，但是要兔子的地方就不能给一个动物——除非它就是兔子。子类一定<strong>是</strong>父类，父类不一定<strong>是</strong>子类。这里的“是”指逻辑上的属种关系。</p>
+<p>子类在拥有父类的特性的基础上，要能够有自己特定的特性。但这种特性是不违反父类特性的基础上的。在实践中这既是优点也是缺点，优点在于能够重用，容易对父类进行扩展；缺点在于，子类必须继承父类所有方法和域（当然，只有 public 和 protected 的方法和域对子类可见），实现父类中所有方法，代码灵活性降低，且耦合性增强了——一旦父类要进行更改，所有子类都要进行更改。</p>
+<p>在进行编程时，应当使用父类或接口作为声明类型，这时候父类或接口就像一个<strong>契约</strong>（依赖倒置原则也对其起作用），如若发现某种情况下无法进行这样的使用，则说明里氏替换原则被违反了，应当进行重构。</p>
+<p>要满足里氏替换原则，子类对父类的方法进行覆盖或重载时，只能够将参数进行扩大而不能缩小，只能将输出结果进行缩小而不能扩大。这里的扩大是指从子类到父类，比如从 HashMap 到 Map，缩小指从父类到子类，如从 Map 到 HashMap。前者设计是为了子类对覆盖的方法进行重载时能够不覆盖父类的实现，否则里氏替换原则就要被破坏了——子类分明没有重写父类的方法，调用的时候却跑了子类的逻辑而非父类的逻辑！一个代码示例见下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个示例</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Father</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 父类返回较大</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">(List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;父类被调用&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span></span>&#123;</span><br><span class="line">    <span class="comment">// 子类返回较小，不满足上面的要求</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">(ArrayList&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;子类被调用&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ArrayList&lt;Integer&gt; tmp = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        Father obj = <span class="keyword">new</span> Son();</span><br><span class="line">        obj.doSomething(tmp);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这里的输出是有趣的——当数组使用 List 声明类型，无论何时都是父类被调用；数组使用 ArrayList 声明类型时，obj 的声明类型是 Father 时父类被调用，是 Son 时子类被调用，里氏替换原则不满足了——能用父类的地方用子类，结果和预想的不同了（预想的是应当进入父类的方法，或者是子类所重写的父类的方法）。这是令人迷惑的。</span></span><br></pre></td></tr></table></figure>
+
+<p>后者设计则是协变机制。这里不多做介绍。</p>
+<blockquote>
+<p>这个原则是非常迷惑的，但若是遵循面向抽象层编程的规范，一般来说不会出现这个问题。</p>
+</blockquote>
+<p>保证里氏替换原则能够达到这样的效果——即使新增加子类，原有的使用该类父类的代码都可以继续运行而不会出现问题。这保证了可维护性和扩展性。</p>
+<h1 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h1><p>依赖倒置原则包括三层含义——</p>
+<ul>
+<li>高层模块（的实现）不应当依赖底层模块（的实现），两者都应当依赖抽象。</li>
+<li>抽象不应当依赖于细节。</li>
+<li>细节应当依赖于抽象。</li>
+</ul>
+<p>这个原则实际上就是要求我们<strong>面向接口编程</strong>。第一层含义表示，高层模块对底层模块进行使用时，不应当依赖底层模块的具体实现，而是依赖底层模块所做的抽象，在 Java 中，这种抽象是接口或抽象类。至于后两个含义，细节和抽象的实质和关系，我认为之前理解的已经很清楚了。</p>
+<p>依赖倒置原则反映到使用 Java 语言中，表现为如下几点——</p>
+<ul>
+<li>模块间通过抽象（接口，抽象类）进行依赖，而非是实现类之间进行直接依赖。</li>
+<li>接口和抽象类的实现不依赖于实现类。</li>
+<li>实现类的实现依赖于接口或抽象类。</li>
+</ul>
+<p>就如上面的里氏替换原则所提到的，这里的抽象就像<strong>契约</strong>，其进行的约束不仅是对代码，更是对程序员。通过接口或抽象类进行规范能够极大地提升可维护性，扩展性等。但是现实世界终究是抽象依赖于细节的，很多时候我们得先把正着把路走一遍，吸收够足够感性经验了，才能化为理性认识，把抽象抽取出来，用在之后的实践中。从感性认识到理性认识，再反作用于感性认识，由此螺旋上升，认识是这样的规律，这个原则也是这样的规律。</p>
+<h1 id="接口隔离原则"><a href="#接口隔离原则" class="headerlink" title="接口隔离原则"></a>接口隔离原则</h1><ul>
+<li>客户端不应当依赖它不需要的接口。</li>
+<li>类间的依赖关系应当建立在最小的接口上。</li>
+</ul>
+<p>该原则中所谓的“接口”并非指的是语言中的 interface，而是某种更为抽象的东西。接口分为类接口和实例接口，前者为 interface，后者为实例对象。</p>
+<p>接口隔离原则也是容易理解的——只取所需要的依赖，不要任何多余的东西。在 Java 中，对这个原则的实践就和它的描述一样一致。接口隔离原则应当和单一职责原则结合使用——实现类只拿自己所需的依赖，每个接口在保持单一职责的前提下最小化。</p>
+<p>存在这样的情况，即一个接口的设计满足单一职责原则，但是不满足接口隔离原则——很多模块对于这个接口的使用只是使用其的一部分，然后被迫使用文档而非语言特性进行约束，要求不使用某些方法。这种情况下就可以按照隔离原则将这个接口拆分成多个相互独立的接口。但是这种拆分仍旧应当满足单一职责原则。</p>
+<p>要满足接口隔离原则，一个好的实践是尽量减少 public 的方法/域成员，也就是说做尽量少的“承诺”，减少与外界的交互。同时也应当认识到，接口的拆分很大程度上是取决于具体业务的。</p>
+<h1 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h1><p>迪米特法则是关于类之间的耦合的——一个类对于自己相耦合的类应当知道的最少。具体来说，类只和自己的<strong>直接朋友</strong>交流。这同样要求——尽量减少耦合的类的数量；尽量削弱耦合关系——对该类进行改变时，其它相耦合的类的改变最小化。</p>
+<p>朋友就是与该类相互有耦合关系的类，组合，聚合，依赖等关系都属于在内。方法中的输入输出参数中的类为成员朋友类，但是<strong>出现在方法体中的类不属于朋友</strong>。</p>
+<h1 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h1><p>对扩展开放，对修改封闭，一切设计模式归根结蒂都是要满足这个原则，只因它是最基础的原则。可以认为前五个原则都是开闭原则在某个具体方面上的表现，或者说是具体与抽象的关系。</p>
+<p>软件产品在它的生命周期内是时时刻刻在变化的，如何保证进行变化时能对原有代码不做大的改动是一个至关重要的问题，这个原则就要求我们尽量通过扩展而非修改的方式实现变化。</p>
+<p>修改分为三类——</p>
+<ul>
+<li>逻辑变化</li>
+</ul>
+<p>单纯一个逻辑的变化，不涉及其它模块，这一般能通过修改原有类的方法来解决。</p>
+<ul>
+<li>模块变化</li>
+</ul>
+<p>模块变化可以认为是模块提供的接口发生的变化，低层次的模块的变化必定会影响高层次模块。</p>
+<ul>
+<li>视图变化</li>
+</ul>
+<p>视图层的变化可能会引起严重的连锁反应，暂且不表。（前后端分离好哇！）</p>
+<p>对这个原则的实现，在 Java 编程中的一个基本要求是，<strong>接口应当稳定可靠，不经常发生变化</strong>。如果必须要进行修改，对接口的修改是最后选择。</p>
+<p>满足开闭原则要求尽量少修改历史代码——所有已经投产的代码都是有意义的（当然，总有特例存在），对历史代码的修改可能会让测试人员重新编写测试，原有的代码的经过实践保证的健壮性需要被重新验证了。这可能会产生很坏的后果。且能够通过扩展来实现变化，能够减轻编码人员的压力——不用在旧代码的海洋（或者是、**）里四处游弋，寻找需要修改的地方了。</p>
+<p>OOP 的六大原则，归根结底就是要求系统能够<strong>拥抱变化</strong>，而实现其的方法并不局限于这六大原则。二十三种设计模式是对这六个原则进行应用，针对特定场景的“样板戏”，对其的学懂弄通是大有益处的——模仿样板戏来进行自己的创造，甚至开发出新的样板戏，对设计模式的学习也能够使对这六大原则认识更清楚…这就是接下来的任务了。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.md" title="再看面向对象的六原则">_posts/2021/07-04再看面向对象的六原则.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.html" rel="prev" title="关于 Spring 的 IoC 和 AOP">
+      <i class="fa fa-chevron-left"></i> 关于 Spring 的 IoC 和 AOP
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07-07%E5%85%B3%E4%BA%8Ejs%E7%9A%84promise.html" rel="next" title="关于 js 的 promise">
+      关于 js 的 promise <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%81%8C%E8%B4%A3%E5%8E%9F%E5%88%99"><span class="nav-number">1.</span> <span class="nav-text">单一职责原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%8C%E6%B0%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text">里氏替换原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%80%92%E7%BD%AE%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">依赖倒置原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99"><span class="nav-number">4.</span> <span class="nav-text">接口隔离原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%AA%E7%B1%B3%E7%89%B9%E6%B3%95%E5%88%99"><span class="nav-number">5.</span> <span class="nav-text">迪米特法则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99"><span class="nav-number">6.</span> <span class="nav-text">开闭原则</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

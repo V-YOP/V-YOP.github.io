@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello, MapReduce——Word Count">
+<meta property="og:url" content="http://example.com/2022/02-19MapReduce%E7%9A%84hello-world.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
+<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220218215040.png">
+<meta property="article:published_time" content="2022-02-19T01:17:33.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.852Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="MapReduce">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
+
+<link rel="canonical" href="http://example.com/2022/02-19MapReduce%E7%9A%84hello-world.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Hello, MapReduce——Word Count | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02-19MapReduce%E7%9A%84hello-world.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hello, MapReduce——Word Count
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-19 09:17:33" itemprop="dateCreated datePublished" datetime="2022-02-19T09:17:33+08:00">2022-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2022/02-19MapReduce%E7%9A%84hello-world.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/02-19MapReduce的hello-world.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/MapReduce/" rel="tag"><i class="fa fa-tag"></i> MapReduce</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/V-YOP/yuuki-hadoop"><img src="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg" alt="V-YOP/yuuki-hadoop - GitHub"></a></p>
+<p>总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce。这里做下关于 MapReduce，以及它的第一课——WordCount 的笔记，主要参考 Hadoop 权威指南以及尚硅谷的视频（官方文档未免跳的太快）。</p>
+<span id="more"></span>
+
+<h2 id="MapReduce-是什么"><a href="#MapReduce-是什么" class="headerlink" title="MapReduce 是什么"></a>MapReduce 是什么</h2><p>MapReduce 是一个基于 Hadoop 平台的，高度并行的<strong>分布式运算框架</strong>（与此相对地，HDFS 是系统），它能充分利用多核处理器，并具有高度的容错性，能够处理海量的数据。用户只需继承简单的抽象类便可轻易嵌入自己的业务逻辑并交付给服务器（实际上是 Yarn，ResourceManager）执行。同时借助 Hadoop Stream，它可以使用其他语言对 Mapper，Reducer 进行编写。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 MapReduce 的优缺点</span></summary>
+        <blockquote><p>MapReduce 的优点如下——</p>
+<ol>
+<li>容易编程，对用户来说，他只需要关心 Map 和 Reduce 的业务逻辑即可，关于任务的调度和分配，各节点的通信等细节都是透明的（必须表扬这点：它对此做了足够的抽象，以至于相关代码在本地执行还是在远程的 HDFS 上执行对用户来说都是一样的，因此对其进行调试非常容易——在本地执行即可）</li>
+<li>容易横向扩展</li>
+<li>高容错性，即使特定节点的任务失败了，它仍旧能自动地将该任务分配给其它节点，不会导致整个任务直接挂掉</li>
+<li>支持海量数据（TB 级，PB 级）的计算</li>
+</ol>
+<p>缺点如下——</p>
+<ol>
+<li>无法支持实时计算</li>
+<li>不擅长流式计算——使用的数据必须预先准备，无法后续再添加；Spark 擅长此项</li>
+<li>不擅长迭代式计算——后面的计算需要使用前面计算的结果的计算；Spark 擅长此项</li>
+</ol>
+</blockquote>
+        
+    </details>
+  
+
+<p>关于 MapReduce 为什么叫 MapReduce，我认为这是因为它的执行过程典型地出现了 Map 和 Reduce 操作——</p>
+<p>它首先会将任务划分成互相独立的多个部分，交与各节点去执行，得到一个输出，如果将任务的各部分看作一个集合，这就成为了一个典型的 Map 操作——<strong>对集合的每一个元素执行相同的操作，得到对应的结果并组成新的集合</strong>。划分任务由框架负责，而各节点执行的 Map 操作称为 <strong>MapTask</strong>，大小为块大小。</p>
+<blockquote>
+<p>但有一说一，MapTask执行的操作更像是<code>flatMap</code>，每一次执行Map操作时都能够向上下文中写入复数的数据，这些数据最终是扁平的。</p>
+</blockquote>
+<p>将各节点的输出结果进行汇总得到最终结果是算法的第二部分。如果将各 MapTask 的结果当成一个集合，则这就成为了一个典型的 Reduce 操作——<strong>将集合中每一个元素“积累”到一个值上</strong>，而每一个 Reducer 的行为实际上也是 reduce——将 Mapper 的中间结果中的“一类值”累积到一个值中；各节点要进行的 Reduce 操作称为 <strong>ReduceTask</strong>。</p>
+<p>当然，<strong>问题远没有这么简单</strong>，比如这里想当然可以提一个问题——Reduce 操作怎么并行？<span class="heimu">答案应该可以概括为——每个 ReduceTask 处理“同一类”数据。</span>显然我们不能单单从函数式编程的角度来对 MapReduce 望文生义——在 MapReduce 的实际架构中，还得引入几个额外角色——<code>Combiner</code>，<code>Partitioner</code>；在 Map 和 Reduce 阶段中间，有着所谓的 shuffle 阶段；MapReduce 强迫数据必须使用 KV 对的形式……想必这些都是为了能最好地并行化。</p>
+<p>一个需要特别注意的地方是，MapReduce 的输入，输出以及所有中间结果必须保存在硬盘上（但不一定保存在 HDFS 里，如 Map 的中间结果是不会落到 HDFS，而是落到本地文件系统中），这会增加许多 IO 时间，实际上让 Hadoop 难以处理实时计算任务。</p>
+<blockquote>
+<p><strong>不一定！如果自定义 OutputFormat，输出可以不是 HDFS，它可以是数据库，本地硬盘，或第三方系统！</strong></p>
+</blockquote>
+<p>题外话——关于并行的 reduce，我想到了 java8 stream 里的 reduce，它和 Java8-reduce 都为并行情况做了特殊处理，并且它们中都有个叫”Combiner”的角色，虽然其在两者中发挥的作用是不同的。为此，<a href="#">Post not found: 2022/02-17关于Java8-stream中的reduce 操作 我去了解了一下关于 java8-reduce 的使用</a>。</p>
+<h2 id="WordCount-一窥"><a href="#WordCount-一窥" class="headerlink" title="WordCount 一窥"></a>WordCount 一窥</h2><p>先从一个实例来看一看怎么编写 MapReduce 的业务代码，这里选择官方推荐的教程案例——wordCount，统计字符串中各单词的数量。</p>
+<p>WordCount 程序可以这样描述——</p>
+<ol>
+<li>先将输入字符串按行切分成许多个 MapTask，分配给各节点处理</li>
+<li>各节点将 MapTask 中的字符串每行按字符串划分，统计每行每个单词的出现，将结果输出</li>
+<li>MapTask 的结果在本地预先进行一次聚集，经框架汇总和处理后被按特定顺序进行排序、分组、将每个组传递给特定的 ReduceTask，分配给各 Reducer 节点处理（MapTask 的数量和数据集的大小成正比，而 ReduceTask 的数量是独立指定的）</li>
+<li>各节点统计各单词出现次数，输出结果到文件中</li>
+<li>框架汇总输出文件，得到最终输出文件</li>
+</ol>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220218215040.png"></p>
+<p>每个 ReduceTask 都包含所有 MapTask 的结果的一部分，比如说，假设它的 partitioner 是按字符串的“基数”进行分区，则 MapTask1，2，3 的结果中可能所有 A、B、C 开头的所有单词会传递给 ReduceTask1，D、E、F 开头的所有单词会传递给 ReduceTask2……<strong>但实际的 partitioner 一般使用哈希算法，以保证分区尽量均匀；而用户则需要保证每个 MapTask 的输出值尽量均匀，即每个 K 对应的 V 的数量尽量相同，从而保证每个 ReduceTask 的工作量基本相同</strong>。</p>
+<p>另外，也是由于每个 ReduceTask 都需要拿到所有 MapTask 的结果的一部分，<strong>ReduceTask 因此享受不到数据本地化的优势——MapTask 的结果必须通过网络传输给 ReduceTask</strong>。</p>
+<p>MapReduce 程序中，用户最少需要编写三个部分——<strong>Driver：程序的入口，创建配置和 job；Mapper：处理 MapTask 的业务类；Reducer：处理 ReduceTask 的业务类</strong>。</p>
+<p><strong>Mapper 和 Reducer 使用和产生的数据都为 KV 对的形式</strong>，Mapper 的接口形如<code>Mapper&lt;KEYIN, VALUEIN, KEYOUT, VALUEOUT&gt;</code>，其中 KEYIN 为输入数据的标识符，VALUEIN 为输入数据，KEYOUT 结果数据的标识符，VALUEOUT 为结果数据，Mapper 中的 map 方法为我们需要重写的业务方法，它的签名为<code>void map(KEYIN, VALUEIN, Context)</code>（Context 为实现 MapperContext 的类，它包含了所有所需类型信息），<strong>map 方法对每一个输入数据的 KV 对都会调用一次</strong>，Context 负责对应输出文件等信息，看签名就知道，这方法的结果必须要通过 Context 写出去。</p>
+<p>在 WordCount 实例中，KEYIN 是行的偏移量（不是行号，是该行相对于文件开头偏移多少字节），VALUEIN 是该行的内容。WordCount 的 Mapper 大概长这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// IntWritable 对应 Integer，Text 对应 String，Hadoop 为了提供更轻量级的序列化功能，为所有基本类型都做了一定的包装，使用它自己的一套序列化机制</span></span><br><span class="line"><span class="comment">// 可惜！倘若 Hadoop 使用 Scala，因而有 implicit 之类的机制，就可以直接使用原生类型了</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordCountMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">Text</span>, <span class="title">IntWritable</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Text outputK = <span class="keyword">new</span> Text();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IntWritable ONE = <span class="keyword">new</span> IntWritable(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (String s : value.toString().split(<span class="string">&quot;\\s&quot;</span>)) &#123;</span><br><span class="line">            outputK.set(s);</span><br><span class="line">            <span class="comment">// write 应该是一个 append 操作，在文件尾部插入这样一个 KV 对</span></span><br><span class="line">            <span class="comment">// 改变 outputK 的值是不要紧的，甚至是官方推荐的</span></span><br><span class="line">            context.write(outputK, ONE);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">            Mapper 看到的数据就像</span></span><br><span class="line"><span class="comment">            1 hello, happy world! hello, kokoro!</span></span><br><span class="line"><span class="comment">            2 happy! lucky! smile! yeah!</span></span><br><span class="line"><span class="comment">            Mapper 生成的数据就像</span></span><br><span class="line"><span class="comment">            hello 1</span></span><br><span class="line"><span class="comment">            happy 1</span></span><br><span class="line"><span class="comment">            world 1</span></span><br><span class="line"><span class="comment">            hello 1</span></span><br><span class="line"><span class="comment">            kokoro 1</span></span><br><span class="line"><span class="comment">            happy 1</span></span><br><span class="line"><span class="comment">            lucky 1</span></span><br><span class="line"><span class="comment">            ...</span></span><br><span class="line"><span class="comment">            虽然看起来很傻，但是 Hadoop 考虑过这种情况——Combiner</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于拉模式和推模式</span></summary>
+        <blockquote><p>Mapper 的 map 方法是典型的<strong>推模式</strong>——服务端，即任务的上下文，一行一行地把数据推给 mapper 的 map 方法，期待其做出动作，该操作就像处理 STDIN，消息队列的接受者，MVC 框架中的控制器……</p>
+<p>而<strong>拉模式</strong>，则是把所需的数据直接拿到而进行处理，倘若重写 run 方法，就能得到所谓的拉模式了，也可以将每一行数据都暂存在成员变量中，在 cleanup 方法时一次性全处理掉，这似乎也可以称作一种拉模式？</p>
+</blockquote>
+        
+    </details>
+  
+
+<p>Reducer 接口的签名为<code>Reducer&lt;KEYIN, VALUEIN, KEYOUT, VALUEOUT&gt;</code>，它的输入的类型必须和 Mapper 的输出的类型一致。Reducer 的接口和 Mapper 的形状一样，但是它的行为和 Mapper 不同：<strong>Reducer 的业务方法 reduce 对“每一类”的对象，即 KEY 相同的所有 KV 对数据执行一次</strong>，这可以从 reduce 的方法签名中一窥——<code>void reduce(KEYIN, Iterable&lt;VALUEIN&gt;, Context)</code>。显然，框架必须在内部做一些分组的活。</p>
+<p>Reducer 的示例大概长这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordCountReducer</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">Text</span>, <span class="title">IntWritable</span>, <span class="title">Text</span>, <span class="title">IntWritable</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IntWritable res = <span class="keyword">new</span> IntWritable();</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(Text key, Iterable&lt;IntWritable&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 一个典型的 reduce 操作，values.reduce((acc, x) -&gt; acc + x.get(), 0)</span></span><br><span class="line">        <span class="keyword">for</span> (IntWritable value : values) &#123;</span><br><span class="line">            sum += value.get(); </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        res.set(sum);</span><br><span class="line">        context.write(key, res);</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">            （不考虑 Combiner 的话）reducer 看到的数据就像</span></span><br><span class="line"><span class="comment">            hello [1,1,1,1] </span></span><br><span class="line"><span class="comment">            world [1,1,1]</span></span><br><span class="line"><span class="comment">            ...</span></span><br><span class="line"><span class="comment">            reducer 生成的数据就像</span></span><br><span class="line"><span class="comment">            hello 4</span></span><br><span class="line"><span class="comment">            world 3</span></span><br><span class="line"><span class="comment">            ...</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于对官方示例的一个吐槽</span></summary>
+        <blockquote><p>Hadoop 的官方示例把用到的 Text 和 IntWritable 都作为成员变量了，这虽然性能会好一些（真的会好吗？在现在的 jvm 这样变态的优化下？），但是严重影响了代码的可理解性（任何有编码经验的人都知道把可变对象的引用传给别人后再对它进行修改绝不是好主意）。</p>
+<p>为了强迫自己接受这种写法，这里必须记住一个前提——<code>context.write</code>方法接收到输入后会立刻进行某种复制（或持久化），因此它引用的数据，即 Text 和 IntWritable 即使修改了也不会产生任何影响。这个前提在细节上出现错误也不要紧，的确是这个效果就好。</p>
+</blockquote>
+        
+    </details>
+  
+
+<p>Driver 的示例平平无奇，这里是使用本地文件系统的情况。很棒的一点是，无论是直接跑还是打成 jar 包发到 hadoop 集群里跑，它的代码（甚至配置）是不需要做任何改动的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Configuration conf = <span class="keyword">new</span> Configuration();</span><br><span class="line">        Job job = Job.getInstance(conf, <span class="string">&quot;word count&quot;</span>);</span><br><span class="line">        job.setJarByClass(Main.class);</span><br><span class="line">        job.setMapperClass(WordCountMapper.class);</span><br><span class="line">        job.setCombinerClass(WordCountReducer.class);</span><br><span class="line">        job.setReducerClass(WordCountReducer.class);</span><br><span class="line">        job.setOutputKeyClass(Text.class);</span><br><span class="line">        job.setOutputValueClass(IntWritable.class);</span><br><span class="line">        FileInputFormat.addInputPath(job, <span class="keyword">new</span> Path(<span class="string">&quot;file:///Users/mememe/tmp/input&quot;</span>));</span><br><span class="line">        FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> Path(<span class="string">&quot;file:///Users/mememe/tmp/output&quot;</span>));</span><br><span class="line">        System.exit(job.waitForCompletion(<span class="keyword">true</span>) ? <span class="number">0</span> : <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>示例代码<a target="_blank" rel="noopener" href="https://github.com/V-YOP/code-repository/tree/master/hadoop_mapreduce/src/main/java">见此</a>。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2022/02-19MapReduce%E7%9A%84hello-world.md" title="Hello, MapReduce——Word Count">_posts/2022/02-19MapReduce的hello-world.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html" rel="prev" title="关于 Java8 的 stream 中的 reduce 操作">
+      <i class="fa fa-chevron-left"></i> 关于 Java8 的 stream 中的 reduce 操作
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02-21Zookeeper%E7%AC%94%E8%AE%B0.html" rel="next" title="关于 Zookeeper 的一些笔记">
+      关于 Zookeeper 的一些笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MapReduce-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">MapReduce 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WordCount-%E4%B8%80%E7%AA%A5"><span class="nav-number">2.</span> <span class="nav-text">WordCount 一窥</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

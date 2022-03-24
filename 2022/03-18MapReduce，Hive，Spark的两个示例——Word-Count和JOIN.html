@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在系统学习 Hive 的 SELECT 之前，我们先来进行一些超有趣的事情——分别使用 MapReduce，Hive，Spark 来实现同一个程序，感受一下三者代码的差异，这里选择去实现一下 WordCount，以及一个表连接的示例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN">
+<meta property="og:url" content="http://example.com/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="在系统学习 Hive 的 SELECT 之前，我们先来进行一些超有趣的事情——分别使用 MapReduce，Hive，Spark 来实现同一个程序，感受一下三者代码的差异，这里选择去实现一下 WordCount，以及一个表连接的示例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-18T14:33:20.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.856Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="分布式计算">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-18 22:33:20" itemprop="dateCreated datePublished" datetime="2022-03-18T22:33:20+08:00">2022-03-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/03-18MapReduce，Hive，Spark的两个示例——Word-Count和JOIN.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97/" rel="tag"><i class="fa fa-tag"></i> 分布式计算</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在系统学习 Hive 的 SELECT 之前，我们先来进行一些超有趣的事情——分别使用 MapReduce，Hive，Spark 来实现同一个程序，感受一下三者代码的差异，这里选择去实现一下 WordCount，以及一个表连接的示例。</p>
+<span id="more"></span>
+
+<h1 id="Word-Count"><a href="#Word-Count" class="headerlink" title="Word Count"></a>Word Count</h1><p>Word Count，不从它开始从谁开始呢？首先是 MapReduce，使用 Java 语言，代码是庞然大物。</p>
+<h2 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NeoWordCount</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">NeoWordCountMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">Text</span>, <span class="title">LongWritable</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> LongWritable ONE = <span class="keyword">new</span> LongWritable(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Text outputK = <span class="keyword">new</span> Text();</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            <span class="keyword">for</span> (String s : value.toString().split(<span class="string">&quot; &quot;</span>)) &#123;</span><br><span class="line">                outputK.set(s);</span><br><span class="line">                context.write(outputK, ONE);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">NeoWordCountReducer</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">Text</span>, <span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">LongWritable</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> LongWritable outputV = <span class="keyword">new</span> LongWritable();</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(Text key, Iterable&lt;LongWritable&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            <span class="keyword">long</span> sum = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (LongWritable value : values) &#123;</span><br><span class="line">                sum += value.get();</span><br><span class="line">            &#125;</span><br><span class="line">            outputV.set(sum);</span><br><span class="line">            context.write(key, outputV);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        GenericOptionsParser parser = <span class="keyword">new</span> GenericOptionsParser(args);</span><br><span class="line">        Job job = Job.getInstance(parser.getConfiguration());</span><br><span class="line">        args = parser.getRemainingArgs();</span><br><span class="line"></span><br><span class="line">        job.setInputFormatClass(TextInputFormat.class);</span><br><span class="line">        job.setOutputFormatClass(TextOutputFormat.class);</span><br><span class="line"></span><br><span class="line">        job.setMapOutputKeyClass(Text.class);</span><br><span class="line">        job.setMapOutputValueClass(LongWritable.class);</span><br><span class="line">        job.setOutputKeyClass(Text.class);</span><br><span class="line">        job.setOutputKeyClass(LongWritable.class);</span><br><span class="line"></span><br><span class="line">        job.setMapperClass(NeoWordCountMapper.class);</span><br><span class="line">        job.setReducerClass(NeoWordCountReducer.class);</span><br><span class="line">        job.setCombinerClass(NeoWordCountReducer.class);</span><br><span class="line"></span><br><span class="line">        FileInputFormat.setInputPaths(job, <span class="keyword">new</span> Path(args[<span class="number">0</span>]));</span><br><span class="line">        FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> Path(args[<span class="number">1</span>]));</span><br><span class="line"></span><br><span class="line">        System.exit(job.waitForCompletion(<span class="keyword">true</span>) ? <span class="number">0</span> : <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，Mapper 和 Reducer 的代码是很显然的，在 Mapper 中，我们将每一行字符串按空格分割，并构造<code>(WORD, 1)</code>的键值对，然后我们通过 Combiner 进行本地聚集，再发送给各个 Reducer，每个 Reducer 对每个 KEY 对应的所有值，进行 sum 操作，得到结果。</p>
+<p>但这里却需要定义一堆东西，更别说 Driver 里的许多东西实际上都是重复的。</p>
+<h2 id="Spark"><a href="#Spark" class="headerlink" title="Spark"></a>Spark</h2><p>我们再来看看 Scala 的 Spark 的代码，Spark 实现 WordCount 其实是对我们这些开发人员最舒服的，但我还没系统学习过 Spark，所以不知道自己的描述是否正确。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义函数只是为了能形式化地引入外部变量</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wordCount</span></span>(sc : <span class="type">SparkContext</span>, inputPath : <span class="type">String</span>, outputPath : <span class="type">String</span>) : <span class="type">Unit</span> = &#123;</span><br><span class="line">  <span class="comment">// 不使用链式调用也是为了清晰</span></span><br><span class="line">  <span class="keyword">val</span> lines = sc.textFile(inputPath) <span class="comment">// 读取</span></span><br><span class="line">  <span class="keyword">val</span> words = lines.flatMap(_.split(<span class="string">&quot; &quot;</span>)) <span class="comment">// 把字符串按空格切割并展平</span></span><br><span class="line">  <span class="keyword">val</span> wordPairs = words..map((_, <span class="number">1</span>)) <span class="comment">// 对每个 word 构造键值对 (WORD, 1)</span></span><br><span class="line">  <span class="keyword">val</span> resultPairs = wordPairs.foldByKey(<span class="number">0</span>)(_ + _) <span class="comment">// 折叠操作，该方法应当在本地也会进行聚集……应当</span></span><br><span class="line">  resultPairs.saveAsTextFile(outputPath) <span class="comment">// 保存</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不要看着 flatMap 就想入非非，<strong>RDD 不是 Monad</strong>！但虽然 RDD 不是 Monad，它仍旧可以使用 for，但这时它的上下文是列表的上下文——flatMap 函数的函数参数不能返回 RDD，因此我们在 for 里所能做的只有列表能做的。</p>
+<p>另外，我不知道为何 Spark 最后得到的结果的 KEY 为何是无序的……按理说经过 shuffle，这里应当是有序的才对，我只能猜测，Spark 利用单进程的方便之处，在折叠时是并行进行的，并输出到同一个文件中，放到 MapReduce 的语境下，就是多个 Reducer 的输出文件为同一个，这样无论如何也不可能得出有序的结果。但这也是符合需求的——我确实没有指定排序。</p>
+<h2 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h2><p>然后是 Hive，这里展示了 Hive 从建模，读取数据到写出数据的全流程。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span> 按默认设置建表，默认设置好像是按、<span class="number">001</span> 分割字段，按、n 分割记录，所以满足需求</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span> 这时候每一行都会被当作一个记录看待</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> docs(line STRING);</span><br><span class="line">LOAD DATA INPATH <span class="string">&#x27;/hdfs/path/to/the/document&#x27;</span> OVERWRITE <span class="keyword">INTO</span> <span class="keyword">TABLE</span> docs; <span class="comment">-- 将文件读入（覆盖）到表中</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> word_counts <span class="keyword">AS</span> </span><br><span class="line"><span class="keyword">SELECT</span> word, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FROM</span></span><br><span class="line">(<span class="keyword">SELECT</span> explode(split(line, <span class="string">&#x27; &#x27;</span>)) <span class="keyword">AS</span> word <span class="keyword">FROM</span> docs) <span class="keyword">AS</span> w</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> word;</span><br></pre></td></tr></table></figure>
+
+<p><code>(SELECT explode(split(line, &#39; &#39;)) AS word FROM docs)</code>需要特别解释一下，这里使用了所谓的<strong>表生成函数（UDTF）</strong> <code>explode</code>，即通过一行数据生成一个表（该函数处理一个 Array，生成一个表，而 split 得到的是 Array），这里是 docs 表中每行数据按空格进行切割，并将每个结果展平，最后得到一张表，表中每一个记录都是一个单词，<strong>可以认为这是一种 flatMap</strong>，反过来说，这种在 Mapper 阶段干 flatMap 的操作，是显然需要使用 UDTF 的。</p>
+<p>在得到这个单词表后，我们将其按照单词进行分组，并对每个分组进行 COUNT 聚集，得到结果并用该查询结果创建一张新表。通过<code>SELECT *</code>可以发现其生成的结果和 MapReduce 的版本一致。</p>
+<h1 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h1><p>现在考虑一个传统的案例——现在有一张部门表和一张雇员表，其中雇员属于特定部门，且有自己的工资，现在要求获取每个部门的工资最大的雇员的信息，相关表的定义如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">---- dept.sql ----</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS dept (</span><br><span class="line">	deptno INT,</span><br><span class="line">	dname STRING,</span><br><span class="line">	loc INT</span><br><span class="line">)</span><br><span class="line">ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;,&#x27;;</span><br><span class="line"></span><br><span class="line">---- dept.txt ----</span><br><span class="line"></span><br><span class="line">10,ACCOUNTING,1700</span><br><span class="line">20,RESEARCH,1800</span><br><span class="line">30,SALES,1900</span><br><span class="line">40,OPERATIONS,1700</span><br><span class="line"></span><br><span class="line">---- emp.sql ----</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS emp (</span><br><span class="line">	empno INT,</span><br><span class="line">	ename STRING,</span><br><span class="line">	job STRING,</span><br><span class="line">	mgr INT, -- 上级</span><br><span class="line">	hiredate STRING, -- 入职时间</span><br><span class="line">	sal DOUBLE, -- 薪水</span><br><span class="line">	comm DOUBLE, -- 奖金</span><br><span class="line">	deptno INT)</span><br><span class="line">ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;,&#x27;;</span><br><span class="line"></span><br><span class="line">---- emp.txt ----</span><br><span class="line"></span><br><span class="line">7369,SMITH,CLERK,7902,1980-12-17,800.00,,20</span><br><span class="line">7499,ALLEN,SALESMAN,7698,1981-2-20,1600.00,300.00,30</span><br><span class="line">7521,WARD,SALESMAN,7698,1981-2-22,1250.00,500.00,30</span><br><span class="line">7566,JONES,MANAGER,7839,1981-4-2,2975.00,,20</span><br><span class="line">7654,MARTIN,SALESMAN,7698,1981-9-28,1250.00,1400.00,30</span><br><span class="line">7698,BLAKE,MANAGER,7839,1981-5-1,2850,,30</span><br><span class="line">7782,CLARK,MANAGER,7839,1981-6-9,2450.00,,10</span><br><span class="line">7788,SCOTT,ANALYST,7566,1987-4-19,3000.00,,20</span><br><span class="line">7839,KING,PRESIDENT,,1981-11-17,5000.00,,10</span><br><span class="line">7844,TURNER,SALESMAN,7698,1981-9-8,1500.00,0.00,30</span><br><span class="line">7876,ADAMS,CLERK,7788,1987-5-23,1100.00,,20</span><br><span class="line">7900,JAMES,CLERK,7698,1981-12-3,950.00,,30</span><br><span class="line">7902,FORD,ANALYST,7566,1981-12-3,3000.00,,20</span><br><span class="line">7934,MILLER,CLERK,7782,1982-1-23,1300.00,,10</span><br></pre></td></tr></table></figure>
+
+<h2 id="Hive-1"><a href="#Hive-1" class="headerlink" title="Hive"></a>Hive</h2><p>这个需求和 SQL 非常契合，所以我们先使用 Hive 进行描述，我们显然需要一个内连接来进行此工作。（可能有更简单的方式，但我还没学到）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> department,employee,salary <span class="keyword">FROM</span></span><br><span class="line">    (<span class="keyword">SELECT</span></span><br><span class="line">        dept.dname <span class="keyword">AS</span> department,</span><br><span class="line">        emp.ename <span class="keyword">AS</span> employee,</span><br><span class="line">        emp.sal <span class="keyword">AS</span> salary,</span><br><span class="line">        <span class="built_in">RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> dept.deptno <span class="keyword">ORDER</span> <span class="keyword">BY</span> emp.sal <span class="keyword">DESC</span>) <span class="keyword">as</span> rk</span><br><span class="line">    <span class="keyword">FROM</span> dept <span class="keyword">JOIN</span> emp <span class="keyword">ON</span> dept.deptno <span class="operator">=</span> emp.deptno) <span class="keyword">AS</span> t</span><br><span class="line"><span class="keyword">WHERE</span> rk <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里使用了 RANK 窗口函数，其中根据部门分区，根据工资降序，获取 rank 为 1 的就是工资最高的，这里<strong>耗时 28 秒</strong>。一个更加清晰的表述使用子查询，但 Hive 不支持子查询，所以这里使用 JOIN 来表述。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> dept.dname, emp.ename, emp.sal <span class="keyword">FROM</span></span><br><span class="line">  dept <span class="keyword">JOIN</span> emp <span class="keyword">ON</span> dept.deptno <span class="operator">=</span> emp.deptno</span><br><span class="line">       <span class="keyword">JOIN</span> (<span class="keyword">SELECT</span> deptno, <span class="built_in">MAX</span>(sal) <span class="keyword">AS</span> max_sal <span class="keyword">FROM</span> emp <span class="keyword">GROUP</span> <span class="keyword">BY</span> deptno) <span class="keyword">AS</span> max_t</span><br><span class="line"><span class="keyword">ON</span> max_t.deptno <span class="operator">=</span> emp.deptno <span class="keyword">AND</span> max_t.max_sal <span class="operator">=</span> emp.sal;</span><br></pre></td></tr></table></figure>
+
+<p>这个更加麻烦一些，而且性能更加差——两次 JOIN，要执行两次 MapReduce 任务才行，<strong>它耗时 64 秒</strong>（Hive 不是会进行 MapJoin 优化吗？？）。下面的 MapReduce 只描述第一种。</p>
+<h2 id="MapReduce-1"><a href="#MapReduce-1" class="headerlink" title="MapReduce"></a>MapReduce</h2><p>关于 MapReduce 的编写，考虑到部门和雇员是一对多的关系，且部门的数量一定是较少的，我们本可以使用 map 端 join，但为了通用性，我们使用 reduce 端 join，为此，用于 join 的键必须要在键值对的键中，因此，Mapper 的输出的键中应当包含 deptno，然后在 reduce 的值的集合里，我们要让部门作为第一个元素，因此我们需要为此创建一个虚拟键。</p>
+<p>再考虑分区，分组，排序，关于分区，肯定是按 deptno 进行分区；关于分组，我们也是按 deptno 进行分组；关于排序，为了能保证部门在最前面，我们要按 deptno 和虚拟键进行排序，这里也可以把工资也加进来进行排序，以保证第二个元素就能获取到最高的工资，但这其实并无必要。</p>
+<p>根据上面的分析，我们规定，Mapper 的输出类型为<code>&lt;(deptno, virtualKey), Text&gt;</code>（懒得定义一个泛类型了，机械操作太多了），按 deptno 进行分区，按 deptno 进行分组，按 deptno、virtualKey 进行排序；<strong>同时也可以发现，这里可以有一个 Combiner</strong>；Reducer 的输出类型就随意了，人能看就行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意这个需要两个输入，第一个输入是 dept，第二个输入是 emp</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Mapper 输出的 key</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CombineKey</span> <span class="keyword">implements</span> <span class="title">WritableComparable</span>&lt;<span class="title">CombineKey</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer deptno;</span><br><span class="line">    <span class="keyword">private</span> Integer virtualKey;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(CombineKey o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!deptno.equals(o.deptno))</span><br><span class="line">            <span class="keyword">return</span> deptno.compareTo(o.deptno);</span><br><span class="line">        <span class="keyword">return</span> virtualKey.compareTo(o.virtualKey);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(DataOutput out)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        out.writeInt(deptno);</span><br><span class="line">        out.writeInt(virtualKey);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readFields</span><span class="params">(DataInput in)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        deptno = in.readInt();</span><br><span class="line">        virtualKey = in.readInt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DeptMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">CombineKey</span>, <span class="title">Text</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        String[] cols = value.toString().split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> deptno = Integer.parseInt(cols[<span class="number">0</span>]);</span><br><span class="line">        CombineKey outputK = <span class="keyword">new</span> CombineKey();</span><br><span class="line">        outputK.deptno = deptno;</span><br><span class="line">        outputK.virtualKey = <span class="number">0</span>;</span><br><span class="line">        context.write(outputK, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">EmpMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">CombineKey</span>, <span class="title">Text</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        String[] cols = value.toString().split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> deptno = Integer.parseInt(cols[<span class="number">7</span>]);</span><br><span class="line">        CombineKey outputK = <span class="keyword">new</span> CombineKey();</span><br><span class="line">        outputK.deptno = deptno;</span><br><span class="line">        outputK.virtualKey = <span class="number">1</span>;</span><br><span class="line">        context.write(outputK, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DeptnoPartitioner</span> <span class="keyword">extends</span> <span class="title">Partitioner</span>&lt;<span class="title">CombineKey</span>, <span class="title">Text</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPartition</span><span class="params">(CombineKey combineKey, Text text, <span class="keyword">int</span> numPartitions)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (combineKey.deptno.hashCode() &amp; Integer.MAX_VALUE) % numPartitions;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DeptnoGroupComparator</span> <span class="keyword">extends</span> <span class="title">WritableComparator</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 永远记着定义 Comparator 的时候别把这茬忘掉了……</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DeptnoGroupComparator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(CombineKey.class, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(WritableComparable a, WritableComparable b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ((CombineKey) a).deptno.compareTo(((CombineKey) b).deptno);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Combiner 的职责是在每个 Mapper 本地聚集</span></span><br><span class="line"><span class="comment">// 对于 DeptMapper，没有聚集的必要，对于 EmpMapper，可以直接找到该 Mapper 该部门最大工资的雇员，只写它就行</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SomeCombiner</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">CombineKey</span>, <span class="title">Text</span>, <span class="title">CombineKey</span>, <span class="title">Text</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(CombineKey key, Iterable&lt;Text&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key.virtualKey.equals(<span class="number">0</span>)) &#123;</span><br><span class="line">            <span class="keyword">for</span> (Text value : values) &#123;</span><br><span class="line">                context.write(key, value);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">double</span> maxSal = -<span class="number">1</span>;</span><br><span class="line">        String maxEmp = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Text value : values) &#123;</span><br><span class="line">            String emp = value.toString();</span><br><span class="line">            <span class="keyword">double</span> sal = Double.parseDouble(emp.split(<span class="string">&quot;,&quot;</span>)[<span class="number">5</span>]);</span><br><span class="line">            <span class="keyword">if</span> (sal &gt; maxSal) &#123;</span><br><span class="line">                maxSal = sal;</span><br><span class="line">                maxEmp = emp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        context.write(key, <span class="keyword">new</span> Text(maxEmp));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SomeReducer</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">CombineKey</span>, <span class="title">Text</span>, <span class="title">NullWritable</span>, <span class="title">Text</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(CombineKey key, Iterable&lt;Text&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="comment">// 虚拟键不可能是 1，如果是 1，则说明这些雇员根本没有对应的部门</span></span><br><span class="line">        <span class="comment">// 考虑当前连接是内连接，这时直接返回即可</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (key.virtualKey.equals(<span class="number">1</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String[] deptCols = values.iterator().next().toString().split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">double</span> maxSal = -<span class="number">1</span>;</span><br><span class="line">        String maxEmp = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">for</span> (Text value : values) &#123;</span><br><span class="line">            String emp = value.toString();</span><br><span class="line">            <span class="keyword">double</span> sal = Double.parseDouble(emp.split(<span class="string">&quot;,&quot;</span>)[<span class="number">5</span>]);</span><br><span class="line">            <span class="keyword">if</span> (sal &gt; maxSal) &#123;</span><br><span class="line">                maxSal = sal;</span><br><span class="line">                maxEmp = emp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 部门没有任何雇员，这里是内连接，也是直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (maxEmp == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String[] empCols = maxEmp.split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line"></span><br><span class="line">        String result = <span class="keyword">new</span> StringJoiner(<span class="string">&quot;,&quot;</span>)</span><br><span class="line">                .add(deptCols[<span class="number">1</span>])</span><br><span class="line">                .add(empCols[<span class="number">1</span>])</span><br><span class="line">                .add(empCols[<span class="number">5</span>])</span><br><span class="line">                .toString();</span><br><span class="line"></span><br><span class="line">        context.write(NullWritable.get(), <span class="keyword">new</span> Text(result));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MapReduce 编写这种业务代码真的是非常……非常痛苦，底层细节太多了，远不如 SQL 那样直接，更不用说有三个以上的表进行 reduce 端 join 的时候需要使用多个 MR 任务，且需要注意的细节更多，需要定义更多 Bean……想想就痛苦，和 CRUD 一样的痛苦。</p>
+<h2 id="Spark-1"><a href="#Spark-1" class="headerlink" title="Spark"></a>Spark</h2><p>然后是 Spark 版本。Spark 版本怎么写其实我还没有学过，但跟随着直觉，还是挺容易写的。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">someComplexJob</span></span>(sc : <span class="type">SparkContext</span>, deptInputPath : <span class="type">String</span>, empInputPath : <span class="type">String</span>, outputPath : <span class="type">String</span>) : <span class="type">Unit</span> = &#123;</span><br><span class="line">  <span class="keyword">val</span> depts = sc.textFile(deptInputPath)</span><br><span class="line">    .map(_.split(<span class="string">&quot;,&quot;</span>))</span><br><span class="line">    .map&#123;cols =&gt; (cols(<span class="number">0</span>), cols)&#125;</span><br><span class="line">  <span class="keyword">val</span> emps = sc.textFile(empInputPath)</span><br><span class="line">    .map(_.split(<span class="string">&quot;,&quot;</span>))</span><br><span class="line">    .map&#123;cols =&gt; (cols(<span class="number">7</span>), cols)&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 值得注意的是，Spark 进行 join 操作不需要</span></span><br><span class="line">  <span class="comment">// 像 MapReduce 那样在 KEY 里给定一个虚拟键，</span></span><br><span class="line">  <span class="comment">// 但相信 Spark 的实现也会采取类似的手段</span></span><br><span class="line">  <span class="keyword">val</span> deptEmps = depts.join(emps)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 做一个 max 操作</span></span><br><span class="line">  <span class="comment">// 需注意，reduceByKey 中的参数拿不到 KEY，这点很好</span></span><br><span class="line">  <span class="comment">// 它怎么推断不出来……</span></span><br><span class="line">  deptEmps.reduceByKey&#123; (a, b) =&gt;</span><br><span class="line">    <span class="keyword">val</span> (pairA@(_, empA), pairB@(_, empB)) = (a, b)</span><br><span class="line">    <span class="keyword">if</span> (empA(<span class="number">5</span>).toDouble &gt; empB(<span class="number">5</span>).toDouble)</span><br><span class="line">      pairA</span><br><span class="line">    <span class="keyword">else</span> pairB</span><br><span class="line">  &#125;.map&#123;<span class="keyword">case</span> (_, (dept, emp)) =&gt;</span><br><span class="line">    <span class="type">Array</span>(dept(<span class="number">1</span>),emp(<span class="number">1</span>),emp(<span class="number">5</span>)).mkString(<span class="string">&quot;,&quot;</span>)</span><br><span class="line">  &#125;.saveAsTextFile(outputPath)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Spark 的代码真是优雅！但一个遗憾的地方是函数参数无法解构，使用 PartialFunction 解构，它居然说类型推断不出来，要我给出类型……i 服了 you。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总结个啥，我只能说 Spark 太香了。上面的 JOIN 代码，如果在工程实践中应当定义 Bean，MapReduce 进行连接操作时应该使用 GenericWritable 作为 VALUE。实际上本还想写个分布式排序示例，但我对 Hive 和 Spark 都还没学到那里，先跳过了。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.md" title="MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN">_posts/2022/03-18MapReduce，Hive，Spark的两个示例——Word-Count和JOIN.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03-17Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%201%E2%80%94%E2%80%94%E6%9E%B6%E6%9E%84%EF%BC%8CDDL%20%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AF%BC%E5%87%BA%E5%AF%BC%E5%85%A5.html" rel="prev" title="Hive 学习笔记 1——架构，DDL 和数据的导出导入">
+      <i class="fa fa-chevron-left"></i> Hive 学习笔记 1——架构，DDL 和数据的导出导入
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html" rel="next" title="SQL 学习笔记——GROUP BY，JOIN，窗口函数">
+      SQL 学习笔记——GROUP BY，JOIN，窗口函数 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Word-Count"><span class="nav-number">1.</span> <span class="nav-text">Word Count</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MapReduce"><span class="nav-number">1.1.</span> <span class="nav-text">MapReduce</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spark"><span class="nav-number">1.2.</span> <span class="nav-text">Spark</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive"><span class="nav-number">1.3.</span> <span class="nav-text">Hive</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JOIN"><span class="nav-number">2.</span> <span class="nav-text">JOIN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive-1"><span class="nav-number">2.1.</span> <span class="nav-text">Hive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MapReduce-1"><span class="nav-number">2.2.</span> <span class="nav-text">MapReduce</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spark-1"><span class="nav-number">2.3.</span> <span class="nav-text">Spark</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

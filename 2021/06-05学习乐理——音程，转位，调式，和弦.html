@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="学点乐理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习乐理笔记——音程，转位，调式……">
+<meta property="og:url" content="http://example.com/2021/06-05%E5%AD%A6%E4%B9%A0%E4%B9%90%E7%90%86%E2%80%94%E2%80%94%E9%9F%B3%E7%A8%8B%EF%BC%8C%E8%BD%AC%E4%BD%8D%EF%BC%8C%E8%B0%83%E5%BC%8F%EF%BC%8C%E5%92%8C%E5%BC%A6.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="学点乐理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-05T14:59:43.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.842Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="乐理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/06-05%E5%AD%A6%E4%B9%A0%E4%B9%90%E7%90%86%E2%80%94%E2%80%94%E9%9F%B3%E7%A8%8B%EF%BC%8C%E8%BD%AC%E4%BD%8D%EF%BC%8C%E8%B0%83%E5%BC%8F%EF%BC%8C%E5%92%8C%E5%BC%A6.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>学习乐理笔记——音程，转位，调式…… | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06-05%E5%AD%A6%E4%B9%A0%E4%B9%90%E7%90%86%E2%80%94%E2%80%94%E9%9F%B3%E7%A8%8B%EF%BC%8C%E8%BD%AC%E4%BD%8D%EF%BC%8C%E8%B0%83%E5%BC%8F%EF%BC%8C%E5%92%8C%E5%BC%A6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          学习乐理笔记——音程，转位，调式……
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-05 22:59:43" itemprop="dateCreated datePublished" datetime="2021-06-05T22:59:43+08:00">2021-06-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/06-05%E5%AD%A6%E4%B9%A0%E4%B9%90%E7%90%86%E2%80%94%E2%80%94%E9%9F%B3%E7%A8%8B%EF%BC%8C%E8%BD%AC%E4%BD%8D%EF%BC%8C%E8%B0%83%E5%BC%8F%EF%BC%8C%E5%92%8C%E5%BC%A6.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/06-05学习乐理——音程，转位，调式，和弦.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">学点乐理</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/%E4%B9%90%E7%90%86/" rel="tag"><i class="fa fa-tag"></i> 乐理</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <!--Hello, Happy World-->
+
+<h1 id="音程"><a href="#音程" class="headerlink" title="音程"></a>音程</h1><p>音程为两个音之间的“距离”，以半音数为单位。一个八度中，音程可以为：纯一度，小二度，大二度，小三度，大三度，纯四度，增四度，减五度，纯五度，小六度，大六度，小七度，大七度，纯八度。其和半音数的对应关系如表。</p>
+<table>
+<thead>
+<tr>
+<th align="center">纯一度</th>
+<th align="center">小二度</th>
+<th align="center">大二度</th>
+<th align="center">小三度</th>
+<th align="center">大三度</th>
+<th align="center">纯四度</th>
+<th align="center">增四度</th>
+<th align="center">减五度</th>
+<th align="center">纯五度</th>
+<th align="center">小六度</th>
+<th align="center">大六度</th>
+<th align="center">小七度</th>
+<th align="center">大七度</th>
+<th align="center">纯八度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">8</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">12</td>
+</tr>
+</tbody></table>
+<p>纯一度即为自身与自身，间隔 0 个半音，比如 C-C，D-D。</p>
+<p>小二度为间隔 1 个半音，C 大调上有 B-C，E-F。</p>
+<p>大二度为间隔 2 个半音，C 大调上有 C-D，D-E，F-G，G-A，A-B。</p>
+<p>小三度为间隔 3 个半音，C 大调上有 D-F，E-G，A-C。</p>
+<p>大三度为间隔 4 个半音，C 大调上有 C-E,F-A，G-B。</p>
+<p>增四度、减五度间隔 6 个半音，为 F-B，B-F（下一个八度的 F）。</p>
+<p>纯四度间隔 5 个半音，为除 F-B 之外的所有四度。</p>
+<p>纯五度间隔 7 个半音，为除 B-F 之外的所有五度。</p>
+<p>小六度间隔 8 个半音，C 大调上有 E-C，A-F，B-G。</p>
+<p>……</p>
+<h1 id="转位"><a href="#转位" class="headerlink" title="转位"></a>转位</h1><p>根据上面的音程，可以发现各音程间存在一定的规律——将半音数为 n 的音程反转即可得到半音数为 12-n 的音程，比如 C-E 为大三度，E-C 就为小六度（这里的 C 为下一个八度里的 C）。F-B 为增四度，B-F 为减五度。这称为音程的转位。</p>
+<p>总结来说互为转位的音程有如下规律：</p>
+<ul>
+<li>相加为九度。<br>比如大三度转位得到小六度，纯四度转位得到纯五度，相加为九度。</li>
+<li>大小互换，增减互换，纯则不变。<br>例子同上。</li>
+</ul>
+<p>根据这个规律，实际上只需要记忆从纯一度到增四度/减五度的音程即可，其后的通过转位进行计算。</p>
+<h1 id="调式"><a href="#调式" class="headerlink" title="调式"></a>调式</h1><p>可以认为调式是一组音阶，其中各个音之间的音程是确定的。调式和主音确定所谓的<strong>调性</strong>。</p>
+<p>现在主要学习了大调和自然小调，大调为分别相隔全全半全全全半（全指一个全音即两个半音，半指一个半音）组成的音阶，小调则相隔全半全全半全全，可以发现大调和小调有“全全半全全”这公共的部分，也就是说将大调最后的“全半”移到前面就能够变成小调，小调最前的全半移到后面就能变成大调。这里就能够获得所谓的关系调（也叫平行调）和同主调的计算方法。</p>
+<p>所谓关系调就是组成的音完全相同的大小调，如 C 大调和 a 小调，同主调就是主音相同的大小调，如 C 大调和 c 小调。</p>
+<p>获取一个大调的关系小调，只需对该大调向左循环移位，直到六级音（下属音）到达第一位为止，比如 C 大调为 CDEFGAB，其六级音为 A，得出的关系小调为 ABCDEFG，为 a 小调（其实实质就是获取主音向下小三度的音——大调的六级音和主音音程一定是大六度，转位后为小三度）。获取小调的关系大调，也只需向左循环移位，直到三级音（属音）到达第一位（主音向上小三度）。</p>
+<p>获取一个大调的同主小调，只需将 3，6，7 级音下降半音即可。可以这样理解：</p>
+<p>大调：n +2 +2 +1 +2 +2 +2 +1<br>小调：n +2 +1 +2 +2 +1 +2 +2</p>
+<p>假设主音是 n，大调的一级音就为 n+2，二级音为 n+2+2……以此类推，最后一个音一定是 n+12（下一个八度的 n）。将大调转成小调，就得调整各级音相对于前一个音的升高（即这里的+i）和小调的一致。</p>
+<p>对第二级音，大小调是一致的，不需要修改。</p>
+<p>对第三级音，大调比小调高 1，因此<strong>减去 1</strong>，把这个 1 当做类似加法的进位看待。</p>
+<p>对第四级音，大调的+1 进 1 得到+2，和小调一致，不变。第五级音也不变。</p>
+<p>对第六级音，大调比小调高 1，**减去 1 **作进位。</p>
+<p>对第七级音，大调加上进位得到+3，**减去 1 **作进位。</p>
+<p>对第八级音，大调比小调高 1，进 1 得到+2，和小调一致。</p>
+<p>总之，为了让大调的音阶能够变化成小调的音阶，需要对 3，6，7 级音降一个半音，并填补在后面的音上。</p>
+<p>小调转大调则正相反，将 3，6，7 级音加上一个半音即可。</p>
+<h1 id="和弦"><a href="#和弦" class="headerlink" title="和弦"></a>和弦</h1><p>和弦即同时奏响多个音，按音的数量有三和弦，七和弦等，按音程的组合有大/小和弦，增/减和弦等。</p>
+<p>所谓三和弦，就是由三个音组成的和弦，第二个音和第三个音和第一个音分别是三度，五度，因此分别称为三度音，五度音，第一个音称为根音。三和弦中由大三度，小三度组成的和弦称为大三和弦，如 C-E-G，写作 C，由小三度，大三度组成的和弦称为小三和弦，如 D-F-A，写作 Dm，由小三度和小三度组成的和弦称为减三和弦，如 B-D-F，写作 Bdim。</p>
+<p>按照某个调的音阶排列的和弦称为顺阶和弦或调内和弦，其性质是所有组成和弦的音都在调内。如 C 大调的顺阶和弦为 C，Dm，Em，F，G，Am，Bdim。</p>
+<p>七和弦为四个音组成的和弦，因根音和第四个音（七度音）相差七度得名。</p>
+<p>continued…. 这玩意不是一蹴而就的东西，要多次反哺才行。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/06-05%E5%AD%A6%E4%B9%A0%E4%B9%90%E7%90%86%E2%80%94%E2%80%94%E9%9F%B3%E7%A8%8B%EF%BC%8C%E8%BD%AC%E4%BD%8D%EF%BC%8C%E8%B0%83%E5%BC%8F%EF%BC%8C%E5%92%8C%E5%BC%A6.md" title="学习乐理笔记——音程，转位，调式……">_posts/2021/06-05学习乐理——音程，转位，调式，和弦.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05-27%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%BA%9Bhaskell%E7%9A%84%E5%88%97%E8%A1%A8%E6%93%8D%E4%BD%9C.html" rel="prev" title="一些 haskell 的列表操作的实现">
+      <i class="fa fa-chevron-left"></i> 一些 haskell 的列表操作的实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06-27%E5%85%B3%E4%BA%8E%E6%AF%95%E8%AE%BE%E7%9A%84%E6%80%BB%E7%BB%93.html" rel="next" title="关于毕设的总结">
+      关于毕设的总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9F%B3%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">音程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%AC%E4%BD%8D"><span class="nav-number">2.</span> <span class="nav-text">转位</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B0%83%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">调式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%92%8C%E5%BC%A6"><span class="nav-number">4.</span> <span class="nav-text">和弦</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

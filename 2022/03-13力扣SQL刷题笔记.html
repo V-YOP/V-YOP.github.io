@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近意识到 SQL 的重要性（Hive 要写 SQL，Spark 还要写 SQL，MapReduce 又可以用 SQL 来描述），并且大数据的各种平台作为分析型系统，复杂的查询是屡见不鲜的，因此打算对 SQL 进行专门学习，这里把 LeetCode 上所有免费 SQL 题目都刷一下，之后也要做做别的题目。尽量给出多于一个解决方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="力扣 SQL 刷题笔记">
+<meta property="og:url" content="http://example.com/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="最近意识到 SQL 的重要性（Hive 要写 SQL，Spark 还要写 SQL，MapReduce 又可以用 SQL 来描述），并且大数据的各种平台作为分析型系统，复杂的查询是屡见不鲜的，因此打算对 SQL 进行专门学习，这里把 LeetCode 上所有免费 SQL 题目都刷一下，之后也要做做别的题目。尽量给出多于一个解决方案。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220309001948.png">
+<meta property="article:published_time" content="2022-03-13T06:56:55.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.854Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220309001948.png">
+
+<link rel="canonical" href="http://example.com/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>力扣 SQL 刷题笔记 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          力扣 SQL 刷题笔记
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-13 14:56:55" itemprop="dateCreated datePublished" datetime="2022-03-13T14:56:55+08:00">2022-03-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/03-13力扣SQL刷题笔记.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/SQL/" rel="tag"><i class="fa fa-tag"></i> SQL</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近意识到 SQL 的重要性（Hive 要写 SQL，Spark 还要写 SQL，MapReduce 又可以用 SQL 来描述），并且大数据的各种平台作为分析型系统，复杂的查询是屡见不鲜的，因此打算对 SQL 进行专门学习，这里把 LeetCode 上所有免费 SQL 题目都刷一下，之后也要做做别的题目。尽量给出多于一个解决方案。</p>
+<span id="more"></span>
+
+<h1 id="Easy"><a href="#Easy" class="headerlink" title="Easy"></a>Easy</h1><h2 id="175-Combine-Two-Tables"><a href="#175-Combine-Two-Tables" class="headerlink" title="175. Combine Two Tables"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/combine-two-tables/">175. Combine Two Tables</a></h2><p>有一张 Person 表和一张 Address 表，Person 表标识人的姓名，Address 表标识人的住址，它们的定义如下——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Person</span><br><span class="line">+-------------+---------+</span><br><span class="line">| Column Name | Type    |</span><br><span class="line">+-------------+---------+</span><br><span class="line">| personId    | int     |</span><br><span class="line">| lastName    | varchar |</span><br><span class="line">| firstName   | varchar |</span><br><span class="line">+-------------+---------+</span><br><span class="line"></span><br><span class="line">Address</span><br><span class="line">+-------------+---------+</span><br><span class="line">| Column Name | Type    |</span><br><span class="line">+-------------+---------+</span><br><span class="line">| addressId   | int     |</span><br><span class="line">| personId    | int     |</span><br><span class="line">| city        | varchar |</span><br><span class="line">| state       | varchar |</span><br><span class="line">+-------------+---------+</span><br></pre></td></tr></table></figure>
+
+<p>现在，要获取某人的姓名对应的住址，<strong>注意有人可能没有住址</strong>，输入输出为——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Input: </span><br><span class="line">Person table:</span><br><span class="line">+----------+----------+-----------+</span><br><span class="line">| personId | lastName | firstName |</span><br><span class="line">+----------+----------+-----------+</span><br><span class="line">| 1        | Wang     | Allen     |</span><br><span class="line">| 2        | Alice    | Bob       |</span><br><span class="line">+----------+----------+-----------+</span><br><span class="line">Address table:</span><br><span class="line">+-----------+----------+---------------+------------+</span><br><span class="line">| addressId | personId | city          | state      |</span><br><span class="line">+-----------+----------+---------------+------------+</span><br><span class="line">| 1         | 2        | New York City | New York   |</span><br><span class="line">| 2         | 3        | Leetcode      | California |</span><br><span class="line">+-----------+----------+---------------+------------+</span><br><span class="line">Output: </span><br><span class="line">+-----------+----------+---------------+----------+</span><br><span class="line">| firstName | lastName | city          | state    |</span><br><span class="line">+-----------+----------+---------------+----------+</span><br><span class="line">| Allen     | Wang     | Null          | Null     |</span><br><span class="line">| Bob       | Alice    | New York City | New York |</span><br><span class="line">+-----------+----------+---------------+----------+</span><br></pre></td></tr></table></figure>
+
+<p>这道题目明显地过了头，可以看到，Wang Allen 这个人是没有住址的，因此对应字段为空，这是一个非常显然的外连接——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">    firstName,</span><br><span class="line">    lastName,</span><br><span class="line">    city,</span><br><span class="line">    state</span><br><span class="line"><span class="keyword">FROM</span> Person <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> Address <span class="keyword">ON</span> Person.personId <span class="operator">=</span> Address.personId;</span><br></pre></td></tr></table></figure>
+
+<p>开门红！</p>
+<h2 id="181-Employees-Earning-More-Than-Their-Managers"><a href="#181-Employees-Earning-More-Than-Their-Managers" class="headerlink" title="181. Employees Earning More Than Their Managers"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/employees-earning-more-than-their-managers/">181. Employees Earning More Than Their Managers</a></h2><p>现在有一张雇员表，其中 id 字段代表当前雇员的 id，managerId 代表它的上级的 id（也是雇员），现在要求查询工资比他的上级高的雇员的名称。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+-------------+---------+</span><br><span class="line">| Column Name | Type    |</span><br><span class="line">+-------------+---------+</span><br><span class="line">| id          | int     |</span><br><span class="line">| name        | varchar |</span><br><span class="line">| salary      | int     |</span><br><span class="line">| managerId   | int     |</span><br><span class="line">+-------------+---------+</span><br></pre></td></tr></table></figure>
+
+<p>一个最直接的想法是，<strong>对每个雇员，根据他的 managerId 找到他的上级的工资</strong>，然后用他的工资和上级的工资做比较，SQL 如下，这里使用了关联子查询——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name <span class="keyword">as</span> Employee </span><br><span class="line"><span class="keyword">FROM</span> Employee <span class="keyword">AS</span> e </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">&gt;</span> (<span class="keyword">SELECT</span> salary <span class="keyword">FROM</span> Employee <span class="keyword">AS</span> m <span class="keyword">WHERE</span> m.id <span class="operator">=</span> e.managerId);</span><br></pre></td></tr></table></figure>
+
+<p>但再看看这张表的结构，可以发现可以直接让自己和自己内连接，从而把自己的工资和上级的工资放到一张表中，从而能够进行比较。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> e.name <span class="keyword">as</span> Employee</span><br><span class="line"><span class="keyword">FROM</span> Employee <span class="keyword">as</span> e <span class="keyword">JOIN</span> Employee <span class="keyword">as</span> m <span class="keyword">ON</span> e.managerId <span class="operator">=</span> m.id</span><br><span class="line"><span class="keyword">WHERE</span> e.salary <span class="operator">&gt;</span> m.salary;</span><br></pre></td></tr></table></figure>
+
+<p>输入输出为——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Input: </span><br><span class="line">Employee table:</span><br><span class="line">+----+-------+--------+-----------+</span><br><span class="line">| id | name  | salary | managerId |</span><br><span class="line">+----+-------+--------+-----------+</span><br><span class="line">| 1  | Joe   | 70000  | 3         |</span><br><span class="line">| 2  | Henry | 80000  | 4         |</span><br><span class="line">| 3  | Sam   | 60000  | Null      |</span><br><span class="line">| 4  | Max   | 90000  | Null      |</span><br><span class="line">+----+-------+--------+-----------+</span><br><span class="line">Output: </span><br><span class="line">+----------+</span><br><span class="line">| Employee |</span><br><span class="line">+----------+</span><br><span class="line">| Joe      |</span><br><span class="line">+----------+</span><br></pre></td></tr></table></figure>
+
+<p>顺带一提，这里使用左外连接的话，WHERE 执行前的结果的左边四个字段会多包含所有没有上级的雇员，即 Sam，Max，右边四个字段为 NULL；使用左外连接的话，WHERE 执行前的结果的右边四个字段会包含所有没有下级的雇员，即 Joe，Henry，左边四个为 NULL。</p>
+<p>在进行这种思考时，把左右外连接看作<code>内连接的结果 + 左/右边无法匹配的记录</code>即可。</p>
+<p><strong>为表取一个合适的名字非常重要，比如左边的表叫雇员表，右边的表叫上级表，使用业务相关的术语来描述表效果非常好</strong>。</p>
+<h2 id="182-Duplicate-Emails"><a href="#182-Duplicate-Emails" class="headerlink" title="182. Duplicate Emails"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/duplicate-emails/">182. Duplicate Emails</a></h2><p>考虑一个邮箱表，每个邮箱有自己的 id，id 为主键，邮箱名称可能重复，现在考虑获取有重复的邮箱的名称。</p>
+<p>这显然是一个需要使用聚集操作的场合，考虑可以直接使用邮箱名进行分组，然后使用 HAVING，COUNT 统计出出现次数大于 1 的邮箱名称，代码非常简单。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> email <span class="keyword">as</span> Email <span class="keyword">FROM</span> Person <span class="comment">-- 这个表叫 Person？？</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> email</span><br><span class="line"><span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>记住，HAVING 对分组后的数据进行筛选，因此可以使用聚集操作。</p>
+<p>还有更 dummy 的解决方案——获取每个邮箱名称的出现次数，找到大于 1 的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> email <span class="keyword">FROM</span> </span><br><span class="line">(<span class="keyword">SELECT</span> email, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">as</span> num <span class="keyword">FROM</span> Person <span class="keyword">GROUP</span> <span class="keyword">BY</span> email) <span class="keyword">as</span> c</span><br><span class="line"><span class="keyword">WHERE</span> num <span class="operator">&gt;</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>还有更弯弯绕的方案——考虑使用 email 字段进行自连接（？），对于重复的邮箱记录<code>(1, a@b.com), (3, a@b.com)</code>，自连接就会得到<code>(1, a@b.com, 1, a@b.com), (1, a@b.com, 3, a@b.com), (3, a@b.com, 1, a@b.com), (3, a@b.com, 3, a@b.com)</code>；对于不重复的邮箱记录<code>(2, b@c.com)</code>，自连接只会得到<code>(2, b@c.com, 2, b@c.com)</code>。</p>
+<p>因此，我们能够发现规律——如果某个邮箱是重复的，那么它自连接必然会得到这样的记录，即第一个 id 和第二个 id 不相等，而不重复的邮箱必然相等（重复的邮箱会同时生成相等和不等的记录）。</p>
+<p>如此，我们便能够得到相应的 SQL，注意需要筛选重复的——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> p1.email <span class="keyword">AS</span> Email <span class="keyword">FROM</span> </span><br><span class="line">Person p1 <span class="keyword">JOIN</span> Person p2 <span class="keyword">ON</span> p1.email <span class="operator">=</span> p2.email</span><br><span class="line"><span class="keyword">WHERE</span> p1.id <span class="operator">!=</span> p2.id;</span><br></pre></td></tr></table></figure>
+
+<p>可以，无论是可读性还是性能，都糟糕透顶。</p>
+<h2 id="183-Customers-Who-Never-Order"><a href="#183-Customers-Who-Never-Order" class="headerlink" title="183. Customers Who Never Order"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/customers-who-never-order/">183. Customers Who Never Order</a></h2><p>现在有一张消费者表，只包括 ID 和名称；有一张订单表，包含 ID 和消费者 ID，现在考虑要找到没有任何对应订单的消费者。</p>
+<p>最直接的想法是，根据订单表获取所有有过消费的消费者 ID，然后对每个消费者，检查他是否在这个 ID 集合中即可——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name <span class="keyword">AS</span> Customers <span class="keyword">FROM</span> Customers </span><br><span class="line"><span class="keyword">WHERE</span> id <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> customerId <span class="keyword">FROM</span> Orders);</span><br></pre></td></tr></table></figure>
+
+<p>但也可以考虑使用外连接——首先将消费者表作为主表，使用 id 作为同订单外连接，这样就得到了每个消费者消费的全部消费记录，而没有消费记录的消费者则只有一条，且订单部分为 NULL，这时候我们就可以按主键分组并在订单表的任意字段调用 COUNT 即可。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c.name <span class="keyword">AS</span> Customers </span><br><span class="line"><span class="keyword">FROM</span> Customers <span class="keyword">AS</span> c <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> Orders <span class="keyword">AS</span> o <span class="keyword">ON</span> c.id <span class="operator">=</span> o.customerId </span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> c.id</span><br><span class="line"><span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(customerId) <span class="operator">=</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里有个有趣的地方——不是说在使用 GROUP BY 时，SELECT 部分只允许出现三个角色：分组的字段，聚集函数处理的列，以及常数吗？为什么在这里出现了列还能正常地跑呢？</p>
+<p>因为，表是通过 JOIN 构建的，而左边的列，即 c.id，c.name 总是一一对应的（c.id 是主键，因此对任意一个 c.id，只能找到同一个 c.name），这性质在 JOIN 后仍旧会保留，因此 c.name 是原子的。</p>
+<p>这里也可以认为，在这里当我们使用<code>GROUP BY c.id</code>时，它和<code>GROUP BY c.id, c.name</code>等价。</p>
+<p>至于网上说 GROUP BY 对主键使用无意义，这论述是正确的，但是这里处理的表并非是 Customers，而是 Customers 和 Orders 进行连接后得到的临时表，这时候 c.id 的主键性质已经失效了——能找到不同的记录，它们拥有同样的主键。</p>
+<p>当然，上面其实不必进行分组和聚集操作——使用外连接时，如果某个消费者的订单处为 NULL，则他必然没有任何消费，因为如此便不会为 NULL，我们可以直接使用 IS NULL 判断——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> c.name <span class="keyword">AS</span> Customers</span><br><span class="line"><span class="keyword">FROM</span> Customers <span class="keyword">AS</span> c <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> Orders <span class="keyword">AS</span> o <span class="keyword">ON</span> c.id <span class="operator">=</span> o.customerId </span><br><span class="line"><span class="keyword">WHERE</span> customerId <span class="keyword">IS</span> <span class="keyword">NULL</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="196-Delete-Duplicate-Emails"><a href="#196-Delete-Duplicate-Emails" class="headerlink" title="196. Delete Duplicate Emails"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/delete-duplicate-emails/">196. Delete Duplicate Emails</a></h2><p>一图胜千言。</p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220309001948.png"></p>
+<p>在我尝试了无数次后，我突然发现，<span style="color: #FF0000">这题是删除</span>！真该仔细看看英文，下面也有老外和我犯了一样的错误 hh。</p>
+<p>但这题确实有够恶心，让人不禁想问，这真的是 Easy 难度？</p>
+<p>这题的表结构和 182 一样，但要求删除重复的邮箱，只保留 ID 最小的。</p>
+<p>问题就变得很容易——考虑将邮箱按邮箱路径分组，并找到每组的最小 ID，对该组的邮箱，删除大于该最小 ID 的邮箱即可。这里显然需要使用关系子查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> Person</span><br><span class="line"><span class="keyword">WHERE</span> id <span class="operator">&gt;</span> (<span class="keyword">SELECT</span> <span class="built_in">MIN</span>(id) <span class="keyword">FROM</span> Person <span class="keyword">AS</span> p2 </span><br><span class="line">              <span class="keyword">WHERE</span> email <span class="operator">=</span> p2.email </span><br><span class="line">              <span class="keyword">GROUP</span> <span class="keyword">BY</span> email); </span><br></pre></td></tr></table></figure>
+
+<p>但问题其实没那么容易……<strong>MySQL 好像不支持在 UPDATE（DELETE）子句中的关联子查询中引用自己</strong>……这确实会让实现变得非常复杂。</p>
+<p>想了想，直接跳过这题，它一点都不明显，甚至用的语法我都没见过/吐血，神 TM 在 DELETE 里用连接，会这个的只有数据库 guru 吧。</p>
+<h2 id="197-Rising-Temperature"><a href="#197-Rising-Temperature" class="headerlink" title="197. Rising Temperature"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/rising-temperature/">197. Rising Temperature</a></h2><p>有一张日期——温度表，记录每天的温度；现在考虑计算出温度比前一天高的日期。</p>
+<p>该问题比较简单——将某日的日期和它的昨日做连接，筛选出大于昨日的温度的日期即可。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> today.id <span class="keyword">AS</span> id <span class="keyword">FROM</span> </span><br><span class="line">Weather today <span class="keyword">JOIN</span> Weather yesterday </span><br><span class="line">  <span class="keyword">ON</span> today.recordDate <span class="operator">=</span> date_add(yesterday.recordDate, <span class="type">INTERVAL</span> <span class="number">1</span> <span class="keyword">DAY</span>)</span><br><span class="line"><span class="keyword">WHERE</span> today.temperature <span class="operator">&gt;</span> yesterday.temperature;</span><br></pre></td></tr></table></figure>
+
+<p>这里唯一需要注意的是日期需要用相应的函数来进行处理，不要试图写什么<code>date + 1</code> 还期待它能够理解。</p>
+<h2 id="595-Big-Countries"><a href="#595-Big-Countries" class="headerlink" title="595. Big Countries"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/big-countries/">595. Big Countries</a></h2><p>单纯的 WHERE 而已，跳过。</p>
+<h2 id="596-Classes-More-Than-5-Students"><a href="#596-Classes-More-Than-5-Students" class="headerlink" title="596. Classes More Than 5 Students"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/classes-more-than-5-students/">596. Classes More Than 5 Students</a></h2><p>现在有一个学生——班级表，表结构为——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Courses <span class="keyword">table</span>:</span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+---------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">Column</span> Name <span class="operator">|</span> Type    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+---------+</span></span><br><span class="line"><span class="operator">|</span> student     <span class="operator">|</span> <span class="type">varchar</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> class       <span class="operator">|</span> <span class="type">varchar</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------+---------+</span></span><br></pre></td></tr></table></figure>
+
+<p>其中<code>(student, class)</code>为主键（就像关系表），现在考虑筛选出有大于等于 5 个学生的班级。</p>
+<p>非常简单，按 class 分组，使用 COUNT 做分组的筛选条件即可。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> class <span class="keyword">FROM</span> Courses <span class="keyword">GROUP</span> <span class="keyword">BY</span> class <span class="keyword">HAVING</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">&gt;=</span> <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="620-Not-Boring-Movies"><a href="#620-Not-Boring-Movies" class="headerlink" title="620. Not Boring Movies"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/not-boring-movies/">620. Not Boring Movies</a></h2><p>电影无不无聊我不知道，反正这一题挺无聊。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> Cinema </span><br><span class="line"><span class="keyword">WHERE</span> id <span class="operator">%</span> <span class="number">2</span> <span class="operator">=</span> <span class="number">1</span> <span class="keyword">AND</span> description <span class="operator">!=</span> <span class="string">&#x27;boring&#x27;</span> </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> rating <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="627-Swap-Salary"><a href="#627-Swap-Salary" class="headerlink" title="627. Swap Salary"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/swap-salary/">627. Swap Salary</a></h2><p>现在有一张雇员表，它有一个性别字段，使用’f’和’m’来标识性别。现在，我们要给所有人都变个性。</p>
+<p>这题考查了“关联”的 UPDATE 语句——我们可以在 SET 子句<code>SET field = expr</code>中的 expr 中<strong>引用当前行的字段</strong>，</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UPDATE Salary</span><br><span class="line"><span class="keyword">SET</span> sex <span class="operator">=</span> <span class="keyword">CASE</span> sex <span class="keyword">WHEN</span> <span class="string">&#x27;f&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;m&#x27;</span> <span class="keyword">ELSE</span> <span class="string">&#x27;f&#x27;</span> <span class="keyword">END</span>;</span><br></pre></td></tr></table></figure>
+
+<p>注意，SET 子句中的=并非是等于运算符，而是某种“赋值运算符”，其行为和命令式编程语言中的=一致。</p>
+<p>这道题目的测试用例有问题，导致不熟悉语法的我吃了大亏。</p>
+<h2 id="1179-Reformat-Department-Table"><a href="#1179-Reformat-Department-Table" class="headerlink" title="1179. Reformat Department Table"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/reformat-department-table/">1179. Reformat Department Table</a></h2><p>这一题需要重点关注一下。</p>
+<p>现在有一张部门每月的收入表，表结构如下，其中 id 为部门 id，<code>(id, month)</code>为主键——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+-------------+---------+</span><br><span class="line">| Column Name | Type    |</span><br><span class="line">+-------------+---------+</span><br><span class="line">| id          | int     |</span><br><span class="line">| revenue     | int     |</span><br><span class="line">| month       | varchar |</span><br><span class="line">+-------------+---------+</span><br></pre></td></tr></table></figure>
+
+<p>现在，考虑每个部门（id）从 1 月到 12 月的收入，做成一张横表。</p>
+<p>显然，我们必须要按 id 进行分组后再进行其它操作，所以我们先看看分组后会发生什么——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">原数据</span><br><span class="line">+------+---------+-------+</span><br><span class="line">| id   | revenue | month |</span><br><span class="line">+------+---------+-------+</span><br><span class="line">| 1    | 8000    | Jan   |</span><br><span class="line">| 2    | 9000    | Jan   |</span><br><span class="line">| 3    | 10000   | Feb   |</span><br><span class="line">| 1    | 7000    | Feb   |</span><br><span class="line">| 1    | 6000    | Mar   |</span><br><span class="line">+------+---------+-------+</span><br><span class="line"></span><br><span class="line">按 id 分组后，会得到——</span><br><span class="line">+-------+------+---------+-------+</span><br><span class="line">| id    | id   | revenue | month |</span><br><span class="line">+-------+------+---------+-------+</span><br><span class="line">| 1     | 1    | 8000    | Jan   |</span><br><span class="line">|       | 1    | 7000    | Feb   |</span><br><span class="line">|       | 1    | 6000    | Mar   |</span><br><span class="line">+-------+------+---------+-------+</span><br><span class="line">| 2     | 2    | 9000    | Jan   |</span><br><span class="line">+-------+------+---------+-------+</span><br><span class="line">| 3     | 3    | 10000   | Feb   |</span><br><span class="line">+-------+------+---------+-------+</span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们想要得到形如<code>1, 8000, 7000, 6000, NULL, ...</code>这样的列，因此我们必须要从分组后的数据中分别<strong>选择</strong>出 month 为 Jan，Feb，Mar……等的记录的收入。</p>
+<p>但是我们做不到，<strong>对分组后的数据进行操作，只能使用聚集函数</strong>，没法进一步筛选。因此这里只能使用特定的聚集函数来进行该操作，这里符合要求的只有 SUM 了。我们可以在 SUM 中使用 IF 或 CASE 表达式，仅统计所需月份的收入，否则就使用 NULL。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id,</span><br><span class="line"><span class="built_in">SUM</span>(IF(<span class="keyword">month</span> <span class="operator">=</span> <span class="string">&#x27;Jan&#x27;</span>, revenue, <span class="keyword">NULL</span>)) <span class="keyword">AS</span> Jan_Revenue,</span><br><span class="line"><span class="built_in">SUM</span>(IF(<span class="keyword">month</span> <span class="operator">=</span> <span class="string">&#x27;Feb&#x27;</span>, revenue, <span class="keyword">NULL</span>)) <span class="keyword">AS</span> Feb_Revenue,</span><br><span class="line"><span class="built_in">SUM</span>(IF(<span class="keyword">month</span> <span class="operator">=</span> <span class="string">&#x27;Mar&#x27;</span>, revenue, <span class="keyword">NULL</span>)) <span class="keyword">AS</span> Mar_Revenue</span><br><span class="line"><span class="comment">-- ...</span></span><br><span class="line"><span class="keyword">FROM</span> Department <span class="keyword">GROUP</span> <span class="keyword">BY</span> id;</span><br></pre></td></tr></table></figure>
+
+<p>这里我也试图使用关联子查询，但是这直接超时了……显然这样性能是最优解，记住这个模式。</p>
+<h1 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h1><h2 id="178-Rank-Scores"><a href="#178-Rank-Scores" class="headerlink" title="178. Rank Scores"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/rank-scores/">178. Rank Scores</a></h2><p>现在有一张 ID——成绩表，现在要求按成绩降序进行排名，相同成绩的并列，成绩相邻的排名计数+1，比如，对于下面的输入，有下面的输出——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Input: </span><br><span class="line">Scores table:</span><br><span class="line">+----+-------+</span><br><span class="line">| id | score |</span><br><span class="line">+----+-------+</span><br><span class="line">| 1  | 3.50  |</span><br><span class="line">| 2  | 3.65  |</span><br><span class="line">| 3  | 4.00  |</span><br><span class="line">| 4  | 3.85  |</span><br><span class="line">| 5  | 4.00  |</span><br><span class="line">| 6  | 3.65  |</span><br><span class="line">+----+-------+</span><br><span class="line">Output: </span><br><span class="line">+-------+------+</span><br><span class="line">| score | rank |</span><br><span class="line">+-------+------+</span><br><span class="line">| 4.00  | 1    |</span><br><span class="line">| 3.85  | 2    |</span><br><span class="line">| 3.65  | 3    |</span><br><span class="line">| 3.50  | 4    |</span><br><span class="line">+-------+------+</span><br></pre></td></tr></table></figure>
+
+<p>该题显然需要使用窗口函数，观察输出，显然需要使用 DENSE_RANK。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> score, <span class="built_in">DENSE_RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> score <span class="keyword">DESC</span>) <span class="keyword">AS</span> `rank`</span><br><span class="line"><span class="keyword">FROM</span> Scores;</span><br></pre></td></tr></table></figure>
+
+<p>但是使用窗口函数算什么好汉？有没有别的手段可以用呢？</p>
+<p>确实有，答案就是我们要手动模拟窗口函数的执行过程——对每一个记录，检查比它大的集合的数量。根据对应的窗口函数的不同，使用不同的约束方式。</p>
+<p>比如，对 RANK，直接统计比它大 score 大的集合的数量即可，SQL 如下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> score,</span><br><span class="line">  (<span class="keyword">SELECT</span> (<span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">+</span> <span class="number">1</span>) <span class="keyword">FROM</span> Scores <span class="keyword">AS</span> s1 <span class="keyword">WHERE</span> s1.score <span class="operator">&gt;</span> s0.score) <span class="keyword">AS</span> `rank`</span><br><span class="line"><span class="keyword">FROM</span> Scores <span class="keyword">AS</span> s0 <span class="keyword">ORDER</span> <span class="keyword">BY</span> s0.score <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 等价于</span></span><br><span class="line"><span class="keyword">SELECT</span> score, <span class="built_in">RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> score <span class="keyword">DESC</span>) <span class="keyword">FROM</span> Scores;</span><br></pre></td></tr></table></figure>
+
+<p>ROW_NUMBER 就有一些麻烦，需要妥善处理相等的情况。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  score,</span><br><span class="line">  (<span class="keyword">SELECT</span> (<span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="operator">+</span> <span class="number">1</span>) <span class="keyword">FROM</span> Scores <span class="keyword">AS</span> s1 <span class="keyword">WHERE</span> </span><br><span class="line">    s1.score <span class="operator">&gt;</span> s0.score <span class="keyword">OR</span> (s1.score <span class="operator">=</span> s0.score <span class="keyword">AND</span> s1.id <span class="operator">&gt;</span> s0.id))</span><br><span class="line">  <span class="keyword">AS</span> `rank`</span><br><span class="line"><span class="keyword">FROM</span> Scores <span class="keyword">AS</span> s0 <span class="keyword">ORDER</span> <span class="keyword">BY</span> s0.score <span class="keyword">DESC</span>, s0.id <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 等价于</span></span><br><span class="line"><span class="keyword">SELECT</span> score, <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> score <span class="keyword">DESC</span>) <span class="keyword">FROM</span> Scores;</span><br></pre></td></tr></table></figure>
+
+<p>这里计数分了两个部分——大于当前分数的部分和等于当前分数的部分，大于的部分需要全部统计，等于的部分只需要统计其中一部分（相同的组里 ROW_NUMBER 仍旧是递增的），统计哪部分随意，只要排序后结果正确即可。</p>
+<p>DENSE_RANK 的话，它不看前面具体有多少个分数高于它，只看有多少“种”分数高于它，在 RANK 中的 COUNT 中加上 DISTINCT 约束即可。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> score,</span><br><span class="line">  (<span class="keyword">SELECT</span> (<span class="built_in">COUNT</span>(<span class="keyword">DISTINCT</span> s1.score) <span class="operator">+</span> <span class="number">1</span>) <span class="keyword">FROM</span> Scores <span class="keyword">AS</span> s1 <span class="keyword">WHERE</span> s1.score <span class="operator">&gt;</span> s0.score) <span class="keyword">AS</span> `rank`</span><br><span class="line"><span class="keyword">FROM</span> Scores <span class="keyword">AS</span> s0 <span class="keyword">ORDER</span> <span class="keyword">BY</span> s0.score <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="176-Second-Highest-Salary"><a href="#176-Second-Highest-Salary" class="headerlink" title="176. Second Highest Salary"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/second-highest-salary/">176. Second Highest Salary</a></h2><p>现在有一张 ID——工资表，要求获取第二（DISTINCT 的）高的工资，如果没有第二高的工资，则返回 NULL。</p>
+<p>考虑到有返回 NULL 的需求，感觉就可以使用连接操作了，进行自连接，右外连接，假设左表为 lower_t，右表为 higher_t，条件设为<code>lower_t.salary &lt;= higher_t.salary AND lower_t.id != higher_t.id</code>，取<code>MAX(lower_t.salary)</code>即可。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">MAX</span>(lower_t.salary) <span class="keyword">AS</span> SecondHighestSalary</span><br><span class="line"><span class="keyword">FROM</span> Employee <span class="keyword">AS</span> lower_t <span class="keyword">RIGHT</span> <span class="keyword">JOIN</span> Employee <span class="keyword">AS</span> higher_t </span><br><span class="line"><span class="keyword">ON</span> (lower_t.salary <span class="operator">&lt;</span> higher_t.salary);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>记住，使用左外连接时，右边的值可能为 NULL，使用右外连接时，左边的值可能为 NULL。</p>
+</blockquote>
+<p>这样写性能颇为灾难。第二种方法就是经典的排序了，DISTINCT 并用 LIMIT 取第二个值，取到了就返回它，否则返回 NULL。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Write your MySQL query statement below</span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">(<span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> salary </span><br><span class="line">  <span class="keyword">FROM</span> Employee <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span> LIMIT <span class="number">1</span>, <span class="number">1</span>) </span><br><span class="line"><span class="keyword">AS</span> SecondHighestSalary;</span><br></pre></td></tr></table></figure>
+
+<p>外层的 SELECT 能够把空表转换成 NULL。</p>
+<p>第三种方式是，直接筛掉最高的工资，再次调用 MAX 就是第二高的工资了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">MAX</span>(salary) <span class="keyword">AS</span> SecondHighestSalary <span class="keyword">FROM</span> Employee </span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">!=</span> (<span class="keyword">SELECT</span> <span class="built_in">MAX</span>(salary) <span class="keyword">FROM</span> Employee)</span><br></pre></td></tr></table></figure>
+
+<h2 id="177-Nth-Highest-Salary"><a href="#177-Nth-Highest-Salary" class="headerlink" title="177. Nth Highest Salary"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/nth-highest-salary/">177. Nth Highest Salary</a></h2><p>和上题类似，但获取第 N 高的工资。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> getNthHighestSalary(N <span class="type">INT</span>) <span class="keyword">RETURNS</span> <span class="type">INT</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">  <span class="keyword">SELECT</span> (N <span class="operator">-</span> <span class="number">1</span>) <span class="keyword">INTO</span> N;</span><br><span class="line">  <span class="keyword">RETURN</span> (</span><br><span class="line">      # Write your MySQL query statement below.</span><br><span class="line">      <span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> salary </span><br><span class="line">        <span class="keyword">FROM</span> Employee <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span> LIMIT N, <span class="number">1</span></span><br><span class="line">  );</span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+
+<p>第一想法是，直接拿上一题的代码过来不就好了，这里需要注意 N 需要减 1（偏移量从 0 开始计数），LIMIT 子句里不允许对偏移量和列数进行运算，所以直接修改变量。</p>
+<p>另外的想法就是利用窗口函数了，DENSE_RANK 显然满足要求。确定完 rank 后，直接用相等判就好了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> getNthHighestSalary(N <span class="type">INT</span>) <span class="keyword">RETURNS</span> <span class="type">INT</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">  <span class="keyword">SELECT</span> (N <span class="operator">-</span> <span class="number">1</span>) <span class="keyword">INTO</span> N;</span><br><span class="line">  <span class="keyword">RETURN</span> (</span><br><span class="line">      <span class="keyword">SELECT</span> t.salary <span class="keyword">FROM</span> </span><br><span class="line">      (<span class="keyword">SELECT</span> salary, </span><br><span class="line">              <span class="built_in">DENSE_RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> `rank` </span><br><span class="line">           <span class="keyword">FROM</span> Employee) <span class="keyword">AS</span> t</span><br><span class="line">      <span class="keyword">WHERE</span> t.rank <span class="operator">=</span> N <span class="operator">+</span> <span class="number">1</span> LIMIT <span class="number">1</span></span><br><span class="line">  );</span><br><span class="line"><span class="keyword">END</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="184-Department-Highest-Salary"><a href="#184-Department-Highest-Salary" class="headerlink" title="184. Department Highest Salary"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/department-highest-salary/">184. Department Highest Salary</a></h2><p>现在有一个雇员表，一个部门表，部门表包含部门 ID 和名称，雇员表包含雇员 ID，名称，薪水，部门 ID。</p>
+<p>现在想要知道每个部门中薪水最高的人的信息，需注意的是一个部门中薪水最高的人不止一个。要做的第一件事是明确的——将两个表进行内连接。</p>
+<p>然后这时我们就想着，可以对于每个雇员，检查他所处的部门的最高的薪水，检查他的薪水是否和这最高薪水相等，如果相等就说明他是最高的，将其插入到结果中。这里使用了关联子查询，所以效率很差。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> Department, e.name <span class="keyword">AS</span> Employee, salary</span><br><span class="line"><span class="keyword">FROM</span> Employee <span class="keyword">AS</span> e <span class="keyword">JOIN</span> Department <span class="keyword">AS</span> d <span class="keyword">ON</span> e.departmentId <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">WHERE</span> salary <span class="operator">=</span> (<span class="keyword">SELECT</span> <span class="built_in">MAX</span>(salary) <span class="keyword">FROM</span> Employee <span class="keyword">AS</span> e0 </span><br><span class="line">                   <span class="keyword">WHERE</span> e0.departmentId <span class="operator">=</span> e.departmentId);</span><br></pre></td></tr></table></figure>
+
+<p>但我们又想着，为啥要对每个雇员分别去查他的部门呢？直接预先把所有部门的最高薪水都查到，在比较时连部门带薪水一起比较不就好了！</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> Department, e.name <span class="keyword">AS</span> Employee, salary</span><br><span class="line"><span class="keyword">FROM</span> Employee <span class="keyword">AS</span> e <span class="keyword">JOIN</span> Department <span class="keyword">AS</span> d <span class="keyword">ON</span> e.departmentId <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">WHERE</span> (d.id, e.salary) <span class="keyword">IN</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> departmentId, <span class="built_in">MAX</span>(salary) <span class="keyword">FROM</span> Employee <span class="keyword">GROUP</span> <span class="keyword">BY</span> departmentId</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>没想到 SQL 还能进行这种非原子的比较，很酷炫。</p>
+<p>直奔评论区，发现有人对 Employee 表，用 RANK 函数直接获得每个部门的薪水的排名，然后从中筛选出排名为 1 的 Employee，使用这些 Employee 对 Department 进行 JOIN。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> Department, e.name <span class="keyword">AS</span> Employee, salary</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">SELECT</span> <span class="operator">*</span>, </span><br><span class="line">       <span class="built_in">RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> departmentId <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) </span><br><span class="line">      <span class="keyword">AS</span> rk <span class="keyword">FROM</span> Employee) </span><br><span class="line">    <span class="keyword">AS</span> e <span class="keyword">JOIN</span> Department <span class="keyword">AS</span> d <span class="keyword">ON</span> e.departmentId <span class="operator">=</span> d.id </span><br><span class="line"><span class="keyword">WHERE</span> e.rk <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>但这些方法其实性能都差不多，怎么清晰怎么来吧。</p>
+<h2 id="180-Consecutive-Numbers"><a href="#180-Consecutive-Numbers" class="headerlink" title="180. Consecutive Numbers"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/consecutive-numbers/">180. Consecutive Numbers</a></h2><p>现在，有一张 ID——数字表，要求获取这样的数字，它连续出现超过三次，输入输出类似这样——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Input: </span><br><span class="line">Logs table:</span><br><span class="line">+----+-----+</span><br><span class="line">| id | num |</span><br><span class="line">+----+-----+</span><br><span class="line">| 1  | 1   |</span><br><span class="line">| 2  | 1   |</span><br><span class="line">| 3  | 1   |</span><br><span class="line">| 4  | 2   |</span><br><span class="line">| 5  | 1   |</span><br><span class="line">| 6  | 2   |</span><br><span class="line">| 7  | 2   |</span><br><span class="line">+----+-----+</span><br><span class="line">Output: </span><br><span class="line">+-----------------+</span><br><span class="line">| ConsecutiveNums |</span><br><span class="line">+-----------------+</span><br><span class="line">| 1               |</span><br><span class="line">+-----------------+</span><br></pre></td></tr></table></figure>
+
+<p>这里，只有数字 1 连续出现三次，选择它。</p>
+<p>这题，直接使用特定窗口函数吧……有一个 LEAD 函数和 LAG 函数，<strong>LEAD 函数获取向前看 n 行的数据，LAG 函数获取向后看 n 行的数据</strong>，这里往前后分别看一行，如果前后一行和当前行相等，说明三行相等，符合要求。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> num <span class="keyword">AS</span> ConsecutiveNums</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line"><span class="keyword">SELECT</span> num,</span><br><span class="line">    <span class="built_in">LEAD</span>(num) <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> id) <span class="keyword">AS</span> `lead`,</span><br><span class="line">    <span class="built_in">LAG</span>(num) <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> id) <span class="keyword">AS</span> `lag`</span><br><span class="line"><span class="keyword">FROM</span> Logs</span><br><span class="line">) <span class="keyword">AS</span> t</span><br><span class="line"><span class="keyword">WHERE</span> num<span class="operator">=</span>`lead` <span class="keyword">and</span> num<span class="operator">=</span>`lag`;</span><br></pre></td></tr></table></figure>
+
+<p>官方解答进行了两次自连接，且不能处理所有情况，很残废。</p>
+<h2 id="626-Exchange-Seats"><a href="#626-Exchange-Seats" class="headerlink" title="626. Exchange Seats"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/exchange-seats/">626. Exchange Seats</a></h2><p>现在有一个学生的座位 ID——名称表，要求每个座位为偶数的和他之前的奇数位学生交换座位，如果总座位数为奇数，则最后一个学生不移动，输入和输出如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Input: </span><br><span class="line">Seat table:</span><br><span class="line">+----+---------+</span><br><span class="line">| id | student |</span><br><span class="line">+----+---------+</span><br><span class="line">| 1  | Abbot   |</span><br><span class="line">| 2  | Doris   |</span><br><span class="line">| 3  | Emerson |</span><br><span class="line">| 4  | Green   |</span><br><span class="line">| 5  | Jeames  |</span><br><span class="line">+----+---------+</span><br><span class="line">Output: </span><br><span class="line">+----+---------+</span><br><span class="line">| id | student |</span><br><span class="line">+----+---------+</span><br><span class="line">| 1  | Doris   |</span><br><span class="line">| 2  | Abbot   |</span><br><span class="line">| 3  | Green   |</span><br><span class="line">| 4  | Emerson |</span><br><span class="line">| 5  | Jeames  |</span><br><span class="line">+----+---------+</span><br></pre></td></tr></table></figure>
+
+<p>这其实是一个数学题，我们首先能发现，将<code>IF(ID % 2 = 0, id - 1, id + 1)</code>座位新 ID 进行排序的话，学生的顺序就符合要求了，但最后一个 ID 如果是奇数的话会出现错误，那既然这样的话我们直接按照这个顺序上一个 ROW_NUMBER 不就好了？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">  <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER</span> <span class="keyword">BY</span> IF(id <span class="operator">%</span> <span class="number">2</span> <span class="operator">=</span> <span class="number">0</span>, id <span class="operator">-</span> <span class="number">1</span>, id <span class="operator">+</span> <span class="number">1</span>)) <span class="keyword">AS</span> id,</span><br><span class="line">  student </span><br><span class="line"><span class="keyword">FROM</span> Seat;</span><br></pre></td></tr></table></figure>
+
+<p>官方推荐的解决方式是在执行之前获取表记录的数量，若是奇数就对最后一个值去特别处理，这相当于是修改了新 ID 的计算方式，这里不表了。</p>
+<h1 id="Hard"><a href="#Hard" class="headerlink" title="Hard"></a>Hard</h1><h2 id="185-Department-Top-Three-Salaries"><a href="#185-Department-Top-Three-Salaries" class="headerlink" title="185. Department Top Three Salaries"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/department-top-three-salaries/solution/">185. Department Top Three Salaries</a></h2><p>和 <a target="_blank" rel="noopener" href="https://leetcode.com/problems/department-highest-salary/">184. Department Highest Salary</a> 一样，但是要求获取前三高（DISTINCT 的）的薪资。</p>
+<p>最开始的想法是，可以直接按上一题使用窗口函数的方法进行修改，判断 rank 时使用<code>[1,3]</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> Department, e.name <span class="keyword">AS</span> Employee, salary</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">SELECT</span> <span class="operator">*</span>, </span><br><span class="line">       <span class="built_in">DENSE_RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> departmentId <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">DESC</span>) </span><br><span class="line">      <span class="keyword">AS</span> rk <span class="keyword">FROM</span> Employee) </span><br><span class="line">    <span class="keyword">AS</span> e <span class="keyword">JOIN</span> Department <span class="keyword">AS</span> d <span class="keyword">ON</span> e.departmentId <span class="operator">=</span> d.id </span><br><span class="line"><span class="keyword">WHERE</span> e.rk <span class="operator">&lt;=</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这代码性能不太好（我不服，tnnd 有人和我的代码一样，怎么性能比我快一倍？怀疑是他们的硬件原因），官方的 Solution 是，对每一个雇员，检查同部门的比它高的薪水的“种类”（DISTINCT），如果这“种类”小于 3，则该雇员的薪水在前三中。这和上一题的关联子查询类似。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> d.name <span class="keyword">AS</span> Department, e.name <span class="keyword">AS</span> Employee, salary</span><br><span class="line"><span class="keyword">FROM</span> Employee <span class="keyword">AS</span> e <span class="keyword">JOIN</span> Department <span class="keyword">AS</span> d <span class="keyword">ON</span> e.departmentId <span class="operator">=</span> d.id</span><br><span class="line"><span class="keyword">WHERE</span> <span class="number">3</span> <span class="operator">&gt;</span> (<span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(<span class="keyword">DISTINCT</span> salary) <span class="keyword">FROM</span> Employee e1</span><br><span class="line">             <span class="keyword">WHERE</span> e1.departmentId <span class="operator">=</span> e.departmentId</span><br><span class="line">               <span class="keyword">AND</span> e1.salary <span class="operator">&gt;</span> e.salary);</span><br></pre></td></tr></table></figure>
+
+<p>可见，这种求第 N 个排名的题基本都可以用关联子查询或窗口函数来解决，其中窗口函数显然是更加通俗易懂的。</p>
+<h2 id="262-Trips-and-Users"><a href="#262-Trips-and-Users" class="headerlink" title="262. Trips and Users"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/trips-and-users/">262. Trips and Users</a></h2><p>这题其实很简单，但却麻烦了我半天……最大的问题是审题不仔细，然后对某些函数不熟悉。</p>
+<p>现在有一张出租车订单表和一张用户表，出租车订单表中包含用户 id 和驾驶员 id，两 id 都引用用户表，还包含订单的状态——完成或取消；用户表包含用户的角色以及是否被 ban。</p>
+<p>现在，要求获取 <strong>2013-10-01 到 2013-10-03 日期中</strong>的每天的，用户和驾驶员均未被 ban 的，订单的取消率。</p>
+<p>问题其实很简单——筛选出驾驶员和用户未被 ban 的订单，按天分组，统计状态为取消的订单数除以总订单数，格式化即可。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> request_at <span class="keyword">AS</span> <span class="keyword">Day</span>, </span><br><span class="line">       ROUND(<span class="number">1</span> <span class="operator">-</span> (<span class="built_in">COUNT</span>(IF(status <span class="operator">=</span> &quot;completed&quot;, <span class="number">1</span>, <span class="keyword">NULL</span>)) <span class="operator">/</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>)), <span class="number">2</span>) <span class="keyword">AS</span> `Cancellation Rate`</span><br><span class="line"><span class="keyword">FROM</span> Trips <span class="keyword">WHERE</span> </span><br><span class="line">    request_at <span class="keyword">BETWEEN</span> &quot;2013-10-01&quot; <span class="keyword">AND</span> &quot;2013-10-03&quot;</span><br><span class="line"><span class="keyword">AND</span> client_id <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="keyword">SELECT</span> users_id <span class="keyword">FROM</span> Users <span class="keyword">WHERE</span> banned <span class="operator">=</span> <span class="string">&#x27;Yes&#x27;</span>)   </span><br><span class="line"><span class="keyword">AND</span> driver_id <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="keyword">SELECT</span> users_id <span class="keyword">FROM</span> Users <span class="keyword">WHERE</span> banned <span class="operator">=</span> <span class="string">&#x27;Yes&#x27;</span>)</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> request_at;</span><br></pre></td></tr></table></figure>
+
+<h2 id="601-Human-Traffic-of-Stadium"><a href="#601-Human-Traffic-of-Stadium" class="headerlink" title="601. Human Traffic of Stadium"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/human-traffic-of-stadium/">601. Human Traffic of Stadium</a></h2><p>最后一题了！</p>
+<p>现在有一张体育场入场数表，表示每天体育场的入场人数，它长这样——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Stadium table:</span><br><span class="line">+------+------------+-----------+</span><br><span class="line">| id   | visit_date | people    |</span><br><span class="line">+------+------------+-----------+</span><br><span class="line">| 1    | 2017-01-01 | 10        |</span><br><span class="line">| 2    | 2017-01-02 | 109       |</span><br><span class="line">| 3    | 2017-01-03 | 150       |</span><br><span class="line">| 4    | 2017-01-04 | 99        |</span><br><span class="line">| 5    | 2017-01-05 | 145       |</span><br><span class="line">| 6    | 2017-01-06 | 1455      |</span><br><span class="line">| 7    | 2017-01-07 | 199       |</span><br><span class="line">| 8    | 2017-01-09 | 188       |</span><br><span class="line">+------+------------+-----------+</span><br></pre></td></tr></table></figure>
+
+<p>参观日期递增，id 和日期一一对应且递增，现在要求获取这些记录——参观人数大于等于 100 且超过连续 3 个 id 如此，比如对上面的表，会选择 5，6，7，8，因为这四个 id 相邻且人数连续大于等于 100.</p>
+<p>这题直接使用窗口函数就行了，对每一条记录，我们要检查它以及其上两条，它以及上下一条，它以及其下两条这三个集合中的最小值大于等于 100，只要其中一个满足，它就是符合要求的。</p>
+<p>这里使用 ROW 来取得前后的数据，需注意如果前后没有数据，它就干脆不取了，所以需要保证传递给 MIN 的数据为 3 个。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 好工整啊</span></span><br><span class="line"><span class="comment">-- 因为 id 本来就是 ASC 的，这里就不用加了</span></span><br><span class="line"><span class="keyword">SELECT</span> id, visit_date, people <span class="keyword">FROM</span> (<span class="keyword">SELECT</span> id, visit_date, people, </span><br><span class="line">     <span class="built_in">MIN</span>(people) <span class="keyword">OVER</span> (<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="number">1</span> PRECEDING <span class="keyword">AND</span> <span class="number">1</span> FOLLOWING) <span class="operator">&gt;=</span> <span class="number">100</span> </span><br><span class="line">    <span class="keyword">AND</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">OVER</span> (<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="number">1</span> PRECEDING <span class="keyword">AND</span> <span class="number">1</span> FOLLOWING) <span class="operator">=</span> <span class="number">3</span></span><br><span class="line">  <span class="keyword">OR</span> <span class="built_in">MIN</span>(people) <span class="keyword">OVER</span> (<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="number">2</span> PRECEDING <span class="keyword">AND</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span>) <span class="operator">&gt;=</span> <span class="number">100</span> </span><br><span class="line">    <span class="keyword">AND</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">OVER</span> (<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="number">2</span> PRECEDING <span class="keyword">AND</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span>) <span class="operator">=</span> <span class="number">3</span></span><br><span class="line">  <span class="keyword">OR</span> <span class="built_in">MIN</span>(people) <span class="keyword">OVER</span> (<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">2</span> FOLLOWING) <span class="operator">&gt;=</span> <span class="number">100</span> </span><br><span class="line">    <span class="keyword">AND</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">OVER</span> (<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">2</span> FOLLOWING) <span class="operator">=</span> <span class="number">3</span> <span class="keyword">AS</span> flag  </span><br><span class="line"><span class="keyword">FROM</span> Stadium) <span class="keyword">AS</span> t <span class="keyword">WHERE</span> flag;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，窗口函数真的能够玩很多花活，且格式非常灵活，之后还得继续了解。</p>
+<hr>
+<p>下一步是牛客网的82道题！</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.md" title="力扣 SQL 刷题笔记">_posts/2022/03-13力扣SQL刷题笔记.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html" rel="prev" title="关于 MR 为何需要排序，以及一个分布式排序的示例">
+      <i class="fa fa-chevron-left"></i> 关于 MR 为何需要排序，以及一个分布式排序的示例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03-14MapReduce%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F2%E2%80%94%E2%80%94ORDER-BY%EF%BC%8CJOIN.html" rel="next" title="MapReduce 开发模式 2——排序，二次排序，JOIN">
+      MapReduce 开发模式 2——排序，二次排序，JOIN <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Easy"><span class="nav-number">1.</span> <span class="nav-text">Easy</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#175-Combine-Two-Tables"><span class="nav-number">1.1.</span> <span class="nav-text">175. Combine Two Tables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#181-Employees-Earning-More-Than-Their-Managers"><span class="nav-number">1.2.</span> <span class="nav-text">181. Employees Earning More Than Their Managers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#182-Duplicate-Emails"><span class="nav-number">1.3.</span> <span class="nav-text">182. Duplicate Emails</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#183-Customers-Who-Never-Order"><span class="nav-number">1.4.</span> <span class="nav-text">183. Customers Who Never Order</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#196-Delete-Duplicate-Emails"><span class="nav-number">1.5.</span> <span class="nav-text">196. Delete Duplicate Emails</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#197-Rising-Temperature"><span class="nav-number">1.6.</span> <span class="nav-text">197. Rising Temperature</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#595-Big-Countries"><span class="nav-number">1.7.</span> <span class="nav-text">595. Big Countries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#596-Classes-More-Than-5-Students"><span class="nav-number">1.8.</span> <span class="nav-text">596. Classes More Than 5 Students</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#620-Not-Boring-Movies"><span class="nav-number">1.9.</span> <span class="nav-text">620. Not Boring Movies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#627-Swap-Salary"><span class="nav-number">1.10.</span> <span class="nav-text">627. Swap Salary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1179-Reformat-Department-Table"><span class="nav-number">1.11.</span> <span class="nav-text">1179. Reformat Department Table</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Medium"><span class="nav-number">2.</span> <span class="nav-text">Medium</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#178-Rank-Scores"><span class="nav-number">2.1.</span> <span class="nav-text">178. Rank Scores</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#176-Second-Highest-Salary"><span class="nav-number">2.2.</span> <span class="nav-text">176. Second Highest Salary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#177-Nth-Highest-Salary"><span class="nav-number">2.3.</span> <span class="nav-text">177. Nth Highest Salary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#184-Department-Highest-Salary"><span class="nav-number">2.4.</span> <span class="nav-text">184. Department Highest Salary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#180-Consecutive-Numbers"><span class="nav-number">2.5.</span> <span class="nav-text">180. Consecutive Numbers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#626-Exchange-Seats"><span class="nav-number">2.6.</span> <span class="nav-text">626. Exchange Seats</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hard"><span class="nav-number">3.</span> <span class="nav-text">Hard</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#185-Department-Top-Three-Salaries"><span class="nav-number">3.1.</span> <span class="nav-text">185. Department Top Three Salaries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#262-Trips-and-Users"><span class="nav-number">3.2.</span> <span class="nav-text">262. Trips and Users</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#601-Human-Traffic-of-Stadium"><span class="nav-number">3.3.</span> <span class="nav-text">601. Human Traffic of Stadium</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

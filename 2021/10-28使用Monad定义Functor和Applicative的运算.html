@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="惊为天人，惊为天人啊，没想到仅使用 Monad 的&gt;&gt;&#x3D;和return便可以实现&lt;$&gt;和&lt;*&gt;！下面描述一下我的心路历程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Monad 的&gt;&gt;&#x3D;实现&lt;$&gt;和&lt;*&gt;">
+<meta property="og:url" content="http://example.com/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="惊为天人，惊为天人啊，没想到仅使用 Monad 的&gt;&gt;&#x3D;和return便可以实现&lt;$&gt;和&lt;*&gt;！下面描述一下我的心路历程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg">
+<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png">
+<meta property="article:published_time" content="2021-10-29T14:56:23.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.848Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg">
+
+<link rel="canonical" href="http://example.com/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用 Monad 的>>=实现<$>和<*> | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 Monad 的>>=实现<$>和<*>
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-29 22:56:23" itemprop="dateCreated datePublished" datetime="2021-10-29T22:56:23+08:00">2021-10-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/10-28使用Monad定义Functor和Applicative的运算.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/FP/" rel="tag"><i class="fa fa-tag"></i> FP</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>惊为天人，惊为天人啊，没想到仅使用 Monad 的<code>&gt;&gt;=</code>和<code>return</code>便可以实现<code>&lt;$&gt;</code>和<code>&lt;*&gt;</code>！下面描述一下我的心路历程。</p>
+<span id="more"></span>
+
+<p>在一切发生之前，先来梳理一下我们手头的工具。我们只能使用 Monad 中直接定义的方法，即——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b</span><br><span class="line"><span class="title">return</span> :: a -&gt; m a</span><br></pre></td></tr></table></figure>
+
+<p>就这些！开始表演魔法吧。</p>
+<h1 id="lt-gt"><a href="#lt-gt" class="headerlink" title="&lt;$&gt;"></a>&lt;$&gt;</h1><p>首先是<code>&lt;$&gt;</code>即<code>fmap</code>，先看其签名——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">fmap</span> :: (a -&gt; b) -&gt; m a -&gt; m b</span><br></pre></td></tr></table></figure>
+
+<p>在这里，函数<code>a -&gt; b</code>和变量<code>m a</code>就是我们的已知量，我们要用这两个素材得到<code>m b</code>。容易意识到，我们只需要对函数<code>a -&gt; b</code>进行变换，根据这个函数构造一个函数<code>a -&gt; m b</code>即可，这样得到的函数签名刚好就是<code>flip (&gt;&gt;=)</code>。</p>
+<p>而如何进行这种构造？整个 lambda，在 lambda 上下文中调用函数<code>a -&gt; b</code>并返回一个<code>m b</code>即可！</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">magic</span> :: <span class="type">Monad</span> m =&gt; (a -&gt; b) -&gt; (a -&gt; m b)</span><br><span class="line"><span class="title">magic</span> fn = \a -&gt; return $ fn a</span><br></pre></td></tr></table></figure>
+
+<p>这个形式可以化简，但为了明确，这里不化简。</p>
+<p>有了这个 magic，我们就能够构造 fmapM 了！</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">fmapM</span> :: <span class="type">Monad</span> m =&gt; (a -&gt; b) -&gt; m a -&gt; m b</span><br><span class="line"><span class="title">fmapM</span> fn ma = (&gt;&gt;=) ma $ magic fn</span><br></pre></td></tr></table></figure>
+
+<h1 id="lt-gt-1"><a href="#lt-gt-1" class="headerlink" title="&lt;*&gt;"></a>&lt;*&gt;</h1><p><code>&lt;*&gt;</code>的签名如下——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(&lt;*&gt;) :: <span class="type">Monad</span> m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b</span><br></pre></td></tr></table></figure>
+
+<p> 这里，最关键的问题是，该如何把这个<code>a -&gt; b</code>从 Monad 的上下文里拿出来（否则无法进行使用！）。</p>
+<p>显然，<code>a -&gt; b</code>（以及任何其它变量）是不能直接赤果果直接放到“全局作用域”的——它们在上下文中，只能通过模式匹配或 getter 拿出来，甚至对于 IO，这些手段也是无效的。</p>
+<p>但是它又确实是能拿出来的……之前一切的学习都没有否定这一点…这就意味着，把它拿出来必须要有一定条件，也就是说，要在一定上下文中！显然，离开具体的数据类型，我们能构造的唯一的上下文就是 lambda 了！</p>
+<p>于是我们又开始重新查看手头的工具，好像<code>(&gt;&gt;=)</code>给我们提供了这样一个上下文！再次查看<code>(&gt;&gt;=)</code>的签名——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(&gt;&gt;=) :: <span class="type">Monad</span> m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b</span><br></pre></td></tr></table></figure>
+
+<p>我们看到了什么？<code>m a</code>中的值<code>a</code>在<code>(a -&gt; m b)</code>函数中被进行应用了！</p>
+<p><code>(&gt;&gt;=)</code>能提供我们这样的上下文！把值取出来，进行特定操作，再放回上下文中！</p>
+<p>比如，我们有一个<code>Just 1</code>，我们想给它加 1，于是我们可以这样用——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">res</span> = (<span class="type">Just</span> <span class="number">1</span>) &gt;&gt;= (\a -&gt; return $ a + <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然后我们查看 fmap 的签名，好像 fmap 也能干这事！</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">res</span> = (\a -&gt; a + <span class="number">1</span>) &lt;$&gt; (<span class="type">Just</span> <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>于是破案了，纠结这么久，真实原因是我太傻，对 lambda 的意义了解不够深刻，遇上复杂问题就抓瞎了！</p>
+<p>带着我们的新思路，再次查看我们所要实现的东西——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;*&gt; :: <span class="type">Monad</span> m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b</span><br></pre></td></tr></table></figure>
+
+<p>显然，通过上面的工具，我们能在 lambda 里把<code>m (a -&gt; b)</code>中的<code>a -&gt; b</code>解出来，比如这样——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">allApp</span> :: <span class="type">Monad</span> m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b</span><br><span class="line"><span class="title">allApp</span> mf ma = mf &gt;&gt;= (\f -&gt; _)</span><br></pre></td></tr></table></figure>
+
+<p>这里的 f 就是<code>a -&gt; b</code>！在这个 lambda 的上下文里，我们有<code>a -&gt; b</code>，有<code>m a</code>，显然这里该用<code>fmap</code>了！</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">allApp</span> mf ma = mf &gt;&gt;= (\f -&gt; fmap f ma)</span><br></pre></td></tr></table></figure>
+
+<p>BINGO！</p>
+<p>但是稍微再瞅瞅呢？我们把 fmap 重新展开成使用<code>&gt;&gt;=</code>和<code>return</code>构造的形式（以及删掉一些括号）——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">allApp</span> :: <span class="type">Monad</span> m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b</span><br><span class="line"><span class="title">allApp</span> mf ma = mf &gt;&gt;= \f</span><br><span class="line">                    -&gt; ma &gt;&gt;= \a</span><br><span class="line">                        -&gt; return $ f a</span><br></pre></td></tr></table></figure>
+
+<p>这为什么合法？加点括号——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">allApp</span> :: <span class="type">Monad</span> m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b</span><br><span class="line"><span class="title">allApp</span> mf ma = mf &gt;&gt;= (\f</span><br><span class="line">                    -&gt; (ma &gt;&gt;= \a</span><br><span class="line">                        -&gt; (return $ f a)))</span><br></pre></td></tr></table></figure>
+
+<p><code>(ma &gt;&gt;= \a -&gt; (return $ f a))</code>先执行，返回一个<code>m b</code>，结果直接作为<code>(\f -&gt; _)</code>的返回值。真正的计算已经结束（如果有<code>Nothing</code>之类的，那就根本没有计算），得到的值会一直往外传递，最终作为<code>allMap</code>函数的返回值。</p>
+<p>显然，这里存在着某种模式——我们可以<del>同时</del>将多个 Monad 中的值取出来并进行操作，最后再封装成新的 Monad。</p>
+<p>使用这个思想，我们重新实现一下 fmap——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">fmapM&#x27;</span> :: <span class="type">Monad</span> m =&gt; (a -&gt; b) -&gt; m a -&gt; m b</span><br><span class="line"><span class="title">fmapM&#x27;</span> fn ma = ma &gt;&gt;= \a </span><br><span class="line">                    -&gt; return $ fn a</span><br></pre></td></tr></table></figure>
+
+<p>清晰！</p>
+<h1 id="一些更酷的东西"><a href="#一些更酷的东西" class="headerlink" title="一些更酷的东西"></a>一些更酷的东西</h1><p>更酷（或许没有再酷了！）的是，do 语法糖是可以翻译成<code>&gt;&gt;</code>和<code>&gt;&gt;=</code>的！见下面的代码——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">main</span> = <span class="keyword">do</span></span><br><span class="line">  putStrLn <span class="string">&quot;input value 1&quot;</span></span><br><span class="line">  val1 &lt;- readInt</span><br><span class="line">  putStrLn <span class="string">&quot;input value 2&quot;</span></span><br><span class="line">  val2 &lt;- readInt</span><br><span class="line">  <span class="keyword">let</span> res = val1 + val2</span><br><span class="line">  <span class="keyword">let</span> doubleRes = res * <span class="number">2</span></span><br><span class="line">  print $ mconcat [<span class="string">&quot;2 * (&quot;</span>, show val1,<span class="string">&quot; + &quot;</span>,show val2, <span class="string">&quot;) = &quot;</span>, show doubleRes]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 特意组织成这样的结构，使其映射更为清晰</span></span><br><span class="line"><span class="title">main&#x27;</span> =</span><br><span class="line">  putStrLn <span class="string">&quot;input value 1&quot;</span> &gt;&gt; </span><br><span class="line">  readInt &gt;&gt;= \val1 -&gt;</span><br><span class="line">  putStrLn <span class="string">&quot;input value 2&quot;</span> &gt;&gt; </span><br><span class="line">  readInt &gt;&gt;= \val2 -&gt;</span><br><span class="line">  <span class="keyword">let</span> res = val1 + val2 <span class="keyword">in</span> </span><br><span class="line">  <span class="keyword">let</span> doubleRes = <span class="number">2</span> * res <span class="keyword">in</span> </span><br><span class="line">  print $ mconcat [<span class="string">&quot;2 * (&quot;</span>, show val1,<span class="string">&quot; + &quot;</span>,show val2, <span class="string">&quot;) = &quot;</span>, show doubleRes]</span><br></pre></td></tr></table></figure>
+
+<p>当我们要副作用的时候，我们使用<code>&gt;&gt;</code>，当我们要从一个 Monad 里取出值的时候，我们使用<code>&gt;&gt;=</code>，do 就是这样！</p>
+<p>另一个很酷的地方是，列表推导式也是可以通过 do 进行描述的！比如下面的两个使用是等价的——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">someList</span> = <span class="keyword">do</span></span><br><span class="line">  val1 &lt;- [<span class="number">1</span> .. <span class="number">10</span>]</span><br><span class="line">  val2 &lt;- [<span class="number">1.</span><span class="number">.10</span>]</span><br><span class="line">  <span class="keyword">if</span> val1 * val2 &lt; <span class="number">50</span> </span><br><span class="line">    <span class="keyword">then</span> [val1 * val2]</span><br><span class="line">    <span class="keyword">else</span> [] </span><br><span class="line"></span><br><span class="line"><span class="title">someList&#x27;</span> = [val1 * val2 | val1 &lt;- [<span class="number">1.</span><span class="number">.10</span>], val2 &lt;- [<span class="number">1.</span><span class="number">.10</span>], val1 * val2 &lt; <span class="number">50</span>]</span><br></pre></td></tr></table></figure>
+
+<p>令人感叹，令人感叹啊。再次感叹 Haskell 设计的精巧。顺便，据群里大佬所说，使用 Monad 实现<code>&lt;*&gt;</code>是”SKI 那个 S”，只能说虽不明但觉厉。该沉下心来继续学习了！</p>
+<h1 id="关于-gt-gt"><a href="#关于-gt-gt" class="headerlink" title="关于&gt;&gt;"></a>关于&gt;&gt;</h1><p>我曾以为<code>&gt;&gt;</code>是干脆地丢弃前者的结果，返回后者，但事实证明这是错误的——前者的值对后者将会有影响——下面两个例子可见一般——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Nothing</span> &gt;&gt; <span class="type">Just</span> <span class="number">1</span> <span class="comment">-- Nothing</span></span><br><span class="line"><span class="type">Just</span> <span class="number">1</span> &gt;&gt; <span class="type">Just</span> <span class="number">2</span> <span class="comment">-- Just 2</span></span><br><span class="line">[] &gt;&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="comment">-- []</span></span><br><span class="line">[<span class="number">1</span>] &gt;&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="comment">-- [1,2,3]</span></span><br></pre></td></tr></table></figure>
+
+<p>显然，当前者为 mempty（实际上是 mzero）的时候，值为后者，否则为 mempty。</p>
+<p>因此，我们可以试图定义自己的 guard——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">guard&#x27;</span> :: <span class="type">MonadPlus</span> m =&gt; <span class="type">Bool</span> -&gt; m ()</span><br><span class="line"><span class="title">guard&#x27;</span> <span class="type">True</span> = return ()</span><br><span class="line"><span class="title">guard&#x27;</span> <span class="type">False</span> = mzero</span><br><span class="line"></span><br><span class="line"><span class="title">abc</span> ::  [<span class="type">Integer</span>]</span><br><span class="line"><span class="title">abc</span> = <span class="keyword">do</span></span><br><span class="line">    i &lt;- [<span class="number">1.</span><span class="number">.100</span>]</span><br><span class="line">    guard&#x27; $ i `mod` <span class="number">5</span> == <span class="number">0</span></span><br><span class="line">    return i</span><br></pre></td></tr></table></figure>
+
+<p>至于这里的 MonadPlus 究竟是个什么东西……我们之后再说吧。</p>
+<h1 id="Monad-In-Java（大雾"><a href="#Monad-In-Java（大雾" class="headerlink" title="Monad In Java（大雾"></a>Monad In Java（大雾</h1><p>Java 8 紧跟时髦，添加了 Optional（即 Maybe）和 Stream（类似列表）这两种 Monad，其中 bind 操作被命名为 flatmap，其的使用类似 do 对应的原始代码。下面的代码展示了 Optional Monad 的使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 关于 Optional 的使用</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Object Unit = <span class="keyword">new</span> Object();</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;K, V&gt; <span class="function">Optional&lt;V&gt; <span class="title">getMaybe</span><span class="params">(Map&lt;K, V&gt; map, K k)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (map.containsKey(k))</span><br><span class="line">            <span class="keyword">return</span> Optional.of(map.get(k));</span><br><span class="line">        <span class="keyword">return</span> Optional.empty();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;String, Integer&gt;() &#123;&#123;</span><br><span class="line">            put(<span class="string">&quot;hello&quot;</span>, <span class="number">1</span>);</span><br><span class="line">            put(<span class="string">&quot;world&quot;</span>, <span class="number">2</span>);</span><br><span class="line">        &#125;&#125;;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        “等价”于——</span></span><br><span class="line"><span class="comment">        do</span></span><br><span class="line"><span class="comment">          println &quot;hello! Optional Monad!&quot; -- 这显然不是合法的 Haskell 代码</span></span><br><span class="line"><span class="comment">          a &lt;- getMaybe &quot;hello&quot;</span></span><br><span class="line"><span class="comment">          println a</span></span><br><span class="line"><span class="comment">          b &lt;- getMaybe &quot;world&quot;</span></span><br><span class="line"><span class="comment">          println b</span></span><br><span class="line"><span class="comment">          return a + b</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        Optional&lt;Integer&gt; res =</span><br><span class="line">            Optional.of(Unit).flatMap(__ -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;hello! Optional Monad!&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> getMaybe(map, <span class="string">&quot;hello&quot;</span>).flatMap(a -&gt; &#123;</span><br><span class="line">            System.out.println(a);</span><br><span class="line">            <span class="keyword">return</span> getMaybe(map, <span class="string">&quot;world&quot;</span>).flatMap(b -&gt; &#123;</span><br><span class="line">            System.out.println(b);</span><br><span class="line">            <span class="keyword">return</span> Optional.of(a + b);&#125;);&#125;);&#125;); -- 这一堆分号有点恐怖！如果是在 kotlin 里，这代码会干净漂亮很多，只有花括号了</span><br><span class="line">        System.out.println(res);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而下面的代码展示了 Stream Monad 和列表推导式的等价。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">假设我们要求 [z * z | x &lt;- [1 .. 100], y &lt;- [1 .. 50],</span></span><br><span class="line"><span class="comment">    let z = x + y, ord x, even y]</span></span><br><span class="line"><span class="comment">为方便理解，先转换成 do 形式</span></span><br><span class="line"><span class="comment">do</span></span><br><span class="line"><span class="comment">    x &lt;- [1 .. 100]</span></span><br><span class="line"><span class="comment">    y &lt;- [1 .. 50]</span></span><br><span class="line"><span class="comment">    let z = x + y</span></span><br><span class="line"><span class="comment">    guard $ ord x &amp;&amp; even y</span></span><br><span class="line"><span class="comment">    return $ z * z</span></span><br><span class="line"><span class="comment">再转换成原始形式</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">IntStream.range(<span class="number">1</span>, <span class="number">101</span>).flatMap(x -&gt;</span><br><span class="line">IntStream.range(<span class="number">1</span>, <span class="number">51</span>).flatMap(y -&gt; &#123;</span><br><span class="line"><span class="keyword">int</span> z = x + y;</span><br><span class="line"><span class="keyword">if</span> (x % <span class="number">2</span> == <span class="number">1</span> &amp;&amp; y % <span class="number">2</span> == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> IntStream.of(z * z);</span><br><span class="line"><span class="keyword">return</span> IntStream.empty();</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
+
+<p>路长的很，不能膨胀。</p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg" alt="img"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png" alt="image-20210822231117859"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.md" title="使用 Monad 的&gt;&gt;&#x3D;实现&lt;$&gt;和&lt;*&gt;">_posts/2021/10-28使用Monad定义Functor和Applicative的运算.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10-25%E3%80%90%E7%BF%BB%E8%AF%91%E3%80%91Working-with-type-in-a-context.html" rel="prev" title="【翻译】Working with type in a context">
+      <i class="fa fa-chevron-left"></i> 【翻译】Working with type in a context
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11-11go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94hello,%20world%EF%BC%9B%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B.html" rel="next" title="go 语言学习笔记 1——Hello, World 和基本集合类型">
+      go 语言学习笔记 1——Hello, World 和基本集合类型 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#lt-gt"><span class="nav-number">1.</span> <span class="nav-text">&lt;$&gt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lt-gt-1"><span class="nav-number">2.</span> <span class="nav-text">&lt;*&gt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%9B%B4%E9%85%B7%E7%9A%84%E4%B8%9C%E8%A5%BF"><span class="nav-number">3.</span> <span class="nav-text">一些更酷的东西</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-gt-gt"><span class="nav-number">4.</span> <span class="nav-text">关于&gt;&gt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Monad-In-Java%EF%BC%88%E5%A4%A7%E9%9B%BE"><span class="nav-number">5.</span> <span class="nav-text">Monad In Java（大雾</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

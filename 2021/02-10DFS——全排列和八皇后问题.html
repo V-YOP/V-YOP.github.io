@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="《关于使用 racket 和 Java 来复习 DFS 这回事》">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DFS 从入门到入坟——全排列和八皇后问题">
+<meta property="og:url" content="http://example.com/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="《关于使用 racket 和 Java 来复习 DFS 这回事》">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/09/nFOuLSN94vhB3Gl.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/02/09/FyI6SwducPlYVbi.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/02/09/pZukVxjRL3TYoIb.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/02/03/sJDeV3hPQFrTgOW.png">
+<meta property="article:published_time" content="2021-02-10T00:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.840Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/09/nFOuLSN94vhB3Gl.jpg">
+
+<link rel="canonical" href="http://example.com/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>DFS 从入门到入坟——全排列和八皇后问题 | 友纪V-λOP</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
+      <meta itemprop="name" content="友纪V-λOP">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="友纪V-λOP">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DFS 从入门到入坟——全排列和八皇后问题
+        </h1>
+
+        <div class="post-meta" style="margin:3px 0 20px 0">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-10 08:00:00" itemprop="dateCreated datePublished" datetime="2021-02-10T08:00:00+08:00">2021-02-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    
+      <a title="changyan" href="/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/02-10DFS——全排列和八皇后问题.html" itemprop="commentCount"></span>
+      </a>
+    
+  </span>
+  
+  
+            <div class="post-description" style="margin-top:10px; font-size:1em">《关于使用 racket 和 Java 来复习 DFS 这回事》</div>
+
+          <!-- 将tag移到文章开头处 -->
+          
+          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
+          </div>
+        </div>
+
+      </header>
+
+    
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>2022 年 1 月 31 日更新，添加 Haskell 的解决方案，和 Racket 的实现一致（即“不断维护所有当前路径的列表”），但更容易看些。</p>
+</blockquote>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">permutationFrom1toN</span> :: <span class="type">Int</span> -&gt; [[<span class="type">Int</span>]]</span><br><span class="line"><span class="title">permutationFrom1toN</span> n | n &lt;= <span class="number">0</span> = error <span class="string">&quot;!&quot;</span></span><br><span class="line"><span class="title">permutationFrom1toN</span> n = helper (map pure [<span class="number">1</span> .. n]) <span class="number">1</span></span><br><span class="line">  <span class="keyword">where</span> </span><br><span class="line">    helper :: [[<span class="type">Int</span>]] -&gt; <span class="type">Int</span> -&gt; [[<span class="type">Int</span>]]</span><br><span class="line">    helper lst step | step == n = lst</span><br><span class="line">    helper lst step = lst &gt;&gt;= \ path -&gt; </span><br><span class="line">      <span class="keyword">let</span> validNextElem = filter (`notElem` path) [<span class="number">1</span> .. n] </span><br><span class="line">          nextPaths = map ((path ++ ). pure) validNextElem <span class="comment">-- 不使用：是为了保证可读性</span></span><br><span class="line">      <span class="keyword">in</span> helper nextPaths $ step + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="title">nQueens</span> :: <span class="type">Int</span> -&gt; [[<span class="type">Int</span>]]</span><br><span class="line"><span class="title">nQueens</span> n | n &lt;= <span class="number">0</span> = error <span class="string">&quot;illegal argument&quot;</span></span><br><span class="line"><span class="title">nQueens</span> n = helper (map pure [<span class="number">1</span> .. n]) <span class="number">1</span></span><br><span class="line">  <span class="keyword">where</span> </span><br><span class="line">    helper :: [[<span class="type">Int</span>]] -&gt; <span class="type">Int</span> -&gt; [[<span class="type">Int</span>]]</span><br><span class="line">    helper pathList step | step == n = pathList</span><br><span class="line">    helper pathList step = pathList &gt;&gt;= \ path -&gt;</span><br><span class="line">      <span class="keyword">let</span> nextPaths = map ((path ++ ). pure) $ validNextPos path</span><br><span class="line">      <span class="keyword">in</span> helper nextPaths $ step + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    validNextPos :: [<span class="type">Int</span>] -&gt; [<span class="type">Int</span>]</span><br><span class="line">    validNextPos path = </span><br><span class="line">      filter (\currentX -&gt; all (\(x, y) -&gt; </span><br><span class="line">        currentX /= x &amp;&amp; </span><br><span class="line">        abs (currentY - y) /= abs (currentX - x) </span><br><span class="line">      ) zippedWithY) [<span class="number">1</span> .. n]</span><br><span class="line">      <span class="keyword">where</span> zippedWithY = zip path $ iterate (+<span class="number">1</span>) <span class="number">1</span></span><br><span class="line">            currentY = length path + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>太久没有好好敲代码了……最近整一堆花里胡哨的，学 racket，haskell，scala（当然，日语也包含在内）之类的，但是一个都没深入。这里 racket 是我最感兴趣的，它的 LOP（面向语言编程）我非常想去了解和学习，scala 则是看重它运行在 JVM 上且有充足的函数式编程特性（函数式编程也是我想去了解的），在将来的项目中或许可以用到，haskell……新语法太多（但是它的函数的表现形式，对柯里化的支持等都是非常酷的…但是我苯，不想学：），还是纯函数式的，一时难以接受。</p>
+<p>于是现在重拾算法，发现之前学的都不知道忘到哪里去了……是时候该进行一波复习了。首先拿 DFS 开刀，这算法是能归纳出一个“范式”的。</p>
+<p>其实，无论 DFS 还是 BFS，其实都是以不同的方式遍历一棵树（也就是搜索的路径，其实也是在动态构造这棵树），那些没有叶子节点的节点即为搜索成功或再没有路径可选。区别在于，如果要留下搜索路径，BFS 需要保存所有的路径，而 DFS 则无此需要（可以说应该选择的路径被保存在函数调用栈中了）。从实例能看出这一点。</p>
+<h1 id="数的全排列"><a href="#数的全排列" class="headerlink" title="数的全排列"></a>数的全排列</h1><p>首先考虑数的全排列问题。这个问题要求给定一个数字 n，输出从 1 到 n 的全排列。</p>
+<p>这里先按 BFS 来思考一下。假设 n 等于 3，能得到这样的一棵树——</p>
+<p><img src="https://i.loli.net/2021/02/09/nFOuLSN94vhB3Gl.jpg" alt="2.jpg"></p>
+<p>任何一个排列都是从根结点到子节点的一条<strong>路径</strong>。BFS 的方法就是不断维护所有路径，直到所有路径（或某个路径）成功（或失败）。</p>
+<blockquote>
+<p>这个树叫<strong>解空间树</strong>，其实对树中每个节点（目前的路径），都需要遍历所有的可能（当然，也可以根据一定问题使用一定手段，以保证能在 O(n) 复杂度以下获取到有效可能），比如对路径 (1 2)，要遍历 1，2，3，然后发现 1 和 2 是不合法的，因此其子节点只有 (1 2 3) 了。</p>
+</blockquote>
+<p>比如下面的 BFS 的 racket 实现就是不断维护所有当前路径的列表，假设 n 为 3，经历多次（n-1 次）迭代后，所有路径都到达终点，每次迭代的结果如下，其中 0 为初始值——</p>
+<ol start="0">
+<li>‘((1) (2) (3))</li>
+<li>‘((1 2) (1 3) (2 1) (2 3) (3 1) (3 2))</li>
+<li>‘((1 2 3) (1 3 2) (2 1 3) (2 3 1) (3 1 2) (3 2 1))</li>
+</ol>
+<blockquote>
+<p>其实写完迭代的结果后我才突然意识到好像递归法满好写的…使用 map 和 flatten 就可以了，我用了非常丑陋的命令式的写法…</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">;; 写的累死人……我为啥不干脆用 Java 写？</span><br><span class="line">;; BFS 的方法……由于我完全不熟悉 racket，所以写的及其丑陋（而且用了非常命令式的写法…由于 racket 并没有提供太多有副作用的函数，所以写的还是蛮痛苦的……这时候或许应该用 mutable list？）</span><br><span class="line">;; 顺便，羡慕 haskell 的偏函数调用</span><br><span class="line">(require control)</span><br><span class="line">;; 以二维 list 的形式返回从 1 到 n 的全排列</span><br><span class="line">(define (permutation-from-1-to-n n)</span><br><span class="line">  ;; 从 (1) 到 (n) 的 list，它储存所有路径</span><br><span class="line">  (define paths (build-list n (lambda (x) (list (add1 x)))))</span><br><span class="line">  </span><br><span class="line">  ;; 循环 n-1 次维护 paths，增长（和分支）其中每条 path 并将其“打散”到 paths 中</span><br><span class="line">  (dotimes (__ (sub1 n))</span><br><span class="line">    (set! paths (foldl append empty (map (generate-paths n) paths))))</span><br><span class="line">  paths)</span><br><span class="line"></span><br><span class="line">;; 一个柯里化函数，它维护和分支一条 path。比如对于 n=5，path=(1 3) 的情况，它返回 ((1 3 2) (1 3 4) (1 3 5))</span><br><span class="line">(define generate-paths</span><br><span class="line">  (lambda (n)</span><br><span class="line">    (lambda (path)</span><br><span class="line">      (for/list ([i (in-range 1 (add1 n))]</span><br><span class="line">             #:when (not (member i path)))</span><br><span class="line">    (append path (list i))))))</span><br></pre></td></tr></table></figure>
+
+<p>也可以使用队列来实现，其实质仍旧是不断维护所有当前路径，只不过将每次延伸队列头部的路径，并将其出队，将延伸后的路径加入到队列尾，容易知道当队列头部的路径长度为 n 时已获取到所有路径——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(require data/queue control)</span><br><span class="line"></span><br><span class="line">;; 循环维护队列首，将其生成的路径入队，直到队首长度为 n，此时已生成所有全排列</span><br><span class="line">(define (permutation-from-1-to-n n)</span><br><span class="line">  (define res (make-queue))</span><br><span class="line">  (for ([i (build-list n (lambda (x) (list (add1 x))))])</span><br><span class="line">    (enqueue! res i))</span><br><span class="line">  (while (not (= (length (queue-head res)) n))</span><br><span class="line">    (for ([i ((generate-paths n) (dequeue! res))]) ; define 不能在循环体内使用</span><br><span class="line">      (enqueue! res i)))</span><br><span class="line">  (queue-&gt;list res))</span><br><span class="line"></span><br><span class="line">;; racket 的 queue 居然没有提供直接获取队列头部的过程，设计者究竟是什么意思……</span><br><span class="line">(define (queue-head queue)</span><br><span class="line">  (let ([head (dequeue! queue)])</span><br><span class="line">    (enqueue-front! queue head)</span><br><span class="line">    head))</span><br><span class="line"></span><br><span class="line">;; 同上面的定义</span><br><span class="line">(define generate-paths</span><br><span class="line">  (lambda (n)</span><br><span class="line">    (lambda (path)</span><br><span class="line">      (for/list ([i (in-range 1 (add1 n))]</span><br><span class="line">             #:when (not (member i path)))</span><br><span class="line">    (append path (list i))))))</span><br></pre></td></tr></table></figure>
+
+<p>DFS 相当与对每一条 path，对它的所有子节点进行“尝试”，DFS 解法的 racket 代码如下（这个比 Java 版好理解多了）——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(define (permutation-from-1-to-n n)</span><br><span class="line">  (define (DFS path)</span><br><span class="line">    (if (= (length path) n) ; 如果 path 长度已经为 n，说明必定已经完成一个排列。</span><br><span class="line">        (println path) ; 基线条件，此时的 path 即为一条路经</span><br><span class="line">        (for ([i (in-range 1 (add1 n))]) ; 从 1 到 n</span><br><span class="line">          (unless (member i path)</span><br><span class="line">            (DFS (append path (list i)))))))</span><br><span class="line">  (DFS empty))</span><br></pre></td></tr></table></figure>
+
+<p>可以形象地将 DFS 解法的函数调用栈这样表示——</p>
+<p><img src="https://i.loli.net/2021/02/09/FyI6SwducPlYVbi.jpg" alt="1.jpg"></p>
+<p>在每一次函数调用里，它都会对每一个可能进行递归，比如对路径’(1)，它会递归’(1 2)，’(1 3)……</p>
+<p>Java 版的写法较此要麻烦一些（出于 Java 并不方便像 racket 这样的函数式语言一样使用不可变的数据结构），需要使用一个数组来维护当前路径，需要维护当前的“步长”。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">permutationFrom1ToN</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        DFS(<span class="keyword">new</span> <span class="keyword">int</span>[n + <span class="number">1</span>], <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DFS</span><span class="params">(<span class="keyword">int</span>[] path, <span class="keyword">int</span> step)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> N = path.length - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (step == N + <span class="number">1</span>) &#123; <span class="comment">// 基线条件</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= N; i++)</span><br><span class="line">                System.out.print(i + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            System.out.println();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= N; i++) &#123;</span><br><span class="line">            <span class="comment">// 传统手段是使用一个 bool 数组来维护元素是否已经保存在 path 中。如果使用那种方式，</span></span><br><span class="line">            <span class="comment">// 需要在将元素置入 path 前将该位置置为 true，在递归下一个位置后将该位置置为 false。</span></span><br><span class="line">            <span class="comment">// 这里直接通过一次遍历来检查元素是否存在于 path 中</span></span><br><span class="line">            <span class="keyword">if</span> (numInPath(path, step, i)) </span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            path[step] = i;</span><br><span class="line">            DFS(path, step + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">numInPath</span><span class="params">(<span class="keyword">int</span>[]path, <span class="keyword">int</span> step, <span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; step; i++)</span><br><span class="line">            <span class="keyword">if</span> (path[i] == num) <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总之，DFS 可以归纳出一个“范式”——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def DFS(step):</span><br><span class="line">    if （达到基线条件）:</span><br><span class="line">        进行一些处理，比如打印，保存当前 path 等</span><br><span class="line">        return</span><br><span class="line"></span><br><span class="line">    for i in 所有元素 where i 未被取出且合法：# 遍历该 path 的下一步所有的可能</span><br><span class="line">        books[i] = true # 取该元素</span><br><span class="line">        path[step] = i</span><br><span class="line">        DFS(step + 1) # 递归其子节点</span><br><span class="line">        books[i] = false # 放回该元素</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>八皇后问题也是遵循这样的范式的。</p>
+<h1 id="八皇后问题"><a href="#八皇后问题" class="headerlink" title="八皇后问题"></a>八皇后问题</h1><p>八皇后是这样一个问题——在一个 8X8 的棋盘上安排 8 个皇后，各个皇后两两之间要遵循这样的要求——每两个皇后不能在同一行，同一列，或相对棋盘边相互呈 45 度（即行距离和列距离相等）。</p>
+<p>一个问题是，如何定义“步长”？这里考虑到各个皇后两两不能在同一行同一列，但每一行，每一列又必须存在一个皇后，所以可以以行数或列数作为步长。比如对一个 5X5 的棋盘，可以有这样的树，其中 (1 . 1) 这样的值代表在位置 (1, 1) 安放皇后——</p>
+<p><img src="https://i.loli.net/2021/02/09/pZukVxjRL3TYoIb.jpg" alt="759c77ab01145604.jpg"></p>
+<blockquote>
+<p>其实就根本上来说，步长是每一个皇后的安置，也就是说每一步都可以遍历整个棋盘，检查该位置是否可以安置皇后，但是这样是不划算的——已经安置过皇后的行或列是不必要再遍历的，并且会造成有重复的情况。比如对路径’((1 . 1) (2 . 3) …)，还可以有路径’((2 . 3) (1 . 1) …)……</p>
+</blockquote>
+<p>因此，可以很容易得到 DFS 的代码，这里以行作为 step——</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一年后再看这代码，只能说很面向过程😂</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Queen</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> step;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> y;</span><br><span class="line"></span><br><span class="line">    Queen(<span class="keyword">int</span> step, <span class="keyword">int</span> y) &#123;</span><br><span class="line">        <span class="keyword">this</span>.step = step;</span><br><span class="line">        <span class="keyword">this</span>.y = y;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">n_queensCount</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        counter = <span class="number">0</span>;</span><br><span class="line">        DFS(<span class="keyword">new</span> Queen[n + <span class="number">1</span>], n, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> counter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">DFS</span><span class="params">(Queen[] queens, <span class="keyword">int</span> n, <span class="keyword">int</span> step)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> N = queens.length - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (step == N + <span class="number">1</span>) &#123; <span class="comment">// 基线条件</span></span><br><span class="line">            counter++;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123; <span class="comment">// 从第一列到第 n 列，这里的行数是 step</span></span><br><span class="line">            <span class="keyword">if</span> (!canPlaceAt(step, i, queens)) <span class="comment">// 遍历第 1 到第 step-1 个 queen，看这个 queen 能不能放在这里</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            queens[step] = <span class="keyword">new</span> Queen(step, i);</span><br><span class="line">            DFS(queens, n, step + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">canPlaceAt</span><span class="params">(<span class="keyword">int</span> step, <span class="keyword">int</span> y, Queen[] queens)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= step - <span class="number">1</span>; i++)</span><br><span class="line">            <span class="comment">// 如果在同一列或对角线</span></span><br><span class="line">            <span class="keyword">if</span> (y == queens[i].y || </span><br><span class="line">                Math.abs(step - queens[i].step) == Math.abs(y - queens[i].y))</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>racket 代码如下（can-place? 过程给我写麻了…），仍旧以行作为 step——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">(define-struct queen (step y) #:transparent)</span><br><span class="line">; 判断 (step . y) 位置是否合法</span><br><span class="line">(define (can-place? path step y) ; 只要既有的 path 中没有和要放置的 path 处于同一行，同一列或对角线，则合法</span><br><span class="line">  (andmap </span><br><span class="line">    (λ (queen)</span><br><span class="line">      (and (not (= (queen-y queen) y))</span><br><span class="line">           (not (= (abs (- (queen-step queen) step))</span><br><span class="line">                   (abs (- (queen-y queen) y))))))</span><br><span class="line">    path))</span><br><span class="line"></span><br><span class="line">(define (n-queens n)</span><br><span class="line">  (let DFS ([path empty])</span><br><span class="line">    (define step (add1 (length path)))</span><br><span class="line">    (if (= (length path) n)</span><br><span class="line">        (println path) ; base case</span><br><span class="line">        (for ([y (in-range 1 (add1 n))]) ; 迭代从 1 到 n 列</span><br><span class="line">          (when (can-place? path step y)</span><br><span class="line">            (DFS (append path (list (make-queen step y)))))))))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>哦瓦！</p>
+<p><img src="https://i.loli.net/2021/02/03/sJDeV3hPQFrTgOW.png" alt="stamp_012001.png"></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>友纪V-λOP
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <!-- <a href="/_posts/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.md" title="DFS 从入门到入坟——全排列和八皇后问题">_posts/2021/02-10DFS——全排列和八皇后问题.md</a> -->
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+<script>
+// 通过js来获取当前URL
+const currentUrl = decodeURI(document.URL)
+const a = document.createElement('a')
+a.innerHTML = currentUrl
+a.setAttribute("href", currentUrl)
+document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
+</script>
+
+
+      <footer class="post-footer">
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02-03%E4%B8%83%E5%8E%9F%E5%88%99%EF%BC%8C%E5%8D%95%E4%BE%8B%EF%BC%8C%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82.html" rel="prev" title="面向对象七原则，单例模式，简单工厂模式">
+      <i class="fa fa-chevron-left"></i> 面向对象七原则，单例模式，简单工厂模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02-12%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E5%92%8C%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.html" rel="next" title="工厂方法模式和抽象工厂模式">
+      工厂方法模式和抽象工厂模式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E7%9A%84%E5%85%A8%E6%8E%92%E5%88%97"><span class="nav-number">1.</span> <span class="nav-text">数的全排列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">八皇后问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

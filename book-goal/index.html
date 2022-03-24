@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="上次更新时间：you can&#39;t see me...           TODO list              关于最近（至多是今年）打算做文章的地方，找个地方“持久化”一下         数据库 连接查询，以及 SQL 的编写模式 目前还没找到合适的书籍总结模式的，只能自己在实践中多多总结了   事务和 ACID 理论 分库分表 行存储，列存储">
+<meta property="og:type" content="website">
+<meta property="og:title" content="2022 年&lt;del&gt;大饼&lt;&#x2F;del&gt;书单 &#x2F; 目标">
+<meta property="og:url" content="http://example.com/book-goal/index.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="上次更新时间：you can&#39;t see me...           TODO list              关于最近（至多是今年）打算做文章的地方，找个地方“持久化”一下         数据库 连接查询，以及 SQL 的编写模式 目前还没找到合适的书籍总结模式的，只能自己在实践中多多总结了   事务和 ACID 理论 分库分表 行存储，列存储">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-22T12:53:51.858Z">
+<meta property="article:modified_time" content="2022-03-22T12:53:51.858Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/book-goal/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2022 年<del>大饼</del>书单 / 目标 | 友纪V-λOP
+</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">友纪V-λOP</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book-&-goal">
+
+    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">90</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+  
+  
+
+          <div class="content page posts-expand">
+            
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">2022 年<del>大饼</del>书单 / 目标
+</h1>
+
+<div class="post-meta">
+  
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+          <!-- 引入 Ramda，自编写的工具类 start -->
+
+<!-- ramda 莫名其妙慢！<script src="https://cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script> -->
+
+<script src="./util.js"></script>
+
+<!-- 引入 Ramda，自编写的工具类 end -->
+
+
+    <div class="alertbox alertbox-note">
+      <p>上次更新时间：<code id="modified-time">you can't see me...</code></p>
+
+    </div>
+  
+
+<h2 id="TODO-list"><a href="#TODO-list" class="headerlink" title="TODO list"></a>TODO list</h2>
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于最近（至多是今年）打算做文章的地方，找个地方“持久化”一下</span></summary>
+        <blockquote><h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
+<li>连接查询，以及 SQL 的编写<strong>模式</strong><ul>
+<li>目前还没找到合适的书籍总结模式的，只能自己在实践中多多总结了</li>
+</ul>
+</li>
+<li>事务和 ACID 理论</li>
+<li>分库分表</li>
+<li>行存储，列存储</li>
+<li>主从架构</li>
+<li>性能调优的最佳实践</li>
+</ul>
+<h3 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a>NoSQL</h3><ul>
+<li>HBase，原理，使用场景以及最佳实践</li>
+<li>MongoDB，同上</li>
+<li>Redis，同上</li>
+</ul>
+<h3 id="Spark"><a href="#Spark" class="headerlink" title="Spark"></a>Spark</h3><ul>
+<li>原理</li>
+<li>编程模式</li>
+</ul>
+<h3 id="Scala"><a href="#Scala" class="headerlink" title="Scala"></a>Scala</h3><ul>
+<li>Class, Object, Trait，Sealed 等 OOP 概念以及其为 ADT 建模的最佳实践</li>
+<li>implicit，typeclass 以及最佳实践</li>
+<li>类型系统和泛型机制</li>
+<li>常用 Monad（集合类型，Option，Either，Try……）及其最佳实践</li>
+<li>集合类型及其继承结构</li>
+<li>Scala的设计模式</li>
+<li>函数式编程模式，以及Cats，scalaz库的使用和最佳实践</li>
+<li>Lens</li>
+<li>Play框架，AKKA框架的原理及其使用场景，最佳实践</li>
+<li>宏，编译期反射，运行时反射</li>
+</ul>
+<h3 id="Haskell"><a href="#Haskell" class="headerlink" title="Haskell"></a>Haskell</h3><ul>
+<li>Monad，ADT，范畴论……（翻译All about Monads）</li>
+</ul>
+<h3 id="HDFS"><a href="#HDFS" class="headerlink" title="HDFS"></a>HDFS</h3><ul>
+<li>写操作，以及为何能保持一致性</li>
+<li>读操作</li>
+<li>大量小文件问题</li>
+<li>整体架构，记得画几张图</li>
+</ul>
+<h3 id="YARN"><a href="#YARN" class="headerlink" title="YARN"></a>YARN</h3><ul>
+<li>1.x 和 2.x 的区别</li>
+<li>提交任务的流程</li>
+<li>任务调度的过程，使用不同类的作业（如 MapReduce 和 Spark 作业）进行横向比较</li>
+<li>整体架构，以及流程图</li>
+<li>能否自己按 YARN 的框架实现一个 ApplicationMaster？</li>
+</ul>
+<h3 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h3><ul>
+<li>延迟和吞吐量的关系，为什么说必须是二选一，而Mapreduce选择高吞吐量，而Scala选择低延迟？</li>
+<li><del>Shuffle 阶段的具体操作</del></li>
+<li><del>KV 存储的意义（排序，分区用）</del></li>
+<li>全流程，以及架构图和流程图</li>
+<li>MapReduce 的编程模式</li>
+</ul>
+<h3 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h3><ul>
+<li>编程模式</li>
+<li>partition机制</li>
+<li>调优</li>
+</ul>
+<h3 id="分布式理论"><a href="#分布式理论" class="headerlink" title="分布式理论"></a>分布式理论</h3><ul>
+<li>CAP 理论</li>
+<li>分布式下会遇到的各种问题</li>
+</ul>
+<h3 id="数据结构和算法"><a href="#数据结构和算法" class="headerlink" title="数据结构和算法"></a>数据结构和算法</h3><ul>
+<li>复习排序算法，使用过程式和函数式分别实现每个算法</li>
+<li>树，图的各种算法</li>
+<li>字符串的诸算法</li>
+<li>动态规划等</li>
+<li>函数式的数据结构和算法</li>
+<li>机器学习相关的算法（目前连要了解什么都不知道）</li>
+</ul>
+<h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><ul>
+<li>JUC</li>
+<li>……</li>
+</ul>
+<h3 id="响应式编程"><a href="#响应式编程" class="headerlink" title="响应式编程"></a>响应式编程</h3><ul>
+<li>RxJS</li>
+<li>Vert.x</li>
+</ul>
+<h3 id="数据分析"><a href="#数据分析" class="headerlink" title="数据分析"></a>数据分析</h3><ul>
+<li>占位……</li>
+</ul>
+<h3 id="形式逻辑"><a href="#形式逻辑" class="headerlink" title="形式逻辑"></a>形式逻辑</h3><ul>
+<li>prolog</li>
+<li>在日常生活中应用的模式</li>
+</ul>
+</blockquote>
+        
+    </details>
+  
+
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><blockquote>
+<p>今年的总体目标是<strong>大数据</strong>相关技术和理论的学习，具体来说，是数仓的方向，当前先学离线数仓的技术栈。</p>
+</blockquote>
+<p>今年已经过去了：<code id="passed-time">YOU CAN'T SEE ME</code></p>
+<ul>
+<li><input disabled="" type="checkbox"> 减到 <span style="color: #FF0000">60</span> kg！当前：<span style="color: #FF0000">70</span> kg <ul>
+<li><span style="color: #FF0000">优先级 MAX！决不允许再拖下去。</span></li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> 翻译All about Monads，以对Monad进行进一步的学习</li>
+<li><input disabled="" type="checkbox"> <a target="_blank" rel="noopener" href="https://www.nowcoder.com/exam/oj?tab=SQL%E7%AF%87&topicId=199">牛客网的SQL题目</a><code class="eval-to-percent">(39 + 50 + 1 + 1 + 1) / (39 + 50 + 46 + 39 + 82)</code> <ul>
+<li>这些可够刷了</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> 笔记 / 文章<code id="target-post-count">50</code>篇：<code id="post-count" target="target-post-count">19</code></li>
+<li><input disabled="" type="checkbox"> 学习一下 Play 框架，感受一下其和 Spring 的异同</li>
+<li><input disabled="" type="checkbox"> 学习一下 Redux，研究其如何解决前端的状态管理问题以及对状态的抽象<ul>
+<li>已经不止一次遇到组件“泄漏”对象引用造成的 bug 了，规范化状态控制是极其重要的。</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> 学习一下思维导图，研究一下它究竟是确实（对我）有效还是炒作的结果</li>
+<li><input disabled="" type="checkbox"> 学习一下 awk，因为可能需要掌握一门开发方便的文本处理语言</li>
+<li><input disabled="" type="checkbox"> 再次去学习一下vim<ul>
+<li>目的是为了了解被现代IDE所抽象的那些东西，可能无必要，但是很有趣</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> （Optional）考过托福/雅思之一<ul>
+<li>可能会非常困难，当前应该没精力，可能得放到明年</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> 刷掉Leetcode上所有免费的SQL题目 <code class="eval-to-percent">20 / 20</code> </li>
+</ul>
+<h2 id="视频"><a href="#视频" class="headerlink" title="视频"></a>视频</h2><p><i class="fa fa-cog fa-spin"></i> 表示正在进行中。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于为什么书单中间混进去一个/几个视频</span></summary>
+        <blockquote><p><del>为什么混进去几个视频？我认为像这种微服务这种架构，设计的东西还是在有一些实践经验的前提下才能真正地深入进去的。而相关书籍都假设读者有丰富实践经验，因此更偏向理论，虽然它可能是通俗易懂的（这本《Spring Microservices in Action》我觉得就挺容易看进去的），但是缺乏丰富的说明和例子，因而我无法确认自己是否真的吸收到了相应知识。因此我考虑先看看视频，积累一些实践经验（以及至少对微服务/分布式的感性认识）再去读书。但也需要强调——我半点不认为看视频能学到什么架构的知识。</del></p>
+<p>为什么混进去几个视频？因为我功利起来了，哈哈！  </p>
+<p>其实关于大数据我也是和微服务一样的想法——在有足够实践经验前，那些原理（这里说的是大数据的开发，而非大数据分析）之类的东西都是干巴巴的，所以我也选择先看看视频，再去看书，增长些实践经验。但也要记住，<strong>最重要的还是大数据后面的分布式原理，以及数学基础和相应的分析工具</strong>（并非指具体框架/中间件，而是……模式，理论吧大概）。</p>
+</blockquote>
+        
+    </details>
+  
+
+<ul>
+<li><input disabled="" type="checkbox"> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV11A411L7CK">尚硅谷 Scala</a><code class="eval-to-percent">2   / 210</code> ##WORKING##</li>
+<li><input disabled="" type="checkbox"> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1EZ4y1G7iL">尚硅谷 Hive</a> <code class="eval-to-percent">59 / 125</code></li>
+<li><input checked="" disabled="" type="checkbox"> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1to4y1C7gw">尚硅谷 Zookeeper</a> <code class="eval-to-percent">30 / 46</code> <ul>
+<li>了解了基本使用以及一些机制和简单的原理了，源码先跳过，之后需要深入学习分布式理论</li>
+</ul>
+</li>
+<li><del><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV18E411x7eT">尚硅谷 SpringCloud 框架开发教程</a> <code class="eval-to-percent">44 / 149</code></del><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/V-YOP/cloud-learn">我的对应 git 仓库</a></li>
+<li>顺带还学习了一下 Docker 搭建环境的最佳实践，挺好</li>
+<li>现在是大数据时间！</li>
+</ul>
+</li>
+<li><input checked="" disabled="" type="checkbox"> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Qp4y1n7EN">尚硅谷 Hadoop</a> <code class="eval-to-percent">93 / 178</code> <ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/V-YOP/yuuki-hadoop">我的 docker 集群</a>，付出了好多心血，现在搭环境飞速！</li>
+<li>越往后讲越乱，先跳过了</li>
+</ul>
+</li>
+</ul>
+<h2 id="书单"><a href="#书单" class="headerlink" title="书单"></a>书单</h2><p>本来是按TODO List来编排书单的，但是考虑实践发现我通常不会持续扎在一本书上，因此就不再使用这种形式了。</p>
+<h3 id="大数据"><a href="#大数据" class="headerlink" title="大数据"></a>大数据</h3><blockquote>
+<p>主要按照 <a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv5213600">这里</a> 的顺序。</p>
+<p>关键词：Hadoop, Zookeeper (HA), Hive, Kafka, HBase, Spark, Flink… 学习方案同学微服务时一致——先主要看视频，然后再看书补全，我发现这似乎是一个学习新技术的很好的模式。<strong>但 Scala 我选择直接看书，关于编程语言的视频我认为是没有必要的</strong>。</p>
+</blockquote>
+<p>学习MapReduce，Hive，Spark之类的时候，要能够把握住它们的共性和个性，要能够横向比较，这对学习将会是很有益处的。</p>
+<ul>
+<li>Kafka in Action</li>
+<li>大数据技术体系详解<ul>
+<li>此书视角很高，用于对大数据建立整体印象应当是比较合适的</li>
+</ul>
+</li>
+<li>数据密集型应用系统设计<ul>
+<li>我从未在豆瓣上看到分数如此高的书…必须得看了</li>
+</ul>
+</li>
+</ul>
+<h4 id="Hadoop"><a href="#Hadoop" class="headerlink" title="Hadoop"></a>Hadoop</h4><ul>
+<li>深入理解 Hadoop<ul>
+<li>此书干货满满且容易理解，就是翻译实在是有点差</li>
+</ul>
+</li>
+<li>Hadoop 权威指南</li>
+</ul>
+<h4 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h4><ul>
+<li>Hive 编程指南</li>
+</ul>
+<h4 id="Scala，Spark"><a href="#Scala，Spark" class="headerlink" title="Scala，Spark"></a>Scala，Spark</h4><ul>
+<li>快学Scala</li>
+<li>Spark 快速大数据分析 ##WORKING##</li>
+<li>Spark最佳实践 ##WORKING##</li>
+<li>Spark in action</li>
+<li>~~Get programming with Scala ~~<ul>
+<li>看了大概五分之三，感觉当前学到的东西已经足够把 Scala 当作 Java 写了，但是后面还有非常多的高级特性，如并发，异步编程，implicit（这书讲的实属有点抽象，也或许是我太急了），类型类，纯函数式编程等需要去学习，留到将来吧，当前的重点是大数据！</li>
+</ul>
+</li>
+</ul>
+<h4 id="数据仓库"><a href="#数据仓库" class="headerlink" title="数据仓库"></a>数据仓库</h4><ul>
+<li>Hadoop构建数据仓库实践</li>
+</ul>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
+<li>高性能 MySQL<ul>
+<li>学习它是为了学习传统关系型数据库的一些机制，以加深对此的理解，期待能反哺对Hive内核的学习</li>
+</ul>
+</li>
+<li><del>SQL 基础教程</del></li>
+</ul>
+<h3 id="分布式-中间件"><a href="#分布式-中间件" class="headerlink" title="分布式/中间件"></a>分布式/中间件</h3><ul>
+<li>从 Paxos 到 Zookeeper</li>
+<li><del>Spring Microservices in Action</del><ul>
+<li>无限期推迟</li>
+</ul>
+</li>
+<li><del>Docker 实战</del><ul>
+<li>此书翻译质量糟糕透顶，难以阅读</li>
+<li>下次买翻译书籍前先看看豆瓣评价如何</li>
+</ul>
+</li>
+</ul>
+<h3 id="函数式"><a href="#函数式" class="headerlink" title="函数式"></a>函数式</h3><ul>
+<li>Functional Programming in Scala<ul>
+<li>为了不让 Scala 仅仅成为“Better Java”，对函数式的学习（同时也是对 Scala 相关概念的深入）是必要的</li>
+</ul>
+</li>
+<li>Functional Programming Patterns in Scala and Clojure <ul>
+<li>Java 和 Scala 部分，此书好多东西我已经了解过了，看得比较快 </li>
+<li>但对 Scala 了解还不够，待了解关于 Trait 等概念后再继续</li>
+</ul>
+</li>
+<li><del>Functional Programming in Java</del><ul>
+<li>想来还是没必要，在工作中使用这种东西对团队作业不利，Java 终究还是 Java</li>
+</ul>
+</li>
+</ul>
+<!-- 解析那些“##WORKING##”，"you can't see me..."的代码 -->
+
+<script src="./script.js"></script>
+
+      </div>
+      
+      
+      
+    </div>
+    
+
+    
+    
+    
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="SOHUCS"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TODO-list"><span class="nav-number">1.</span> <span class="nav-text">TODO list</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NoSQL"><span class="nav-number">1.2.</span> <span class="nav-text">NoSQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spark"><span class="nav-number">1.3.</span> <span class="nav-text">Spark</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scala"><span class="nav-number">1.4.</span> <span class="nav-text">Scala</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Haskell"><span class="nav-number">1.5.</span> <span class="nav-text">Haskell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HDFS"><span class="nav-number">1.6.</span> <span class="nav-text">HDFS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YARN"><span class="nav-number">1.7.</span> <span class="nav-text">YARN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MapReduce"><span class="nav-number">1.8.</span> <span class="nav-text">MapReduce</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hive"><span class="nav-number">1.9.</span> <span class="nav-text">Hive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA"><span class="nav-number">1.10.</span> <span class="nav-text">分布式理论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95"><span class="nav-number">1.11.</span> <span class="nav-text">数据结构和算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.12.</span> <span class="nav-text">多线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E5%BC%8F%E7%BC%96%E7%A8%8B"><span class="nav-number">1.13.</span> <span class="nav-text">响应式编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="nav-number">1.14.</span> <span class="nav-text">数据分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%A2%E5%BC%8F%E9%80%BB%E8%BE%91"><span class="nav-number">1.15.</span> <span class="nav-text">形式逻辑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87"><span class="nav-number">2.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%86%E9%A2%91"><span class="nav-number">3.</span> <span class="nav-text">视频</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%A6%E5%8D%95"><span class="nav-number">4.</span> <span class="nav-text">书单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E6%95%B0%E6%8D%AE"><span class="nav-number">4.1.</span> <span class="nav-text">大数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hadoop"><span class="nav-number">4.1.1.</span> <span class="nav-text">Hadoop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hive"><span class="nav-number">4.1.2.</span> <span class="nav-text">Hive</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Scala%EF%BC%8CSpark"><span class="nav-number">4.1.3.</span> <span class="nav-text">Scala，Spark</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93"><span class="nav-number">4.1.4.</span> <span class="nav-text">数据仓库</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">4.2.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F-%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">分布式&#x2F;中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%BC%8F"><span class="nav-number">4.4.</span> <span class="nav-text">函数式</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
+      src="https://avatars.githubusercontent.com/u/88199249">
+  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<script id="quotation">
+    (function(){
+      function disableSelection(element) {
+        if (typeof element.onselectstart != 'undefined') {
+            element.onselectstart = function() { return false; };
+        } else if (typeof element.style.MozUserSelect != 'undefined') {
+            element.style.MozUserSelect = 'none';
+        } else {
+            element.onmousedown = function() { return false; };
+        }
+      }
+
+      const random = function(arr) {
+        // 如果有"//ONLY//"开头的，强制用它
+        const ID = "//ONLY//"
+        const onlyElem = arr.find(str => str.startsWith(ID))
+        if (onlyElem) return onlyElem.substring(ID.length)
+        return arr[Math.floor(Math.random()*(arr.length))]
+      }
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+
+      let last = random(QUOTATIONS)
+      document.getElementsByClassName("site-description")[0].innerHTML = last
+      function chanteQuotation() {
+        let current = random(QUOTATIONS)
+        while (current === last) {
+          current = random(QUOTATIONS)
+        }
+        last = current
+        document.getElementsByClassName("site-description")[0].innerHTML = current
+      }
+      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 如果鼠标点击，也切换
+      document.getElementsByClassName("site-description")[0].onclick = function () {
+        chanteQuotation()
+      }
+
+      // 禁止选择
+      disableSelection(document.getElementsByClassName("site-description")[0])
+    })()
+  </script>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script>
+  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
+    var appid = 'cyvWvBoR6';
+    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+    } else {
+      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
+    }
+  });
+  </script>
+  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
