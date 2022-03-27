@@ -1191,31 +1191,47 @@
         }
       }
 
-      const random = function(arr) {
+      // COPY的洗牌算法（js默认居然不提供这个？？）
+      Array.prototype.shuffle = function() {
+        let array = this;
+        let len = array.length;
+        for (let i = len - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }      
+      // 创建一个数组的循环迭代器
+      const iterator = (arr) => {
+        let i = -1;
+        return () => {
+          i = (i + 1) % arr.length
+          return arr[i]
+        }
+      }
+
+      function createChanger(arr, elem) {
         // 如果有"//ONLY//"开头的，强制用它
         const ID = "//ONLY//"
         const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return onlyElem.substring(ID.length)
-        return arr[Math.floor(Math.random()*(arr.length))]
-      }
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-
-      let last = random(QUOTATIONS)
-      document.getElementsByClassName("site-description")[0].innerHTML = last
-      function chanteQuotation() {
-        let current = random(QUOTATIONS)
-        while (current === last) {
-          current = random(QUOTATIONS)
+        if (onlyElem) return () => {
+          elem.innerHTML = onlyElem.substring(ID.length)
         }
-        last = current
-        document.getElementsByClassName("site-description")[0].innerHTML = current
+        const iter = iterator(arr)
+        return () => {
+          elem.innerHTML = iter()
+        }
       }
-      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 这何尝不是一种模板元编程？
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+      QUOTATIONS.shuffle()
+
+      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
+      changer()
+      setInterval(changer, 60 * 1000) // 一分钟更新一次
 
       // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = function () {
-        chanteQuotation()
-      }
+      document.getElementsByClassName("site-description")[0].onclick = changer
 
       // 禁止选择
       disableSelection(document.getElementsByClassName("site-description")[0])

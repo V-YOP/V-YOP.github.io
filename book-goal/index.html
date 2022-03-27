@@ -28,8 +28,8 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="上次更新时间：you can&#39;t see me...           TODO list              关于最近（至多是今年）打算做文章的地方，找个地方“持久化”一下         数据库 连接查询，以及 SQL 的编写模式 目前还没找到合适的书籍总结模式的，只能自己在实践中多多总结了   事务和 ACID 理论 分库分表 行存储，列存储">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-03-22T12:53:51.858Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.858Z">
+<meta property="article:published_time" content="2022-03-27T11:43:02.920Z">
+<meta property="article:modified_time" content="2022-03-27T11:43:02.920Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta name="twitter:card" content="summary">
 
@@ -298,10 +298,7 @@
     </details>
   
 
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><blockquote>
-<p>今年的总体目标是<strong>大数据</strong>相关技术和理论的学习，具体来说，是数仓的方向，当前先学离线数仓的技术栈。</p>
-</blockquote>
-<p>今年已经过去了：<code id="passed-time">YOU CAN'T SEE ME</code></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>今年已经过去了：<code id="passed-time">YOU CAN'T SEE ME</code></p>
 <ul>
 <li><input disabled="" type="checkbox"> 减到 <span style="color: #FF0000">60</span> kg！当前：<span style="color: #FF0000">70</span> kg <ul>
 <li><span style="color: #FF0000">优先级 MAX！决不允许再拖下去。</span></li>
@@ -312,7 +309,6 @@
 <li>这些可够刷了</li>
 </ul>
 </li>
-<li><input disabled="" type="checkbox"> 笔记 / 文章<code id="target-post-count">50</code>篇：<code id="post-count" target="target-post-count">19</code></li>
 <li><input disabled="" type="checkbox"> 学习一下 Play 框架，感受一下其和 Spring 的异同</li>
 <li><input disabled="" type="checkbox"> 学习一下 Redux，研究其如何解决前端的状态管理问题以及对状态的抽象<ul>
 <li>已经不止一次遇到组件“泄漏”对象引用造成的 bug 了，规范化状态控制是极其重要的。</li>
@@ -320,10 +316,6 @@
 </li>
 <li><input disabled="" type="checkbox"> 学习一下思维导图，研究一下它究竟是确实（对我）有效还是炒作的结果</li>
 <li><input disabled="" type="checkbox"> 学习一下 awk，因为可能需要掌握一门开发方便的文本处理语言</li>
-<li><input disabled="" type="checkbox"> 再次去学习一下vim<ul>
-<li>目的是为了了解被现代IDE所抽象的那些东西，可能无必要，但是很有趣</li>
-</ul>
-</li>
 <li><input disabled="" type="checkbox"> （Optional）考过托福/雅思之一<ul>
 <li>可能会非常困难，当前应该没精力，可能得放到明年</li>
 </ul>
@@ -352,19 +344,19 @@
 <li><del><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV18E411x7eT">尚硅谷 SpringCloud 框架开发教程</a> <code class="eval-to-percent">44 / 149</code></del><ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/V-YOP/cloud-learn">我的对应 git 仓库</a></li>
 <li>顺带还学习了一下 Docker 搭建环境的最佳实践，挺好</li>
-<li>现在是大数据时间！</li>
+<li>暂缓</li>
 </ul>
 </li>
 <li><input checked="" disabled="" type="checkbox"> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Qp4y1n7EN">尚硅谷 Hadoop</a> <code class="eval-to-percent">93 / 178</code> <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/V-YOP/yuuki-hadoop">我的 docker 集群</a>，付出了好多心血，现在搭环境飞速！</li>
-<li>越往后讲越乱，先跳过了</li>
+<li>太关注细节了，简直就是面向面试编程！我不习惯这种学习模式。</li>
 </ul>
 </li>
 </ul>
-<h2 id="书单"><a href="#书单" class="headerlink" title="书单"></a>书单</h2><p>本来是按TODO List来编排书单的，但是考虑实践发现我通常不会持续扎在一本书上，因此就不再使用这种形式了。</p>
+<h2 id="书单"><a href="#书单" class="headerlink" title="书单"></a>书单</h2><p>本来是按TODO List来编排书单的，但是考虑实践发现我通常不会持续扎在一本书上，也通常不会把书读完，因此就不再使用这种形式了。</p>
 <h3 id="大数据"><a href="#大数据" class="headerlink" title="大数据"></a>大数据</h3><blockquote>
 <p>主要按照 <a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv5213600">这里</a> 的顺序。</p>
-<p>关键词：Hadoop, Zookeeper (HA), Hive, Kafka, HBase, Spark, Flink… 学习方案同学微服务时一致——先主要看视频，然后再看书补全，我发现这似乎是一个学习新技术的很好的模式。<strong>但 Scala 我选择直接看书，关于编程语言的视频我认为是没有必要的</strong>。</p>
+<p>关键词：MapReduce，YARN，HDFS, Zookeeper (HA), Hive, Kafka, HBase, Spark, Flink… 学习方案同学微服务时一致——先主要看视频，然后再看书补全，我发现这似乎是一个学习新技术的很好的模式。<strong>但 Scala 我选择直接看书，关于编程语言的视频我认为是没有必要的</strong>。</p>
 </blockquote>
 <p>学习MapReduce，Hive，Spark之类的时候，要能够把握住它们的共性和个性，要能够横向比较，这对学习将会是很有益处的。</p>
 <ul>
@@ -389,9 +381,9 @@
 <li>Hive 编程指南</li>
 </ul>
 <h4 id="Scala，Spark"><a href="#Scala，Spark" class="headerlink" title="Scala，Spark"></a>Scala，Spark</h4><ul>
-<li>快学Scala</li>
+<li>快学 Scala</li>
 <li>Spark 快速大数据分析 ##WORKING##</li>
-<li>Spark最佳实践 ##WORKING##</li>
+<li>Spark 最佳实践 ##WORKING##</li>
 <li>Spark in action</li>
 <li>~~Get programming with Scala ~~<ul>
 <li>看了大概五分之三，感觉当前学到的东西已经足够把 Scala 当作 Java 写了，但是后面还有非常多的高级特性，如并发，异步编程，implicit（这书讲的实属有点抽象，也或许是我太急了），类型类，纯函数式编程等需要去学习，留到将来吧，当前的重点是大数据！</li>
@@ -399,19 +391,22 @@
 </li>
 </ul>
 <h4 id="数据仓库"><a href="#数据仓库" class="headerlink" title="数据仓库"></a>数据仓库</h4><ul>
-<li>Hadoop构建数据仓库实践</li>
+<li>Hadoop 构建数据仓库实践</li>
 </ul>
 <h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
 <li>高性能 MySQL<ul>
 <li>学习它是为了学习传统关系型数据库的一些机制，以加深对此的理解，期待能反哺对Hive内核的学习</li>
 </ul>
 </li>
-<li><del>SQL 基础教程</del></li>
+<li><del>SQL 基础教程</del><ul>
+<li>Done！好书</li>
+</ul>
+</li>
 </ul>
 <h3 id="分布式-中间件"><a href="#分布式-中间件" class="headerlink" title="分布式/中间件"></a>分布式/中间件</h3><ul>
 <li>从 Paxos 到 Zookeeper</li>
-<li><del>Spring Microservices in Action</del><ul>
-<li>无限期推迟</li>
+<li>Spring Microservices in Action<ul>
+<li>暂缓</li>
 </ul>
 </li>
 <li><del>Docker 实战</del><ul>
@@ -431,7 +426,7 @@
 </ul>
 </li>
 <li><del>Functional Programming in Java</del><ul>
-<li>想来还是没必要，在工作中使用这种东西对团队作业不利，Java 终究还是 Java</li>
+<li>想来还是没必要，在工作中使用这种东西对团队作业不利，Java 终究还是 Java，仅使用官方提供的东西就好</li>
 </ul>
 </li>
 </ul>
@@ -527,31 +522,47 @@
         }
       }
 
-      const random = function(arr) {
+      // COPY的洗牌算法（js默认居然不提供这个？？）
+      Array.prototype.shuffle = function() {
+        let array = this;
+        let len = array.length;
+        for (let i = len - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }      
+      // 创建一个数组的循环迭代器
+      const iterator = (arr) => {
+        let i = -1;
+        return () => {
+          i = (i + 1) % arr.length
+          return arr[i]
+        }
+      }
+
+      function createChanger(arr, elem) {
         // 如果有"//ONLY//"开头的，强制用它
         const ID = "//ONLY//"
         const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return onlyElem.substring(ID.length)
-        return arr[Math.floor(Math.random()*(arr.length))]
-      }
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-
-      let last = random(QUOTATIONS)
-      document.getElementsByClassName("site-description")[0].innerHTML = last
-      function chanteQuotation() {
-        let current = random(QUOTATIONS)
-        while (current === last) {
-          current = random(QUOTATIONS)
+        if (onlyElem) return () => {
+          elem.innerHTML = onlyElem.substring(ID.length)
         }
-        last = current
-        document.getElementsByClassName("site-description")[0].innerHTML = current
+        const iter = iterator(arr)
+        return () => {
+          elem.innerHTML = iter()
+        }
       }
-      setInterval(chanteQuotation, 60 * 1000) // 一分钟更新一次
+
+      // 这何尝不是一种模板元编程？
+      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
+      QUOTATIONS.shuffle()
+
+      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
+      changer()
+      setInterval(changer, 60 * 1000) // 一分钟更新一次
 
       // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = function () {
-        chanteQuotation()
-      }
+      document.getElementsByClassName("site-description")[0].onclick = changer
 
       // 禁止选择
       disableSelection(document.getElementsByClassName("site-description")[0])
