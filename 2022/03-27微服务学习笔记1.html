@@ -21,24 +21,22 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这玩意……也就拿来画 AST 吧。">
+  <meta name="description" content="三个月前做的笔记，后来学到了服务注册和发现，负载模式就停下了。最近可能要捡起来也说不定。  对微服务的学习是至关重要的，这个论断是绝对正确的，单体应用已经难以承受当前的互联网时代的复杂度，且性能等因素也受摩尔定律的约束无法更多提升。无论是对当前还是遥远的将来（？），微服务对工程实践都将是有重大影响的。即使以后分布式技术继续发展，人们发现了什么比微服务更好的分布式架构，对微服务的理解也将会有巨大帮">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于 graphviz 的使用（残卷）">
-<meta property="og:url" content="http://example.com/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+<meta property="og:title" content="微服务学习笔记1——Prelude">
+<meta property="og:url" content="http://example.com/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01.html">
 <meta property="og:site_name" content="友纪V-λOP">
-<meta property="og:description" content="这玩意……也就拿来画 AST 吧。">
+<meta property="og:description" content="三个月前做的笔记，后来学到了服务注册和发现，负载模式就停下了。最近可能要捡起来也说不定。  对微服务的学习是至关重要的，这个论断是绝对正确的，单体应用已经难以承受当前的互联网时代的复杂度，且性能等因素也受摩尔定律的约束无法更多提升。无论是对当前还是遥远的将来（？），微服务对工程实践都将是有重大影响的。即使以后分布式技术继续发展，人们发现了什么比微服务更好的分布式架构，对微服务的理解也将会有巨大帮">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210821222756.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210821235744.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg">
-<meta property="article:published_time" content="2021-08-21T16:31:37.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.846Z">
+<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220102131348.png">
+<meta property="article:published_time" content="2022-03-27T04:38:39.000Z">
+<meta property="article:modified_time" content="2022-03-27T11:27:42.527Z">
 <meta property="article:author" content="友纪V-λOP">
-<meta property="article:tag" content="Graphviz">
+<meta property="article:tag" content="微服务">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210821222756.png">
+<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220102131348.png">
 
-<link rel="canonical" href="http://example.com/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+<link rel="canonical" href="http://example.com/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01.html">
 
 
 <script id="page-configurations">
@@ -51,7 +49,7 @@
   };
 </script>
 
-  <title>关于 graphviz 的使用（残卷） | 友纪V-λOP</title>
+  <title>微服务学习笔记1——Prelude | 友纪V-λOP</title>
   
 
 
@@ -174,7 +172,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
@@ -187,7 +185,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于 graphviz 的使用（残卷）
+          微服务学习笔记1——Prelude
         </h1>
 
         <div class="post-meta" style="margin:3px 0 20px 0">
@@ -196,16 +194,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-08-22 00:31:37" itemprop="dateCreated datePublished" datetime="2021-08-22T00:31:37+08:00">2021-08-22</time>
+              <time title="创建时间：2022-03-27 12:38:39 / 修改时间：19:27:42" itemprop="dateCreated datePublished" datetime="2022-03-27T12:38:39+08:00">2022-03-27</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
-              </span>
 
           
   
@@ -217,19 +209,18 @@
       <span class="post-meta-item-text">Changyan：</span>
     
     
-      <a title="changyan" href="/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/08-21关于graphviz的使用.html" itemprop="commentCount"></span>
+      <a title="changyan" href="/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01.html#SOHUCS" itemprop="discussionUrl">
+        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/03-27微服务学习笔记1.html" itemprop="commentCount"></span>
       </a>
     
   </span>
   
   
-            <div class="post-description" style="margin-top:10px; font-size:1em">这玩意……也就拿来画 AST 吧。</div>
 
           <!-- 将tag移到文章开头处 -->
           
           <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/Graphviz/" rel="tag"><i class="fa fa-tag"></i> Graphviz</a>
+              <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"><i class="fa fa-tag"></i> 微服务</a>
           </div>
         </div>
 
@@ -242,150 +233,56 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <!--Hello, Happy World-->
-
-<p>最近学习编译原理，苦于使用 draw.io 这样的软件绘制示意图的时候特别麻烦，于是试图找到更为简单的方案，而 <a target="_blank" rel="noopener" href="https://graphviz.org/">graphviz</a> 就是一个很舒爽的解决方案——它提供了一个名为 dot 的 DSL 用以生成 svg，png 以及其他图像格式的文件。所以这里对它进行一些学习。这软件或许在其他地方也能够使用，比如绘制流程图，状态转移图之类的时候。</p>
-<p>先尝尝鲜——下面是一个表示<code>(19+2)*2</code>的语法树的 dot 代码——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 单行和多行注释同 Java</span><br><span class="line">// graph 定义无向图</span><br><span class="line">graph &#123;</span><br><span class="line">    // 节点可以预先定义，也可以直接进行使用，这时其显示的内容就是其名称</span><br><span class="line">    MUL [label=&quot;*&quot;]; // [] 中的内容对节点进行描述，显然这里定义了节点所显示的标签</span><br><span class="line">    PLUS [label=&quot;+&quot;];</span><br><span class="line">    NUM2 [label=2];</span><br><span class="line">    NUM2_1 [label=2];</span><br><span class="line">	</span><br><span class="line">    PLUS -- NUM2; // --标识相连，绘制树的话，左边深度较浅</span><br><span class="line">    PLUS -- 19;  // 直接定义和描述了一个新节点</span><br><span class="line">    MUL -- &#123;PLUS NUM2_1&#125;; // 等价于 MUL -- PLUS; MUL -- NUM2_1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其使用 dot 生成的对应的图如下——</p>
-<svg width="170pt" height="188pt" viewBox="0.00 0.00 170.00 188.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
-<title>%0</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-184 166,-184 166,4 -4,4"></polygon>
-<!-- MUL -->
-<g id="node1" class="node">
-<title>MUL</title>
-<ellipse fill="none" stroke="#000000" cx="99" cy="-162" rx="27" ry="18"></ellipse>
-<text text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00" fill="#000000">*</text>
-</g>
-<!-- PLUS -->
-<g id="node2" class="node">
-<title>PLUS</title>
-<ellipse fill="none" stroke="#000000" cx="63" cy="-90" rx="27" ry="18"></ellipse>
-<text text-anchor="middle" x="63" y="-85.8" font-family="Times,serif" font-size="14.00" fill="#000000">+</text>
-</g>
-<!-- MUL&#45;&#45;PLUS -->
-<g id="edge3" class="edge">
-<title>MUL--PLUS</title>
-<path fill="none" stroke="#000000" d="M90.2854,-144.5708C84.6253,-133.2506 77.2784,-118.5568 71.6343,-107.2687"></path>
-</g>
-<!-- NUM2_1 -->
-<g id="node4" class="node">
-<title>NUM2_1</title>
-<ellipse fill="none" stroke="#000000" cx="135" cy="-90" rx="27" ry="18"></ellipse>
-<text text-anchor="middle" x="135" y="-85.8" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
-</g>
-<!-- MUL&#45;&#45;NUM2_1 -->
-<g id="edge4" class="edge">
-<title>MUL--NUM2_1</title>
-<path fill="none" stroke="#000000" d="M107.7146,-144.5708C113.3747,-133.2506 120.7216,-118.5568 126.3657,-107.2687"></path>
-</g>
-<!-- NUM2 -->
-<g id="node3" class="node">
-<title>NUM2</title>
-<ellipse fill="none" stroke="#000000" cx="27" cy="-18" rx="27" ry="18"></ellipse>
-<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
-</g>
-<!-- PLUS&#45;&#45;NUM2 -->
-<g id="edge1" class="edge">
-<title>PLUS--NUM2</title>
-<path fill="none" stroke="#000000" d="M54.2854,-72.5708C48.6253,-61.2506 41.2784,-46.5568 35.6343,-35.2687"></path>
-</g>
-<!-- 19 -->
-<g id="node5" class="node">
-<title>19</title>
-<ellipse fill="none" stroke="#000000" cx="99" cy="-18" rx="27" ry="18"></ellipse>
-<text text-anchor="middle" x="99" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">19</text>
-</g>
-<!-- PLUS&#45;&#45;19 -->
-<g id="edge2" class="edge">
-<title>PLUS--19</title>
-<path fill="none" stroke="#000000" d="M71.7146,-72.5708C77.3747,-61.2506 84.7216,-46.5568 90.3657,-35.2687"></path>
-</g>
-</svg>
-
-<p>说使用 dot 生成，是因为 graphviz 实际上提供了多种命令来生成图，其代表各种不同的<strong>布局引擎</strong>，其各有特点——</p>
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>特性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>dot</td>
-<td>渲染的图具有明确方向性。</td>
-</tr>
-<tr>
-<td>neato</td>
-<td>渲染的图缺乏方向性。</td>
-</tr>
-<tr>
-<td>twopi</td>
-<td>渲染的图采用放射性布局。</td>
-</tr>
-<tr>
-<td>circo</td>
-<td>渲染的图采用环型布局。</td>
-</tr>
-<tr>
-<td>fdp</td>
-<td>渲染的图缺乏方向性。</td>
-</tr>
-<tr>
-<td>sfdp</td>
-<td>渲染大型的图，图片缺乏方向性。</td>
-</tr>
-</tbody></table>
-<p>下面通过一些实例和注释描述其使用。</p>
-<h1 id="List"><a href="#List" class="headerlink" title="List"></a>List</h1><p>这里试图展示 Lisp 中的 cons/list 的结构。一般来说这种结构使用所谓的“箱子表示法 ”（box notation），如下图来自《ANSI Common Lisp》。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210821222756.png" alt="../_images/Figure-3.3.png"></p>
-<p>这里，每一个 node 都有两个“箱子”（之后都这么称呼），dot 中使用 record 类型的 shape 可以让 node 如此展示。其使用方法如下。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">digraph g &#123;</span><br><span class="line">    node [shape = record]; // 可以使用这种方法设定所有 node 的属性</span><br><span class="line">    node0[label = &quot;&#123;\&lt;interface\&gt; \n AInterface| |+ hello():void&#125;&quot;];  // 可以使用一些标识符</span><br><span class="line">    node1[label = &quot;&lt;f0&gt; A|&lt;f1&gt; BCD&quot;]; </span><br><span class="line">    node0 -&gt; node1:f0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<svg width="112pt" height="173pt" viewBox="0.00 0.00 112.19 173.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 169.2)">
-<title>g</title>
-<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-169.2 108.1896,-169.2 108.1896,4 -4,4"></polygon>
-<!-- node0 -->
-<g id="node1" class="node">
-<title>node0</title>
-<polygon fill="none" stroke="#000000" points="0,-73.5 0,-164.7 93.4928,-164.7 93.4928,-73.5 0,-73.5"></polygon>
-<text text-anchor="middle" x="46.7464" y="-148.1" font-family="Times,serif" font-size="14.00" fill="#000000">&lt;interface&gt; </text>
-<text text-anchor="middle" x="46.7464" y="-131.3" font-family="Times,serif" font-size="14.00" fill="#000000"> AInterface</text>
-<polyline fill="none" stroke="#000000" points="0,-123.1 93.4928,-123.1 "></polyline>
-<text text-anchor="middle" x="46.7464" y="-106.5" font-family="Times,serif" font-size="14.00" fill="#000000"> </text>
-<polyline fill="none" stroke="#000000" points="0,-98.3 93.4928,-98.3 "></polyline>
-<text text-anchor="middle" x="46.7464" y="-81.7" font-family="Times,serif" font-size="14.00" fill="#000000">+ hello():void</text>
-</g>
-<!-- node1 -->
-<g id="node2" class="node">
-<title>node1</title>
-<polygon fill="none" stroke="#000000" points="33.3032,-.5 33.3032,-36.5 104.1896,-36.5 104.1896,-.5 33.3032,-.5"></polygon>
-<text text-anchor="middle" x="46.3565" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">A</text>
-<polyline fill="none" stroke="#000000" points="59.4098,-.5 59.4098,-36.5 "></polyline>
-<text text-anchor="middle" x="81.7997" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">BCD</text>
-</g>
-<!-- node0&#45;&gt;node1 -->
-<g id="edge1" class="edge">
-<title>node0-&gt;node1:f0</title>
-<path fill="none" stroke="#000000" d="M46.7464,-73.2248C46.7464,-64.632 46.7464,-55.5681 46.7464,-46.7299"></path>
-<polygon fill="#000000" stroke="#000000" points="50.2465,-46.5 46.7464,-36.5 43.2465,-46.5 50.2465,-46.5"></polygon>
-</g>
-</svg>
-
-<p>上面的代码试图展示一个 UML 类图。需要注意的是 node0 中 label 的内容。其包含三个元符号——{}，&lt;&gt;和|。</p>
-<p>其中，|可以认为是各个箱子的分隔符；{}则是对特定数量箱子起作用，其将更改箱子排列的方向（这个元符号用以构造结构更为复杂的箱子）。&lt;&gt;用来定义“锚点”，使可以被 edge 所引用。</p>
-<p>为实现箱型表示法，还有一点需要实现——默认排列是从上到下的，需要改成从左到右，这是通过 graph 的 rankdir 属性实现的。需要注意的是，rankdir 会改变 record 的默认方向。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">digraph g &#123;</span><br><span class="line">    rankdir=LR;	// 方向</span><br><span class="line">    node [shape = record]; // 默认所有 node 都是 record</span><br><span class="line">    edge [tailclip=false]; // edge 不会被 clip——这是为了保证箭头从内部伸出</span><br><span class="line">    node0[label = &quot;&#123;a | &lt;A&gt;&#125;&quot;]; </span><br><span class="line">    node1_0[label = &quot;&#123;&lt;A&gt;|&lt;B&gt;&#125;&quot;];</span><br><span class="line">    node1_1[label = &quot;&#123;b|&lt;B&gt;&#125;&quot;];</span><br><span class="line">    node2[label = &quot;&#123;c|nil&#125;&quot;];</span><br><span class="line">    node3[label = &quot;&#123;d|nil&#125;&quot;];</span><br><span class="line">    node0:A:c -&gt; node1_0; // :c 是 node 默认提供的“锚点”，表示从中心开始</span><br><span class="line">    node1_0:A:c -&gt; node1_1;</span><br><span class="line">    node1_1:A:c -&gt; node2;</span><br><span class="line">    node1_0:B:c -&gt; node3;</span><br><span class="line">    // &#123;rank=same;node1_0;node1_1;&#125; 这玩意有 bug，对 record 会报错！</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210821235744.png" alt="image-20210821235744881"></p>
-<p>……看起来要表达规则的图形的时候这玩意并不太适合。</p>
-<blockquote>
-<p>  先就这样吧……这玩意出现的 bug 浇灭了我继续的兴趣。反正当前学到的东西足够画 AST 了。</p>
+        <blockquote>
+<p>三个月前做的笔记，后来学到了服务注册和发现，负载模式就停下了。最近可能要捡起来也说不定。</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg" alt="img"></p>
+<p>对微服务的学习是至关重要的，这个论断是绝对正确的，单体应用已经难以承受当前的互联网时代的复杂度，且性能等因素也受摩尔定律的约束无法更多提升。无论是对当前还是遥远的将来（？），微服务对工程实践都将是有重大影响的。即使以后分布式技术继续发展，人们发现了什么比微服务更好的分布式架构，对微服务的理解也将会有巨大帮助。</p>
+<span id="more"></span>
+
+<p>本来打算去看《微服务架构设计模式》这本书来进行学习，但进行一些学习后发现这本书实在不适合初学者——概念太多，实践/示例太少，没有相应实践经验的人（That’s me！）难以消化。因此此书我认为应当在有一定经验的基础上再进行阅读，即使该书作者似乎并非以此为出发点。</p>
+<p>当前在看的书是《Spring Microservices in Action》第二版，粗略地翻了翻，感觉还不错，就以此来作为敲门砖了。这书正巧第二版最近刚出，还没有中文翻译，同时也能多学学英文。</p>
+<h1 id="Prelude"><a href="#Prelude" class="headerlink" title="Prelude"></a>Prelude</h1><p>一个有趣的事实是，这两本书都强调在微服务架构中的<strong>模式</strong>，即对微服务架构中面临的各种问题/需求的形式化的描述和解决方案，在这之前我还未能理解为何在此处要特意使用模式来描述，而最近才意识到，将这些问题抽象为模式是在解决方案和特定技术/中间件中增加了一道抽象层，从而避免解决方案耦合于特定的技术/中间件，让架构真正成为架构，而非特定技术的堆砌。</p>
+<blockquote>
+<p>没有什么问题是不能通过增加一个抽象层解决的，如果不能，就再加一层。</p>
+</blockquote>
+<p>我们在进行架构设计等的时候，也应当从模式出发，而非从特定技术/中间件出发。比如，就服务发现和路由——如何对服务进行注册，从而抽象服务的物理地址；如何让消费微服务的客户端能够定位和路由到相应微服务——这个来说，不应当从特定技术，如Spring Gateway，Nacos，Eureka等出发，而应当在更抽象即模式的层面上研究，问题和需求究竟是什么，怎样的设计是松散耦合的，可维护可配置的，<strong>这些技术/中间件是如何应用这个模式的</strong>，有什么优点和缺点……这样既可以从特定技术中解放出来，也给予我们选择最合适的方案的可能性。</p>
+<h2 id="各种云计算模型（XaaS）"><a href="#各种云计算模型（XaaS）" class="headerlink" title="各种云计算模型（XaaS）"></a>各种云计算模型（XaaS）</h2><p>微服务必定和云脱不了关系，这里介绍了常见的云计算模型，即各种XaaS（anything as a service）以及用户和服务提供商所需要负担的职责，即开发者使用该种云平台时需要关心的东西——</p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220102131348.png"></p>
+<blockquote>
+<p>可以认为最底层的两个即”Networking, storage, and servers”和”Data center”为真正的硬件设施。</p>
+</blockquote>
+<ul>
+<li><p><em>Infrastructure as a Service (IaaS，基础设施即服务)</em> ——服务提供商负责提供一定基础设施，让用户能够访问诸如服务器，存储和网络等计算资源。在这个模型里，用户需要负责一切和基础设施以及应用的伸缩性相关的东西，IaaS平台包括AWS的EC2，Azure Virtual Machines，Google Compute Engine，和Kubernetes。可以认为IaaS就相当于是租用了一个云服务器，需要自己管理操作系统之上的所有部分。</p>
+</li>
+<li><p><em>Container as a Service (CaaS，容器即服务)</em> ——基于容器的虚拟化的形式，用户可以把微服务部署在一个轻量的，可携带（绿色）的虚拟容器如Docker中。云服务提供商负责运行容器，以及提供所有关于构建，部署，监控和伸缩容器的工具。CaaS相较于IaaS，用户不需关心操作系统的细节，且治理工具由云服务提供商提供，因而维护和伸缩起来较IaaS更容易。CaaS平台包括谷歌的GKE，亚马逊的ECS（阿里的云服务器也叫这个名字，但阿里的是IaaS，funny）。这本书主要使用CaaS，我也认为CaaS在复杂性和定制性之间取得了一个很好的平衡。</p>
+</li>
+<li><p><em>Platform as a Service (PaaS，平台即服务)</em> ——服务器提供商提供平台和环境来让用户专注于应用的开发，执行和维护。用户可以完全不用关心物理的基础设施。PaaS的缺点在于这样部署的应用是和平台提供商耦合的，必须利用平台提供商提供的API或工具来交互计算资源，因而移植性欠佳。PaaS平台包括Google App Engine，Cloud Fondry，Heroku和AWS Elastic Beanstalk。</p>
+</li>
+<li><p><em>Function as a Service (FaaS，功能即服务)</em> ——也称为无服务器架构，用户只需关心服务的开发，其余任何东西都交给云服务商了，应用将运行在服务提供商提供的运行时引擎中。FaaS平台包括AWS（Lambda），Google Cloud Function和Azure functions，Cloudflare的worker也是FaaS（还免费呢，好玩）。</p>
+</li>
+<li><p><em>Software as a Service (SaaS，软件即服务)</em> ——用户使用一个特定的应用而不需要部署或维护。用户租了就用，其他什么都关心不了。这像是某种低代码之类的东西。</p>
+</li>
+</ul>
+<h2 id="微服务面临的问题"><a href="#微服务面临的问题" class="headerlink" title="微服务面临的问题"></a>微服务面临的问题</h2><p>在接触到具体的模式前，应当先知道开发微服务架构应用时会遇到什么问题——</p>
+<ol>
+<li><p><strong>服务粒度</strong>——如何正确分解业务领域到一堆微服务中，使其中每个都有合适的职责？职责的粒度若太粗，在不同业务问题领域上有重叠，就会让其难以维护和修改；若太细，则会增加应用整体的复杂度，让服务变成愚蠢的数据抽象层，除了对数据的访问外没有别的逻辑。（这话真难翻译！）</p>
+</li>
+<li><p><strong>通讯协议</strong>——服务和客户端/服务间的通信同步还是异步？轻量级还是重量级？通用还是自定义？</p>
+</li>
+<li><p><strong>接口设计</strong>——调用服务的实际接口该如何设计？</p>
+</li>
+<li><p><strong>服务的配置管理</strong>——如何优雅和方便地管理微服务的配置，使不需要修改源代码就可以适应不同环境？</p>
+</li>
+<li><p><strong>服务间的事件处理</strong>——如何使用事件对微服务进行解耦，从而最小化服务间<strong>硬编码</strong>（直接调用？）的相互依赖？</p>
+</li>
+</ol>
+<p>也需要意识到，微服务不是银弹，它和单体架构相比，也只能说是另一种架构风格而已，有自己所适用之处，也有自己的缺点，带来自己的复杂度。</p>
+<blockquote>
+<p>The more distributed a system is, the more places it can fail.</p>
+</blockquote>
+<p>书中介绍道，微服务是无状态（stateless）的。为何要设计成无状态？为了能方便横向扩展，即增加一个微服务的实例数量时不会有任何影响。考虑一个简单情形——维护一个对接口访问量的计数器：如果该状态维护在每个实例（进程）的内存中， 统计完全的计数值就需要统计每一个实例中的值，徒增了复杂度，而这种复杂度完全可以通过Redis或数据库等来避免。</p>
+<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p>该书书名已经指明，其将以Spring作为出发点来介绍微服务。<strong>Spring Cloud为微服务开发提供了完全的支持，对各种模式提供了相应的中间件的集成，且仅通过简单注解便可快速起步</strong>，因此非常适合进行学习。</p>
+<p>Spring Cloud当然不是唯一选择，微服务使用轻量级的通讯协议，这使使用不同语言进行开发成为可能。我在网络上看到过.Net Core + Nacos + Spring Cloud这样的组合。但Spring肯定是最优先的选择，毕竟JVM这边才是主流。</p>
 
     </div>
 
@@ -401,7 +298,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.md" title="关于 graphviz 的使用（残卷）">_posts/2021/08-21关于graphviz的使用.md</a> -->
+    <!-- <a href="/_posts/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01.md" title="微服务学习笔记1——Prelude">_posts/2022/03-27微服务学习笔记1.md</a> -->
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -425,13 +322,10 @@ document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/08-21%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B04%E2%80%94%E2%80%94Stone%E8%AF%AD%E6%B3%95%E7%9A%84%E8%AE%BE%E8%AE%A1.html" rel="prev" title="《两周自制脚本语言》笔记 4——Stone 语法的设计">
-      <i class="fa fa-chevron-left"></i> 《两周自制脚本语言》笔记 4——Stone 语法的设计
+    <a href="/2022/03-24Scala%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2%E4%B9%8B%E4%B8%80%E7%AA%A5.html" rel="prev" title="Scala 隐式转换之一窥">
+      <i class="fa fa-chevron-left"></i> Scala 隐式转换之一窥
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html" rel="next" title="《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现">
-      《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -495,7 +389,7 @@ document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#List"><span class="nav-number">1.</span> <span class="nav-text">List</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Prelude"><span class="nav-number">1.</span> <span class="nav-text">Prelude</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E4%BA%91%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9E%8B%EF%BC%88XaaS%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">各种云计算模型（XaaS）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text">微服务面临的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Cloud"><span class="nav-number">1.3.</span> <span class="nav-text">Spring Cloud</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
