@@ -23,15 +23,12 @@ const metaData = (function () {
 
 S.id("modified-time").textContent = new Date(metaData[ARTICLE_MODIFIED_TIME]).format("yyyy-MM-dd")
 
-// 所有的带checkbox的li
 // liList :: [HTMLElement]
 const liList = S(S.clazz("post-body")[0]).tag("ul")
         .flatMap(ul => S(ul).tag("li"))
-        .filter(li => S(li).tag("input").length > 0)
 
 const taskCount = liList.length
 const workingCount = liList.filter(li => li.innerHTML.indexOf("##WORKING##") != -1).length
-const finishedCount = liList.map(li => S(li).tag("input")[0]).filter(input=>input.checked).length
 
 // 获取elem.textContent / elem["target"]的百分数表示
 // HTMLElement -> tring
@@ -53,15 +50,5 @@ S.clazz("eval-to-percent").forEach(elem => {
 
 // 把##WORKING##替换成一个齿轮标
 liList.forEach(li => li.innerHTML = li.innerHTML.replaceAll("##WORKING##", '<i class="fa fa-cog fa-spin"></i>'))
-
-// 构造progress
-S.id("working-item-count").textContent = workingCount
-S.id("finished-item-count").textContent = finishedCount
-S.id("unfinished-item-count").textContent = taskCount - workingCount - finishedCount
-
-// 计算吉他时间
-S.id("guitar-time").textContent = getPercentFormat(S.id("guitar-time"))
-// 笔记篇数
-S.id("post-count").textContent = getPercentFormat(S.id("post-count"))
 
 S.id("passed-time").textContent = parseInt(parseInt((Date.parse(new Date()) - Date.parse(`${new Date().getFullYear()}-01-01`)) / (1000 * 60 * 60 * 24)) / 365 * 100) + "%"

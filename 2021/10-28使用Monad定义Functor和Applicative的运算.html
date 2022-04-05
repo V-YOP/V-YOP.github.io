@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg">
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png">
 <meta property="article:published_time" content="2021-10-29T14:56:23.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.848Z">
+<meta property="article:modified_time" content="2022-04-04T05:46:53.098Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta name="twitter:card" content="summary">
@@ -203,7 +203,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
+                <time title="修改时间：2022-04-04 13:46:53" itemprop="dateModified" datetime="2022-04-04T13:46:53+08:00">2022-04-04</time>
               </span>
 
           
@@ -306,7 +306,20 @@
 <figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">someList</span> = <span class="keyword">do</span></span><br><span class="line">  val1 &lt;- [<span class="number">1</span> .. <span class="number">10</span>]</span><br><span class="line">  val2 &lt;- [<span class="number">1.</span><span class="number">.10</span>]</span><br><span class="line">  <span class="keyword">if</span> val1 * val2 &lt; <span class="number">50</span> </span><br><span class="line">    <span class="keyword">then</span> [val1 * val2]</span><br><span class="line">    <span class="keyword">else</span> [] </span><br><span class="line"></span><br><span class="line"><span class="title">someList&#x27;</span> = [val1 * val2 | val1 &lt;- [<span class="number">1.</span><span class="number">.10</span>], val2 &lt;- [<span class="number">1.</span><span class="number">.10</span>], val1 * val2 &lt; <span class="number">50</span>]</span><br></pre></td></tr></table></figure>
 
 <p>令人感叹，令人感叹啊。再次感叹 Haskell 设计的精巧。顺便，据群里大佬所说，使用 Monad 实现<code>&lt;*&gt;</code>是”SKI 那个 S”，只能说虽不明但觉厉。该沉下心来继续学习了！</p>
-<h1 id="关于-gt-gt"><a href="#关于-gt-gt" class="headerlink" title="关于&gt;&gt;"></a>关于&gt;&gt;</h1><p>我曾以为<code>&gt;&gt;</code>是干脆地丢弃前者的结果，返回后者，但事实证明这是错误的——前者的值对后者将会有影响——下面两个例子可见一般——</p>
+<h1 id="关于-gt-gt"><a href="#关于-gt-gt" class="headerlink" title="关于&gt;&gt;"></a>关于&gt;&gt;</h1><blockquote>
+<p><code>&gt;&gt;</code>的行为其实没必要说那么多，它的定义就足够了——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(&gt;&gt;) :: <span class="type">Monad</span> m =&gt; m a -&gt; m b -&gt; m b</span><br><span class="line"><span class="title">m</span> &gt;&gt; k = m &gt;&gt;= (\_ -&gt; k)</span><br><span class="line"><span class="comment">-- 翻译成 do，就是——</span></span><br><span class="line"><span class="title">do</span> </span><br><span class="line">  ma</span><br><span class="line">  mb</span><br><span class="line"><span class="comment">-- 或者可以这样理解——</span></span><br><span class="line"><span class="title">do</span></span><br><span class="line">  _ &lt;- ma</span><br><span class="line">  mb </span><br></pre></td></tr></table></figure>
+<p>因此，当 m 本身为 <code>[]</code> 或 <code>Nothing</code>等的时候，这计算本身就不会再进行下去了。要理解<code>&gt;&gt;</code>，直接从定义出发就好。于是归根结底，还是要回到<code>&gt;&gt;=</code>，还是要回到 bind，还是要回到flatMap。</p>
+<p>同时，从这个方面来看，下面的guard函数就十分容易理解了，考虑护卫语句的定义，它可能返回一个<code>m ()</code>，也可能返回一个<code>mzero</code>。在列表的上下文里，即<code>[()]</code>或<code>[]</code>。当为前者的时候，它有一个值，因此计算成功继续；为后者的时候，没有值就无法进行了。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span></span><br><span class="line">  i &lt;- [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">  guard $ i % <span class="number">2</span> == <span class="number">0</span> </span><br><span class="line">  i</span><br></pre></td></tr></table></figure>
+
+<p>在这里，<code>guard $ i % 2 == 0</code> 要么返回<code>[()]</code>，要么返回<code>[]</code>，因此整个代码可以理解为</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">do</span></span><br><span class="line">  i &lt;- [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line">  _ &lt;- <span class="keyword">if</span> i `mod` <span class="number">2</span> == <span class="number">0</span> <span class="keyword">then</span> [()] <span class="keyword">else</span> [] <span class="comment">-- 当然，_在这里是不合法的！</span></span><br><span class="line">  return i</span><br></pre></td></tr></table></figure>
+
+<p>结果是显然的。</p>
+<p>—— 2022.04.04</p>
+</blockquote>
+<p>我曾以为<code>&gt;&gt;</code>是干脆地丢弃前者的结果，返回后者，但事实证明这是错误的——前者的值对后者将会有影响——下面两个例子可见一般——</p>
 <figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Nothing</span> &gt;&gt; <span class="type">Just</span> <span class="number">1</span> <span class="comment">-- Nothing</span></span><br><span class="line"><span class="type">Just</span> <span class="number">1</span> &gt;&gt; <span class="type">Just</span> <span class="number">2</span> <span class="comment">-- Just 2</span></span><br><span class="line">[] &gt;&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="comment">-- []</span></span><br><span class="line">[<span class="number">1</span>] &gt;&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="comment">-- [1,2,3]</span></span><br></pre></td></tr></table></figure>
 
 <p>显然，当前者为 mempty（实际上是 mzero）的时候，值为后者，否则为 mempty。</p>
