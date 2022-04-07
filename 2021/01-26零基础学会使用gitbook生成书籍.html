@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="使用 gitbook 生成书籍，让你免除麻烦的排版等过程。">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="使用 gitbook 生成书籍，让你免除麻烦的排版等过程。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="（未完成）从零开始使用 gitbook 生成书籍">
 <meta property="og:url" content="http://example.com/2021/01-26%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8gitbook%E7%94%9F%E6%88%90%E4%B9%A6%E7%B1%8D.html">
@@ -31,217 +26,205 @@
 <meta property="og:image" content="https://i.loli.net/2021/01/26/Os6AvgUPE5XLnhI.png">
 <meta property="og:image" content="https://i.loli.net/2021/01/26/nDvUWJjR51HKMTL.png">
 <meta property="article:published_time" content="2021-01-26T00:00:00.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.840Z">
+<meta property="article:modified_time" content="2022-04-07T11:15:47.595Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Gitbook">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i.loli.net/2021/01/26/Os6AvgUPE5XLnhI.png">
+  
+  
+  <title>（未完成）从零开始使用 gitbook 生成书籍 - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2021/01-26%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8gitbook%E7%94%9F%E6%88%90%E4%B9%A6%E7%B1%8D.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>（未完成）从零开始使用 gitbook 生成书籍 | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01-26%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8gitbook%E7%94%9F%E6%88%90%E4%B9%A6%E7%B1%8D.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          （未完成）从零开始使用 gitbook 生成书籍
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-26 08:00:00" itemprop="dateCreated datePublished" datetime="2021-01-26T08:00:00+08:00">2021-01-26</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="（未完成）从零开始使用 gitbook 生成书籍">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
-              </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2021/01-26%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8gitbook%E7%94%9F%E6%88%90%E4%B9%A6%E7%B1%8D.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/01-26零基础学会使用gitbook生成书籍.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
+            
+              <div class="mt-3">
   
   
-            <div class="post-description" style="margin-top:10px; font-size:1em">使用 gitbook 生成书籍，让你免除麻烦的排版等过程。</div>
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-01-26 08:00" pubdate>
+        2021年1月26日 早上
+      </time>
+    </span>
+  
+</div>
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/Gitbook/" rel="tag"><i class="fa fa-tag"></i> Gitbook</a>
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <!--Hello, Happy World-->
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">（未完成）从零开始使用 gitbook 生成书籍</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
 
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://www.gitbook.com/">GitBook</a> 是一个基于 Node.js 的命令行工具，可使用 Github/Git 和 Markdown 来制作精美的电子书。</p>
@@ -277,7 +260,7 @@
 <p>如果官网下载速度慢，你可以使用 <a target="_blank" rel="noopener" href="https://npm.taobao.org/mirrors/git-for-windows/">国内镜像</a>，选择最新的版本进行下载。这里给出本文写作时间最新的** 64 位**版本地址 <a target="_blank" rel="noopener" href="https://npm.taobao.org/mirrors/git-for-windows/v2.30.0.windows.2/Git-2.30.0.2-64-bit.exe">https://npm.taobao.org/mirrors/git-for-windows/v2.30.0.windows.2/Git-2.30.0.2-64-bit.exe</a>。</p>
 </blockquote>
 <p>安装完成后，通过<code>Win+R</code>（Win 是 windows 图标键，这里是要求按住 Win 键，然后按下 r 键）打开“运行”，输入<code>powershell</code>打开控制台（或者右击开始菜单，也能进入 powershell）。输入<code>git --version</code>，查看是否有这样形式的输出——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git version 2.20.1 </span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">git</span> version <span class="hljs-number">2</span>.<span class="hljs-number">20</span>.<span class="hljs-number">1</span> <br></code></pre></div></td></tr></table></figure>
 
 <p>如果没有，且显示什么命令未找到之类的，查看下下一节。</p>
 <blockquote>
@@ -289,14 +272,14 @@
 <p>在这里，单纯就 gitbook 软件的运行来说，可以认为 nodejs 是 gitbook 的运行平台，就如 windows 是 qq，office 的运行平台一样。因此 nodejs 是必须安装的。</p>
 <p>最新版的 nodejs 似乎和当前版本的 gitbook 不兼容，因此这里使用旧版本的 <a target="_blank" rel="noopener" href="https://npm.taobao.org/mirrors/node/v10.23.1/">nodejs</a>，你应当下载目录中的 msi 文件并安装。这里给出 <a target="_blank" rel="noopener" href="https://npm.taobao.org/mirrors/node/v10.23.1/node-v10.23.1-x64.msi">64 位的安装包</a>。</p>
 <p>安装完成后，你应当输入<code>npm -v</code>，查看是否有这样形式的输出——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">6.14.8</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">6</span>.<span class="hljs-number">14</span>.<span class="hljs-number">8</span><br></code></pre></div></td></tr></table></figure>
 
 <p>如果没有，查看下一节。</p>
 <blockquote>
 <p>你可以输入 node 进入 nodejs 的 REPL 环境（Read，Evaluate，Print，Loop，也就是说，这个环境将不断进行——读取你的输入，进行运算，打印出结果，重复以上步骤——这样的操作），过一把程序员的瘾。nodejs 使用 javascript，一种动态的脚本语言，广泛运用在网页中，但也可以运行在桌面端。gitbook 就是使用这个语言编写的。输入<code>console.log(&quot;hello, fucking world!&quot;)</code>试试看？这个操作（实际上，是<strong>函数调用</strong>）读取一个字符串并打印到控制台中。</p>
 </blockquote>
 <p>安装 gitbook 需要使用 nodejs 所提供的包管理工具** npm**。它的用途是从远程直接安装软件到本机中，并提供更新，移除等功能。在安装前，你应当更换到“国内镜像源”，因为官方提供的源慢到让人无法忍受，甚至还可能会超时。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config set registry https://registry.npm.taobao.org -g</span><br><span class="line">npm install -g gitbook-cli</span><br></pre></td></tr></table></figure>
+<figure class="highlight gams"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gams">npm config <span class="hljs-keyword">set</span> registry <span class="hljs-comment">https:</span>//<span class="hljs-comment">registry.npm.taobao.org -g</span><br>npm <span class="hljs-comment">install -g gitbook-cli</span><br></code></pre></div></td></tr></table></figure>
 
 <p>-g 这个参数是不可以省略的，使用该参数安装的软件将直接保存在 PATH 路径下（什么是 PATH 见下一节），这是符合我们的需要的。</p>
 <p>现在，输入<code>gitbook fetch</code>。如果安装正确的话，这一步将会安装 gitbook 的最新版本，需要注意的是，<strong>这一步非常慢，可能需要数十分钟</strong>，不知道该如何解决……</p>
@@ -304,9 +287,9 @@
 <p>这里的 gitbook 命令和它安装的 gitbook 是什么关系？请联想瓶和酒的关系，一个瓶子可以装多种酒（可以选择使用哪个版本的 gitbook），人要喝酒，则只能拿着瓶子喝。</p>
 </blockquote>
 <h2 id="如果出现了问题"><a href="#如果出现了问题" class="headerlink" title="如果出现了问题"></a>如果出现了问题</h2><p>如果出现了问题，九成九的可能是上述软件的路径并未添加到 PATH 中。也就是说，你应当将 git 和 nodejs 的路径添加到 PATH 中，我的 git 和 nodejs 都安装在了默认位置，其中 git 的路径是<code>C:\Program Files\Git\cmd</code>，nodejs 的路径是<code>C:\Program Files\nodejs</code>。关于如何将这些路径添加到 PATH，你可以按下 win 键，输入 env 并回车。</p>
-<p><img src="https://i.loli.net/2021/01/26/Os6AvgUPE5XLnhI.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/01/26/Os6AvgUPE5XLnhI.png"></p>
 <p>你将打开“系统属性”窗口。点击“环境变量”按钮，找到“系统变量”（“用户变量”也可以）中的 Path 行，双击并将路径添加进新的一行。</p>
-<p><img src="https://i.loli.net/2021/01/26/nDvUWJjR51HKMTL.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/01/26/nDvUWJjR51HKMTL.png"></p>
 <blockquote>
 <p>PATH 是一个文件路径的列表——当你在控制台下执行命令（其实每个命令都是一个软件，执行命令就是打开这个软件，只不过控制台下执行的软件很多都没有图形界面罢了）时，windows 会遍历 PATH 中所有路径以图找到该命令并执行。</p>
 <p>也就是说，如果你的软件没有添加到 PATH 中，Windows 将找不到该软件并报错。当然，你也可以直接给定软件的路径（无论是相对路径——软件的路径相对于你的控制台程序的当前路径，还是绝对路径——顾名思义）以运行没有添加到 PATH 中的程序，这里不考虑这种操作。</p>
@@ -318,300 +301,205 @@
 <p>每一个控制台窗口都有一个<strong>工作目录</strong>，其显示在光标的左边，形如<code>PS C:\Users\aoymykn&gt;</code>，这里的“C:\Users\aoymykn”就是工作目录。下面的 gitbook init 会在工作目录下生成项目文件。你也可以通过<code>cd</code>命令来更改工作目录。</p>
 </blockquote>
 <p>要创建一个 gitbook 项目，你应当创建一个空文件夹并在该文件夹下按住 shift+鼠标右键，选择“在此处打开 Powershell 窗口”（或 cmd 窗口），输入<code>gitbook init</code>并回车，这条命令将初始化一个项目。其会有这样的回显——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">warn: no summary file in this book</span><br><span class="line">info: create README.md</span><br><span class="line">info: create SUMMARY.md</span><br><span class="line">info: initialization is finished</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs pgsql">warn: <span class="hljs-keyword">no</span> <span class="hljs-keyword">summary</span> file <span class="hljs-keyword">in</span> this book<br><span class="hljs-keyword">info</span>: <span class="hljs-keyword">create</span> README.md<br><span class="hljs-keyword">info</span>: <span class="hljs-keyword">create</span> <span class="hljs-keyword">SUMMARY</span>.md<br><span class="hljs-keyword">info</span>: initialization <span class="hljs-keyword">is</span> finished<br></code></pre></div></td></tr></table></figure>
 
 <p>这里的 SUMMARY.md 文件是书籍的<strong>目录</strong>，README.md 文件是书籍的最初页面，可以认为是<strong>封面</strong>。</p>
 <p>你可以随意在 README.md 中输入一些东西。现在，输入<code>gitbook serve</code>。这条命令会在本地启动一个服务器以预览项目。</p>
 <p>TODO: 摸了</p>
 <h1 id="书籍的分发"><a href="#书籍的分发" class="headerlink" title="书籍的分发"></a>书籍的分发</h1><p>TODO: 摸了</p>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Gitbook/">Gitbook</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/01-27%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">模板方法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01-06%E7%BA%B5%E8%A7%88ArchLinux%E7%9A%84%E5%AE%89%E8%A3%85.html">
+                        <span class="hidden-mobile">ArchLinux 及图形界面的安装</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2021/01-26%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8gitbook%E7%94%9F%E6%88%90%E4%B9%A6%E7%B1%8D.md" title="（未完成）从零开始使用 gitbook 生成书籍">_posts/2021/01-26零基础学会使用gitbook生成书籍.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/01-06%E7%BA%B5%E8%A7%88ArchLinux%E7%9A%84%E5%AE%89%E8%A3%85.html" rel="prev" title="ArchLinux 及图形界面的安装">
-      <i class="fa fa-chevron-left"></i> ArchLinux 及图形界面的安装
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01-27%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95.html" rel="next" title="模板方法">
-      模板方法 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF-gitbook%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">为什么是 gitbook？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gitbook-%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">gitbook 环境的搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9-powershell-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%93%8D%E4%BD%9C"><span class="nav-number">2.1.</span> <span class="nav-text">对 powershell 的一些操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git-%E7%9A%84%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">2.2.</span> <span class="nav-text">git 的环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nodejs-%E5%92%8C-gitbook-%E7%9A%84%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">2.3.</span> <span class="nav-text">nodejs 和 gitbook 的环境搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E5%87%BA%E7%8E%B0%E4%BA%86%E9%97%AE%E9%A2%98"><span class="nav-number">2.4.</span> <span class="nav-text">如果出现了问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-markdown-%E8%AF%AD%E8%A8%80"><span class="nav-number">3.</span> <span class="nav-text">关于 markdown 语言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gitbook-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">gitbook 的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%A6%E7%B1%8D%E7%9A%84%E5%88%86%E5%8F%91"><span class="nav-number">5.</span> <span class="nav-text">书籍的分发</span></a></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>

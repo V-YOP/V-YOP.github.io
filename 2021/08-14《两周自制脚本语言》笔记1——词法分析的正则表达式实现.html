@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="这书，香！">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="这书，香！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《两周自制脚本语言》笔记 1——基于正则表达式的词法分析">
 <meta property="og:url" content="http://example.com/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html">
@@ -32,217 +27,205 @@
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814000737.png">
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203324.jpg">
 <meta property="article:published_time" content="2021-08-14T12:34:36.000Z">
-<meta property="article:modified_time" content="2022-03-26T11:55:41.810Z">
+<meta property="article:modified_time" content="2022-04-07T11:15:47.606Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="编译原理">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203349.jpg">
+  
+  
+  <title>《两周自制脚本语言》笔记 1——基于正则表达式的词法分析 - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>《两周自制脚本语言》笔记 1——基于正则表达式的词法分析 | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          《两周自制脚本语言》笔记 1——基于正则表达式的词法分析
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-14 20:34:36" itemprop="dateCreated datePublished" datetime="2021-08-14T20:34:36+08:00">2021-08-14</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《两周自制脚本语言》笔记 1——基于正则表达式的词法分析">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-26 19:55:41" itemprop="dateModified" datetime="2022-03-26T19:55:41+08:00">2022-03-26</time>
-              </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/08-14《两周自制脚本语言》笔记1——词法分析的正则表达式实现.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
+            
+              <div class="mt-3">
   
   
-            <div class="post-description" style="margin-top:10px; font-size:1em">这书，香！</div>
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-14 20:34" pubdate>
+        2021年8月14日 晚上
+      </time>
+    </span>
+  
+</div>
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" rel="tag"><i class="fa fa-tag"></i> 编译原理</a>
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203349.jpg" alt="img"></p>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《两周自制脚本语言》笔记 1——基于正则表达式的词法分析</h1>
+            
+            <div class="markdown-body">
+              <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203349.jpg"></p>
 <!--Hello, Happy World-->
 
 <p>该书的目标是<strong>使用 Java 语言</strong>实现一门简单的脚本语言——更具体的来说，是实现一个简单的<strong>脚本语言</strong>的<strong>语言处理器</strong>，其主体是一个解释器（就像 python），但内部通过编译器提高性能。</p>
@@ -250,13 +233,13 @@
 <blockquote>
 <p>AST 是什么？联想 Lisp 罢！</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814000737.png" alt="image-20210814000737459"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814000737.png"></p>
 <p>该书将此语言命名为 Stone——Perl 是珍珠（大概），Ruby 是红宝石，而它则只是一颗小石子。</p>
 <blockquote>
 <p>  等什么时候我真的去写一门喜欢的语言，就自己给它取名吧。</p>
 </blockquote>
 <h1 id="Stone-的基本语法"><a href="#Stone-的基本语法" class="headerlink" title="Stone 的基本语法"></a>Stone 的基本语法</h1><p>Stone 仍旧是 C 系语言，它在某些地方和 python 相近，某些地方又同传统的语言相近——</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 注释使用//，传统！</span><br><span class="line">even = 0 // 变量定义，类似 python，单行语句不需加分号，不需要定义变量类型</span><br><span class="line">odd = 0</span><br><span class="line">i = 1</span><br><span class="line">while i &lt; 10 &#123; // if 和 while 的条件不需要括号，类似 python</span><br><span class="line">	if i % 2 == 0 &#123;</span><br><span class="line">		even = even + i // 偶数</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		odd = odd + i</span><br><span class="line">	&#125;</span><br><span class="line">  i = i + 1</span><br><span class="line">&#125;</span><br><span class="line">even + odd // 不需要 return，最后表达式为返回值</span><br><span class="line"></span><br><span class="line">&#123; x = 1; y = 2 &#125; // 分号是语句间的分隔符，这种形式是合法的</span><br><span class="line">// 没有多行注释</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">// 注释使用//，传统！<br>even = 0 // 变量定义，类似 python，单行语句不需加分号，不需要定义变量类型<br>odd = 0<br>i = 1<br>while i &lt; 10 &#123; // if 和 while 的条件不需要括号，类似 python<br>	if i % 2 == 0 &#123;<br>		even = even + i // 偶数<br>	&#125; else &#123;<br>		odd = odd + i<br>	&#125;<br>  i = i + 1<br>&#125;<br>even + odd // 不需要 return，最后表达式为返回值<br><br>&#123; x = 1; y = 2 &#125; // 分号是语句间的分隔符，这种形式是合法的<br>// 没有多行注释<br></code></pre></div></td></tr></table></figure>
 
 <p>语句的换行如果要能够允许各种情况，会导致实现的复杂化，因此对换行情况做尽量多限制——左花括号必须不换行，else 必须和右花括号在同一行。</p>
 <blockquote>
@@ -274,10 +257,10 @@
 <blockquote>
 <p>似乎有时候（或者是一般来说？）保留字（关键字）和标点符号会被归为另一种类型的 Token。</p>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">num = 0</span><br><span class="line">hello = &quot;world&quot;</span><br><span class="line">while 1 &#123;</span><br><span class="line">	num = num + 100</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// num, =, hello, while, &#123;, +, &#125;为标识符</span><br><span class="line">// 0, 1, 100 为数字字面量，其代表数字 0, 1, 100（当然，也可以用 two、one、three，0x01、0x02、0x03，ひとつ、ふたつ、みっつ等字面量来定义 1，2，3 等数字！）</span><br><span class="line">// &quot;world&quot;为字符串字面量，其表示字符串值 Java（同理，也可以使用其它符号如单引号来标记字符串）</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">num = 0<br>hello = &quot;world&quot;<br>while 1 &#123;<br>	num = num + 100<br>&#125;<br><br>// num, =, hello, while, &#123;, +, &#125;为标识符<br>// 0, 1, 100 为数字字面量，其代表数字 0, 1, 100（当然，也可以用 two、one、three，0x01、0x02、0x03，ひとつ、ふたつ、みっつ等字面量来定义 1，2，3 等数字！）<br>// &quot;world&quot;为字符串字面量，其表示字符串值 Java（同理，也可以使用其它符号如单引号来标记字符串）<br></code></pre></div></td></tr></table></figure>
 
 <h2 id="Token-的定义"><a href="#Token-的定义" class="headerlink" title="Token 的定义"></a>Token 的定义</h2><p>下面给 Token 一个总的定义——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Token</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Token EOF = <span class="keyword">new</span> Token(-<span class="number">1</span>)&#123;&#125;; <span class="comment">// 文件结尾</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String EOL = <span class="string">&quot;\\n&quot;</span>; <span class="comment">// 行结尾</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> lineNumber;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 使用 protected 保证不会被外界直接实例化，同时子类又可以重写</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">Token</span><span class="params">(<span class="keyword">int</span> lineNumber)</span> </span>&#123; </span><br><span class="line">        <span class="keyword">this</span>.lineNumber = lineNumber;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getLineNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lineNumber;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isIdentifier</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getNumber</span><span class="params">()</span> </span>&#123; <span class="comment">// 为数字时能够获取到其代表的数值</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> StoneException(<span class="string">&quot;not number token&quot;</span>); <span class="comment">// 为自己实现的一个 Exception</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getText</span><span class="params">()</span> </span>&#123; <span class="comment">// 为字符串或标识符时，通过该方法能够取到其文本</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Token</span> </span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Token EOF = <span class="hljs-keyword">new</span> Token(-<span class="hljs-number">1</span>)&#123;&#125;; <span class="hljs-comment">// 文件结尾</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String EOL = <span class="hljs-string">&quot;\\n&quot;</span>; <span class="hljs-comment">// 行结尾</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> lineNumber;<br>  <br>  	<span class="hljs-comment">// 使用 protected 保证不会被外界直接实例化，同时子类又可以重写</span><br>    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-title">Token</span><span class="hljs-params">(<span class="hljs-keyword">int</span> lineNumber)</span> </span>&#123; <br>        <span class="hljs-keyword">this</span>.lineNumber = lineNumber;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getLineNumber</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> lineNumber;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isIdentifier</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isNumber</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isString</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getNumber</span><span class="hljs-params">()</span> </span>&#123; <span class="hljs-comment">// 为数字时能够获取到其代表的数值</span><br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> StoneException(<span class="hljs-string">&quot;not number token&quot;</span>); <span class="hljs-comment">// 为自己实现的一个 Exception</span><br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getText</span><span class="hljs-params">()</span> </span>&#123; <span class="hljs-comment">// 为字符串或标识符时，通过该方法能够取到其文本</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>关于 Token 的定义（即规定各个类型 Token 的合法值），使用 java 的正则表达式的库并遵循其定义方式——</p>
 <p>首先是最简单的数字的字面量——<code>[0-9]+</code>（没错，这里没有小数！负数则通过负号运算符进行定义……大概吧）。</p>
@@ -286,10 +269,10 @@
 <p>然后是字符串字面量的定义，其为<code>&quot;(\\&quot;|\\\\|\\n|[^&quot;\n])*&quot;</code>，这代表字符串中的值能包括、&quot;，\\，\n（作为字面量写出来的，两个字符的、n，而非真正的换行符），以及除”，换行符以外其他字符（”和换行符会打断字符串。书中居然没有匹配换行符，为什么？）。</p>
 <p>Java 需要对”和、进行转义，最终编写在 Java 文件里的正则表达式如下。需要记住的是，<strong>下面的字符串最后应当得到的目标字符串是上面的正则</strong>，因此这其中有<code>字面量 Java 字符串-&gt;实际正则表达式字符串</code>这一层转换——比如正则表达式要匹配<code>\n</code>这个回车符，对应 Java 代码就要<code>\\n</code>，其将成为原生字符串<code>\n</code>并作为 regex。但若是要匹配<code>\n</code>这个长度为二的字符串，相应的原生字符串是<code>\\n</code>，为此，相应的 Java 字符串应当转义两个反斜杠，最终得到<code>\\\\n</code>这样的结果。</p>
 <p>如果 Java 提供了 raw 字符串的功能，编写这个将漂亮很多。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String pattern = <span class="string">&quot;\&quot;(\\\\\&quot;|\\\\\\\\|\\\\\n|[^\&quot;\n])*\&quot;&quot;</span>; <span class="comment">// mdzz</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">String pattern = <span class="hljs-string">&quot;\&quot;(\\\\\&quot;|\\\\\\\\|\\\\\n|[^\&quot;\n])*\&quot;&quot;</span>; <span class="hljs-comment">// mdzz</span><br></code></pre></div></td></tr></table></figure>
 
 <h2 id="词法分析器的设计和实现"><a href="#词法分析器的设计和实现" class="headerlink" title="词法分析器的设计和实现"></a>词法分析器的设计和实现</h2><p>Java 语言能够使用一个正则表达式获取特定字符串中所有匹配字符串，因此这里使用正则表达式来获取 Token，具体来说，可以通过如下正则表达式来对 Token 进行获取——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\s*((//.*)|(pat1)|(pat2)|(pat3))?</span><br></pre></td></tr></table></figure>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode">\s*<span class="hljs-comment">((//.*)</span>|<span class="hljs-comment">(pat1)</span>|<span class="hljs-comment">(pat2)</span>|<span class="hljs-comment">(pat3)</span>)?<br></code></pre></div></td></tr></table></figure>
 
 <blockquote>
 <p>这里的 pat3 的括号加或不加都可，只不过标识符所匹配的括号不一样罢了。</p>
@@ -297,304 +280,209 @@
 <p>其中，pat1-3 为匹配整型字面量，字符串字面量，标识符的正则表达式。//. *用于匹配注释，\s *用于匹配 0 个及以上的空字符，? 代表即使没有任何内容也能够匹配。正则表达式匹配成功时，能通过代码对每个括号所匹配的内容进行获取，这样从四个括号的匹配值是否是 null 就能看出，能获得到被匹配的 Token 的类型。</p>
 <p>词法分析器的工作是简单的——逐行读取源代码，对每行源代码，从开头起检查内容是否匹配，并在检查完成后获取所有匹配的字符串。</p>
 <p>在获取时，使用的正则表达式如下。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String STRING_PATTERN = <span class="string">&quot;\&quot;((\\\\\&quot;|\\\\\\\\|\\\\\n|[^\&quot;\\n])*)\&quot;&quot;</span>; <span class="comment">// 这里又加了一层括号，使能够直接获取字符串双引号包围的值</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String NUMBER_PATTERN = <span class="string">&quot;[0-9]+&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String IDENTIFIER_PATTERN = <span class="string">&quot;[A-Z_a-z][A-Z_a-z0-9]*|==|&lt;=|&gt;=|&amp;&amp;|\\|\\||\\p&#123;Punct&#125;&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Pattern FULL_PATTERN</span><br><span class="line">  = Pattern.compile(String.format(<span class="string">&quot;\\s*((//.*)|(%s)|(%s)|(%s))?&quot;</span>, NUMBER_PATTERN, STRING_PATTERN, IDENTIFIER_PATTERN));</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">matcher.group(0) 无意义</span></span><br><span class="line"><span class="comment">group(1) 若为 null 说明字符串为空</span></span><br><span class="line"><span class="comment">group(2) 为注释</span></span><br><span class="line"><span class="comment">group(3) 为数字字面量之字符串表述</span></span><br><span class="line"><span class="comment">group(4) 为字符串</span></span><br><span class="line"><span class="comment">group(5) 为字符串字面量之实际值，但需要将所有应当转义字符进行转义，比如用户如果在字符串中包括、n，其是以、，n 两个字符保存在文本中的，读取到内存中也是两个字符&#x27;\\&#x27;和&#x27;n&#x27;，需要将其转换成换行符</span></span><br><span class="line"><span class="comment">group(6) 无意义</span></span><br><span class="line"><span class="comment">group(7) 为标识符</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">像 123abc 这样的是不会出现错误的，它会拆成数字字面量 123 和标识符 abc，这河里吗？还是说这种错误必然会在语法分析阶段被发现？感觉如果要在词法分析阶段解决这个问题，需要增加更多逻辑……得不偿失。</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String STRING_PATTERN = <span class="hljs-string">&quot;\&quot;((\\\\\&quot;|\\\\\\\\|\\\\\n|[^\&quot;\\n])*)\&quot;&quot;</span>; <span class="hljs-comment">// 这里又加了一层括号，使能够直接获取字符串双引号包围的值</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String NUMBER_PATTERN = <span class="hljs-string">&quot;[0-9]+&quot;</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String IDENTIFIER_PATTERN = <span class="hljs-string">&quot;[A-Z_a-z][A-Z_a-z0-9]*|==|&lt;=|&gt;=|&amp;&amp;|\\|\\||\\p&#123;Punct&#125;&quot;</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Pattern FULL_PATTERN<br>  = Pattern.compile(String.format(<span class="hljs-string">&quot;\\s*((//.*)|(%s)|(%s)|(%s))?&quot;</span>, NUMBER_PATTERN, STRING_PATTERN, IDENTIFIER_PATTERN));<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">matcher.group(0) 无意义</span><br><span class="hljs-comment">group(1) 若为 null 说明字符串为空</span><br><span class="hljs-comment">group(2) 为注释</span><br><span class="hljs-comment">group(3) 为数字字面量之字符串表述</span><br><span class="hljs-comment">group(4) 为字符串</span><br><span class="hljs-comment">group(5) 为字符串字面量之实际值，但需要将所有应当转义字符进行转义，比如用户如果在字符串中包括、n，其是以、，n 两个字符保存在文本中的，读取到内存中也是两个字符&#x27;\\&#x27;和&#x27;n&#x27;，需要将其转换成换行符</span><br><span class="hljs-comment">group(6) 无意义</span><br><span class="hljs-comment">group(7) 为标识符</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">像 123abc 这样的是不会出现错误的，它会拆成数字字面量 123 和标识符 abc，这河里吗？还是说这种错误必然会在语法分析阶段被发现？感觉如果要在词法分析阶段解决这个问题，需要增加更多逻辑……得不偿失。</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
 
 <p>根据正则表达式，能够容易写出相应的代码，下面的是获取单行的 Token 的代码——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 对一行字符串进行词法分析</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> lineNumber 字符串所处行数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> str 待分析字符串</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Token 序列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Token&gt; <span class="title">analyzeLine</span><span class="params">(<span class="keyword">int</span> lineNumber, String str)</span> </span>&#123;</span><br><span class="line">  List&lt;Token&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  Matcher matcher = FULL_PATTERN.matcher(str);</span><br><span class="line">  <span class="keyword">while</span>(matcher.find()) &#123;</span><br><span class="line">    <span class="keyword">if</span> (matcher.group(<span class="number">1</span>) == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span> (matcher.group(<span class="number">3</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">      res.add(TokenFactory.of(lineNumber, TokenType.NUMBER, matcher.group(<span class="number">3</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (matcher.group(<span class="number">5</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="comment">// TODO 需要转义</span></span><br><span class="line">      res.add(TokenFactory.of(lineNumber, TokenType.STRING ,matcher.group(<span class="number">5</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (matcher.group(<span class="number">7</span>) != <span class="keyword">null</span>) &#123;</span><br><span class="line">      res.add(TokenFactory.of(lineNumber, TokenType.IDENTIFIER, matcher.group(<span class="number">7</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  res.add(TokenFactory.EOL(lineNumber));</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> str 待分析字符串数组，将根据下标确定行数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Token 序列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Token&gt; <span class="title">analyze</span><span class="params">(String[] str)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span>[] count = &#123;<span class="number">1</span>&#125;;</span><br><span class="line">  <span class="keyword">return</span> Arrays.stream(str)</span><br><span class="line">    .map(line -&gt; analyzeLine(count[<span class="number">0</span>]++, line)) <span class="comment">// 在 map 中使用会改变的参数非常不好，但这里写起来简单</span></span><br><span class="line">    .flatMap(List::stream)</span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 对一行字符串进行词法分析</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> lineNumber 字符串所处行数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> str 待分析字符串</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Token 序列</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Token&gt; <span class="hljs-title">analyzeLine</span><span class="hljs-params">(<span class="hljs-keyword">int</span> lineNumber, String str)</span> </span>&#123;<br>  List&lt;Token&gt; res = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();<br>  Matcher matcher = FULL_PATTERN.matcher(str);<br>  <span class="hljs-keyword">while</span>(matcher.find()) &#123;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">1</span>) == <span class="hljs-keyword">null</span>) <span class="hljs-keyword">break</span>;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">3</span>) != <span class="hljs-keyword">null</span>) &#123;<br>      res.add(TokenFactory.of(lineNumber, TokenType.NUMBER, matcher.group(<span class="hljs-number">3</span>)));<br>    &#125;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">5</span>) != <span class="hljs-keyword">null</span>) &#123;<br>      <span class="hljs-comment">// TODO 需要转义</span><br>      res.add(TokenFactory.of(lineNumber, TokenType.STRING ,matcher.group(<span class="hljs-number">5</span>)));<br>    &#125;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">7</span>) != <span class="hljs-keyword">null</span>) &#123;<br>      res.add(TokenFactory.of(lineNumber, TokenType.IDENTIFIER, matcher.group(<span class="hljs-number">7</span>)));<br>    &#125;<br>  &#125;<br>  res.add(TokenFactory.EOL(lineNumber));<br>  <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> str 待分析字符串数组，将根据下标确定行数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Token 序列</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Token&gt; <span class="hljs-title">analyze</span><span class="hljs-params">(String[] str)</span> </span>&#123;<br>  <span class="hljs-keyword">int</span>[] count = &#123;<span class="hljs-number">1</span>&#125;;<br>  <span class="hljs-keyword">return</span> Arrays.stream(str)<br>    .map(line -&gt; analyzeLine(count[<span class="hljs-number">0</span>]++, line)) <span class="hljs-comment">// 在 map 中使用会改变的参数非常不好，但这里写起来简单</span><br>    .flatMap(List::stream)<br>    .collect(Collectors.toList());<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203324.jpg" alt="img"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203324.jpg"></p>
 <p>正则表达式用来进行词法分析感觉还是有些不太舒服的，好在实践中已经开发了许多现成的词法分析器可以直接使用，该书似乎之后还会通过有限状态自动机来进行词法分析…再议吧！下一步是学习和编写语法分析器。</p>
 <blockquote>
 <p>  感觉其实可以把 NumToken 和 StringToken 统一起来，变成 LiteralToken</p>
 </blockquote>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08-17%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8CBNF.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 2——语法分析和 BNF</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-02%E5%85%B3%E4%BA%8Egit%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8.html">
+                        <span class="hidden-mobile">对 git 的一些使用的笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.md" title="《两周自制脚本语言》笔记 1——基于正则表达式的词法分析">_posts/2021/08-14《两周自制脚本语言》笔记1——词法分析的正则表达式实现.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/08-02%E5%85%B3%E4%BA%8Egit%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8.html" rel="prev" title="对 git 的一些使用的笔记">
-      <i class="fa fa-chevron-left"></i> 对 git 的一些使用的笔记
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/08-17%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8CBNF.html" rel="next" title="《两周自制脚本语言》笔记 2——语法分析和 BNF">
-      《两周自制脚本语言》笔记 2——语法分析和 BNF <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Stone-%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">Stone 的基本语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">词法分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Token"><span class="nav-number">2.1.</span> <span class="nav-text">Token</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Token-%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.2.</span> <span class="nav-text">Token 的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.</span> <span class="nav-text">词法分析器的设计和实现</span></a></li></ol></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>

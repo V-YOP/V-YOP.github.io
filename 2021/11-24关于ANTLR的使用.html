@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="词法分析和语法分析的核心部分在之前实际上已经完成了，现在看看更接近实践的玩意。">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="词法分析和语法分析的核心部分在之前实际上已经完成了，现在看看更接近实践的玩意。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于 ANTLR 的使用">
 <meta property="og:url" content="http://example.com/2021/11-24%E5%85%B3%E4%BA%8EANTLR%E7%9A%84%E4%BD%BF%E7%94%A8.html">
@@ -31,217 +26,205 @@
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210910010100.png">
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210911001131.png">
 <meta property="article:published_time" content="2021-11-24T06:08:09.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.849Z">
+<meta property="article:modified_time" content="2022-04-07T11:15:47.607Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="编译原理">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210910010100.png">
+  
+  
+  <title>关于 ANTLR 的使用 - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2021/11-24%E5%85%B3%E4%BA%8EANTLR%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>关于 ANTLR 的使用 | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11-24%E5%85%B3%E4%BA%8EANTLR%E7%9A%84%E4%BD%BF%E7%94%A8.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          关于 ANTLR 的使用
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-24 14:08:09" itemprop="dateCreated datePublished" datetime="2021-11-24T14:08:09+08:00">2021-11-24</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 ANTLR 的使用">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
-              </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2021/11-24%E5%85%B3%E4%BA%8EANTLR%E7%9A%84%E4%BD%BF%E7%94%A8.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/11-24关于ANTLR的使用.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
+            
+              <div class="mt-3">
   
   
-            <div class="post-description" style="margin-top:10px; font-size:1em">词法分析和语法分析的核心部分在之前实际上已经完成了，现在看看更接近实践的玩意。</div>
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-11-24 14:08" pubdate>
+        2021年11月24日 下午
+      </time>
+    </span>
+  
+</div>
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" rel="tag"><i class="fa fa-tag"></i> 编译原理</a>
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <blockquote>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 ANTLR 的使用</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
 <p>  三四个月前的文章，在学习编译原理的时候写的。当前并没精力干这个，所以直接发出来（不否认“水”一篇的意图）。如果再要去学的话，就通过 Haskell 去学吧。早就听说 Haskell 特别擅长这个啦。</p>
 </blockquote>
 <p>考虑到词法分析和语法分析的核心部分我已经通过《两周自制脚本语言》的前几章有了了解（当然，仅限于了解而已！），该书其后的基本上是<strong>对语言的语义的设计</strong>，如表达式，变量，函数，闭包，对象……我认为现阶段没必要为此费心——我的主要目的仍旧没有变化，仍旧是为了编写 DSL，而 DSL 很大程度上是不需要像一个通用编程语言一样有这些特性的，所以就先停止相关学习，考虑去学习现实的，应用在实际项目中的工具，为之后的设计和代码编写提供新的可能性。</p>
@@ -258,10 +241,10 @@
 <p>ANTLR 是一个解析器生成器（parser generator），或者更时髦的说法——CC（Complier Complier），其作用是根据特定的描述对 lexer，parser 进行生成，从而达到简化语言解析过程，让用户能专注语言的语义上的目标。ANTLR 相较于 JavaCC 更为重型——它不仅提供解析器生成功能，也提供树转换，代码生成等复杂功能。这是优势也是劣势，但现阶段大可以无视它，仅利用其生成 AST 树的功能即可。</p>
 <p>ANTLR 相较于 JavaCC 另一项重要的优势在于——其生成的 lexer 和 parser 能跑在一堆语言上，包括但不限于 Java，Python，Js，这是一个很大的优势，意味着完全可以通过其对这些语言进行扩展……在这时，其实如何提供语法高亮和补全的插件反而是问题最大的地方。</p>
 <h2 id="quick-start"><a href="#quick-start" class="headerlink" title="quick start"></a>quick start</h2><p>通过实例上手是最方便的，下面是一个支持两个整数相加的语法在 ANTLR 中的描述——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// Adder.g4</span><br><span class="line">grammar Adder;</span><br><span class="line">/**</span><br><span class="line"> * Parser Rules</span><br><span class="line"> */</span><br><span class="line">operation: NUMBER &#x27;+&#x27; NUMBER;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Lexer Rules</span><br><span class="line"> */</span><br><span class="line">NUMBER : [0-9]+;</span><br><span class="line">WHITESPACE:&#x27; &#x27; -&gt; skip;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scss"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scss"><span class="hljs-comment">// Adder.g4</span><br>grammar Adder;<br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Parser Rules</span><br><span class="hljs-comment"> */</span><br>operation: NUMBER <span class="hljs-string">&#x27;+&#x27;</span> NUMBER;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Lexer Rules</span><br><span class="hljs-comment"> */</span><br>NUMBER : [<span class="hljs-number">0</span>-<span class="hljs-number">9</span>]+;<br>WHITESPACE:<span class="hljs-string">&#x27; &#x27;</span> -&gt; skip;<br></code></pre></div></td></tr></table></figure>
 
 <p>对于字符串”1 + 2”，其对应 AST 为——</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210910010100.png" alt="parseTree"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210910010100.png"></p>
 <p>可以看到，对描述文件有这样的<strong>约定</strong>（可能并非语言的约束）——</p>
 <ul>
 <li>终结符（词法规则）全部为大写，非终结符（语法规则）全部为小写。</li>
@@ -269,20 +252,20 @@
 </ul>
 <p>需注意的是，词法规则是按顺序匹配的！这意味着关键字应当先出现，标识符等应当后出现。</p>
 <h3 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h3><p>词法分析负责将源代码切分为 Token 序列。其使用类似正则表达式的语法。下面编写了 Stone 语言所使用的词法分析器所对应的 ANTLR 表示。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">grammar Stone;</span><br><span class="line">// 测试用 parser</span><br><span class="line">token_list : (NUMBER_LITERAL | STRING_LITERAL | IDENTIFIER | SYMBOL)*;</span><br><span class="line">// lexer</span><br><span class="line">WHITE_SPACE : (&#x27; &#x27; | &#x27;\t&#x27;) -&gt; skip; // 忽略空格，制表符是任何现代语言的共性：）</span><br><span class="line">NUMBER_LITERAL : [0-9]+;</span><br><span class="line">STRING_LITERAL : &#x27;&quot;&#x27;~[\n&quot;]*&#x27;&quot;&#x27;;</span><br><span class="line">IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]*;</span><br><span class="line">SYMBOL : [&#123;&#125;\-+!@#$%^~&amp;*()[\];&#x27;`?&lt;&gt;/.:\n=]; // 虽然很恐怖……但大可以对键盘进行&quot;遍历&quot;，需要注意的是-和] 需要转义。值得注意的是这里保留了换行符。</span><br></pre></td></tr></table></figure>
+<figure class="highlight elixir"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs elixir">grammar Stone;<br><span class="hljs-regexp">//</span> 测试用 parser<br>token_list : (NUMBER_LITERAL | STRING_LITERAL | IDENTIFIER | SYMBOL)*;<br><span class="hljs-regexp">//</span> lexer<br>WHITE_SPACE : (<span class="hljs-string">&#x27; &#x27;</span> | <span class="hljs-string">&#x27;\t&#x27;</span>) -&gt; skip; <span class="hljs-regexp">//</span> 忽略空格，制表符是任何现代语言的共性：）<br>NUMBER_LITERAL : [0<span class="hljs-number">-9</span>]+;<br>STRING_LITERAL : <span class="hljs-string">&#x27;&quot;&#x27;</span>~[\n<span class="hljs-string">&quot;]*&#x27;&quot;</span><span class="hljs-string">&#x27;;</span><br><span class="hljs-string">IDENTIFIER : [a-zA-Z_][a-zA-Z_0-9]*;</span><br><span class="hljs-string">SYMBOL : [&#123;&#125;\-+!@#$%^~&amp;*()[\];&#x27;</span>`?&lt;&gt;<span class="hljs-regexp">/.:\n=]; /</span><span class="hljs-regexp">/ 虽然很恐怖……但大可以对键盘进行&quot;遍历&quot;，需要注意的是-和] 需要转义。值得注意的是这里保留了换行符。</span><br></code></pre></div></td></tr></table></figure>
 
 <h4 id="一个误区"><a href="#一个误区" class="headerlink" title="一个误区"></a>一个误区</h4><p>在学习中，我遇到一个非常迷惑的问题，在解决的过程中，我意识到我有一个严重的误区——认为在进行语法分析时，其能够根据当前所处状态挑选适合的正则表达式进行匹配——这是错误的！它会按顺序对词法规则进行匹配，并找到<strong>最长</strong>的匹配！如果长度相同，则按顺序最前的匹配规则。</p>
 <p>这个误区会导致严重问题——比如试图编写一条“万能”的词法规则来匹配一切事物时，会发现遇到莫名其妙的问题。比如，这里试图编写一个”chat language”，其示例如下——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Yukina says : hello world;</span><br><span class="line">Me asks : Nice to meet u yukina;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ada"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ada">Yukina says : <span class="hljs-type">hello</span> world;<br>Me asks : <span class="hljs-type">Nice</span> to meet u yukina;<br></code></pre></div></td></tr></table></figure>
 
 <p>与其对应的 g4 文件内容是——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">grammar Stone;</span><br><span class="line">// parser</span><br><span class="line">line : NAME COMMAND &#x27;:&#x27; word+ &#x27;;&#x27;;</span><br><span class="line">word : WORD | NAME;</span><br><span class="line">// lexer</span><br><span class="line"></span><br><span class="line">fragment LOWER_CASE : [a-z]; // fragment 可以认为是一种&quot;宏&quot;，使用到它时它直接会被做文本替换，没有更多骚操作。</span><br><span class="line">fragment UPPER_CASE : [A-Z];</span><br><span class="line"></span><br><span class="line">WHITESPACE : (&#x27; &#x27; | &#x27;\t&#x27;) -&gt; skip;</span><br><span class="line">NAME : UPPER_CASE LOWER_CASE*;</span><br><span class="line">COMMAND : &#x27;says&#x27; | &#x27;asks&#x27;;</span><br><span class="line">WORD : (LOWER_CASE | UPPER_CASE)+;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scss"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scss">grammar Stone;<br><span class="hljs-comment">// parser</span><br>line : NAME COMMAND <span class="hljs-string">&#x27;:&#x27;</span> word+ <span class="hljs-string">&#x27;;&#x27;</span>;<br>word : WORD | NAME;<br><span class="hljs-comment">// lexer</span><br><br>fragment LOWER_CASE : [a-z]; <span class="hljs-comment">// fragment 可以认为是一种&quot;宏&quot;，使用到它时它直接会被做文本替换，没有更多骚操作。</span><br>fragment UPPER_CASE : [A-Z];<br><br>WHITESPACE : (<span class="hljs-string">&#x27; &#x27;</span> | <span class="hljs-string">&#x27;\t&#x27;</span>) -&gt; skip;<br>NAME : UPPER_CASE LOWER_CASE*;<br>COMMAND : <span class="hljs-string">&#x27;says&#x27;</span> | <span class="hljs-string">&#x27;asks&#x27;</span>;<br>WORD : (LOWER_CASE | UPPER_CASE)+;<br></code></pre></div></td></tr></table></figure>
 
 <p>或许还可以改善，但是这个已经能够进行使用了。但是最初我可不是这么实现的，我幻想将其输出的内容（: 和；中间的内容）全部拿到，于是写了这样一条词法规则——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MESSAGE : (LOWER_CASE | UPPER_CASE | WHITESPACE)+;</span><br></pre></td></tr></table></figure>
+<figure class="highlight coq"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs coq">MESSAGE : (LOWER_CASE | <span class="hljs-type">UPPER_CASE</span> | <span class="hljs-type">WHITESPACE</span>)+;<br></code></pre></div></td></tr></table></figure>
 
 <p>然后就遭重了——只要加上了空格，所有符合 MESSAGE 的东西全都被匹配成了 MESSAGE，离谱起来了。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210911001131.png" alt="image-20210911001131467"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210911001131.png"></p>
 <p>总之，对词法分析规则的实现，应当得出这些教训——</p>
 <ul>
 <li>词法分析规则应当抽象，尽量少涉及语义（除非语言本身非常简单），而是抽取出那些不同语言都能共通的东西，比如字面量，标识符等（不确定）。</li>
@@ -291,293 +274,198 @@
 </ul>
 <h3 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h3><p>摸啦！学个屁！要写 DSL 的话拿 Haskell 写啦，衰仔！</p>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/12-07%E3%80%8A%E4%B8%83%E5%91%A8%E4%B8%83%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94ruby.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《七周七语言》笔记——Ruby</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11-11go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94hello,%20world%EF%BC%9B%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B.html">
+                        <span class="hidden-mobile">go 语言学习笔记 1——Hello, World 和基本集合类型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2021/11-24%E5%85%B3%E4%BA%8EANTLR%E7%9A%84%E4%BD%BF%E7%94%A8.md" title="关于 ANTLR 的使用">_posts/2021/11-24关于ANTLR的使用.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/11-11go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94hello,%20world%EF%BC%9B%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B.html" rel="prev" title="go 语言学习笔记 1——Hello, World 和基本集合类型">
-      <i class="fa fa-chevron-left"></i> go 语言学习笔记 1——Hello, World 和基本集合类型
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/12-07%E3%80%8A%E4%B8%83%E5%91%A8%E4%B8%83%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94ruby.html" rel="next" title="《七周七语言》笔记——Ruby">
-      《七周七语言》笔记——Ruby <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ANTLR"><span class="nav-number">1.</span> <span class="nav-text">ANTLR</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#quick-start"><span class="nav-number">1.1.</span> <span class="nav-text">quick start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">词法分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E8%AF%AF%E5%8C%BA"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">一个误区</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-number">1.1.2.</span> <span class="nav-text">语法分析</span></a></li></ol></li></ol></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>

@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="进行一个 Spring 的学，先去了解下它最重要的两项功能——IoC 和 AOP。">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="进行一个 Spring 的学，先去了解下它最重要的两项功能——IoC 和 AOP。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于 Spring 的 IoC 和 AOP">
 <meta property="og:url" content="http://example.com/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.html">
@@ -31,219 +26,207 @@
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png">
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210811225149.jpg">
 <meta property="article:published_time" content="2021-06-29T07:21:40.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.843Z">
+<meta property="article:modified_time" content="2022-04-07T11:15:47.595Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Spring">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png">
+  
+  
+  <title>关于 Spring 的 IoC 和 AOP - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>关于 Spring 的 IoC 和 AOP | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          关于 Spring 的 IoC 和 AOP
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-29 15:21:40" itemprop="dateCreated datePublished" datetime="2021-06-29T15:21:40+08:00">2021-06-29</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 Spring 的 IoC 和 AOP">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
-              </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/06-29关于Spring的IoC和AOP.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
+            
+              <div class="mt-3">
   
   
-            <div class="post-description" style="margin-top:10px; font-size:1em">进行一个 Spring 的学，先去了解下它最重要的两项功能——IoC 和 AOP。</div>
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-29 15:21" pubdate>
+        2021年6月29日 下午
+      </time>
+    </span>
+  
+</div>
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/Spring/" rel="tag"><i class="fa fa-tag"></i> Spring</a>
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      11k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <!--Hello, Happy World-->
 
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png" alt="image-20210811223632874"></p>
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 Spring 的 IoC 和 AOP</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png"></p>
 <blockquote>
 <p>这张图片非常生动形象地描述了 IoC 的性质，它还能进行更多扩展——比如图上的女孩拿到衣服后，可以烫衣服，缝补……以此说明 IoC 容器可以对 Bean 进行非常多的操作，AOP 离开了 IoC，实现也是比较麻烦的。</p>
 </blockquote>
@@ -262,34 +245,34 @@
 <p>IoC（控制反转）即对所需对象的创建不由程序进行，而是由用户进行，将控制权交由用户，Spring 中的 IoC 即是将对象的创建，管理交由 Spring 提供的 IoC 容器进行，其实现的方式是 DI（依赖注入）。IoC 可以认为是工厂方法模式的一种应用。</p>
 <p>就如大多数特定的技术一样，IoC 的意义也在于对程序解耦合，提高程序的可维护性。</p>
 <p>考虑这样一个场景，在某个 Service 里通过 DAO 层获取用户信息。这里系统使用了 MySQl 作为数据库。于是得到了这样的代码——</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getUser</span><span class="params">()</span></span>: User;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getUser</span><span class="params">()</span></span>: User;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserDaoMySQLImpl</span> : <span class="type">UserDao &#123;</span></span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getUser</span><span class="params">()</span></span>: User &#123;</span><br><span class="line">        println(<span class="string">&quot;查询了 MySQL&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> User()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserServiceImpl</span> : <span class="type">UserService &#123;</span></span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> userDao : UserDao = UserDaoMySQLImpl()</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getUser</span><span class="params">()</span></span>: User &#123;</span><br><span class="line">        <span class="keyword">return</span> userDao.getUser()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs kotlin"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">UserService</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">getUser</span><span class="hljs-params">()</span></span>: User;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">UserDao</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">getUser</span><span class="hljs-params">()</span></span>: User;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserDaoMySQLImpl</span> : <span class="hljs-type">UserDao &#123;</span></span><br>    <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">getUser</span><span class="hljs-params">()</span></span>: User &#123;<br>        println(<span class="hljs-string">&quot;查询了 MySQL&quot;</span>)<br>        <span class="hljs-keyword">return</span> User()<br>    &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserServiceImpl</span> : <span class="hljs-type">UserService &#123;</span></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> userDao : UserDao = UserDaoMySQLImpl()<br>    <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">getUser</span><span class="hljs-params">()</span></span>: User &#123;<br>        <span class="hljs-keyword">return</span> userDao.getUser()<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>然后，出于某种奇怪的业务需要，系统又换成了 SQL Server 数据库，然后下面的程序员就编写了 UserDaoSQLServerImpl，并把各种 Service 里的所有的 UserDaoMySQLImpl 改成 UserDaoSQLServerImpl。</p>
 <p>再然后，需求又改了，要用 sqlite 数据库了，于是程序员们又重复了上面的步骤，周而复始……</p>
 <p>这里就可以看到问题，每次需求一改变，都要改源代码，这里的问题在于，各种 serviceImpl 实际上和各种 daoImpl 是<strong>紧耦合</strong>的，要更换使用的 dao 就必须侵入式地修改代码，显然这里可以使用工厂方法模式，通过反射和配置文件生成相应的类。</p>
 <p>但是这里先不提工厂方法模式，一个比较简单的修改方式是，将使用哪个 daoImpl 的权力交给“用户”（使用相关类的代码），让用户通过构造器或 set 方法，对想要使用的 dao 进行设定。如下面的形式——</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserServiceImpl</span> : <span class="type">UserService &#123;</span></span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> userDao : UserDao? = <span class="literal">null</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setUserDao</span><span class="params">(userDao : <span class="type">UserDao</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.userDao = userDao;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getUser</span><span class="params">()</span></span>: User &#123;</span><br><span class="line">        <span class="keyword">return</span> userDao?.getUser()!! <span class="comment">// 这里写的非常不优雅</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 假设这是用户代码</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">userCode</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> userService : UserService = UserServiceImpl()</span><br><span class="line">    (userService <span class="keyword">as</span> UserServiceImpl).setUserDao(UserDaoMySQLImpl()) <span class="comment">// 在这里注入</span></span><br><span class="line">    userService.getUser()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs kotlin"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserServiceImpl</span> : <span class="hljs-type">UserService &#123;</span></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> userDao : UserDao? = <span class="hljs-literal">null</span><br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">setUserDao</span><span class="hljs-params">(userDao : <span class="hljs-type">UserDao</span>)</span></span> &#123;<br>        <span class="hljs-keyword">this</span>.userDao = userDao;<br>    &#125;<br>    <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">getUser</span><span class="hljs-params">()</span></span>: User &#123;<br>        <span class="hljs-keyword">return</span> userDao?.getUser()!! <span class="hljs-comment">// 这里写的非常不优雅</span><br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 假设这是用户代码</span><br><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">userCode</span><span class="hljs-params">()</span></span> &#123;<br>    <span class="hljs-keyword">val</span> userService : UserService = UserServiceImpl()<br>    (userService <span class="hljs-keyword">as</span> UserServiceImpl).setUserDao(UserDaoMySQLImpl()) <span class="hljs-comment">// 在这里注入</span><br>    userService.getUser()<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>用户想用 mySQL？想用 SQL Server？自己选择相应的实现就是了！这就是所谓的控制权交给用户，即控制反转的一个示例。更换实现也不需要改变源代码了。但是显然，这也是比较复杂和麻烦的——用户需要手动注入所需依赖，且需要自己创建所需的实际对象，引入了本不必要的复杂性，抽象程度降低了。“如果有人能够在我们需要时将某个依赖对象送过来，为什么还要大费周折地自己去折腾？”</p>
 <h1 id="IoC-的使用"><a href="#IoC-的使用" class="headerlink" title="IoC 的使用"></a>IoC 的使用</h1><p>在 Spring 中，对象创建的控制权交给了 IoC 容器，被接管的对象称为** Bean**。用户需要通过 xml，Java 代码或注解对 Bean 进行配置。使用时，根据 xml 或其它形式获取相关配置的上下文，并手动或自动对 Bean 进行获取，下面是一个手动获取 Bean 的示例。</p>
 <p>IoC 容器接管的类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DAO 层</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">HelloDao</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getHappyEnergy</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloDaoImpl</span> <span class="keyword">implements</span> <span class="title">HelloDao</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getHappyEnergy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Happy, Lucky, Smile, Yeah!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Service 层</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getHappyEnergy</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloServiceImpl</span> <span class="keyword">implements</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> HelloDao helloDao;</span><br><span class="line">    <span class="comment">// 用于注入的 setter，必须要有此方法，Spring 才能进行依赖注入，或者使用 Autowired 注解域也可，Spring 将通过反射设置属性。</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setHelloDao</span><span class="params">(HelloDao helloDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.helloDao = helloDao;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getHappyEnergy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        helloDao.getHappyEnergy();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// DAO 层</span><br><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">HelloDao</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getHappyEnergy</span><span class="hljs-params">()</span></span>;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloDaoImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">HelloDao</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getHappyEnergy</span><span class="hljs-params">()</span> </span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;Happy, Lucky, Smile, Yeah!&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-comment">// Service 层</span><br><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">HelloService</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getHappyEnergy</span><span class="hljs-params">()</span></span>;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">HelloService</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> HelloDao helloDao;<br>    <span class="hljs-comment">// 用于注入的 setter，必须要有此方法，Spring 才能进行依赖注入，或者使用 Autowired 注解域也可，Spring 将通过反射设置属性。</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setHelloDao</span><span class="hljs-params">(HelloDao helloDao)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.helloDao = helloDao;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getHappyEnergy</span><span class="hljs-params">()</span> </span>&#123;<br>        helloDao.getHappyEnergy();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>xml 文件：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- ApplicationContext.xml --&gt;</span></span><br><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:p</span>=<span class="string">&quot;http://www.springframework.org/schema/p&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- bean 在这里定义，要修改使用的实现？修改 class 即可！</span></span><br><span class="line"><span class="comment">    这里还能够进行更加精细的配置，如通过构造器参数配置，</span></span><br><span class="line"><span class="comment">    对每个成员进行配置（各种容器类也提供了相应的配置标签），</span></span><br><span class="line"><span class="comment">    其成员也可以引用其它 Bean，从而让各实现类能够相互引用，</span></span><br><span class="line"><span class="comment">    也可在此配置 autowire，令 IoC 进行自动注入 --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 也可通过注解和 component-scan，annotation-config 这两个注解进行自动注入 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;helloDao&quot;</span> <span class="attr">class</span>=<span class="string">&quot;xyz.yukina.dao.HelloDaoImpl&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;helloService&quot;</span> <span class="attr">class</span>=<span class="string">&quot;xyz.yukina.service.HelloServiceImpl&quot;</span> <span class="attr">p:helloDao-ref</span>=<span class="string">&quot;helloDao&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- ApplicationContext.xml --&gt;</span><br><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">beans</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/beans&quot;</span></span><br><span class="hljs-tag">       <span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span><br><span class="hljs-tag">       <span class="hljs-attr">xmlns:p</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/p&quot;</span></span><br><span class="hljs-tag">       <span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- bean 在这里定义，要修改使用的实现？修改 class 即可！</span><br><span class="hljs-comment">    这里还能够进行更加精细的配置，如通过构造器参数配置，</span><br><span class="hljs-comment">    对每个成员进行配置（各种容器类也提供了相应的配置标签），</span><br><span class="hljs-comment">    其成员也可以引用其它 Bean，从而让各实现类能够相互引用，</span><br><span class="hljs-comment">    也可在此配置 autowire，令 IoC 进行自动注入 --&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 也可通过注解和 component-scan，annotation-config 这两个注解进行自动注入 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;helloDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;xyz.yukina.dao.HelloDaoImpl&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;helloService&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;xyz.yukina.service.HelloServiceImpl&quot;</span> <span class="hljs-attr">p:helloDao-ref</span>=<span class="hljs-string">&quot;helloDao&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">beans</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
 
 <p>用户代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ClassPathXmlApplicationContext——通过 xml 获取配置，简写 CPX</span></span><br><span class="line">    ApplicationContext context = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">&quot;ApplicationContext.xml&quot;</span>);</span><br><span class="line">    HelloService helloService = context.getBean(<span class="string">&quot;helloService&quot;</span>, HelloService.class);</span><br><span class="line">    helloService.getHappyEnergy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>    <span class="hljs-comment">// ClassPathXmlApplicationContext——通过 xml 获取配置，简写 CPX</span><br>    ApplicationContext context = <span class="hljs-keyword">new</span> ClassPathXmlApplicationContext(<span class="hljs-string">&quot;ApplicationContext.xml&quot;</span>);<br>    HelloService helloService = context.getBean(<span class="hljs-string">&quot;helloService&quot;</span>, HelloService.class);<br>    helloService.getHappyEnergy();<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>可见，现在用户要获取的实例是通过配置文件给定的，而对配置文件的修改是不需要修改源代码的，这就让各个模块解耦了——在使用 IoC 之前，各个模块是紧密相连，需要手动处理（new）相互的依赖关系，使用 IoC 容器后，它们<strong>实际上只需要与 IoC 容器交互</strong>即可，这样互相的耦合性就降低了，且用户也可以不必关心自己究竟用的是哪个具体类，提高了系统的抽象性。且将对象的创建和管理交管给 IoC 容器，这也让容器对对象进行特定的处理也成为可能，或许 AOP 就是在此条件下实现的吧！</p>
 <p>需要注意的是，Bean 默认是<strong>单例</strong>的，<strong>非惰性</strong>的——在执行<code>new ClassPathXmlApplicationContext(&quot;ApplicationContext.xml&quot;)</code>时，所有 bean 默认将被初始化而无论是否使用。</p>
 <h1 id="关于注入的方式"><a href="#关于注入的方式" class="headerlink" title="关于注入的方式"></a>关于注入的方式</h1><p>Spring 提供的注入方式有三种——域注入，set 注入，构造器注入。默认在 xml 中进行配置的话使用的是 set 注入和构造器注入，将 Autowired 注解作用到域中则是域注入。Spring 不推荐使用域注入。</p>
 <p>Spring 推荐使用构造器注入，其次是 set 注入，其中构造器注入用于注入必需的（不为 null）依赖，set 注入用于注入可选的，或者给定默认值的依赖。kotlin 推荐的方式也是构造器注入。构造器注入的优势在于其能够定义注入对象为 final（或者 kotlin 的 val），语义更加明确。</p>
 <p>其中，对于构造器注入，Spring 推荐使用断言来保证为非 null（这里姑且使用 lombok 提供的 NonNull 注解）。一个示例如下。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloServiceImpl</span> <span class="keyword">implements</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span> <span class="comment">// 域注入</span></span><br><span class="line">    <span class="keyword">private</span> AbcDao abcDao;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AnotherDao anotherDao;</span><br><span class="line">    <span class="meta">@Autowired</span> <span class="comment">// set 注入</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAnotherDao</span><span class="params">(AnotherDao anotherDao)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.anotherDao = anotherDao;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> HelloDao helloDao;</span><br><span class="line">    <span class="meta">@Autowired</span> <span class="comment">// 构造器注入</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HelloServiceImpl</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="meta">@Qualifier(&quot;HelloDaoImpl&quot;)</span> <span class="meta">@NonNull</span> HelloDao helloDao // 如果有歧义，可以在这里用 Qualifier 注解</span></span></span><br><span class="line"><span class="params"><span class="function">    )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.HelloDao = helloDao;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getHappyEnergy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        helloDao.getHappyEnergy();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">HelloService</span> </span>&#123;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// 域注入</span><br>    <span class="hljs-keyword">private</span> AbcDao abcDao;<br><br>    <span class="hljs-keyword">private</span> AnotherDao anotherDao;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// set 注入</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setAnotherDao</span><span class="hljs-params">(AnotherDao anotherDao)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.anotherDao = anotherDao;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> HelloDao helloDao;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// 构造器注入</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">HelloServiceImpl</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">        <span class="hljs-meta">@Qualifier(&quot;HelloDaoImpl&quot;)</span> <span class="hljs-meta">@NonNull</span> HelloDao helloDao // 如果有歧义，可以在这里用 Qualifier 注解</span></span><br><span class="hljs-params"><span class="hljs-function">    )</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.HelloDao = helloDao;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getHappyEnergy</span><span class="hljs-params">()</span> </span>&#123;<br>        helloDao.getHappyEnergy();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>需要注意的是，构造器注入法可能导致循环依赖问题！</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210811225149.jpg" alt="img"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210811225149.jpg"></p>
 <h1 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h1><blockquote>
 <p>关于 AOP，我曾经以为它意义并不重大，直到最近我发现，很多地方如 Spring MVC 中都使用了 AOP，且一些可能对业务很重要的地方也是通过 AOP 实现的。比如控制器中方法的返回值将会经由切面转换成相应视图，JSON 或其它对象，这个转换是可以通过自定义切面进行自定义的，可见学习 AOP 是比较有意义的。</p>
 </blockquote>
@@ -313,307 +296,212 @@
 </ol>
 <p>客户端为调用接口的角色，在这里，客户端应当使用代理角色，并期待它通过真实角色进行操作时同时执行自己的业务。</p>
 <p>AOP 其实就是这样的东西——它对特定对象进行<strong>切入</strong>，在这些对象执行特定方法时能够进行“劫持”，添加进自己的操作，比如输出，计数，监控 <del>，发给某些企业</del> ，异常处理（！）等，甚至可修改传递给原对象的方法的参数。将方法标识为事务也是利用了 AOP。下面编写了一个实例——通过代理对原有操作进行计数。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyServiceImpl</span> <span class="keyword">implements</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;做点什么事&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ServiceProxy</span> <span class="keyword">implements</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MyService myService;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> counter = <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ServiceProxy</span><span class="params">(MyService myService)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.myService = myService;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;第&quot;</span>+(++counter)+<span class="string">&quot;次执行&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;执行前&quot;</span>);</span><br><span class="line">        myService.doSomething();</span><br><span class="line">        System.out.println(<span class="string">&quot;执行后&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyService myService = <span class="keyword">new</span> MyServiceImpl(); <span class="comment">// 也可以不暴露原对象给客户端</span></span><br><span class="line">        MyService myServiceProxy = <span class="keyword">new</span> ServiceProxy(myService);</span><br><span class="line">        myServiceProxy.doSomething();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">MyService</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">doSomething</span><span class="hljs-params">()</span></span>;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">MyService</span> </span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doSomething</span><span class="hljs-params">()</span> </span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;做点什么事&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ServiceProxy</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">MyService</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> MyService myService;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> counter = <span class="hljs-number">0</span>;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ServiceProxy</span><span class="hljs-params">(MyService myService)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.myService = myService;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doSomething</span><span class="hljs-params">()</span> </span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;第&quot;</span>+(++counter)+<span class="hljs-string">&quot;次执行&quot;</span>);<br>        System.out.println(<span class="hljs-string">&quot;执行前&quot;</span>);<br>        myService.doSomething();<br>        System.out.println(<span class="hljs-string">&quot;执行后&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Main</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        MyService myService = <span class="hljs-keyword">new</span> MyServiceImpl(); <span class="hljs-comment">// 也可以不暴露原对象给客户端</span><br>        MyService myServiceProxy = <span class="hljs-keyword">new</span> ServiceProxy(myService);<br>        myServiceProxy.doSomething();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <h1 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h1><p>上面所说的是静态代理模式——代理角色是写死的，而还存在动态代理模式——动态生成代理角色（vue 的例子应当也是动态代理）。动态代理分为<strong>基于接口的动态代理</strong>和<strong>基于类的动态代理</strong>。</p>
 <p>动态代理其实就是利用反射对方法调用进行劫持。这里展示了一个代理 handler 的例子，它劫持所有方法调用，在方法执行前和执行后都进行输出。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代理 handler，每个 handler 都应当有自己的业务</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyInvocationHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取代理实例</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">getProxyInstance</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass().getInterfaces(),  <span class="keyword">new</span> ProxyInvocationHandler(obj));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// handler 是和被代理对象一一对应的，这非常让人误解</span></span><br><span class="line">    <span class="keyword">private</span> Object t;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ProxyInvocationHandler</span><span class="params">(<span class="meta">@NotNull</span> Object t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.t = t;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="comment">// 对象进行方法调用时，实际调用的是这个方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;执行前&quot;</span>);</span><br><span class="line">        Object res = method.invoke(t, args);</span><br><span class="line">        System.out.println(<span class="string">&quot;执行后&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 业务代码</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 也可通过给定 Class 的方法避免强转，但是这语法我不会</span></span><br><span class="line">        UserService serviceProxy = (UserService) ProxyInvocationHandler.getProxyInstance(<span class="keyword">new</span> UserServiceImpl());</span><br><span class="line">        serviceProxy.add();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 代理 handler，每个 handler 都应当有自己的业务</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ProxyInvocationHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">InvocationHandler</span> </span>&#123;<br>    <span class="hljs-comment">// 获取代理实例</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Object <span class="hljs-title">getProxyInstance</span><span class="hljs-params">(Object obj)</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass().getInterfaces(),  <span class="hljs-keyword">new</span> ProxyInvocationHandler(obj));<br>    &#125;<br><br>    <span class="hljs-comment">// handler 是和被代理对象一一对应的，这非常让人误解</span><br>    <span class="hljs-keyword">private</span> Object t;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ProxyInvocationHandler</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> Object t)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.t = t;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">// 对象进行方法调用时，实际调用的是这个方法</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">invoke</span><span class="hljs-params">(Object proxy, Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable </span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;执行前&quot;</span>);<br>        Object res = method.invoke(t, args);<br>        System.out.println(<span class="hljs-string">&quot;执行后&quot;</span>);<br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 业务代码</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-comment">// 也可通过给定 Class 的方法避免强转，但是这语法我不会</span><br>        UserService serviceProxy = (UserService) ProxyInvocationHandler.getProxyInstance(<span class="hljs-keyword">new</span> UserServiceImpl());<br>        serviceProxy.add();<br>    &#125;<br></code></pre></div></td></tr></table></figure>
 
 <blockquote>
 <p>代理类的接口为什么要这么设计？看上去简直就是在说，代理处理器是和特定方法（接口）绑定的，而非是和实例绑定的，但在实践中却是和实例进行绑定的。</p>
 </blockquote>
 <p>这个代理 handler 可以进一步抽象成更加一般的形式——要求用户给定方法执行前，执行后将要执行的代码，给定对 args 的处理，给定对输出结果的处理……这里按本人想法进行了一些编码，可以意识到，invoke 方法采用了模板方法模式。相信 Spring 的 AOP 对此有更加具有实践性和更优雅的实现。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 考虑到要持有对象，使用抽象类而非接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ProxyHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object obj;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ProxyHandler</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.obj = obj;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">after</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">    <span class="keyword">public</span> Object[] parseArg(Method method, Object[] args) &#123;<span class="keyword">return</span> args;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">parseRes</span><span class="params">(Method method, Object[] args)</span> <span class="keyword">throws</span> InvocationTargetException, IllegalAccessException </span>&#123;<span class="keyword">return</span> method.invoke(obj, args);&#125;;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">// 这里可以根据 method.getName 对代理的方法做限定</span></span><br><span class="line">        before();</span><br><span class="line">        <span class="comment">// 在某些情形，比如缓存时，甚至可以不调用原方法！</span></span><br><span class="line">        Object res = parseRes(method, parseArg(method, args));</span><br><span class="line">        after();</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 考虑到如果使用 static，则无法直接引用到类的 class，这里被迫使用抽象程度比较低的写法，同样的，这里可以整个 class 作为参数</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title">getProxyInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 一个代理的定义</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CounterProxy</span> <span class="keyword">extends</span> <span class="title">ProxyHandler</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CounterProxy</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(obj);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> startTime;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> endTime;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;执行前&quot;</span>);</span><br><span class="line">        startTime = System.currentTimeMillis();    <span class="comment">//获取开始时间</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">after</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        endTime = System.currentTimeMillis();    <span class="comment">//获取开始时间</span></span><br><span class="line">        System.out.println(<span class="string">&quot;执行后&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;程序运行时间： &quot;</span>+(endTime-startTime)+<span class="string">&quot;ns&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 业务代码</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 考虑到能够让用户不了解 ProxyHandler 便可编写新的代理，我觉得这种抽象程度已经足够</span></span><br><span class="line">    <span class="comment">// 但若是容忍每次编写新的代理类时都把 getProxyInstance 静态方法重写一次，则可使用更加优雅的写法（伴生对象能不能解决这一问题？）</span></span><br><span class="line">    <span class="comment">// 当然，或许更优的方式则是通过工厂方法模式获取相应 Class 并进行操作，这理论上可以通过注解或配置文件进行，应该是非常好的一个解决方案。</span></span><br><span class="line">    UserService service = (UserService) <span class="keyword">new</span> CounterProxy(<span class="keyword">new</span> UserServiceImpl()).getProxyInstance();</span><br><span class="line">    service.add();</span><br><span class="line">    service.delete();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 考虑到要持有对象，使用抽象类而非接口</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ProxyHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">InvocationHandler</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Object obj;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ProxyHandler</span><span class="hljs-params">(Object obj)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.obj = obj;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">before</span><span class="hljs-params">()</span> </span>&#123;&#125;;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">after</span><span class="hljs-params">()</span> </span>&#123;&#125;;<br>    <span class="hljs-keyword">public</span> Object[] parseArg(Method method, Object[] args) &#123;<span class="hljs-keyword">return</span> args;&#125;;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">parseRes</span><span class="hljs-params">(Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> InvocationTargetException, IllegalAccessException </span>&#123;<span class="hljs-keyword">return</span> method.invoke(obj, args);&#125;;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Object <span class="hljs-title">invoke</span><span class="hljs-params">(Object proxy, Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable </span>&#123;<br>        <span class="hljs-comment">// 这里可以根据 method.getName 对代理的方法做限定</span><br>        before();<br>        <span class="hljs-comment">// 在某些情形，比如缓存时，甚至可以不调用原方法！</span><br>        Object res = parseRes(method, parseArg(method, args));<br>        after();<br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br>    <span class="hljs-comment">// 考虑到如果使用 static，则无法直接引用到类的 class，这里被迫使用抽象程度比较低的写法，同样的，这里可以整个 class 作为参数</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Object <span class="hljs-title">getProxyInstance</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass().getInterfaces(), <span class="hljs-keyword">this</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 一个代理的定义</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CounterProxy</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ProxyHandler</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CounterProxy</span><span class="hljs-params">(Object obj)</span> </span>&#123;<br>        <span class="hljs-keyword">super</span>(obj);<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">long</span> startTime;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">long</span> endTime;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">before</span><span class="hljs-params">()</span> </span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;执行前&quot;</span>);<br>        startTime = System.currentTimeMillis();    <span class="hljs-comment">//获取开始时间</span><br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">after</span><span class="hljs-params">()</span> </span>&#123;<br>        endTime = System.currentTimeMillis();    <span class="hljs-comment">//获取开始时间</span><br>        System.out.println(<span class="hljs-string">&quot;执行后&quot;</span>);<br>        System.out.println(<span class="hljs-string">&quot;程序运行时间： &quot;</span>+(endTime-startTime)+<span class="hljs-string">&quot;ns&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 业务代码</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>    <span class="hljs-comment">// 考虑到能够让用户不了解 ProxyHandler 便可编写新的代理，我觉得这种抽象程度已经足够</span><br>    <span class="hljs-comment">// 但若是容忍每次编写新的代理类时都把 getProxyInstance 静态方法重写一次，则可使用更加优雅的写法（伴生对象能不能解决这一问题？）</span><br>    <span class="hljs-comment">// 当然，或许更优的方式则是通过工厂方法模式获取相应 Class 并进行操作，这理论上可以通过注解或配置文件进行，应该是非常好的一个解决方案。</span><br>    UserService service = (UserService) <span class="hljs-keyword">new</span> CounterProxy(<span class="hljs-keyword">new</span> UserServiceImpl()).getProxyInstance();<br>    service.add();<br>    service.delete();<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>AOP 的具体使用方法不再研究了，先研究其他更重要的东西去。</p>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Spring/">Spring</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">再看面向对象的六原则</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06-27%E5%85%B3%E4%BA%8E%E6%AF%95%E8%AE%BE%E7%9A%84%E6%80%BB%E7%BB%93.html">
+                        <span class="hidden-mobile">关于毕设的总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.md" title="关于 Spring 的 IoC 和 AOP">_posts/2021/06-29关于Spring的IoC和AOP.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/06-27%E5%85%B3%E4%BA%8E%E6%AF%95%E8%AE%BE%E7%9A%84%E6%80%BB%E7%BB%93.html" rel="prev" title="关于毕设的总结">
-      <i class="fa fa-chevron-left"></i> 关于毕设的总结
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/07-04%E5%86%8D%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%AD%E5%8E%9F%E5%88%99.html" rel="next" title="再看面向对象的六原则">
-      再看面向对象的六原则 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">Spring 是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IoC-%E6%98%AF%E4%BB%80%E4%B9%88%E4%BB%A5%E5%8F%8A%E5%85%B6%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text">IoC 是什么以及其的意义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IoC-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">IoC 的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%B3%A8%E5%85%A5%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">关于注入的方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">静态代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">动态代理</span></a></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>

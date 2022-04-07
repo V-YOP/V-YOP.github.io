@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于 MR 为何需要排序，以及一个分布式排序的示例">
 <meta property="og:url" content="http://example.com/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html">
@@ -32,212 +27,201 @@
 <meta property="article:modified_time" content="2022-03-22T12:53:51.854Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="MapReduce">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 MR 为何需要排序，以及一个分布式排序的示例 - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>关于 MR 为何需要排序，以及一个分布式排序的示例 | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          关于 MR 为何需要排序，以及一个分布式排序的示例
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-03-12 07:06:35" itemprop="dateCreated datePublished" datetime="2022-03-12T07:06:35+08:00">2022-03-12</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 MR 为何需要排序，以及一个分布式排序的示例">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
-              </span>
 
-          
+            
+              <div class="mt-3">
   
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/03-12关于MR为何需要排序，以及一个分布式排序的示例.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
   
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-12 07:06" pubdate>
+        2022年3月12日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.8k 字
+    </span>
   
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/MapReduce/" rel="tag"><i class="fa fa-tag"></i> MapReduce</a>
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <p>之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。</p>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 MR 为何需要排序，以及一个分布式排序的示例</h1>
+            
+            <div class="markdown-body">
+              <p>之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。</p>
 <span id="more"></span>
 
 <h1 id="一些疑问及我对它的理解"><a href="#一些疑问及我对它的理解" class="headerlink" title="一些疑问及我对它的理解"></a>一些疑问及我对它的理解</h1><h2 id="为何-MapReduce-需要排序？"><a href="#为何-MapReduce-需要排序？" class="headerlink" title="为何 MapReduce 需要排序？"></a>为何 MapReduce 需要排序？</h2><p>有时候我会想，为啥 MapReduce 中的数据需要排序呢？感觉不排序也没什么问题呀？Map 阶段得到了所需的 KV 对，把 KEY 哈希完后直接发送给对应的 Reducer，等拿到这个 KEY 的所有数据就直接开始 reduce 操作呗？</p>
@@ -248,7 +232,7 @@
 <p>我认为，这就是排序的意义，同时这应该也是 KV 存储的意义——让并行性本就不如 map 阶段的 reduce 阶段能更加轻松。同时，排序也使得可以容易得到易处理，人类可读的数据。</p>
 <p>如果事实就是如此，那说数据被分组其实是一个谎言——其实什么都没干，只是顺序地迭代集合罢了，只不过表现出来的行为（接口等）是分组而已。但这种抽象，这种“谎言”是非常有趣的。</p>
 <p>顺带一提，Haskell 的列表的 group 行为和这非常相似。事实证明，这种算法甚至能够处理无穷列表，或许一切流式操作都有如此特性吧。</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- Haskell 代码</span></span><br><span class="line"></span><br><span class="line"><span class="title">duetNat</span> = [<span class="number">1</span> ..] &gt;&gt;= \i -&gt; [i, i] <span class="comment">-- [1, 1, 2, 2, 3, 3, ...]</span></span><br><span class="line"><span class="comment">-- &gt;&gt;&gt; take 10 $ group duetNat</span></span><br><span class="line"><span class="comment">-- [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- Haskell 代码</span><br><br><span class="hljs-title">duetNat</span> = [<span class="hljs-number">1</span> ..] &gt;&gt;= \i -&gt; [i, i] <span class="hljs-comment">-- [1, 1, 2, 2, 3, 3, ...]</span><br><span class="hljs-comment">-- &gt;&gt;&gt; take 10 $ group duetNat</span><br><span class="hljs-comment">-- [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]</span><br></code></pre></div></td></tr></table></figure>
 
 <p>但参考谷歌的论文对 MR 中进行排序的论述，感觉我可能想太多——</p>
 <blockquote>
@@ -267,297 +251,202 @@
 <p>每个 Mapper 处理完自己的所有记录集合后，会传递给 Partitioner 进行分区操作，Partitioner 分完区后，每个分区的结果会按照 KEY 进行排序，经过 Combiner 后发送给对应的 Reducer。</p>
 <p>每个 Reducer 都将接受每一个 Mapper 传递过来的记录集合，每一个 Mapper 的集合都是有序的，但所有 Mapper（传递给它）的集合总的来说是无序的，因此，Reducer 会进行一种所谓的多路归并算法，将每一个 Mapper 传递的局部有序的集合归并在一起，得到一个整体有序的最终集合，并用于分组。</p>
 <p>当只有一个 Reducer 时，所有 Mapper 的有序的集合都将发送给它，并由它进行归并，排序后传递给用户的 reduce 方法。因此，用户接受到的 reduce 方法，它看到的 KEY 是按顺序的，此时若直接把 KEY 输出，最终得到的结果文件里就是排完序的结果。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在特定文件夹里创建 16 个文件，每个文件里包含 500 万个数</span></span><br><span class="line"><span class="comment">// 总共约 1520M 大小</span></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">CreateInputFiles</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> path = <span class="string">&quot;/路径/到/输入路径&quot;</span></span><br><span class="line">  (<span class="number">0</span> until <span class="number">16</span>).foreach &#123;i =&gt;</span><br><span class="line">    <span class="keyword">val</span> writer = <span class="keyword">new</span> <span class="type">FileWriter</span>(<span class="string">s&quot;<span class="subst">$path</span>/<span class="subst">$i</span>.txt&quot;</span>)</span><br><span class="line">    (<span class="number">0</span> until <span class="number">5000000</span>).foreach(_ =&gt; writer.write(<span class="type">Math</span>.abs(<span class="type">Random</span>.nextLong()) + <span class="string">&quot;\n&quot;</span>))</span><br><span class="line">    writer.close()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DistributedSortMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>[<span class="type">LongWritable</span>, <span class="type">Text</span>, <span class="type">LongWritable</span>, <span class="type">NullWritable</span>] </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> outputK = <span class="keyword">new</span> <span class="type">LongWritable</span>()</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">map</span></span>(key: <span class="type">LongWritable</span>, value: <span class="type">Text</span>, context: <span class="type">Mapper</span>[<span class="type">LongWritable</span>, <span class="type">Text</span>, <span class="type">LongWritable</span>, <span class="type">NullWritable</span>]#<span class="type">Context</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    value.toString.toLongOption <span class="keyword">match</span> &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="type">None</span> =&gt; &#123;&#125;</span><br><span class="line">      <span class="keyword">case</span> <span class="type">Some</span>(longValue) =&gt; &#123;</span><br><span class="line">        outputK.set(longValue)</span><br><span class="line">        context.write(outputK, <span class="type">NullWritable</span>.get)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DistributedSortReducer</span> <span class="keyword">extends</span> <span class="title">Reducer</span>[<span class="type">LongWritable</span>, <span class="type">NullWritable</span>, <span class="type">LongWritable</span>, <span class="type">NullWritable</span>] </span>&#123;</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">reduce</span></span>(key: <span class="type">LongWritable</span>, values: lang.<span class="type">Iterable</span>[<span class="type">NullWritable</span>], context: <span class="type">Reducer</span>[<span class="type">LongWritable</span>, <span class="type">NullWritable</span>, <span class="type">LongWritable</span>, <span class="type">NullWritable</span>]#<span class="type">Context</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="comment">// 为什么要调用 forEach 呢？因为可能有多个值相等，这时候它们会被分在一个组里</span></span><br><span class="line">    <span class="comment">// 直接打印到结果文件里，那就只留下了不重复的了</span></span><br><span class="line">    <span class="comment">// 当然，在这里没必要，在 Long 这么大的范围，8000 万条数据还真的不容易撞</span></span><br><span class="line">    values.forEach(_ =&gt; context.write(key, <span class="type">NullWritable</span>.get))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">DistributedSortJob</span> <span class="keyword">extends</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">  <span class="keyword">val</span> parser = <span class="keyword">new</span> <span class="type">GenericOptionsParser</span>(args)</span><br><span class="line">  <span class="keyword">val</span> job = <span class="type">Job</span>.getInstance(parser.getConfiguration)</span><br><span class="line">  <span class="keyword">val</span> inputPath +: outputPath +: _ = parser.getRemainingArgs.toSeq.map(<span class="keyword">new</span> <span class="type">Path</span>(_))</span><br><span class="line"></span><br><span class="line">  job.setInputFormatClass(classOf[<span class="type">TextInputFormat</span>])</span><br><span class="line">  job.setOutputKeyClass(classOf[<span class="type">TextOutputFormat</span>[_,_]])</span><br><span class="line">  job.setMapOutputKeyClass(classOf[<span class="type">LongWritable</span>])</span><br><span class="line">  job.setMapOutputValueClass(classOf[<span class="type">NullWritable</span>])</span><br><span class="line">  job.setOutputKeyClass(classOf[<span class="type">LongWritable</span>])</span><br><span class="line">  job.setOutputValueClass(classOf[<span class="type">NullWritable</span>])</span><br><span class="line"></span><br><span class="line">  job.setMapperClass(classOf[<span class="type">DistributedSortMapper</span>])</span><br><span class="line">  job.setReducerClass(classOf[<span class="type">DistributedSortReducer</span>])</span><br><span class="line">  <span class="type">FileInputFormat</span>.setInputPaths(job, inputPath)</span><br><span class="line">  <span class="type">FileOutputFormat</span>.setOutputPath(job, outputPath)</span><br><span class="line"></span><br><span class="line">  <span class="type">System</span>.exit(<span class="keyword">if</span> (job.waitForCompletion(<span class="literal">true</span>)) <span class="number">0</span> <span class="keyword">else</span> <span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 在特定文件夹里创建 16 个文件，每个文件里包含 500 万个数</span><br><span class="hljs-comment">// 总共约 1520M 大小</span><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">CreateInputFiles</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> path = <span class="hljs-string">&quot;/路径/到/输入路径&quot;</span><br>  (<span class="hljs-number">0</span> until <span class="hljs-number">16</span>).foreach &#123;i =&gt;<br>    <span class="hljs-keyword">val</span> writer = <span class="hljs-keyword">new</span> <span class="hljs-type">FileWriter</span>(<span class="hljs-string">s&quot;<span class="hljs-subst">$path</span>/<span class="hljs-subst">$i</span>.txt&quot;</span>)<br>    (<span class="hljs-number">0</span> until <span class="hljs-number">5000000</span>).foreach(_ =&gt; writer.write(<span class="hljs-type">Math</span>.abs(<span class="hljs-type">Random</span>.nextLong()) + <span class="hljs-string">&quot;\n&quot;</span>))<br>    writer.close()<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DistributedSortMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>] </span>&#123;<br>  <span class="hljs-keyword">val</span> outputK = <span class="hljs-keyword">new</span> <span class="hljs-type">LongWritable</span>()<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(key: <span class="hljs-type">LongWritable</span>, value: <span class="hljs-type">Text</span>, context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    value.toString.toLongOption <span class="hljs-keyword">match</span> &#123;<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">None</span> =&gt; &#123;&#125;<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">Some</span>(longValue) =&gt; &#123;<br>        outputK.set(longValue)<br>        context.write(outputK, <span class="hljs-type">NullWritable</span>.get)<br>      &#125;<br>    &#125;<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DistributedSortReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Reducer</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(key: <span class="hljs-type">LongWritable</span>, values: lang.<span class="hljs-type">Iterable</span>[<span class="hljs-type">NullWritable</span>], context: <span class="hljs-type">Reducer</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// 为什么要调用 forEach 呢？因为可能有多个值相等，这时候它们会被分在一个组里</span><br>    <span class="hljs-comment">// 直接打印到结果文件里，那就只留下了不重复的了</span><br>    <span class="hljs-comment">// 当然，在这里没必要，在 Long 这么大的范围，8000 万条数据还真的不容易撞</span><br>    values.forEach(_ =&gt; context.write(key, <span class="hljs-type">NullWritable</span>.get))<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">DistributedSortJob</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> parser = <span class="hljs-keyword">new</span> <span class="hljs-type">GenericOptionsParser</span>(args)<br>  <span class="hljs-keyword">val</span> job = <span class="hljs-type">Job</span>.getInstance(parser.getConfiguration)<br>  <span class="hljs-keyword">val</span> inputPath +: outputPath +: _ = parser.getRemainingArgs.toSeq.map(<span class="hljs-keyword">new</span> <span class="hljs-type">Path</span>(_))<br><br>  job.setInputFormatClass(classOf[<span class="hljs-type">TextInputFormat</span>])<br>  job.setOutputKeyClass(classOf[<span class="hljs-type">TextOutputFormat</span>[_,_]])<br>  job.setMapOutputKeyClass(classOf[<span class="hljs-type">LongWritable</span>])<br>  job.setMapOutputValueClass(classOf[<span class="hljs-type">NullWritable</span>])<br>  job.setOutputKeyClass(classOf[<span class="hljs-type">LongWritable</span>])<br>  job.setOutputValueClass(classOf[<span class="hljs-type">NullWritable</span>])<br><br>  job.setMapperClass(classOf[<span class="hljs-type">DistributedSortMapper</span>])<br>  job.setReducerClass(classOf[<span class="hljs-type">DistributedSortReducer</span>])<br>  <span class="hljs-type">FileInputFormat</span>.setInputPaths(job, inputPath)<br>  <span class="hljs-type">FileOutputFormat</span>.setOutputPath(job, outputPath)<br><br>  <span class="hljs-type">System</span>.exit(<span class="hljs-keyword">if</span> (job.waitForCompletion(<span class="hljs-literal">true</span>)) <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>)<br>&#125;<br><br></code></pre></div></td></tr></table></figure>
 
 <p>这种分布式排序的缺陷之一在于，只有一个 Reducer，因而限制了该过程的并行性，在性能上不太够。一个解决方案是自定义 Partitioner，<strong>使每个 Reducer 之间接受的 KEY 是有序的</strong>，既然 Reducer 之间是有序的，每个 Reducer 内部都是有序的，则整体就是有序的。Spark 似乎使用类似的分区方式。但这种分区方式是和业务耦合的，需要自定义。</p>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MapReduce/">MapReduce</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">力扣 SQL 刷题笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html">
+                        <span class="hidden-mobile">SQL 学习笔记——GROUP BY，JOIN，窗口函数</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.md" title="关于 MR 为何需要排序，以及一个分布式排序的示例">_posts/2022/03-12关于MR为何需要排序，以及一个分布式排序的示例.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html" rel="prev" title="SQL 学习笔记——GROUP BY，JOIN，窗口函数">
-      <i class="fa fa-chevron-left"></i> SQL 学习笔记——GROUP BY，JOIN，窗口函数
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html" rel="next" title="力扣 SQL 刷题笔记">
-      力扣 SQL 刷题笔记 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E7%96%91%E9%97%AE%E5%8F%8A%E6%88%91%E5%AF%B9%E5%AE%83%E7%9A%84%E7%90%86%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">一些疑问及我对它的理解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95-MapReduce-%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">为何 MapReduce 需要排序？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95-Partitioner-%E6%89%A7%E8%A1%8C%E5%9C%A8-Combiner-%E4%B9%8B%E5%89%8D%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">为何 Partitioner 执行在 Combiner 之前？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F"><span class="nav-number">2.</span> <span class="nav-text">分布式排序</span></a></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>

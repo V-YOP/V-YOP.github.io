@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="Scala 确实很有趣，虽然它并非像 Haskell 那样优雅简洁，某些抽象，如代数数据类型，仍旧需要通过一些“模式”来实现，而它在 Haskell 中是能够非常优雅清晰地表述的，或许这是使用 OOP 对 FP 进行建模的必然结果吧？但了解它的抽象方式也是非常有趣的，相较于 Haskell 更为啰嗦这一点，也让我对一些之前学习 Haskell 时未曾理解的概念，如模式匹配的视图等有了更加深刻的理解">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Scala 确实很有趣，虽然它并非像 Haskell 那样优雅简洁，某些抽象，如代数数据类型，仍旧需要通过一些“模式”来实现，而它在 Haskell 中是能够非常优雅清晰地表述的，或许这是使用 OOP 对 FP 进行建模的必然结果吧？但了解它的抽象方式也是非常有趣的，相较于 Haskell 更为啰嗦这一点，也让我对一些之前学习 Haskell 时未曾理解的概念，如模式匹配的视图等有了更加深刻的理解">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Scala 学习笔记——模式匹配">
 <meta property="og:url" content="http://example.com/2022/03-02Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D.html">
@@ -33,213 +28,201 @@
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta property="article:tag" content="Scala">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Scala 学习笔记——模式匹配 - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2022/03-02Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>Scala 学习笔记——模式匹配 | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03-02Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          Scala 学习笔记——模式匹配
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-03-02 23:27:22" itemprop="dateCreated datePublished" datetime="2022-03-02T23:27:22+08:00">2022-03-02</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Scala 学习笔记——模式匹配">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-04 17:28:09" itemprop="dateModified" datetime="2022-04-04T17:28:09+08:00">2022-04-04</time>
-              </span>
 
-          
+            
+              <div class="mt-3">
   
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2022/03-02Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2022/03-02Scala学习笔记——模式匹配.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
   
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-02 23:27" pubdate>
+        2022年3月2日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.4k 字
+    </span>
   
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/FP/" rel="tag"><i class="fa fa-tag"></i> FP</a>
-              <a href="/tags/Scala/" rel="tag"><i class="fa fa-tag"></i> Scala</a>
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <p>Scala 确实很有趣，虽然它并非像 Haskell 那样优雅简洁，某些抽象，如代数数据类型，仍旧需要通过一些“模式”来实现，而它在 Haskell 中是能够非常优雅清晰地表述的，或许这是使用 OOP 对 FP 进行建模的必然结果吧？但了解它的抽象方式也是非常有趣的，相较于 Haskell 更为啰嗦这一点，也让我对一些之前学习 Haskell 时未曾理解的概念，如模式匹配的视图等有了更加深刻的理解。</p>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Scala 学习笔记——模式匹配</h1>
+            
+            <div class="markdown-body">
+              <p>Scala 确实很有趣，虽然它并非像 Haskell 那样优雅简洁，某些抽象，如代数数据类型，仍旧需要通过一些“模式”来实现，而它在 Haskell 中是能够非常优雅清晰地表述的，或许这是使用 OOP 对 FP 进行建模的必然结果吧？但了解它的抽象方式也是非常有趣的，相较于 Haskell 更为啰嗦这一点，也让我对一些之前学习 Haskell 时未曾理解的概念，如模式匹配的视图等有了更加深刻的理解。</p>
 <p>总之，做一些关键概念的笔记，当前考虑几个需要重点了解的地方是——</p>
 <ul>
 <li>implicit, type class</li>
@@ -253,19 +236,19 @@
 <span id="more"></span>
 
 <h2 id="模式匹配——对数据的解构"><a href="#模式匹配——对数据的解构" class="headerlink" title="模式匹配——对数据的解构"></a>模式匹配——对数据的解构</h2><p>学习过 Haskell 的话，对模式匹配应当是非常熟悉的，比如，要获取列表的第二个元素，我们会直接这么写——</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">second</span> :: [a] -&gt; <span class="type">Maybe</span> a</span><br><span class="line"><span class="title">second</span> (_:x:_) = <span class="type">Just</span> x</span><br><span class="line"><span class="title">second</span> _ = <span class="type">Nothing</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">second</span> :: [a] -&gt; <span class="hljs-type">Maybe</span> a<br><span class="hljs-title">second</span> (_:x:_) = <span class="hljs-type">Just</span> x<br><span class="hljs-title">second</span> _ = <span class="hljs-type">Nothing</span><br></code></pre></div></td></tr></table></figure>
 
 <blockquote>
 <p>在初学 Haskell 时，我曾以为解构的形式和结构的形式是一一对应的，比如，对于列表<code>data [] a = [] | a : [a]</code>，我曾以为在解构中就只能使用<code>:</code>和<code>[]</code>了；但这是错误的——ViewPattern 提供了创建更多解构符号的能力，在 Scala 中也能够实现类似的效果。</p>
 </blockquote>
 <p>在 Scala 中，也容易有等价的实现——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">second</span></span>[<span class="type">A</span>](lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[<span class="type">A</span>] = lst <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> _ :: x :: _ =&gt; <span class="type">Some</span>(x)</span><br><span class="line">  <span class="keyword">case</span> _ =&gt; <span class="type">None</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">second</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = lst <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> _ :: x :: _ =&gt; <span class="hljs-type">Some</span>(x)<br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">None</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 
     <details style="margin-bottom:15px; margin-top:15px">
         <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 Scala 自定义操作符时的结合性问题</span></summary>
         <blockquote><p>关于 Scala 自定义操作符时的结合性问题，（这里不考虑=结尾的操作符）操作符默认为左结合，如果操作符的最右边是<code>:</code>，则右结合，如<code>1 +: 2 +: List()</code>，结合性为<code>1 +: (2 +: List())</code>。这里也可以认为，<code>:</code>符号贴近对象的先计算，可以通过 Seq 的<code>+:</code>，<code>:+</code>建立形象化的理解（想象一下我<del>抄袭</del>发明的&gt;=&gt;符号，哈哈）——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> +: <span class="number">2</span> +: <span class="number">3</span> +: <span class="type">Nil</span> </span><br><span class="line"><span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>) :+ <span class="number">4</span> :+ <span class="number">5</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-number">1</span> +: <span class="hljs-number">2</span> +: <span class="hljs-number">3</span> +: <span class="hljs-type">Nil</span> <br><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) :+ <span class="hljs-number">4</span> :+ <span class="hljs-number">5</span><br></code></pre></div></td></tr></table></figure>
 </blockquote>
         
     </details>
@@ -273,20 +256,20 @@
 
 <p><strong>如果说构造函数用于构造数据，则模式匹配则是用于解构数据</strong>。</p>
 <p>考虑这样一个数据类型——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">ShouJyo</span> (<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">  name: <span class="type">String</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">  age: <span class="type">Int</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">  bestFriend: <span class="type">String</span></span></span></span><br><span class="line"><span class="params"><span class="class"></span>)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ShouJyo</span> (<span class="hljs-params"></span></span><br><span class="hljs-params"><span class="hljs-class">  name: <span class="hljs-type">String</span>,</span></span><br><span class="hljs-params"><span class="hljs-class">  age: <span class="hljs-type">Int</span>,</span></span><br><span class="hljs-params"><span class="hljs-class">  bestFriend: <span class="hljs-type">String</span></span></span><br><span class="hljs-params"><span class="hljs-class"></span>)</span><br></code></pre></div></td></tr></table></figure>
 
 <p>它是使用<code>case class</code>进行定义的，因此编译器会自动重写它的<code>toString</code>，<code>hashCode</code>，<code>equals</code>等方法；重写伴生对象的<code>apply</code>方法，使其同构造器一致；将所有类参数的访问暴露出来，因此我们可以通过伴生对象直接创建该类型的实例，并通过字段名直接访问它的数据——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> shoujyo = <span class="type">ShouJyo</span>(<span class="string">&quot;Chihaya&quot;</span>, <span class="number">16</span>, <span class="string">&quot;Haruka&quot;</span>)</span><br><span class="line">println(<span class="string">s&quot;少女的名字是 <span class="subst">$&#123;shoujyo.name&#125;</span>，她的最好的朋友是 <span class="subst">$&#123;shoujyo.bestFriend&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> shoujyo = <span class="hljs-type">ShouJyo</span>(<span class="hljs-string">&quot;Chihaya&quot;</span>, <span class="hljs-number">16</span>, <span class="hljs-string">&quot;Haruka&quot;</span>)<br>println(<span class="hljs-string">s&quot;少女的名字是 <span class="hljs-subst">$&#123;shoujyo.name&#125;</span>，她的最好的朋友是 <span class="hljs-subst">$&#123;shoujyo.bestFriend&#125;</span>&quot;</span>)<br></code></pre></div></td></tr></table></figure>
 
 <p>那么，当我们需要将它的字段保存到变量中呢？如果对每个字段都分别创建变量的话需要三行，实在有点不够优雅，这里可以使用解构语法——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> shoujyo = <span class="type">ShouJyo</span>(<span class="string">&quot;Haruka&quot;</span>, <span class="number">16</span>, <span class="string">&quot;Chihaya&quot;</span>)</span><br><span class="line"><span class="keyword">val</span> <span class="type">ShouJyo</span>(name, age, _) = shoujyo</span><br><span class="line">println(<span class="string">s&quot;名：<span class="subst">$name</span>，年龄：<span class="subst">$age</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> shoujyo = <span class="hljs-type">ShouJyo</span>(<span class="hljs-string">&quot;Haruka&quot;</span>, <span class="hljs-number">16</span>, <span class="hljs-string">&quot;Chihaya&quot;</span>)<br><span class="hljs-keyword">val</span> <span class="hljs-type">ShouJyo</span>(name, age, _) = shoujyo<br>println(<span class="hljs-string">s&quot;名：<span class="hljs-subst">$name</span>，年龄：<span class="hljs-subst">$age</span>&quot;</span>)<br></code></pre></div></td></tr></table></figure>
 
 <p>这种写法同 Haskell 一致，我们通过“值构造器”把数据中的值取了出来，同时可以使用<code>_</code>符号来忽略值；同理，我们可以对 tuple 等数据结构进行解构。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> (a, b) = (<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">println(a, b)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> x :: xs = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">println(xs) <span class="comment">// List(2, 3)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">val</span> (a, b) = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br>println(a, b)<br><br><span class="hljs-keyword">val</span> x :: xs = <span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)<br>println(xs) <span class="hljs-comment">// List(2, 3)</span><br></code></pre></div></td></tr></table></figure>
 
 <p>这种解构不一定能够成功——比如对<code>[1,2]</code>解构成<code>x::y::z::xs</code>，这种解构必然会抛出一个<code>MatchError</code>。为了应付各种情况的解构，我们需要模式匹配语法。</p>
 <h2 id="Scala-的模式匹配"><a href="#Scala-的模式匹配" class="headerlink" title="Scala 的模式匹配"></a>Scala 的模式匹配</h2><p>Scala 的模式匹配可以认为是 Haskell 的模式匹配以及守卫表达式的综合，下面的示例展示了模式匹配的一些语法——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">objectInfo</span> </span>(obj : <span class="type">Any</span>) = obj <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> d : <span class="type">Double</span> =&gt; <span class="string">s&quot;%d 是一个浮点数&quot;</span></span><br><span class="line">  <span class="keyword">case</span> n : <span class="type">Int</span> <span class="keyword">if</span> n &gt; <span class="number">0</span> =&gt; <span class="string">s&quot;<span class="subst">$n</span> 是一个正整数&quot;</span></span><br><span class="line">  <span class="keyword">case</span> <span class="string">&quot;ping&quot;</span> =&gt; <span class="string">&quot;pong!&quot;</span></span><br><span class="line">  <span class="keyword">case</span> _ : <span class="type">String</span> =&gt; <span class="string">&quot;一个字符串&quot;</span></span><br><span class="line">  <span class="keyword">case</span> lst @ (x :: xs) : <span class="type">List</span>[<span class="type">Any</span>] =&gt; <span class="string">s&quot;一个 list，第一个元素为<span class="subst">$x</span>，长度为<span class="subst">$&#123;lst.length&#125;</span>&quot;</span></span><br><span class="line">  <span class="keyword">case</span> _ =&gt; <span class="string">&quot;不造啊&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">objectInfo</span> </span>(obj : <span class="hljs-type">Any</span>) = obj <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> d : <span class="hljs-type">Double</span> =&gt; <span class="hljs-string">s&quot;%d 是一个浮点数&quot;</span><br>  <span class="hljs-keyword">case</span> n : <span class="hljs-type">Int</span> <span class="hljs-keyword">if</span> n &gt; <span class="hljs-number">0</span> =&gt; <span class="hljs-string">s&quot;<span class="hljs-subst">$n</span> 是一个正整数&quot;</span><br>  <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;ping&quot;</span> =&gt; <span class="hljs-string">&quot;pong!&quot;</span><br>  <span class="hljs-keyword">case</span> _ : <span class="hljs-type">String</span> =&gt; <span class="hljs-string">&quot;一个字符串&quot;</span><br>  <span class="hljs-keyword">case</span> lst @ (x :: xs) : <span class="hljs-type">List</span>[<span class="hljs-type">Any</span>] =&gt; <span class="hljs-string">s&quot;一个 list，第一个元素为<span class="hljs-subst">$x</span>，长度为<span class="hljs-subst">$&#123;lst.length&#125;</span>&quot;</span><br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-string">&quot;不造啊&quot;</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>该语法会从上到下匹配每一个 case，直到匹配成功，如果没有任何匹配，则抛出<code>MatchError</code>异常。</p>
 <p><code>case d : Double =&gt; s&quot;%d 是一个浮点数&quot;</code>，这个 case 检查 obj 是否是 Double 类型，如果是，则将其赋值到变量 d，执行操作。</p>
@@ -300,335 +283,242 @@
 
 <h2 id="解构的原理——以-List-为例子"><a href="#解构的原理——以-List-为例子" class="headerlink" title="解构的原理——以 List 为例子"></a>解构的原理——以 List 为例子</h2><p>考虑模仿 Scala 自定义一个 List，通过其了解模式匹配的机制。</p>
 <p>使用 Haskell 的语法表述的话（符号用的 Idris 的），List 的定义为——</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">data</span> <span class="type">List</span> a = <span class="type">Nil</span> | a :: <span class="type">List</span> a</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">List</span> a = <span class="hljs-type">Nil</span> | a :: <span class="hljs-type">List</span> a</span><br></code></pre></div></td></tr></table></figure>
 
 <p>在 Scala 中，定义会更加复杂——类型构造器需要使用<code>sealed trait</code>或<code>sealed abstract class</code>来定义，类型参数设为<code>+A</code>，而值构造器，如果它的集合大小仅为 1，比如 Nil，则使用<code>case object</code>定义并继承类型构造器，类型参数设为<code>Nothing</code>，如果大于一，则使用<code>final case class</code>定义，类型参数设为<code>A</code>；类型的所有方法都放置在类型构造器中。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sealed</span> <span class="class"><span class="keyword">trait</span> <span class="title">List</span>[+<span class="type">A</span>] </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">head</span> </span>: <span class="type">A</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">last</span> </span>: <span class="type">List</span>[<span class="type">A</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Nil</span> <span class="keyword">extends</span> <span class="title">List</span>[<span class="type">Nothing</span>] </span>&#123;</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">head</span> </span>= <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">RuntimeException</span>(<span class="string">&quot;head of empty list&quot;</span>)</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">last</span> </span>= <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">RuntimeException</span>(<span class="string">&quot;last of empty list&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 通过类参数直接覆盖了父类的方法</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Cons</span> [<span class="type">A</span>] (<span class="params">head : <span class="type">A</span>, last : <span class="type">List</span>[<span class="type">A</span>]</span>) <span class="keyword">extends</span> <span class="title">List</span>[<span class="type">A</span>]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">List</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 用于演示</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>[<span class="type">A</span>](elems : <span class="type">A</span>*) : <span class="type">List</span>[<span class="type">A</span>] =</span><br><span class="line">    elems.foldRight(<span class="type">Nil</span>:<span class="type">List</span>[<span class="type">A</span>])(<span class="type">Cons</span>.apply)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">sealed</span> <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">List</span>[+<span class="hljs-type">A</span>] </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">head</span> </span>: <span class="hljs-type">A</span><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">last</span> </span>: <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]<br>&#125;<br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Nil</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">List</span>[<span class="hljs-type">Nothing</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">head</span> </span>= <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">&quot;head of empty list&quot;</span>)<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">last</span> </span>= <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-type">RuntimeException</span>(<span class="hljs-string">&quot;last of empty list&quot;</span>)<br>&#125;<br><span class="hljs-comment">// 通过类参数直接覆盖了父类的方法</span><br><span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cons</span> [<span class="hljs-type">A</span>] (<span class="hljs-params">head : <span class="hljs-type">A</span>, last : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]</span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">List</span>[<span class="hljs-type">A</span>]</span><br><br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">List</span> </span>&#123;<br>  <span class="hljs-comment">// 用于演示</span><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">apply</span></span>[<span class="hljs-type">A</span>](elems : <span class="hljs-type">A</span>*) : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>] =<br>    elems.foldRight(<span class="hljs-type">Nil</span>:<span class="hljs-type">List</span>[<span class="hljs-type">A</span>])(<span class="hljs-type">Cons</span>.apply)<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <blockquote>
 <p>注意，这里的<code>Nil:List[A]</code>是类型标注（没错，值也可以做类型标注），而非类型转换，类型转换是 asInstanceOf 方法， 对应 Java 的强制转换，这种类型标注在 Java 中没有对应。</p>
 </blockquote>
 <p>有了这个定义后，我们已经可以通过 Cons 进行类型匹配了，下面的方法获取 List 的第二个元素。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">secondElem</span></span>[<span class="type">A</span>](lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[<span class="type">A</span>] = lst <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="type">Cons</span>(_, <span class="type">Cons</span>(x, _)) =&gt; <span class="type">Some</span>(x)</span><br><span class="line">  <span class="keyword">case</span> _ =&gt; <span class="type">None</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">secondElem</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = lst <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Cons</span>(_, <span class="hljs-type">Cons</span>(x, _)) =&gt; <span class="hljs-type">Some</span>(x)<br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">None</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>但这好用吗？一点都不好用，就感觉自己像在写 Lisp，Scala 提供了我们另一种方式——自定义 ViewPattern——来解决这一问题（这个名词来自于 Haskell，不确定 Scala 有没有）。</p>
 <p>但首先我们要看模式匹配的原理。进行模式匹配时，Scala 会试图去寻找匹配的类（在上面的例子里，为 Cons）的伴生对象的<code>unapply</code>方法，该方法的签名和 apply 正好对应——参数是该类的实例，返回值为所有数据的元组（使用 Option 包装，因为解构有失败的可能性），如上面的 Cons，它的 unapply 方法可能是这样的——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">unapply</span></span>(lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[(<span class="type">A</span>, <span class="type">List</span>[<span class="type">A</span>])] =</span><br><span class="line">    <span class="keyword">if</span> (lst == <span class="type">Nil</span>) <span class="type">None</span> <span class="keyword">else</span> <span class="type">Some</span>((lst.head, lst.last))</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">unapply</span></span>(lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[(<span class="hljs-type">A</span>, <span class="hljs-type">List</span>[<span class="hljs-type">A</span>])] =<br>    <span class="hljs-keyword">if</span> (lst == <span class="hljs-type">Nil</span>) <span class="hljs-type">None</span> <span class="hljs-keyword">else</span> <span class="hljs-type">Some</span>((lst.head, lst.last))<br></code></pre></div></td></tr></table></figure>
 
 <p>这就给我们一个想法——我们可以定义另外的 object 并重写 object，达到编写模式匹配中的模式的目的！比如，我们可以编写一个名为<code>::</code>的 object，它的实现和 Cons 的 unapply 一致——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据结合性的规则，:: 符号右结合</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> </span>:: &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">unapply</span></span>[<span class="type">A</span>](lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[(<span class="type">A</span>, <span class="type">List</span>[<span class="type">A</span>])] =</span><br><span class="line">    <span class="keyword">if</span> (lst == <span class="type">Nil</span>) <span class="type">None</span> <span class="keyword">else</span> <span class="type">Some</span>((lst.head, lst.last))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 根据结合性的规则，:: 符号右结合</span><br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> </span>:: &#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">unapply</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[(<span class="hljs-type">A</span>, <span class="hljs-type">List</span>[<span class="hljs-type">A</span>])] =<br>    <span class="hljs-keyword">if</span> (lst == <span class="hljs-type">Nil</span>) <span class="hljs-type">None</span> <span class="hljs-keyword">else</span> <span class="hljs-type">Some</span>((lst.head, lst.last))<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>使用该“模式”重写 secondElem 方法——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">secondElem</span></span>[<span class="type">A</span>](lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[<span class="type">A</span>] = lst <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> _ :: y :: _ =&gt; <span class="type">Some</span>(y) </span><br><span class="line">  <span class="keyword">case</span> _ =&gt; <span class="type">None</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">secondElem</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = lst <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> _ :: y :: _ =&gt; <span class="hljs-type">Some</span>(y) <br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">None</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>BINGO! 我们达到了和原生 Scala 代码一样的清晰度！</p>
 <p>但我们也可以做的更多，超越（没有扩展的）Haskell 以及 js——谁说列表只能解构前缀呢？我们定义一下 Scala 同时提供的<code>:+</code>——</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据结合性规则，左结合</span></span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> </span>:+ &#123;</span><br><span class="line">  <span class="comment">// 工具函数</span></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">foldr</span></span>[<span class="type">A</span>, <span class="type">B</span>] (lst : <span class="type">List</span>[<span class="type">A</span>], zero : <span class="type">B</span>, acc : (<span class="type">A</span>, <span class="type">B</span>) =&gt; <span class="type">B</span>) : <span class="type">B</span> = lst <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> x :: xs =&gt; acc(x, foldr(xs, zero, acc))</span><br><span class="line">    <span class="keyword">case</span> _ =&gt; zero</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">init_last</span></span>[<span class="type">A</span>] (lst : <span class="type">List</span>[<span class="type">A</span>]) : (<span class="type">List</span>[<span class="type">A</span>], <span class="type">Option</span>[<span class="type">A</span>]) =</span><br><span class="line">    foldr[<span class="type">A</span>, (<span class="type">List</span>[<span class="type">A</span>], <span class="type">Option</span>[<span class="type">A</span>])](lst, (<span class="type">List</span>[<span class="type">A</span>](), <span class="type">Option</span>.empty), &#123;(x, acc) =&gt;</span><br><span class="line">      <span class="keyword">val</span> (count, init) = acc</span><br><span class="line">      <span class="keyword">if</span> (init.isEmpty) (<span class="type">Nil</span>, <span class="type">Some</span>(x))</span><br><span class="line">      <span class="keyword">else</span> (<span class="type">Cons</span>(x, count), init)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">unapply</span></span>[<span class="type">A</span>](lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[(<span class="type">List</span>[<span class="type">A</span>], <span class="type">A</span>)] = &#123;</span><br><span class="line">    <span class="keyword">val</span> (init, optionLast) = init_last(lst)</span><br><span class="line">    optionLast.map((init, _))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">last3Elem</span></span>[<span class="type">A</span>](lst : <span class="type">List</span>[<span class="type">A</span>]) : <span class="type">Option</span>[(<span class="type">A</span>,<span class="type">A</span>,<span class="type">A</span>)] = lst <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> xs :+ x :+ y :+ z =&gt; <span class="type">Some</span>((x,y,z))</span><br><span class="line">  <span class="keyword">case</span> _ =&gt; <span class="type">None</span></span><br><span class="line">&#125;</span><br><span class="line">last3Elem(<span class="type">List</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>)) <span class="comment">// Some((3,4,5))</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 根据结合性规则，左结合</span><br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> </span>:+ &#123;<br>  <span class="hljs-comment">// 工具函数</span><br>  <span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">foldr</span></span>[<span class="hljs-type">A</span>, <span class="hljs-type">B</span>] (lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>], zero : <span class="hljs-type">B</span>, acc : (<span class="hljs-type">A</span>, <span class="hljs-type">B</span>) =&gt; <span class="hljs-type">B</span>) : <span class="hljs-type">B</span> = lst <span class="hljs-keyword">match</span> &#123;<br>    <span class="hljs-keyword">case</span> x :: xs =&gt; acc(x, foldr(xs, zero, acc))<br>    <span class="hljs-keyword">case</span> _ =&gt; zero<br>  &#125;<br>  <span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init_last</span></span>[<span class="hljs-type">A</span>] (lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : (<span class="hljs-type">List</span>[<span class="hljs-type">A</span>], <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>]) =<br>    foldr[<span class="hljs-type">A</span>, (<span class="hljs-type">List</span>[<span class="hljs-type">A</span>], <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>])](lst, (<span class="hljs-type">List</span>[<span class="hljs-type">A</span>](), <span class="hljs-type">Option</span>.empty), &#123;(x, acc) =&gt;<br>      <span class="hljs-keyword">val</span> (count, init) = acc<br>      <span class="hljs-keyword">if</span> (init.isEmpty) (<span class="hljs-type">Nil</span>, <span class="hljs-type">Some</span>(x))<br>      <span class="hljs-keyword">else</span> (<span class="hljs-type">Cons</span>(x, count), init)<br>    &#125;)<br><br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">unapply</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[(<span class="hljs-type">List</span>[<span class="hljs-type">A</span>], <span class="hljs-type">A</span>)] = &#123;<br>    <span class="hljs-keyword">val</span> (init, optionLast) = init_last(lst)<br>    optionLast.map((init, _))<br>  &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">last3Elem</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[(<span class="hljs-type">A</span>,<span class="hljs-type">A</span>,<span class="hljs-type">A</span>)] = lst <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> xs :+ x :+ y :+ z =&gt; <span class="hljs-type">Some</span>((x,y,z))<br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">None</span><br>&#125;<br>last3Elem(<span class="hljs-type">List</span>(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>)) <span class="hljs-comment">// Some((3,4,5))</span><br></code></pre></div></td></tr></table></figure>
 
 <p>精彩！这应该就是所谓的 View 模式，借助它，我们可以对那些实现并非 trival 的数据类型，比如 Map 进行模式匹配了！就是感觉要做的额外的类型标注有点多麻烦……怀疑是我的写法并非最佳实践</p>
 <p>一个需要特别注意的一点是，结构和解构的方法并非是一一对应的——这里实现的<code>::</code>，<code>:+</code>仅能够用于解构，如果想实现结构操作，需要通过隐式参数等方式在 List 上实现同名方法！实现其的 apply 方法也是不能奏效的——如此只能实现类似<code>::(1, Nil)</code>的操作！<strong>Scala 能够在解构时把模式当作中缀操作符来看待，但结构时无法如此</strong>！</p>
 <h1 id="关于-A"><a href="#关于-A" class="headerlink" title="关于+A"></a>关于<code>+A</code></h1><p>在这里的 List 的定义里，类型参数 A 中有一个<code>+</code>，这代表着该参数是<strong>协变</strong>的，这是说，该类型参数<code>A</code>的类型关系会被原样映射到<code>List[A]</code>，举个例子，假如<code>Dog</code>是<code>Animal</code>的子类，则<code>List[Dog]</code>是<code>List[Animal]</code>的子类。如果不给定该<code>+</code>，则<code>List[Dog]</code>和<code>List[Animal]</code>将没有继承关系了。</p>
 <p>那么为什么使用协变呢？再重申一下上面的<code>List</code>的定义：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sealed</span> <span class="class"><span class="keyword">trait</span> <span class="title">List</span>[+<span class="type">A</span>] </span>&#123; <span class="comment">/* ... */</span>&#125;</span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">object</span> <span class="title">Nil</span> <span class="keyword">extends</span> <span class="title">List</span>[<span class="type">Nothing</span>] </span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Cons</span> [<span class="type">A</span>] (<span class="params">head : <span class="type">A</span>, last : <span class="type">List</span>[<span class="type">A</span>]</span>) <span class="keyword">extends</span> <span class="title">List</span>[<span class="type">A</span>]</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">sealed</span> <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">List</span>[+<span class="hljs-type">A</span>] </span>&#123; <span class="hljs-comment">/* ... */</span>&#125;<br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Nil</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">List</span>[<span class="hljs-type">Nothing</span>] </span><br><span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cons</span> [<span class="hljs-type">A</span>] (<span class="hljs-params">head : <span class="hljs-type">A</span>, last : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]</span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">List</span>[<span class="hljs-type">A</span>]</span><br></code></pre></div></td></tr></table></figure>
 
 <p>考虑我们需要定义一个<code>Int</code>的<code>List</code>的空列表，我们可能会这么写：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为什么类型使用 List[Int] 而非 Nil 呢？从 Haskell 来的话应该能知晓，List 是类型构造器，而 Cons 和 Nil 是值构造器，值构造器出现在类型签名中的话实在品味不太好，而且对于 Nil 的话，就根本无法表达这里的 Int 类型信息</span></span><br><span class="line"><span class="keyword">val</span> emptyIntList : <span class="type">List</span>[<span class="type">Int</span>] = <span class="type">Nil</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 为什么类型使用 List[Int] 而非 Nil 呢？从 Haskell 来的话应该能知晓，List 是类型构造器，而 Cons 和 Nil 是值构造器，值构造器出现在类型签名中的话实在品味不太好，而且对于 Nil 的话，就根本无法表达这里的 Int 类型信息</span><br><span class="hljs-keyword">val</span> emptyIntList : <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">Nil</span><br></code></pre></div></td></tr></table></figure>
 
 <p>再回想一下我们在 Java 中是如何使用数据结构的——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; lst = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">List&lt;Integer&gt; lst = <span class="hljs-keyword">new</span> ArrayList&lt;Integer&gt;();<br></code></pre></div></td></tr></table></figure>
 
 <p>类比一下，就能够明确出来，<strong>为了满足类型的匹配，<code>Nil</code>必须是<code>List[Int]</code>的子类</strong>！而 Nil 本身是<code>List[Nothing]</code>的子类，因此，**<code>List[Nothing]</code>必须是<code>List[Int]</code>的子类**！而我们已知<code>Nothing</code>是所有类型的子类，因此它也是<code>Int</code>的子类，因此这里如果是协变的话，从<code>Nothing &lt;: Int</code>，就能够得到<code>Nil &lt;: List[Nothing] &lt;: List[Int]</code>。</p>
 <blockquote>
 <p><code>A &lt;: B</code>表示 A 是 B 的子类，类似 java 泛型的 extends，<code>A &gt;: B</code>表示 B 是 A 的子类，即 java 泛型的 super，可以认为这里的<code>&lt;</code>和<code>&gt;</code>表示是类型的“范围”的大小，越是子类，范围显然越小。</p>
 </blockquote>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Scala/">Scala</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-06MapReduce%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F1%E2%80%94%E2%80%94Mapper%EF%BC%8CReducer%EF%BC%8CCombiner.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02-21Zookeeper%E7%AC%94%E8%AE%B0.html">
+                        <span class="hidden-mobile">关于 Zookeeper 的一些笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2022/03-02Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D.md" title="Scala 学习笔记——模式匹配">_posts/2022/03-02Scala学习笔记——模式匹配.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2022/02-21Zookeeper%E7%AC%94%E8%AE%B0.html" rel="prev" title="关于 Zookeeper 的一些笔记">
-      <i class="fa fa-chevron-left"></i> 关于 Zookeeper 的一些笔记
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/03-06MapReduce%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F1%E2%80%94%E2%80%94Mapper%EF%BC%8CReducer%EF%BC%8CCombiner.html" rel="next" title="MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner">
-      MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D%E2%80%94%E2%80%94%E5%AF%B9%E6%95%B0%E6%8D%AE%E7%9A%84%E8%A7%A3%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">模式匹配——对数据的解构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scala-%E7%9A%84%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">2.</span> <span class="nav-text">Scala 的模式匹配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%84%E7%9A%84%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E4%BB%A5-List-%E4%B8%BA%E4%BE%8B%E5%AD%90"><span class="nav-number">3.</span> <span class="nav-text">解构的原理——以 List 为例子</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-A"><span class="nav-number"></span> <span class="nav-text">关于+A</span></a></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>

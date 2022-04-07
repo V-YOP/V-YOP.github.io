@@ -1,27 +1,22 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":"12`","onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":false,"nav":null,"activeClass":"changyan"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="第一次实现如此复杂的东西，让人颇为激动呢。">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="第一次实现如此复杂的东西，让人颇为激动呢。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现">
 <meta property="og:url" content="http://example.com/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
@@ -32,217 +27,205 @@
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210904234812.svg">
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png">
 <meta property="article:published_time" content="2021-08-21T16:38:27.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.846Z">
+<meta property="article:modified_time" content="2022-04-07T11:15:47.607Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="编译原理">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210904214746.svg">
+  
+  
+  <title>《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现 - 友纪V-λOP</title>
 
-<link rel="canonical" href="http://example.com/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
 
-  <title>《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现 | 友纪V-λOP</title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
   
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+<link  rel="stylesheet" href="/css/main.css" />
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<!-- 自定义样式保持在最底部 -->
 
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">友纪V-λOP</h1>
-      <span class="logo-line-after"><i></i></span>
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
     </a>
-  </div>
 
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
-
-  </li>
-        <li class="menu-item menu-item-book-&-goal">
-
-    <a href="/book-goal/" rel="section"><i class="fa fa-tv fa-fw"></i>Book & Goal</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">91</span></a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-  </ul>
 </nav>
 
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
-            
-
-    
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/88199249">
-      <meta itemprop="name" content="友纪V-λOP">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="友纪V-λOP">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现
-        </h1>
-
-        <div class="post-meta" style="margin:3px 0 20px 0">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-22 00:38:27" itemprop="dateCreated datePublished" datetime="2021-08-22T00:38:27+08:00">2021-08-22</time>
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现">
+              
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-22 20:53:51" itemprop="dateModified" datetime="2022-03-22T20:53:51+08:00">2022-03-22</time>
-              </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Changyan：</span>
-    
-    
-      <a title="changyan" href="/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html#SOHUCS" itemprop="discussionUrl">
-        <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="/2021/09-05《两周自制脚本语言》笔记5——关于语法分析器生成器的实现.html" itemprop="commentCount"></span>
-      </a>
-    
-  </span>
+            
+              <div class="mt-3">
   
   
-            <div class="post-description" style="margin-top:10px; font-size:1em">第一次实现如此复杂的东西，让人颇为激动呢。</div>
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-22 00:38" pubdate>
+        2021年8月22日 凌晨
+      </time>
+    </span>
+  
+</div>
 
-          <!-- 将tag移到文章开头处 -->
-          
-          <div class="post-tags" style="text-align:left;margin-left: 20px; margin-top:10px; font-size:1.3em">
-              <a href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" rel="tag"><i class="fa fa-tag"></i> 编译原理</a>
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      11k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
           </div>
+
+          
         </div>
+      </div>
+    </div>
+  </header>
 
-      </header>
-
+  <main>
     
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <!--Hello, Happy World-->
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
 
 <blockquote>
 <p> 好像好多地方的 Literal 都拼写成 Literial 了……只能说这是一个 feature。</p>
@@ -263,10 +246,10 @@
 </ol>
 <p>这些功能总结来说，就是<strong>让用户能够根据 EBNF 和 Java 代码定义语法规则以及生成 AST 结构</strong>。</p>
 <p>关于第 2 步的具体含义，这里举用作者的 Parser 库一个例子——对这样一个 BNF 范式——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adder : NUMBER &quot;+&quot; NUMBER</span><br></pre></td></tr></table></figure>
+<figure class="highlight autoit"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs autoit">adder : <span class="hljs-built_in">NUMBER</span> <span class="hljs-string">&quot;+&quot;</span> <span class="hljs-built_in">NUMBER</span><br></code></pre></div></td></tr></table></figure>
 
 <p>使用下面两种 Parser 代码，对字符串<code>25 + 17</code>能够生成两种不同结构的 AST——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ParserPattern adder = rule(PlusExpr.class)</span><br><span class="line">    .number().sep(<span class="string">&quot;+&quot;</span>).number();  <span class="comment">// sep 表示匹配分隔符，因此将丢弃</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">ParserPattern adder = rule(PlusExpr.class)<br>    .number().sep(<span class="hljs-string">&quot;+&quot;</span>).number();  <span class="hljs-comment">// sep 表示匹配分隔符，因此将丢弃</span><br></code></pre></div></td></tr></table></figure>
 
 <svg width="164pt" height="132pt" viewBox="0.00 0.00 164.00 131.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 127.6)">
@@ -309,7 +292,7 @@
 </svg>
 
 <p>可以看到，这个 AST 中<code>+</code>被舍弃掉了，如果想要对这个 AST 进行计算，则必须利用 PlusExpr 这个根结点的<strong>类型信息</strong>。下面是另一种实现——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ParserPattern adder = rule(Expr.class)</span><br><span class="line">    number().identifier(<span class="string">&quot;+&quot;</span>).number(); <span class="comment">// identifier 表示匹配且保留特定标识符</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">ParserPattern adder = rule(Expr.class)<br>    number().identifier(<span class="hljs-string">&quot;+&quot;</span>).number(); <span class="hljs-comment">// identifier 表示匹配且保留特定标识符</span><br></code></pre></div></td></tr></table></figure>
 
 <svg width="251pt" height="132pt" viewBox="0.00 0.00 251.00 131.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 127.6)">
@@ -366,35 +349,35 @@
 </svg>
 
 <p>显然，这个实现更具一般性，能够表达所有的双目运算。而且还能玩花活——中间的 ASTLeaf 可以被替换成树，或者说，表达式！返回一个中缀运算符的表达式！就如同下面的 Scheme 代码一样。</p>
-<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(<span class="name"><span class="builtin-name">define</span></span> a-plus-abs-b (<span class="name">a</span> b)</span><br><span class="line">  ((<span class="name"><span class="builtin-name">if</span></span> (<span class="name"><span class="builtin-name">&gt;</span></span> b <span class="number">0</span>) + -) a b))</span><br></pre></td></tr></table></figure>
+<figure class="highlight scheme"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scheme">(<span class="hljs-name"><span class="hljs-builtin-name">define</span></span> a-plus-abs-b (<span class="hljs-name">a</span> b)<br>  ((<span class="hljs-name"><span class="hljs-builtin-name">if</span></span> (<span class="hljs-name"><span class="hljs-builtin-name">&gt;</span></span> b <span class="hljs-number">0</span>) + -) a b))<br></code></pre></div></td></tr></table></figure>
 
 <h1 id="Parser-的设计和实现"><a href="#Parser-的设计和实现" class="headerlink" title="Parser 的设计和实现"></a>Parser 的设计和实现</h1><p>Parser 库的编写包括两个部分——ParserElement，ParserPattern，其关系就像原作者代码中的 Element 和 Parser，只不过将其分离到不同文件中。</p>
 <h2 id="ParserElement-以及一些例子"><a href="#ParserElement-以及一些例子" class="headerlink" title="ParserElement 以及一些例子"></a>ParserElement 以及一些例子</h2><p>ParserElement 表示解析器的“元素”，ParserPattern 由 ParserElement 序列组成，利用其来表示一整个模式，<strong>模式也是一种“元素”</strong>。任何 EBNF 都将表示为 ParserElement 的序列，并能够依序进行解析。</p>
 <p>ParserElement 的定义如下——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ParserElement</span> </span>&#123;</span><br><span class="line">    Class&lt;? extends ASTree&gt; getTargetClass(); <span class="comment">// 目标类应当是继承 ASTree 接口的，这是毋庸置疑的——它要充当 AST 中的特定节点</span></span><br><span class="line">    <span class="function">Optional&lt;ASTree&gt; <span class="title">parse</span><span class="params">(Lexer lexer)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">match</span><span class="params">(Lexer lexer)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">ParserElement</span> </span>&#123;<br>    Class&lt;? extends ASTree&gt; getTargetClass(); <span class="hljs-comment">// 目标类应当是继承 ASTree 接口的，这是毋庸置疑的——它要充当 AST 中的特定节点</span><br>    <span class="hljs-function">Optional&lt;ASTree&gt; <span class="hljs-title">parse</span><span class="hljs-params">(Lexer lexer)</span></span>;<br>    <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">match</span><span class="hljs-params">(Lexer lexer)</span></span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>每一个 ParserElement 都代表一种特定的匹配规则的实现，这种规则通常能够和 EBNF 中的元符号对应。ParserElement 有三个方法——getTargetClass：标识这个模式元素进行匹配后返回的 AST 子树的类型；parse：对该模式元素进行应用，通过词法分析器获取到 ASTree 并返回。这里使用了 Optional，标识其可能返回空值——就如上面示例中的 sep 方法；match：查看是否可以解析。</p>
 <p>下面举几个示例——NumberLiterialElement，SepElement。</p>
 <p>首先是 SepElement，它能够读取和丢弃非终结符。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 识别形如&quot;&#123;&quot;，&quot;)&quot;的终止符的 Parser 元素</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SepElement</span> <span class="keyword">implements</span> <span class="title">ParserElement</span> </span>&#123;</span><br><span class="line">    String[] sepNames;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SepElement</span><span class="params">(String[] names)</span> </span>&#123;</span><br><span class="line">        sepNames = names;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;? extends ASTree&gt; getTargetClass() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 不返回结果，直接丢弃</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Optional&lt;ASTree&gt; <span class="title">parse</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!match(lexer)) <span class="keyword">throw</span> <span class="keyword">new</span> ParseException(lexer.peek(<span class="number">0</span>));</span><br><span class="line">        lexer.read();</span><br><span class="line">        <span class="keyword">return</span> Optional.empty();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">match</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!lexer.peek(<span class="number">0</span>).isIdentifier())</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (String name : sepNames)</span><br><span class="line">            <span class="keyword">if</span> (Objects.equals(name, lexer.peek(<span class="number">0</span>).getText()))</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 识别形如&quot;&#123;&quot;，&quot;)&quot;的终止符的 Parser 元素</span><br><span class="hljs-comment"> */</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SepElement</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ParserElement</span> </span>&#123;<br>    String[] sepNames;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SepElement</span><span class="hljs-params">(String[] names)</span> </span>&#123;<br>        sepNames = names;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;? extends ASTree&gt; getTargetClass() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br>    <span class="hljs-comment">// 不返回结果，直接丢弃</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title">parse</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (!match(lexer)) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ParseException(lexer.peek(<span class="hljs-number">0</span>));<br>        lexer.read();<br>        <span class="hljs-keyword">return</span> Optional.empty();<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">match</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (!lexer.peek(<span class="hljs-number">0</span>).isIdentifier())<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>        <span class="hljs-keyword">for</span> (String name : sepNames)<br>            <span class="hljs-keyword">if</span> (Objects.equals(name, lexer.peek(<span class="hljs-number">0</span>).getText()))<br>                <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>然后是 NumberLiterialElement，它能够读取一个数值字面量并返回一个 NumberLiteral——这是预先定义的一个继承 ASTLeaf 的类——如果没有特别指定返回类型的话。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NumberLiteralElement</span> <span class="keyword">implements</span> <span class="title">ParserElement</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Class&lt;? extends ASTLeaf&gt; clazz;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NumberLiteralElement</span><span class="params">(Class&lt;? extends ASTLeaf&gt; clazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.clazz = clazz;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NumberLiteralElement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.clazz = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;? extends ASTree&gt; getTargetClass() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.clazz;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Optional&lt;ASTree&gt; <span class="title">parse</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (clazz == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> Optional.of(<span class="keyword">new</span> NumberLiteral(lexer.read()));</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ASTree res = clazz.getDeclaredConstructor(Token.class).newInstance(lexer.read());;</span><br><span class="line">            <span class="keyword">return</span> Optional.of(res);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">return</span> Optional.empty();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">match</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lexer.peek(<span class="number">0</span>).isNumber();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NumberLiteralElement</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ParserElement</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Class&lt;? extends ASTLeaf&gt; clazz;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">NumberLiteralElement</span><span class="hljs-params">(Class&lt;? extends ASTLeaf&gt; clazz)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.clazz = clazz;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">NumberLiteralElement</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.clazz = <span class="hljs-keyword">null</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;? extends ASTree&gt; getTargetClass() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.clazz;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title">parse</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (clazz == <span class="hljs-keyword">null</span>)<br>            <span class="hljs-keyword">return</span> Optional.of(<span class="hljs-keyword">new</span> NumberLiteral(lexer.read()));<br>        <span class="hljs-keyword">try</span> &#123;<br>            ASTree res = clazz.getDeclaredConstructor(Token.class).newInstance(lexer.read());;<br>            <span class="hljs-keyword">return</span> Optional.of(res);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> Optional.empty();<br>        &#125;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">match</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> lexer.peek(<span class="hljs-number">0</span>).isNumber();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>显然，ParserPattern 也应当是 ParserElement——元素实际上也是一种模式，模式也可以当作一个元素来看待，其也能够和其他元素相组合成为更复杂的模式。</p>
 <h2 id="ParserPattern"><a href="#ParserPattern" class="headerlink" title="ParserPattern"></a>ParserPattern</h2><p>ParserPattern 是最主要的类——用户通过声明和构造特定 ParserPattern 来使其能够和特定 EBNF 范式对应。ParserPattern 实际上也是一种 ParserElement，区别在于其并非是原子的，而是包括了一个 Element 序列，其本身不负责具体的匹配（但是仍旧是保存有返回类型的），而是将匹配工作<strong>委托</strong>给其 Element 序列去执行。</p>
 <p>下面是 ParserPattern 的源代码——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParserPattern</span> <span class="keyword">implements</span> <span class="title">ParserElement</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;ParserElement&gt; parserElems;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Class&lt;? extends ASTree&gt; clazz;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ParserPattern</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ParserPattern</span><span class="params">(Class&lt;? extends ASTList&gt; rootClazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.clazz = rootClazz;</span><br><span class="line">        <span class="keyword">this</span>.parserElems = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ParserPattern <span class="title">rule</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> rule(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ParserPattern <span class="title">rule</span><span class="params">(Class&lt;? extends ASTList&gt; rootClazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ParserPattern(rootClazz);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;? extends ASTree&gt; getTargetClass() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.clazz;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可见，其将委托给 Element 序列进行匹配并返回结果</span></span><br><span class="line">    <span class="comment">// 这里强制要求，ParserPattern 必须返回 ASTList 及其子类</span></span><br><span class="line">    <span class="comment">// 这是非常不优雅的，解决方案有几个——要么在创建过程时就进行修正，要么在创建完成后进行操作。否则这会对求值造成影响</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Optional&lt;ASTree&gt; <span class="title">parse</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        List&lt;ASTree&gt; res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (ParserElement elem : parserElems)</span><br><span class="line">            elem.parse(lexer).ifPresent(res::add);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.clazz == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> Optional.of(<span class="keyword">new</span> ASTList(res));</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ASTree tmpTree = clazz.getDeclaredConstructor(res.getClass()).newInstance(res);</span><br><span class="line">            <span class="keyword">return</span> Optional.of(tmpTree);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">return</span> Optional.empty();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">match</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (parserElems.size() == <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">return</span> parserElems.get(<span class="number">0</span>).match(lexer);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ParserPattern <span class="title">sep</span><span class="params">(String...sepNames)</span> </span>&#123;</span><br><span class="line">        parserElems.add(<span class="keyword">new</span> SepElement(sepNames));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ParserPattern <span class="title">number</span><span class="params">(Class&lt;? extends ASTLeaf&gt; clazz)</span> </span>&#123;</span><br><span class="line">        parserElems.add(<span class="keyword">new</span> NumberLiteralElement(clazz));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ParserPattern <span class="title">number</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        parserElems.add(<span class="keyword">new</span> NumberLiteralElement(<span class="keyword">null</span>));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// ....</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ParserPattern</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ParserElement</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> List&lt;ParserElement&gt; parserElems;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Class&lt;? extends ASTree&gt; clazz;<br><br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">ParserPattern</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>(<span class="hljs-keyword">null</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">ParserPattern</span><span class="hljs-params">(Class&lt;? extends ASTList&gt; rootClazz)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.clazz = rootClazz;<br>        <span class="hljs-keyword">this</span>.parserElems = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ParserPattern <span class="hljs-title">rule</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> rule(<span class="hljs-keyword">null</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ParserPattern <span class="hljs-title">rule</span><span class="hljs-params">(Class&lt;? extends ASTList&gt; rootClazz)</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ParserPattern(rootClazz);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;? extends ASTree&gt; getTargetClass() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.clazz;<br>    &#125;<br><br>    <span class="hljs-comment">// 可见，其将委托给 Element 序列进行匹配并返回结果</span><br>    <span class="hljs-comment">// 这里强制要求，ParserPattern 必须返回 ASTList 及其子类</span><br>    <span class="hljs-comment">// 这是非常不优雅的，解决方案有几个——要么在创建过程时就进行修正，要么在创建完成后进行操作。否则这会对求值造成影响</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title">parse</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        List&lt;ASTree&gt; res = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (ParserElement elem : parserElems)<br>            elem.parse(lexer).ifPresent(res::add);<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.clazz == <span class="hljs-keyword">null</span>)<br>            <span class="hljs-keyword">return</span> Optional.of(<span class="hljs-keyword">new</span> ASTList(res));<br>        <span class="hljs-keyword">try</span> &#123;<br>            ASTree tmpTree = clazz.getDeclaredConstructor(res.getClass()).newInstance(res);<br>            <span class="hljs-keyword">return</span> Optional.of(tmpTree);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> Optional.empty();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">match</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (parserElems.size() == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;<br>        <span class="hljs-keyword">return</span> parserElems.get(<span class="hljs-number">0</span>).match(lexer);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title">sep</span><span class="hljs-params">(String...sepNames)</span> </span>&#123;<br>        parserElems.add(<span class="hljs-keyword">new</span> SepElement(sepNames));<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title">number</span><span class="hljs-params">(Class&lt;? extends ASTLeaf&gt; clazz)</span> </span>&#123;<br>        parserElems.add(<span class="hljs-keyword">new</span> NumberLiteralElement(clazz));<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title">number</span><span class="hljs-params">()</span> </span>&#123;<br>        parserElems.add(<span class="hljs-keyword">new</span> NumberLiteralElement(<span class="hljs-keyword">null</span>));<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>    &#125;<br>	<span class="hljs-comment">// ....</span><br>&#125;<br><br></code></pre></div></td></tr></table></figure>
 
 <p>ParserPattern 的使用方法上面已经描述了。匹配简单的终结符的 Element 是容易编写的，但是那些复杂的呢？对非终结符如何处理？[]，{}，|元符号该如何处理？这才是最大的考验。</p>
 <h2 id="必须的非终结符（ast）"><a href="#必须的非终结符（ast）" class="headerlink" title="必须的非终结符（ast）"></a>必须的非终结符（ast）</h2><p>首先解决非终结符。非终结符的实现还是容易想到的——它也是用户所定义的 ParserPattern，因此它甚至都不需要另外定义，加一个方法即可——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParserPattern</span> <span class="keyword">implements</span> <span class="title">ParserElement</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ....</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> ParserPattern <span class="title">ast</span><span class="params">(ParserPattern parserPattern)</span> </span>&#123;</span><br><span class="line">        parserElems.add(parserPattern);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ParserPattern</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ParserElement</span> </span>&#123;<br>    <span class="hljs-comment">// ....</span><br>	<span class="hljs-function"><span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title">ast</span><span class="hljs-params">(ParserPattern parserPattern)</span> </span>&#123;<br>        parserElems.add(parserPattern);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>    &#125;<br>    <span class="hljs-comment">// ....</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>下面对其进行一下测试，看能否行得通，试一个非常简单的 EBNF——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adder : NUMBER add NUMBER</span><br><span class="line">add   : add1</span><br><span class="line">add1  : <span class="string">&quot;+&quot;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">adder : NUMBER add NUMBER<br>add   : add1<br>add1  : <span class="hljs-string">&quot;+&quot;</span><br></code></pre></div></td></tr></table></figure>
 
 <p>对应的定义代码如下——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里其实没必要这样定义——只有在有递归定义的时候才需要这样。但这样清晰些</span></span><br><span class="line">ParserPattern adder_ = rule();</span><br><span class="line">ParserPattern add_ = rule();</span><br><span class="line">ParserPattern add1_ = rule();</span><br><span class="line"></span><br><span class="line">ParserPattern adder = adder_.number().ast(add_).number();</span><br><span class="line">ParserPattern add = add_.token(add1_);</span><br><span class="line">ParserPattern add1 = add1_.sep(<span class="string">&quot;+&quot;</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 这里其实没必要这样定义——只有在有递归定义的时候才需要这样。但这样清晰些</span><br>ParserPattern adder_ = rule();<br>ParserPattern add_ = rule();<br>ParserPattern add1_ = rule();<br><br>ParserPattern adder = adder_.number().ast(add_).number();<br>ParserPattern add = add_.token(add1_);<br>ParserPattern add1 = add1_.sep(<span class="hljs-string">&quot;+&quot;</span>);<br></code></pre></div></td></tr></table></figure>
 
 <p>对字符串<code>25 + 17</code>最终结果如图。</p>
 <svg width="247pt" height="291pt" viewBox="0.00 0.00 247.00 291.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -477,10 +460,10 @@
 
 <p>虽然实现了，但是这种嵌套有点离谱——这是 ParserPattern 返回 ASTList 导致的必然结果。因此对其的修改势在必行，但是现在先把所有功能都搭起来先。</p>
 <h2 id="元符号-（or）"><a href="#元符号-（or）" class="headerlink" title="元符号|（or）"></a>元符号|（or）</h2><p>|是原始 BNF 范式中仅有的元符号。其的实现也是容易理解的——它保存一个 ParserPattern 集合。在进行匹配时，遍历集合，找到同其能够进行匹配的 ParserPattern 并利用其进行解析。考虑到这里实现的语法分析器是 LL(1) 的，因此并不考虑有多匹配的情况（这么看起来，好像 LL(k) 实现起来并不复杂）。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrElement</span> <span class="keyword">implements</span> <span class="title">ParserElement</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ....</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> ParserPattern <span class="title">choose</span><span class="params">(Lexer lexer)</span> </span>&#123; <span class="comment">// 选择 parser 的方法</span></span><br><span class="line">            <span class="keyword">for</span> (ParserPattern parser : parsers)</span><br><span class="line">                <span class="keyword">if</span> (parser.match(lexer))</span><br><span class="line">                    <span class="keyword">return</span> parser;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Optional&lt;ASTree&gt; <span class="title">parse</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">        ParserPattern p = choose(lexer);</span><br><span class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> ParseException(lexer.peek(<span class="number">0</span>)); <span class="comment">// 一个都没找到说明出现语法错误</span></span><br><span class="line">        <span class="keyword">return</span> p.parse(lexer);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OrElement</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ParserElement</span> </span>&#123;<br>    <span class="hljs-comment">// ....</span><br>	<span class="hljs-function"><span class="hljs-keyword">private</span> ParserPattern <span class="hljs-title">choose</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123; <span class="hljs-comment">// 选择 parser 的方法</span><br>            <span class="hljs-keyword">for</span> (ParserPattern parser : parsers)<br>                <span class="hljs-keyword">if</span> (parser.match(lexer))<br>                    <span class="hljs-keyword">return</span> parser;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title">parse</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>        ParserPattern p = choose(lexer);<br>        <span class="hljs-keyword">if</span> (p == <span class="hljs-keyword">null</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ParseException(lexer.peek(<span class="hljs-number">0</span>)); <span class="hljs-comment">// 一个都没找到说明出现语法错误</span><br>        <span class="hljs-keyword">return</span> p.parse(lexer);<br>    &#125;<br>    <span class="hljs-comment">// ....</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>实验 or 的方法比较简单——处理不定长度的字符串试试。测试的 BNF 和 Java 定义如下——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// adder : &quot;+&quot; expr | EOL // 试了好多次，终于写出来啦……</span></span><br><span class="line"><span class="comment">// expr : NUMBER adder</span></span><br><span class="line">ParserPattern adder_ = rule();</span><br><span class="line">ParserPattern expr_ = rule();</span><br><span class="line"></span><br><span class="line">ParserPattern adder = adder_.or(</span><br><span class="line">    rule().token(<span class="string">&quot;+&quot;</span>).ast(expr_),</span><br><span class="line">    rule().sep(<span class="string">&quot;\\n&quot;</span>) <span class="comment">// 似乎不使用 EBNF 的话，必须要给定空终结符才能进行这种递归…</span></span><br><span class="line">);</span><br><span class="line">ParserPattern expr = expr_.number().ast(adder_);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// adder : &quot;+&quot; expr | EOL // 试了好多次，终于写出来啦……</span><br><span class="hljs-comment">// expr : NUMBER adder</span><br>ParserPattern adder_ = rule();<br>ParserPattern expr_ = rule();<br><br>ParserPattern adder = adder_.or(<br>    rule().token(<span class="hljs-string">&quot;+&quot;</span>).ast(expr_),<br>    rule().sep(<span class="hljs-string">&quot;\\n&quot;</span>) <span class="hljs-comment">// 似乎不使用 EBNF 的话，必须要给定空终结符才能进行这种递归…</span><br>);<br>ParserPattern expr = expr_.number().ast(adder_);<br></code></pre></div></td></tr></table></figure>
 
 <p>对<code>1 + 2 + 3 + 4 + 5 + 6</code>，其生成的 AST 令人感叹——<code>(1 ((+ (2 ((+ (3 ((+ (4 ((+ (5 ((+ (6 (())))))))))))))))))</code>，图就不画了，总之验证这种写法确实达到了效果。出现这种情况的原因是 ASTList 默认的创建方式——把所有生成的 AST 节点全当成子树。</p>
 <p>接下来还有{}元符号，[] 元符号，其分别对应 repeat 方法，maybe 和 option 方法。在这里，关于 repeat 方法需要注意的是，其是贪婪的，将会持续进行匹配直到不再合法，书中好像没有明确体现这一点。对其的实现留待之后吧。毕竟到周一啦。</p>
@@ -492,325 +475,230 @@
 <p>我学习编译原理的目的并非是做出来一个通用编程语言——当前对其的学习只是为了让我能够对编程语言的底层，如符号表，作用域之类的概念能够有更加深刻的理解，仅此而已，编写新语言既困难也无必要——而是帮助我能够更好地利用编译原理的知识**编写 DSL **来辅助特定工作。考虑到我总是一头扎进技术细节里，必须时时刻刻提醒自己这一点。</p>
 <h1 id="其他元符号"><a href="#其他元符号" class="headerlink" title="其他元符号"></a>其他元符号</h1><p>接下来的任务是解决、{}和、[] 元符号，其意义分别是：<strong>贪婪地</strong>匹配 0 次或无数次；匹配 0 次或一次。这里使用 repeat 和 maybe 为这两个元符号命名。</p>
 <p>当前的 Stone 语言中 block 和 statement 比较典型地使用了这两个元符号——</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">block		: &quot;&#123;&quot; [ statement ] &#123;(&quot;;&quot; | EOL) [statement]&#125; &quot;&#125;&quot; </span><br><span class="line">statement	: &quot;if&quot; expr block [ &quot;else&quot; block ]</span><br><span class="line">		| &quot;while&quot; expr block</span><br><span class="line">		| simple</span><br></pre></td></tr></table></figure>
+<figure class="highlight nim"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs nim"><span class="hljs-keyword">block</span>		: <span class="hljs-string">&quot;&#123;&quot;</span> [ statement ] &#123;(<span class="hljs-string">&quot;;&quot;</span> | <span class="hljs-type">EOL</span>) [statement]&#125; <span class="hljs-string">&quot;&#125;&quot;</span> <br>statement	: <span class="hljs-string">&quot;if&quot;</span> <span class="hljs-built_in">expr</span> <span class="hljs-keyword">block</span> [ <span class="hljs-string">&quot;else&quot;</span> <span class="hljs-keyword">block</span> ]<br>		| <span class="hljs-string">&quot;while&quot;</span> <span class="hljs-built_in">expr</span> <span class="hljs-keyword">block</span><br>		| simple<br></code></pre></div></td></tr></table></figure>
 
 <p>其在作者的 Java 代码表述如下。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Parser block = rule(BlockStmnt.class)</span><br><span class="line">    .sep(<span class="string">&quot;&#123;&quot;</span>).option(statement0)</span><br><span class="line">    .repeat(rule().sep(<span class="string">&quot;;&quot;</span>, Token.EOL).option(statement0))</span><br><span class="line">    .sep(<span class="string">&quot;&#125;&quot;</span>);</span><br><span class="line">Parser statement = statement0.or(</span><br><span class="line">    rule(IfStmnt.class).sep(<span class="string">&quot;if&quot;</span>).ast(expr).ast(block)</span><br><span class="line">    	.option(rule().sep(<span class="string">&quot;else&quot;</span>).ast(block)),</span><br><span class="line">    rule(WhileStmnt.class).sep(<span class="string">&quot;while&quot;</span>).ast(expr).ast(block),simple);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">Parser block = rule(BlockStmnt.class)<br>    .sep(<span class="hljs-string">&quot;&#123;&quot;</span>).option(statement0)<br>    .repeat(rule().sep(<span class="hljs-string">&quot;;&quot;</span>, Token.EOL).option(statement0))<br>    .sep(<span class="hljs-string">&quot;&#125;&quot;</span>);<br>Parser statement = statement0.or(<br>    rule(IfStmnt.class).sep(<span class="hljs-string">&quot;if&quot;</span>).ast(expr).ast(block)<br>    	.option(rule().sep(<span class="hljs-string">&quot;else&quot;</span>).ast(block)),<br>    rule(WhileStmnt.class).sep(<span class="hljs-string">&quot;while&quot;</span>).ast(expr).ast(block),simple);<br></code></pre></div></td></tr></table></figure>
 
 <h2 id="元符号、-——repeat"><a href="#元符号、-——repeat" class="headerlink" title="元符号、{}——repeat"></a>元符号、{}——repeat</h2><p>首先需要明确，repeat 和 maybe 解析的结果是什么？这是容易想到的——repeat 应当返回一个 ASTList，因为其可能匹配多次，需要保存这无数次匹配之结果，maybe 可以返回一个 ASTLeaf，也可以返回一个 ASTList，通过其子树数量为 0 还是 1 来表示其是否匹配到了，这里使用 ASTList。</p>
 <blockquote>
 <p>  <code>expr : factor &#123; OP factor &#125;</code>也是一个、{}符号使用的一个典型例子，但是对其不适合直接使用 repeat 方法：能拿它的解析结果——一个 factor 和一个 ASTList——整什么花活？它生成的 AST 没有任何意义！比如对<code>1 + 2 * 3 + 4 / 5</code>，它将生成<strong>类似</strong>这样的 AST，它显然是没有任何价值的——</p>
-<p>  <img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210904214746.svg" alt="test.dot"></p>
+<p>  <img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210904214746.svg"></p>
 <p>  为此，作者专门提供了 expression 方法用来对表达式进行描述。其使用了算符优先分析法。这个在之后再进行实现（大概罢！）。</p>
 </blockquote>
 <p>repeat 的实现仍旧是简单的——匹配过程中维护一个 ASTree 的 List，不断循环进行匹配，保存匹配结果直到无法再匹配下去，然后返回一个以该 List 为子树集合的 ASTList。其关键 Java 代码如下——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Optional&lt;ASTree&gt; <span class="title">parse</span><span class="params">(Lexer lexer)</span> </span>&#123;</span><br><span class="line">    ASTList lst = <span class="keyword">new</span> ASTList(<span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">    <span class="keyword">while</span> (pattern.match(lexer)) &#123; <span class="comment">// 贪婪！</span></span><br><span class="line">        lst.children().add(pattern.parse(lexer).get());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Optional.of(lst);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title">parse</span><span class="hljs-params">(Lexer lexer)</span> </span>&#123;<br>    ASTList lst = <span class="hljs-keyword">new</span> ASTList(<span class="hljs-keyword">new</span> ArrayList&lt;&gt;());<br>    <span class="hljs-keyword">while</span> (pattern.match(lexer)) &#123; <span class="hljs-comment">// 贪婪！</span><br>        lst.children().add(pattern.parse(lexer).get());<br>    &#125;<br>    <span class="hljs-keyword">return</span> Optional.of(lst);<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>对前面实现过的四则运算语言，其将这样表述——</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    factor		:	NUMBER | &quot;(&quot; expr &quot;)&quot;</span></span><br><span class="line"><span class="comment">    term		:	factor &#123; (&quot;*&quot; | &quot;/&quot;) factor &#125;</span></span><br><span class="line"><span class="comment">    expr		:	term &#123; (&quot;+&quot; | &quot;-&quot;) term &#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">ParserPattern factor_ = rule();</span><br><span class="line">ParserPattern term_ = rule();</span><br><span class="line">ParserPattern expr_ = rule();</span><br><span class="line"></span><br><span class="line">ParserPattern factor = factor_.or(</span><br><span class="line">    rule().number(),</span><br><span class="line">    rule().sep(<span class="string">&quot;(&quot;</span>).ast(expr_).sep(<span class="string">&quot;)&quot;</span>)</span><br><span class="line">);</span><br><span class="line">ParserPattern term = term_.ast(factor_).repeat(rule().token(<span class="string">&quot;*&quot;</span>, <span class="string">&quot;/&quot;</span>).ast(factor_));</span><br><span class="line">ParserPattern expr = expr_.ast(term_).repeat(</span><br><span class="line">    rule().or(rule().token(<span class="string">&quot;+&quot;</span>, <span class="string">&quot;-&quot;</span>).ast(term_))</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/*</span><br><span class="hljs-comment">    factor		:	NUMBER | &quot;(&quot; expr &quot;)&quot;</span><br><span class="hljs-comment">    term		:	factor &#123; (&quot;*&quot; | &quot;/&quot;) factor &#125;</span><br><span class="hljs-comment">    expr		:	term &#123; (&quot;+&quot; | &quot;-&quot;) term &#125;</span><br><span class="hljs-comment">*/</span><br>ParserPattern factor_ = rule();<br>ParserPattern term_ = rule();<br>ParserPattern expr_ = rule();<br><br>ParserPattern factor = factor_.or(<br>    rule().number(),<br>    rule().sep(<span class="hljs-string">&quot;(&quot;</span>).ast(expr_).sep(<span class="hljs-string">&quot;)&quot;</span>)<br>);<br>ParserPattern term = term_.ast(factor_).repeat(rule().token(<span class="hljs-string">&quot;*&quot;</span>, <span class="hljs-string">&quot;/&quot;</span>).ast(factor_));<br>ParserPattern expr = expr_.ast(term_).repeat(<br>    rule().or(rule().token(<span class="hljs-string">&quot;+&quot;</span>, <span class="hljs-string">&quot;-&quot;</span>).ast(term_))<br>);<br></code></pre></div></td></tr></table></figure>
 
 <p>下图展示了<code>1 + 2 * 3</code>，<code>1 * 2 + 3</code>“修剪”后所代表 AST，可以看到其优先级确实被表达了，且其结构较为规整，通过后序遍历仍旧可以得到结果——</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210904234812.svg" alt="test.dot"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210904234812.svg"></p>
 <p>显然，repeat 的局限性很大——它生成的 AST 结构有时候会比较复杂，难以理解。因此应当被用到<strong>有序并列</strong>结构的表达，如代码块中各语句，就极其适合使用 repeat。</p>
 <h2 id="元符号、-——maybe"><a href="#元符号、-——maybe" class="headerlink" title="元符号、[]——maybe"></a>元符号、[]——maybe</h2><p>既然 repeat 已经能够实现，maybe 的实现也不是问题——匹配到就匹配到，匹配不到就给个空的 ASTList。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Optional&lt;ASTree&gt; parse(Lexer lexer) &#123;</span><br><span class="line">	if (pattern.match(lexer))</span><br><span class="line">    	return pattern.parse(lexer);</span><br><span class="line">    return Optional.of(new ASTList(new ArrayList&lt;&gt;()));</span><br><span class="line">&#125;</span><br><span class="line">@Override</span><br><span class="line">public boolean match(Lexer lexer) &#123;</span><br><span class="line">	return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-function"><span class="hljs-title">parse</span>(<span class="hljs-params">Lexer lexer</span>)</span> &#123;<br>	<span class="hljs-keyword">if</span> (pattern.match(lexer))<br>    	<span class="hljs-keyword">return</span> pattern.parse(lexer);<br>    <span class="hljs-keyword">return</span> Optional.of(<span class="hljs-keyword">new</span> ASTList(<span class="hljs-keyword">new</span> ArrayList&lt;&gt;()));<br>&#125;<br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-built_in">boolean</span> <span class="hljs-function"><span class="hljs-title">match</span>(<span class="hljs-params">Lexer lexer</span>)</span> &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>现在实现一个 if-then-else 进行测试。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ifStmnt : &quot;if&quot; expr &quot;then&quot; expr [&quot;else&quot; expr]</span></span><br><span class="line">ParserPattern ifStmnt = </span><br><span class="line">    rule().sep(<span class="string">&quot;if&quot;</span>).ast(expr).sep(<span class="string">&quot;then&quot;</span>).ast(expr)</span><br><span class="line">    	.maybe(rule().sep(<span class="string">&quot;else&quot;</span>).ast(expr));</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// ifStmnt : &quot;if&quot; expr &quot;then&quot; expr [&quot;else&quot; expr]</span><br>ParserPattern ifStmnt = <br>    rule().sep(<span class="hljs-string">&quot;if&quot;</span>).ast(expr).sep(<span class="hljs-string">&quot;then&quot;</span>).ast(expr)<br>    	.maybe(rule().sep(<span class="hljs-string">&quot;else&quot;</span>).ast(expr));<br></code></pre></div></td></tr></table></figure>
 
 <p>其生成 AST 是可以预料的，因此不进行展示。</p>
 <blockquote>
 <p>  决定就到这里，虽然对这个语法分析器生成器的实现很不满意，但是我认为没必要钻得更深，使用现成的如 JavaCC 之类的开源工具即可。对这本书的学习也告一段落，去研究 DSL 去，这对框架编写可能会有帮助。</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png" alt="image-20210822231117859"></p>
+<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png"></p>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09-15%E3%80%90%E8%BD%AC%E8%BD%BD%E3%80%91%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%9A%8F%E6%83%B3%E2%80%94%E2%80%94%E5%A4%9A%E7%94%A8%E7%BB%84%E5%90%88%E6%9D%A5%E4%BB%A3%E6%9B%BF%E7%BB%A7%E6%89%BF.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【转载】面向对象随想——多用组合来代替继承</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+                        <span class="hidden-mobile">关于 graphviz 的使用（残卷）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright" style="background: var(--card-bg-color);border-left: 3px solid #ff2a2a;list-style: none;margin: 2em 0 0;padding: 0.5em 1em">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>友纪V-λOP
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <!-- <a href="/_posts/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.md" title="《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现">_posts/2021/09-05《两周自制脚本语言》笔记5——关于语法分析器生成器的实现.md</a> -->
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-<script>
-// 通过js来获取当前URL
-const currentUrl = decodeURI(document.URL)
-const a = document.createElement('a')
-a.innerHTML = currentUrl
-a.setAttribute("href", currentUrl)
-document.getElementsByClassName('post-copyright-link')[0].appendChild(a)
-</script>
-
-
-      <footer class="post-footer">
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html" rel="prev" title="关于 graphviz 的使用（残卷）">
-      <i class="fa fa-chevron-left"></i> 关于 graphviz 的使用（残卷）
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/09-15%E3%80%90%E8%BD%AC%E8%BD%BD%E3%80%91%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%9A%8F%E6%83%B3%E2%80%94%E2%80%94%E5%A4%9A%E7%94%A8%E7%BB%84%E5%90%88%E6%9D%A5%E4%BB%A3%E6%9B%BF%E7%BB%A7%E6%89%BF.html" rel="next" title="【转载】面向对象随想——多用组合来代替继承">
-      【转载】面向对象随想——多用组合来代替继承 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-    
-  <div class="comments">
-    <div id="SOHUCS"></div>
-  </div>
-  
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Parser-%E7%9A%84%E7%BB%84%E6%88%90%E5%92%8C%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">Parser 的组成和原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parser-%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">Parser 的设计和实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ParserElement-%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E4%BE%8B%E5%AD%90"><span class="nav-number">2.1.</span> <span class="nav-text">ParserElement 以及一些例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParserPattern"><span class="nav-number">2.2.</span> <span class="nav-text">ParserPattern</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%85%E9%A1%BB%E7%9A%84%E9%9D%9E%E7%BB%88%E7%BB%93%E7%AC%A6%EF%BC%88ast%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">必须的非终结符（ast）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%AC%A6%E5%8F%B7-%EF%BC%88or%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">元符号|（or）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%85%83%E7%AC%A6%E5%8F%B7"><span class="nav-number">3.</span> <span class="nav-text">其他元符号</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%AC%A6%E5%8F%B7%E3%80%81-%E2%80%94%E2%80%94repeat"><span class="nav-number">3.1.</span> <span class="nav-text">元符号、{}——repeat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%AC%A6%E5%8F%B7%E3%80%81-%E2%80%94%E2%80%94maybe"><span class="nav-number">3.2.</span> <span class="nav-text">元符号、[]——maybe</span></a></li></ol></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="友纪V-λOP"
-      src="https://avatars.githubusercontent.com/u/88199249">
-  <p class="site-author-name" itemprop="name">友纪V-λOP</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<script id="quotation">
-    (function(){
-      function disableSelection(element) {
-        if (typeof element.onselectstart != 'undefined') {
-            element.onselectstart = function() { return false; };
-        } else if (typeof element.style.MozUserSelect != 'undefined') {
-            element.style.MozUserSelect = 'none';
-        } else {
-            element.onmousedown = function() { return false; };
-        }
-      }
-
-      // COPY的洗牌算法（js默认居然不提供这个？？）
-      Array.prototype.shuffle = function() {
-        let array = this;
-        let len = array.length;
-        for (let i = len - 1; i > 0; i--) {
-          let j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }      
-      // 创建一个数组的循环迭代器
-      const iterator = (arr) => {
-        let i = -1;
-        return () => {
-          i = (i + 1) % arr.length
-          return arr[i]
-        }
-      }
-
-      function createChanger(arr, elem) {
-        // 如果有"//ONLY//"开头的，强制用它
-        const ID = "//ONLY//"
-        const onlyElem = arr.find(str => str.startsWith(ID))
-        if (onlyElem) return () => {
-          elem.innerHTML = onlyElem.substring(ID.length)
-        }
-        const iter = iterator(arr)
-        return () => {
-          elem.innerHTML = iter()
-        }
-      }
-
-      // 这何尝不是一种模板元编程？
-      const QUOTATIONS = ["Form is liberating<br />\n（当然，这话也得辩证看待！）\n","程序设计的基本原则——<br />\n分离易变性和不变性\n","实践是检验真理的唯一标准","不要许诺明天，只需关心当下","扫帚不到，灰尘照例不会自己跑掉","没有调查，没有正确的调查<br />\n就没有发言权\n","犯错不是罪过，从中学不到什么才是罪过","编程首先是与人交流，其次才是与计算机交流","不积跬步，无以至千里<br />\n不积小流，无以成江海\n","穿过那娄山关，穿过少年郎<br />\n我是一个总在行路的人\n","あなたからもらったなにもかも<br />\n道しるべにしてきたよ\n","Writing the code is often the easy part, \nkeeping it running is the hard part\n","Your job as a developer is not just to create code that you can work with easily,\nbut to create code that others can also work easily\n","不管要花多少年 不管分开多么远<br />\n我们总有一天会得到幸福\n","跨过高山，越过平原<br />\n无名的石头啊，翻滚，打磨<br />\n日复一日，不要变得圆滑\n","你看得见我的老家、我的肤色和瞳色<br />\n但那又能代表我的什么呢<br />\n——《青空》\n","感觉到了的东西，我们不能立刻理解它<br />\n只有理解了的东西，才能更深刻地感觉它 \n","<img src=\"https://image-table.oss-cn-beijing.aliyuncs.com/2021/07/142021-07-14.gif\" />"];
-      QUOTATIONS.shuffle()
-
-      const changer = createChanger(QUOTATIONS, document.getElementsByClassName("site-description")[0])
-      changer()
-      setInterval(changer, 60 * 1000) // 一分钟更新一次
-
-      // 如果鼠标点击，也切换
-      document.getElementsByClassName("site-description")[0].onclick = changer
-
-      // 禁止选择
-      disableSelection(document.getElementsByClassName("site-description")[0])
-    })()
-  </script>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/V-YOP" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;V-YOP" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:V-YOP@pm.me" title="E-Mail → mailto:V-YOP@pm.me" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2022</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">友纪V-λOP</span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
-
-        
-
-
-
-
-
-
-
 
       </div>
-    </footer>
+    
   </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
 
   
+</footer>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <!-- SCRIPTS -->
   
-
-  
-
-  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
 
   <script>
-  NexT.utils.loadComments(document.querySelector('#SOHUCS'), () => {
-    var appid = 'cyvWvBoR6';
-    var conf = '3245ecb71f53f504a57ca1cfc5a466ff';
-    var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < 960) {
-      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
-    } else {
-      var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})});
-    }
-  });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
-  <script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
 
 <!-- hexo injector body_end start -->
 <script src="/assets/prism-bundle.js"></script>
