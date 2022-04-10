@@ -19,13 +19,13 @@
     <meta name="description" content="紧绷的精神松懈下来后，马上就感觉不知道该做什么事情了，因此决定去做一下 All About Monads 的翻译，但我也觉得保留原文是非常必要的，因此这里尝试模拟一下 angular 的文档的设计，在点击文字时能够看到原文，效果类似这样。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一个点击翻译文字查看原文的 hexo 标签的实现">
-<meta property="og:url" content="http://example.com/2022/04-03%E4%B8%80%E4%B8%AA%E7%82%B9%E5%87%BB%E7%BF%BB%E8%AF%91%E6%96%87%E5%AD%97%E6%9F%A5%E7%9C%8B%E5%8E%9F%E6%96%87%E7%9A%84hexo%E6%A0%87%E7%AD%BE%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+<meta property="og:url" content="http://example.com/2022/04-10%E4%B8%80%E4%B8%AA%E7%82%B9%E5%87%BB%E7%BF%BB%E8%AF%91%E6%96%87%E5%AD%97%E6%9F%A5%E7%9C%8B%E5%8E%9F%E6%96%87%E7%9A%84hexo%E6%A0%87%E7%AD%BE%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="紧绷的精神松懈下来后，马上就感觉不知道该做什么事情了，因此决定去做一下 All About Monads 的翻译，但我也觉得保留原文是非常必要的，因此这里尝试模拟一下 angular 的文档的设计，在点击文字时能够看到原文，效果类似这样。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/202204041044633.png">
-<meta property="article:published_time" content="2022-04-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-04-04T13:45:42.656Z">
+<meta property="article:published_time" content="2022-04-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-10T04:55:10.825Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Foo">
 <meta name="twitter:card" content="summary_large_image">
@@ -137,6 +137,18 @@
           
           
             <li class="nav-item">
+              <a class="nav-link" href="/book-goal/">
+                <i class="iconfont icon-book"></i>
+                书单 / 目标
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
               <a class="nav-link" href="/about/">
                 <i class="iconfont icon-user-fill"></i>
                 关于
@@ -178,8 +190,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-04-03 00:00" pubdate>
-        2022年4月3日 凌晨
+      <time datetime="2022-04-10 00:00" pubdate>
+        2022年4月10日 凌晨
       </time>
     </span>
   
@@ -189,7 +201,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.7k 字
+      2.7k 字
     </span>
   
 
@@ -227,14 +239,14 @@
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/202204041044633.png"></p>
 <span id="more"></span>
 
-<p>为了让它能够开箱即用，相关的js代码也是直接生成在tag里了，因此这个tag标签copy即可用。如果要尽量减少生成的html文件大小，可以把这个trans_id方法加到模板里，然后通过onclick中的函数调用里来给定参数，</p>
-<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">syntax:</span><br><span class="hljs-comment">&#123;% trans %&#125;</span><br><span class="hljs-comment">我是友纪。</span><br><span class="hljs-comment">@@@</span><br><span class="hljs-comment">I am Yuuki.</span><br><span class="hljs-comment">&#123;% endtrans %&#125;</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">let</span> counter = <span class="hljs-number">0</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nextCount</span>(<span class="hljs-params"></span>) </span>&#123;<br>  <span class="hljs-keyword">return</span> counter++<br>&#125;<br><br>hexo.extend.tag.register(<span class="hljs-string">&#x27;trans&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ignored, content</span>) </span>&#123;<br>  <span class="hljs-keyword">const</span> splitted = content.split(<span class="hljs-string">&quot;@@@&quot;</span>)<br>  <span class="hljs-keyword">if</span> (splitted.length &lt;= <span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`trans标签使用语法错误！标签中未出现@@@！，原文：<span class="hljs-subst">$&#123;content&#125;</span>`</span>)<br>  &#125;<br>  <span class="hljs-keyword">if</span> (splitted.length &gt;= <span class="hljs-number">3</span>) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`trans标签使用语法错误！标签中出现多于2次（<span class="hljs-subst">$&#123;splitted.length&#125;</span>次）@@@！，原文：<span class="hljs-subst">$&#123;content&#125;</span>`</span>)<br>  &#125;<br><br>  <span class="hljs-keyword">const</span> [trans, original] = splitted.map(<span class="hljs-function"><span class="hljs-params">str</span> =&gt;</span> hexo.render.renderSync(&#123; <span class="hljs-attr">text</span>: str, <span class="hljs-attr">engine</span>: <span class="hljs-string">&#x27;markdown&#x27;</span> &#125;))<br><br>  <span class="hljs-comment">// 原本是想使用原文或翻译的哈希值来作为id的，但又想到没这必要，直接用一个自增的变量就好，这说明hexo的标签可以是有副作用的</span><br>  <span class="hljs-keyword">const</span> id = nextCount()<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`</span><br><span class="hljs-string">    &lt;script&gt;</span><br><span class="hljs-string">    function trans_<span class="hljs-subst">$&#123;id&#125;</span>() &#123;</span><br><span class="hljs-string">      const elem = document.getElementById(&quot;ori_<span class="hljs-subst">$&#123;id&#125;</span>&quot;)</span><br><span class="hljs-string">      if (elem.style[&quot;display&quot;] === &quot;none&quot;) &#123;</span><br><span class="hljs-string">        elem.style[&quot;display&quot;] = &quot;&quot;</span><br><span class="hljs-string">      &#125; else &#123;</span><br><span class="hljs-string">        elem.style[&quot;display&quot;] = &quot;none&quot;</span><br><span class="hljs-string">      &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string">    &lt;/script&gt;</span><br><span class="hljs-string">    &lt;div onclick=&quot;trans_<span class="hljs-subst">$&#123;id&#125;</span>()&quot;&#x27;&gt;<span class="hljs-subst">$&#123;trans&#125;</span>&lt;/div&gt;</span><br><span class="hljs-string">    &lt;div id=&quot;ori_<span class="hljs-subst">$&#123;id&#125;</span>&quot; style=&quot;border-top: 1px dashed #0273D4;margin-top:-15px;display:none&quot;&gt;<span class="hljs-subst">$&#123;original&#125;</span>&lt;/div&gt;</span><br><span class="hljs-string">  `</span>;<br><br>&#125;, &#123; <span class="hljs-attr">ends</span>: <span class="hljs-literal">true</span> &#125;);<br></code></pre></div></td></tr></table></figure>
+<p>为了让它能够开箱即用，相关的 js 代码也是直接生成在 tag 里了，因此这个 tag 标签 copy 即可用。如果要尽量减少生成的 html 文件大小，可以把这个 trans_id 方法加到模板里，然后通过 onclick 中的函数调用里来给定参数，</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">syntax:</span><br><span class="hljs-comment">&#123;% trans %&#125;</span><br><span class="hljs-comment">我是友纪。</span><br><span class="hljs-comment">@@@</span><br><span class="hljs-comment">I am Yuuki.</span><br><span class="hljs-comment">&#123;% endtrans %&#125;</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">let</span> counter = <span class="hljs-number">0</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nextCount</span>(<span class="hljs-params"></span>) </span>&#123;<br>  <span class="hljs-keyword">return</span> counter++<br>&#125;<br><br>hexo.extend.tag.register(<span class="hljs-string">&#x27;trans&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ignored, content</span>) </span>&#123;<br>  <span class="hljs-keyword">const</span> splitted = content.split(<span class="hljs-string">&quot;@@@&quot;</span>)<br>  <span class="hljs-keyword">if</span> (splitted.length &lt;= <span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`trans 标签使用语法错误！标签中未出现@@@！，原文：<span class="hljs-subst">$&#123;content&#125;</span>`</span>)<br>  &#125;<br>  <span class="hljs-keyword">if</span> (splitted.length &gt;= <span class="hljs-number">3</span>) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`trans 标签使用语法错误！标签中出现多于 2 次（<span class="hljs-subst">$&#123;splitted.length&#125;</span>次）@@@！，原文：<span class="hljs-subst">$&#123;content&#125;</span>`</span>)<br>  &#125;<br><br>  <span class="hljs-keyword">const</span> [trans, original] = splitted.map(<span class="hljs-function"><span class="hljs-params">str</span> =&gt;</span> hexo.render.renderSync(&#123; <span class="hljs-attr">text</span>: str, <span class="hljs-attr">engine</span>: <span class="hljs-string">&#x27;markdown&#x27;</span> &#125;))<br><br>  <span class="hljs-comment">// 原本是想使用原文或翻译的哈希值来作为 id 的，但又想到没这必要，直接用一个自增的变量就好，这说明 hexo 的标签可以是有副作用的</span><br>  <span class="hljs-keyword">const</span> id = nextCount()<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`</span><br><span class="hljs-string">    &lt;script&gt;</span><br><span class="hljs-string">    function trans_<span class="hljs-subst">$&#123;id&#125;</span>() &#123;</span><br><span class="hljs-string">      const elem = document.getElementById(&quot;ori_<span class="hljs-subst">$&#123;id&#125;</span>&quot;)</span><br><span class="hljs-string">      if (elem.style[&quot;display&quot;] === &quot;none&quot;) &#123;</span><br><span class="hljs-string">        elem.style[&quot;display&quot;] = &quot;&quot;</span><br><span class="hljs-string">      &#125; else &#123;</span><br><span class="hljs-string">        elem.style[&quot;display&quot;] = &quot;none&quot;</span><br><span class="hljs-string">      &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string">    &lt;/script&gt;</span><br><span class="hljs-string">    &lt;div onclick=&quot;trans_<span class="hljs-subst">$&#123;id&#125;</span>()&quot;&#x27;&gt;<span class="hljs-subst">$&#123;trans&#125;</span>&lt;/div&gt;</span><br><span class="hljs-string">    &lt;div id=&quot;ori_<span class="hljs-subst">$&#123;id&#125;</span>&quot; style=&quot;border-top: 1px dashed #0273D4;margin-top:-15px;display:none&quot;&gt;<span class="hljs-subst">$&#123;original&#125;</span>&lt;/div&gt;</span><br><span class="hljs-string">  `</span>;<br><br>&#125;, &#123; <span class="hljs-attr">ends</span>: <span class="hljs-literal">true</span> &#125;);<br></code></pre></div></td></tr></table></figure>
 
 <p>点击下面的文字试试？</p>
 
     <script>
-    function trans_34() {
-      const elem = document.getElementById("34")
+    function trans_0() {
+      const elem = document.getElementById("0")
       if (elem.style["display"] === "none") {
         elem.style["display"] = ""
       } else {
@@ -242,16 +254,18 @@
       }
     }
     </script>
-    <div onclick="trans_34()"'><p>我们经常使用类型变量和类型构造器来描述计算的抽象特性。比如，多态类型<code>Maybe a</code>是这样一个类型，它的所有计算都可能返回一个值或者<code>Nothing</code>。这样，我们就能离开容器持有的东西的细节，专注在容器的属性上。</p>
+    <div onclick="trans_0()"><p>我们经常使用类型变量和类型构造器来描述计算的抽象特性。比如，多态类型<code>Maybe a</code>是这样一个类型，它的所有计算都可能返回一个值或者<code>Nothing</code>。这样，我们就能离开容器持有的东西的细节，专注在容器的属性上。</p>
 </div>
-    <div id="34" style="border-top: 1px dashed #0273D4;margin-top:-15px;display:none"><p>We often use type variables with type constructors to describe abstract features of a computation. For example, the polymorphic type Maybe a is the type of all computations that may return a value or Nothing. In this way, we can talk about the properties of the container apart from any details of what the container might hold. </p>
+    <div id="0" style="border-top: 1px dashed #0273D4;margin-top:-15px;display:none"><p>We often use type variables with type constructors to describe abstract features of a computation. For example, the polymorphic type Maybe a is the type of all computations that may return a value or Nothing. In this way, we can talk about the properties of the container apart from any details of what the container might hold. </p>
 </div>
   
 
 <p>它的使用如下。</p>
 <figure class="highlight markdown"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs markdown">&#123;% trans %&#125;<br>我们经常使用类型变量和类型构造器来描述计算的抽象特性。比如，多态类型<span class="hljs-code">`Maybe a`</span>是这样一个类型，它的所有计算都可能返回一个值或者<span class="hljs-code">`Nothing`</span>。这样，我们就能离开容器持有的东西的细节，专注在容器的属性上。<br>@@@<br>We often use type variables with type constructors to describe abstract features of a computation. For example, the polymorphic type <span class="hljs-code">`Maybe a`</span> is the type of all computations that may return a value or <span class="hljs-code">`Nothing`</span>. In this way, we can talk about the properties of the container apart from any details of what the container might hold. <br>&#123;% endtrans %&#125;<br></code></pre></div></td></tr></table></figure>
 
-<p>一个比较麻烦的地方是，hexo的标签似乎是不支持嵌套的，这非常降低它的泛用性。</p>
+<p>一个比较麻烦的地方是，hexo 的标签似乎是不支持嵌套的，这非常降低它的泛用性。</p>
+<hr>
+<p>后来又选择使用 docsify 来编写该文档了，所以实现方式需要改变，现在考虑使用特定的标签去作为起始，分割，结束，这些标签应当不会干扰 markdown 的渲染。当前使用<code>&lt;!-- xxx --&gt;</code>来作为分割，实现虽然粗糙但也堪用。具体实现参照文档。</p>
 
             </div>
             <hr>
