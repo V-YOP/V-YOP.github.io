@@ -12,6 +12,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="友纪V-λOP">
   <meta name="keywords" content="">
@@ -24,7 +26,7 @@
 <meta property="og:description" content="之前上过数据库课程后已经太长时间没有再使用过 SQL 了……现在复习一波。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-12-21T00:00:00.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.838Z">
+<meta property="article:modified_time" content="2022-04-13T23:58:50.331Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="SQL">
 <meta name="twitter:card" content="summary_large_image">
@@ -287,7 +289,7 @@
 <h2 id="AND-amp-OR"><a href="#AND-amp-OR" class="headerlink" title="AND &amp; OR"></a>AND &amp; OR</h2><p>其还可用<code>OR</code>和<code>AND</code>来连接多个条件。<code>AND</code>子句优先级更高。可以使用括号来决定运算顺序。（事实上，除了加减乘除，其他任何包括不同优先级运算符的表达式都应该强制使用括号来规定运算顺序。）</p>
 <figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> prod_name, prod_price<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> prod_price <span class="hljs-operator">=</span> <span class="hljs-number">3.49</span> <br>  <span class="hljs-keyword">AND</span> prod_name <span class="hljs-operator">!=</span> &quot;ignored&quot;<br>  <span class="hljs-keyword">OR</span> prod_desc <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NULL</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name <span class="hljs-keyword">DESC</span>;<br></code></pre></div></td></tr></table></figure>
 
-<h2 id="IN——在。-之中"><a href="#IN——在。-之中" class="headerlink" title="IN——在。. 之中"></a>IN——在。. 之中</h2><p><code>IN</code>子句用途是枚举条件的可选范围。它接受一对原括号扩起来的，用逗号分割的一组合法值。它<strong>也可以包含其他 SELECT 语句</strong>，但是该 select 要求返回只有一列的表，比如<code>SELECT id from user;</code>。</p>
+<h2 id="IN——在……之中"><a href="#IN——在……之中" class="headerlink" title="IN——在……之中"></a>IN——在……之中</h2><p><code>IN</code>子句用途是枚举条件的可选范围。它接受一对原括号扩起来的，用逗号分割的一组合法值。它<strong>也可以包含其他 SELECT 语句</strong>，但是该 select 要求返回只有一列的表，比如<code>SELECT id from user;</code>。</p>
 <blockquote>
 <p>顺带一提，一行一列的表同字面量（如字符串，数字之类的东西）是一样的效果。比如这样一个没有实际意义且性能低下但可供演示的例子——<code>SELECT * FROM place WHERE place_name = (SELECT place_name FROM place WHERE place_name=&quot;北京&quot; LIMIT 1)</code>。</p>
 </blockquote>
