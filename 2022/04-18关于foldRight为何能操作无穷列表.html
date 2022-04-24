@@ -26,7 +26,7 @@
 <meta property="og:description" content="从我在第一次接触到 Haskell 中的 foldRight（foldr）起，我就对它十分好奇：foldRight 是如何能够处理无穷列表的？这个问题让我魂牵梦绕，我必须要得到一个合情合理的结果。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-18T11:52:00.000Z">
-<meta property="article:modified_time" content="2022-04-19T14:55:55.970Z">
+<meta property="article:modified_time" content="2022-04-23T10:44:20.995Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta property="article:tag" content="Scala">
@@ -202,7 +202,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      5.7k 字
+      5.8k 字
     </span>
   
 
@@ -282,7 +282,10 @@
 
 <p>该过程就相当于是从前往后对每一个元素都进行“检查”，找到要求停止的元素，然后把 fn 的返回值作为初始值，在这里是当 x 为 3 时停止，返回一个 0。</p>
 <p>那么问题又来了，对于惰性列表，链式调用（实际上是折叠操作的链式调用）有没有什么更加舒服的描述方式呢？</p>
-<h1 id="如何看待惰性求值"><a href="#如何看待惰性求值" class="headerlink" title="如何看待惰性求值"></a>如何看待惰性求值</h1><p>惰性求值不会改变代码的形式（即能操作普通列表的方法不需要改变结构就能够去操作惰性列表，当然这前提是要正确使用call by name的语法），但有着更高的性能并减少中间生成的临时数据结构，因此它可以认为是函数式编程中的一个<strong>优化方式</strong>。</p>
+<blockquote>
+<p>另一种考虑惰性列表的方式是将其看作无限嵌套的盒子，每次打开一个盒子，盒子里都会有一个值（在 Haskell 里，这个值也是盒子，所谓一切皆 thunk），和一个更小的盒子。</p>
+</blockquote>
+<h1 id="如何看待惰性求值"><a href="#如何看待惰性求值" class="headerlink" title="如何看待惰性求值"></a>如何看待惰性求值</h1><p>惰性求值不会改变代码的形式（即能操作普通列表的方法不需要改变结构 / 源代码就能够去操作惰性列表），但有着更高的性能并减少中间生成的临时数据结构，因此它可以认为是函数式编程中的一个<strong>优化方式</strong>。</p>
 <p>但这也带来了代价：对方法的时空复杂度的分析将变得困难，错误编写的代码会导致内存泄漏。因此，对于惰性求值的看法应当就同对于优化的看法一致：<strong>不要提前优化</strong>。但若是惰性列表会简化代码的情况，我认为主动去使用它也是合理的。</p>
 
             </div>
