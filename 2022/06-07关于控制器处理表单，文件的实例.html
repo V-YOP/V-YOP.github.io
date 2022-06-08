@@ -26,7 +26,7 @@
 <meta property="og:description" content="在之前的实践中一直都是用的 json 来作为前后端交互的格式，而公司的项目中有些地方使用了表单和文件，这点我还不太熟悉，因此来了解一下 Sprinng MVC 处理表单和文件的方式。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-07T11:30:54.000Z">
-<meta property="article:modified_time" content="2022-06-07T12:46:36.286Z">
+<meta property="article:modified_time" content="2022-06-08T09:32:00.427Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Spring">
 <meta property="article:tag" content="Real World">
@@ -327,7 +327,7 @@
 <h2 id="HttpServletResponse"><a href="#HttpServletResponse" class="headerlink" title="HttpServletResponse"></a>HttpServletResponse</h2><p>直接把 InputStream 写入 HttpServletResponse 的流是使用最多，但最不优雅的方式，如果要使用它的话，就必须得把 HttpServletResponse 传递到服务层（如果保证控制器层不负责业务的话），这实在让人难以接受：</p>
 <figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">fileName</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;...&quot;</span>;<br><span class="hljs-keyword">try</span>(<span class="hljs-type">InputStream</span> <span class="hljs-variable">fileStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;...&quot;</span>);<br>    <span class="hljs-type">ServletOutputStream</span> <span class="hljs-variable">stream</span> <span class="hljs-operator">=</span> response.getOutputStream()) &#123;<br>    response.setContentType(<span class="hljs-string">&quot;application/octet-stream&quot;</span>);<br>    response.setCharacterEncoding(<span class="hljs-string">&quot;utf-8&quot;</span>);<br>    response.setHeader(<span class="hljs-string">&quot;Content-disposition&quot;</span>, <span class="hljs-string">&quot;attachment; filename=&quot;</span> + URLEncoder.encode(fileName, <span class="hljs-string">&quot;UTF-8&quot;</span>));<br>    StreamUtils.copy(fileStream, stream); <span class="hljs-comment">// 这个函数来自 org.springframework.util.StreamUtils，用于把输入流的值写到输出流</span><br>&#125; <br></code></pre></div></td></tr></table></figure>
 
-<h2 id="Resource，byte"><a href="#Resource，byte" class="headerlink" title="Resource，byte[]"></a>Resource，byte[]</h2><p><code>org.springframework.core.io.Resource</code>可以用来返回文件，可能常用的实现包括<code>ByteArrayResource</code>，<code>ClassPathResource</code>，<code>FileSystemResource</code>，<code>InputStreamResource</code>。虽然是题外话，但** Resource 类读取文件非常方便，应当代替直接使用 ClassLoader 去读取文件的行为**。</p>
+<h2 id="Resource，byte"><a href="#Resource，byte" class="headerlink" title="Resource，byte[]"></a>Resource，byte[]</h2><p><code>org.springframework.core.io.Resource</code>可以用来返回文件，可能常用的实现包括<code>ByteArrayResource</code>，<code>ClassPathResource</code>，<code>FileSystemResource</code>，<code>InputStreamResource</code>。虽然是题外话，但 <strong>Resource 类读取文件非常方便，应当代替直接使用 ClassLoader 去读取文件的行为</strong>。</p>
 <blockquote>
 <p>虽然<code>ClassPathResource</code>，<code>FileSystemResource</code>能拿到文件名，<strong>但是 Spring 仍会将其当作<code>text/html</code>来返回</strong>！</p>
 </blockquote>
@@ -381,6 +381,12 @@
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/06-08%E5%85%B3%E4%BA%8EExcel%E7%9A%84%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 Excel 的导入导出</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
