@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>对 Spring 一些工具类的索引</title>
+    <link href="/2022/06-10%E5%AF%B9Spring%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%9A%84%E7%B4%A2%E5%BC%95.html"/>
+    <url>/2022/06-10%E5%AF%B9Spring%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%9A%84%E7%B4%A2%E5%BC%95.html</url>
+    
+    <content type="html"><![CDATA[<p>Spring（和 Spring Boot） 提供了非常多实用的工具类，考虑到当前 Spring 已经成为 Java EE 开发的事实标准，学习 Spring 的工具类并将其运用到开发中是非常有意义的，<strong>特别是对于各种反射操作</strong>。</p><p>本来是想去系统学习一下的，但想想又没有必要，等用到的时候再去具体了解吧！但做一个索引还是比较有意义的。下面为我觉得比较重要的工具类，一级表项为项目名：</p><ul><li>spring-boot:<ul><li>org.springframework.boot.context.properties.PropertyMapper（手动 Bean 映射工具）</li><li>org.springframework.boot.task.TaskExecutorBuilder（线程池 Builder）</li></ul></li><li>spring-core:<ul><li>org.springframework.util.function.SingletonSupplier（“惰性求值”的 Supplier）</li><li>org.springframework.util.ClassUtils（获取类的各种属性）</li><li>org.springframework.util.CollectionUtils（各种集合操作）</li><li>org.springframework.util.PatternMatchUtils（仅实现<code>*</code>的字符串匹配工具，应当比正则更高效）</li><li>org.springframework.util.ReflectionUtils（各种奇妙的反射操作，相较于 ClassUtils 更倾向于去 make effect）</li><li>org.springframework.util.StopWatch（简单计时工具）</li><li>org.springframework.util.StreamUtils（IO 流操作）</li><li>org.springframework.util.StringUtils（常用字符串操作）</li><li>org.springframework.util.TypeUtils（继承关系计算）</li><li>org.springframework.core.annotation.AnnotatedElementUtils（注解获取）</li></ul></li><li>spring-data-commons（这些类居然放在 spring-data 下……但一般来说都会引用 redis，因此会引用该包）:<ul><li>org.springframework.data.util.StreamUtils（java8 Stream 操作，终于有 zip 了呜呜呜）</li><li>org.springframework.data.util.Optionals（关于 Optional 的一些操作）</li><li>org.springframework.data.util.ParsingUtils（切分驼峰命名法字符串）</li></ul></li></ul><p>其中，有一些我感觉比较重要，但是不知道应用场景&#x2F;没能力去使用的工具，需要对并发去进一步学习：</p><ul><li>spring-core:<ul><li>org.springframework.util.AutoPopulatingList</li><li>org.springframework.util.concurrent 包下的各种 Future</li></ul></li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Real World</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>关于 Excel 的导入导出</title>
     <link href="/2022/06-08%E5%85%B3%E4%BA%8EExcel%E7%9A%84%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA.html"/>
     <url>/2022/06-08%E5%85%B3%E4%BA%8EExcel%E7%9A%84%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA.html</url>
