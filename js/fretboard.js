@@ -2779,12 +2779,15 @@
             const dots = wrapper.selectAll('.dot-circle')
                 .filter(filterFunction);
             Object.keys(opts).forEach(key => dots.attr(key, opts[key]));
+
+            // 如果没定义text，也进行操作（万一我text从构造函数里给呢？
+
+            const elems = wrapper.selectAll('.dot-text')
+              .filter(filterFunction)
+              .attr('font-size', fontSize || dotTextSize)
+              .attr('fill', fontFill || DEFAULT_COLORS.dotText);
             if (text) {
-                wrapper.selectAll('.dot-text')
-                    .filter(filterFunction)
-                    .text(text)
-                    .attr('font-size', fontSize || dotTextSize)
-                    .attr('fill', fontFill || DEFAULT_COLORS.dotText);
+              elems.text(text)
             }
             return this;
         }
