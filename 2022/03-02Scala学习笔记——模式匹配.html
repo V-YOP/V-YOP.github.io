@@ -241,8 +241,8 @@
 <ul>
 <li>implicit, type class</li>
 <li>trait，class，object，sealed 等的具体语义以及最佳实践</li>
-<li>函数/方法定义的各种语法及其差别</li>
-<li>花括号/括号的语义及最佳实践</li>
+<li>函数&#x2F;方法定义的各种语法及其差别</li>
+<li>花括号&#x2F;括号的语义及最佳实践</li>
 <li>模式匹配</li>
 <li>Scala 类型系统</li>
 </ul>
@@ -261,7 +261,7 @@
 
     <details style="margin-bottom:15px; margin-top:15px">
         <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 Scala 自定义操作符时的结合性问题</span></summary>
-        <blockquote><p>关于 Scala 自定义操作符时的结合性问题，（这里不考虑=结尾的操作符）操作符默认为左结合，如果操作符的最右边是<code>:</code>，则右结合，如<code>1 +: 2 +: List()</code>，结合性为<code>1 +: (2 +: List())</code>。这里也可以认为，<code>:</code>符号贴近对象的先计算，可以通过 Seq 的<code>+:</code>，<code>:+</code>建立形象化的理解（想象一下我<del>抄袭</del>发明的&gt;=&gt;符号，哈哈）——</p>
+        <blockquote><p>关于 Scala 自定义操作符时的结合性问题，（这里不考虑&#x3D;结尾的操作符）操作符默认为左结合，如果操作符的最右边是<code>:</code>，则右结合，如<code>1 +: 2 +: List()</code>，结合性为<code>1 +: (2 +: List())</code>。这里也可以认为，<code>:</code>符号贴近对象的先计算，可以通过 Seq 的<code>+:</code>，<code>:+</code>建立形象化的理解（想象一下我<del>抄袭</del>发明的&gt;&#x3D;&gt;符号，哈哈）——</p>
 <figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-number">1</span> +: <span class="hljs-number">2</span> +: <span class="hljs-number">3</span> +: <span class="hljs-type">Nil</span> <br><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) :+ <span class="hljs-number">4</span> :+ <span class="hljs-number">5</span><br></code></pre></div></td></tr></table></figure>
 </blockquote>
         
@@ -332,7 +332,7 @@
 <figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 为什么类型使用 List[Int] 而非 Nil 呢？从 Haskell 来的话应该能知晓，List 是类型构造器，而 Cons 和 Nil 是值构造器，值构造器出现在类型签名中的话实在品味不太好，而且对于 Nil 的话，就根本无法表达这里的 Int 类型信息</span><br><span class="hljs-keyword">val</span> emptyIntList : <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>] = <span class="hljs-type">Nil</span><br></code></pre></div></td></tr></table></figure>
 
 <p>再回想一下我们在 Java 中是如何使用数据结构的——</p>
-<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">List&lt;Integer&gt; lst = <span class="hljs-keyword">new</span> ArrayList&lt;Integer&gt;();<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">List&lt;Integer&gt; lst = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;Integer&gt;();<br></code></pre></div></td></tr></table></figure>
 
 <p>类比一下，就能够明确出来，<strong>为了满足类型的匹配，<code>Nil</code>必须是<code>List[Int]</code>的子类</strong>！而 Nil 本身是<code>List[Nothing]</code>的子类，因此，**<code>List[Nothing]</code>必须是<code>List[Int]</code>的子类**！而我们已知<code>Nothing</code>是所有类型的子类，因此它也是<code>Int</code>的子类，因此这里如果是协变的话，从<code>Nothing &lt;: Int</code>，就能够得到<code>Nil &lt;: List[Nothing] &lt;: List[Int]</code>。</p>
 <blockquote>

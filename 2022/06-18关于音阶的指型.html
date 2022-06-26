@@ -21,12 +21,12 @@
     <meta name="description" content="记录三种音阶指型以及其从各弦上出发的变体，以供后续查阅。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于音阶的指型">
-<meta property="og:url" content="http://example.com/%E5%85%B3%E4%BA%8E%E9%9F%B3%E9%98%B6%E7%9A%84%E6%8C%87%E5%9E%8B.html">
+<meta property="og:url" content="http://example.com/2022/06-18%E5%85%B3%E4%BA%8E%E9%9F%B3%E9%98%B6%E7%9A%84%E6%8C%87%E5%9E%8B.html">
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="记录三种音阶指型以及其从各弦上出发的变体，以供后续查阅。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-18T04:58:58.000Z">
-<meta property="article:modified_time" content="2022-06-18T04:58:27.520Z">
+<meta property="article:modified_time" content="2022-06-21T16:58:59.392Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="吉他">
 <meta name="twitter:card" content="summary_large_image">
@@ -201,7 +201,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      10k 字
+      13k 字
     </span>
   
 
@@ -371,28 +371,67 @@ function levelStyle(poses, level) {
     case 8:
         return {
           filter: levelFilter(level),
-          fill: "#283550",
+          fill: "#1e272e",
           stroke:"",
           fontFill: "#ffffff",
-          r: 15
+          r: 15,
+          fontSize:20
+        }
+    case 2:
+      return {
+          filter: levelFilter(level),
+          fill: "#00d8d6",
+          stroke:"",
+          fontFill: "#555555",
+          r: 13,
+          fontSize:17
         }
     case 3:
         return {
           // 三级音
           filter: levelFilter(level),
-          fill: "#E2A647",
+          fill: "#f53b57",
           stroke:"",
           fontFill: "#ffffff",
-          r: 13
+          r: 14,
+          fontSize:17
+        }    
+    case 4:
+        return {
+          filter: levelFilter(level),
+          fill: "#d2dae2",
+          stroke:"",
+          fontFill: "#666666",
+          r: 13,
+          fontSize:17
         }
     case 5:
         return {
           // 五级音
           filter: levelFilter(level),
-          fill: "#BA2B0D",
+          fill: "#575fcf",
           stroke:"",
           fontFill: "#ffffff",
-          r: 13
+          r: 14,
+          fontSize:17
+        }
+    case 6:
+        return {
+          filter: levelFilter(level),
+          fill: "#0be881",
+          stroke:"",
+          fontFill: "#666666",
+          r: 13,
+          fontSize:17
+        }
+    case 7:
+        return {
+          filter: levelFilter(level),
+          fill: "#ef5777",
+          stroke:"",
+          fontFill: "#ffffff",
+          r: 13,
+          fontSize:17
         }
   }
 }
@@ -539,8 +578,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="6-M"><a href="#6-M" class="headerlink" title="6-M"></a>6-M</h2><figure id="_6-M"></figure>
@@ -553,8 +596,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="6-L"><a href="#6-L" class="headerlink" title="6-L"></a>6-L</h2><figure id="_6-L"></figure>
@@ -567,8 +614,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h1 id="5-弦"><a href="#5-弦" class="headerlink" title="5 弦"></a>5 弦</h1><p>从 5 弦出发时，只有 L 指型有变形，其最高音在 2 弦上，因此要向高音处移动一品，这里使用 D 调（5 弦 5 品）举例。</p>
@@ -582,8 +633,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="5-M"><a href="#5-M" class="headerlink" title="5-M"></a>5-M</h2><figure id="_5-M"></figure>
@@ -596,8 +651,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="5-L"><a href="#5-L" class="headerlink" title="5-L"></a>5-L</h2><figure id="_5-L"></figure>
@@ -610,8 +669,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h1 id="4-弦"><a href="#4-弦" class="headerlink" title="4 弦"></a>4 弦</h1><p>使用 G 调（4 弦 5 品）举例。</p>
@@ -625,8 +688,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="4-M"><a href="#4-M" class="headerlink" title="4-M"></a>4-M</h2><figure id="_4-M"></figure>
@@ -639,8 +706,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="4-L"><a href="#4-L" class="headerlink" title="4-L"></a>4-L</h2><p>7 可以移到 1 弦上以避免离开把位：</p>
@@ -654,8 +725,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h1 id="3-弦"><a href="#3-弦" class="headerlink" title="3 弦"></a>3 弦</h1><p>使用 C 调（3 弦 5 品）举例。</p>
@@ -669,8 +744,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="3-M"><a href="#3-M" class="headerlink" title="3-M"></a>3-M</h2><figure id="_3-M"></figure>
@@ -683,8 +762,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="3-L"><a href="#3-L" class="headerlink" title="3-L"></a>3-L</h2><p>也需要移动一些音。</p>
@@ -698,8 +781,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h1 id="2-弦"><a href="#2-弦" class="headerlink" title="2 弦"></a>2 弦</h1><p>2 弦上没有移动，使用 E 调（2 弦 5 品举例）。</p>
@@ -713,8 +800,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="2-M"><a href="#2-M" class="headerlink" title="2-M"></a>2-M</h2><figure id="_2-M"></figure>
@@ -727,8 +818,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="2-L"><a href="#2-L" class="headerlink" title="2-L"></a>2-L</h2><figure id="_2-L"></figure>
@@ -741,8 +836,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="2，1-弦全指型"><a href="#2，1-弦全指型" class="headerlink" title="2，1 弦全指型"></a>2，1 弦全指型</h2><figure id="_2-ALL"></figure>
@@ -755,8 +854,12 @@ new Fretboard({
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h1 id="指型的合并"><a href="#指型的合并" class="headerlink" title="指型的合并"></a>指型的合并</h1><p>指型之间可以有下列的合并法：</p>
@@ -773,13 +876,17 @@ new Fretboard({
 <script>
 pattern = multiPattern(mPattern(3, 2), lPattern(6, 5))
 new Fretboard({
-  ...fretboardCommonSetting(8),
+  ...fretboardCommonSetting(5),
   el: '#_6-L_3-M',
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="6-M-4-L（E-指型）"><a href="#6-M-4-L（E-指型）" class="headerlink" title="6-M + 4-L（E 指型）"></a>6-M + 4-L（E 指型）</h2><p>7 应当移动到 1 弦上。</p>
@@ -788,13 +895,17 @@ new Fretboard({
 <script>
 pattern = multiPattern(lPattern(4, 7), mPattern(6, 5))
 new Fretboard({
-  ...fretboardCommonSetting(8),
+  ...fretboardCommonSetting(6),
   el: '#_6-M_4-L',
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="6-H-4-M（3NPS-指型-1）"><a href="#6-H-4-M（3NPS-指型-1）" class="headerlink" title="6-H + 4-M（3NPS 指型 1）"></a>6-H + 4-M（3NPS 指型 1）</h2><figure id="_6-H_4-M"></figure>
@@ -802,13 +913,17 @@ new Fretboard({
 <script>
 pattern = multiPattern(hPattern(6, 5), mPattern(4, 7))
 new Fretboard({
-  ...fretboardCommonSetting(8),
+  ...fretboardCommonSetting(6),
   el: '#_6-H_4-M',
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="5-M-3-L（3NPS-指型-4）"><a href="#5-M-3-L（3NPS-指型-4）" class="headerlink" title="5-M + 3-L（3NPS 指型 4）"></a>5-M + 3-L（3NPS 指型 4）</h2><figure id="_5-M_3-L"></figure>
@@ -816,13 +931,17 @@ new Fretboard({
 <script>
 pattern = multiPattern(mPattern(5, 12), lPattern(3, 14))
 new Fretboard({
-  ...fretboardCommonSetting(8),
+  ...fretboardCommonSetting(6),
   el: '#_5-M_3-L',
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
 <h2 id="5-H-3-M（3NPS-指型-5）"><a href="#5-H-3-M（3NPS-指型-5）" class="headerlink" title="5-H + 3-M（3NPS 指型 5）"></a>5-H + 3-M（3NPS 指型 5）</h2><figure id="_5-H_3-M"></figure>
@@ -830,18 +949,22 @@ new Fretboard({
 <script>
 pattern = multiPattern(hPattern(5, 12), mPattern(3, 14))
 new Fretboard({
-  ...fretboardCommonSetting(8),
+  ...fretboardCommonSetting(6),
   el: '#_5-H_3-M',
   dotText: pos2Level(pattern)
 }).setDots(pattern).render()
 .style(levelStyle(pattern,1))
+.style(levelStyle(pattern,2))
 .style(levelStyle(pattern,3))
+.style(levelStyle(pattern,4))
 .style(levelStyle(pattern,5))
+.style(levelStyle(pattern,6))
+.style(levelStyle(pattern,7))
 </script>
 
-<p>这些指型要全记下来的话得用一年，但大可以把三种基本指型牢牢记住，然后用的时候快速推导即可，同时也要无数次地进行音阶练习来巩固认识。</p>
 <hr>
-<p>下一篇笔记记录对五线谱的学习，包括各位置的记忆方式（FACE），各种调号，以及从每个位置出发，往上和往下一个八度中各级音的位置，这是为了能够将五线谱和这里所学的音阶指型去做映射，让自己养成首调思维，能够去根据五线谱弹吉他。</p>
+<p>这些指型要全记下来的话得用一年，<strong>但大可以把三种基本指型牢牢记住，然后用的时候快速推导</strong>，同时也要无数次地进行音阶练习来巩固认识。</p>
+<p>下一篇笔记就记录对五线谱的学习，包括各位置的记忆方式（EGBDF，FACE），各种调号，以及从每个位置出发，往上和往下一个八度中各级音的位置，这是为了能够将五线谱和这里所学的音阶指型去做映射，让自己养成首调思维，能够去根据五线谱弹吉他。</p>
 
             </div>
             <hr>

@@ -203,7 +203,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.9k 字
+      3k 字
     </span>
   
 
@@ -278,9 +278,9 @@
 <figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mkfs.fat -F32 /dev/sda1 <span class="hljs-comment"># EFI 系统分区</span><br>mkswap /dev/sda2 <span class="hljs-comment"># 交换分区</span><br>swapon /dev/sda2<br>mkfs.xfs /dev/sda3 <span class="hljs-comment"># 根分区</span><br></code></pre></div></td></tr></table></figure>
 
 <p>然后使用如下命令进行挂载。要注意的是，应先挂载根分区，再挂载 efi 分区。</p>
-<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mount /dev/sda3 /mnt      <span class="hljs-comment"># 挂载根分区</span><br>mkdir /mnt/boot<br>mount /dev/sda1 /mnt/boot <span class="hljs-comment"># 挂载 efi 分区</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mount /dev/sda3 /mnt      <span class="hljs-comment"># 挂载根分区</span><br><span class="hljs-built_in">mkdir</span> /mnt/boot<br>mount /dev/sda1 /mnt/boot <span class="hljs-comment"># 挂载 efi 分区</span><br></code></pre></div></td></tr></table></figure>
 
-<h2 id="配置源，安装系统"><a href="#配置源，安装系统" class="headerlink" title="配置源，安装系统"></a>配置源，安装系统</h2><p>应编辑/etc/pacman.conf，取消注释 multilib 源，并添加 archlinuxcn 源。</p>
+<h2 id="配置源，安装系统"><a href="#配置源，安装系统" class="headerlink" title="配置源，安装系统"></a>配置源，安装系统</h2><p>应编辑&#x2F;etc&#x2F;pacman.conf，取消注释 multilib 源，并添加 archlinuxcn 源。</p>
 <p>使用 pacstrap 安装必须的软件包。这里连带着把 KDE 图形界面的东西也安装了。</p>
 <figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">pacstrap /mnt base linux linux-firmware networkmanager vim sudo xorg xorg-xinit plasma kde-applications xdg-user-dirs grub efibootmgr fcitx<br><span class="hljs-comment"># 这里还应当安装中文输入法，中文字体等</span><br></code></pre></div></td></tr></table></figure>
 
@@ -292,16 +292,16 @@
 
 <h2 id="对系统进行配置"><a href="#对系统进行配置" class="headerlink" title="对系统进行配置"></a>对系统进行配置</h2><p>配置主要有设置时区，修改 hostname，设置 root 账号的 password，创建新用户等。</p>
 <p>设置时区——</p>
-<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime<br>hwclock --systohc<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime<br>hwclock --systohc<br></code></pre></div></td></tr></table></figure>
 
-<p>编辑/etc/hostname 和/etc/hosts 文件——</p>
+<p>编辑&#x2F;etc&#x2F;hostname 和&#x2F;etc&#x2F;hosts 文件——</p>
 <figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># /etc/hostname</span><br>myhostname<br><br><span class="hljs-comment"># /etc/hosts</span><br>127.0.0.1	localhost<br>::1		localhost<br>127.0.1.1	myhostname.localdomain	myhostname<br></code></pre></div></td></tr></table></figure>
 
-<p>**编辑/etc/locale.gen 文件，取消注释 en_US.UTF-8 和 zh_CN. *行。然后调用 locale-gen 程序**。</p>
+<p>**编辑&#x2F;etc&#x2F;locale.gen 文件，取消注释 en_US.UTF-8 和 zh_CN. *行。然后调用 locale-gen 程序**。</p>
 <p><strong>使用 passwd 命令修改 root 的密码</strong>。</p>
 <h3 id="设置-startx"><a href="#设置-startx" class="headerlink" title="设置 startx"></a>设置 startx</h3><p>我决定不使用显示管理器，而是在 tty 中直接使用 startx 登录图形界面。</p>
-<p>设置 startx 应当编辑/etc/X11/xinit/xinitrc（当然，如果~/.xinitrc 存在，会优先执行它）。这里对它进行备份，然后使它中只有一行内容<code>exec startplasma-x11</code>。</p>
-<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mv /etc/X11/xinit/xinitrc /etc/X11/xinit/xinitrc.bak<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;exec startplasma-x11&#x27;</span> &gt; /etc/X11/xinit/xinitrc<br></code></pre></div></td></tr></table></figure>
+<p>设置 startx 应当编辑&#x2F;etc&#x2F;X11&#x2F;xinit&#x2F;xinitrc（当然，如果~&#x2F;.xinitrc 存在，会优先执行它）。这里对它进行备份，然后使它中只有一行内容<code>exec startplasma-x11</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">mv</span> /etc/X11/xinit/xinitrc /etc/X11/xinit/xinitrc.bak<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;exec startplasma-x11&#x27;</span> &gt; /etc/X11/xinit/xinitrc<br></code></pre></div></td></tr></table></figure>
 
 <h3 id="创建新用户"><a href="#创建新用户" class="headerlink" title="创建新用户"></a>创建新用户</h3><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">useradd -m <span class="hljs-string">&#x27;aoymykn&#x27;</span> <span class="hljs-comment"># -m 意思是创建用户主目录</span><br>passwd aoymykn <span class="hljs-comment"># 修改密码</span><br></code></pre></div></td></tr></table></figure>
 
@@ -310,7 +310,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB<br><br>grub-mkconfig -o /boot/grub/grub.cfg  <span class="hljs-comment"># 自动生成配置文件</span><br></code></pre></div></td></tr></table></figure>
 
 <p>重启！</p>
-<h3 id="BIOS-UEFI，MBR-GPT-以及-GRUB-的关系"><a href="#BIOS-UEFI，MBR-GPT-以及-GRUB-的关系" class="headerlink" title="BIOS/UEFI，MBR/GPT 以及 GRUB 的关系"></a>BIOS/UEFI，MBR/GPT 以及 GRUB 的关系</h3><p>TODO: 摸了</p>
+<h3 id="BIOS-x2F-UEFI，MBR-x2F-GPT-以及-GRUB-的关系"><a href="#BIOS-x2F-UEFI，MBR-x2F-GPT-以及-GRUB-的关系" class="headerlink" title="BIOS&#x2F;UEFI，MBR&#x2F;GPT 以及 GRUB 的关系"></a>BIOS&#x2F;UEFI，MBR&#x2F;GPT 以及 GRUB 的关系</h3><p>TODO: 摸了</p>
 <h2 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h2><p>TODO: 摸了</p>
 <blockquote>
 <p>写这篇文章前前后后安装了 3 次，都快能默写了 www</p>

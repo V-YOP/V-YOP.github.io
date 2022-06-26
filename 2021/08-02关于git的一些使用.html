@@ -263,9 +263,9 @@
 <p>关于将修改加入到暂存区这一步，如果在文件 add 后再次编辑文件。文件将同时处于 Modified 和 Staged 状态——Staged 是编辑前被 add 的文件快照，Modified 是编辑后的文件，这时需再次执行 add 命令，但是旧的 add 命令的结果会被覆盖——如果需要保存该结果，应当在此时进行 commit。</p>
 </blockquote>
 <p><code>git status -s</code>命令会紧凑地显示各被修改的文件的情况。其中，?? 代表未追踪，A 表示新添加到暂存区，左边的 M 表示文件修改且存入暂存区，右边的 M 表示文件修改且未存入暂存区。但这个或许没有必要了解——IDE 一般都提供了更丰富的表现方式。</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">$</span><span class="bash"> git status -s</span><br> M README						# 修改但未暂存<br>MM Rakefile					# 暂存后被再次修改且未暂存<br>A  lib/git.rb				# 新添加到暂存区<br>M  lib/simplegit.rb	# 修改且暂存<br>?? LICENSE.txt			# 未追踪<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git status -s</span><br> M README						# 修改但未暂存<br>MM Rakefile					# 暂存后被再次修改且未暂存<br>A  lib/git.rb				# 新添加到暂存区<br>M  lib/simplegit.rb	# 修改且暂存<br>?? LICENSE.txt			# 未追踪<br></code></pre></div></td></tr></table></figure>
 
-<p><code>git diff</code>命令将会显示当前尚未暂存文件和上一次提交/暂存文件的差别（<strong>未暂存的改动</strong>），<code>git diff --staged</code>命令显示当前暂存文件和上一次提交文件的差别（<strong>已暂存的改动</strong>）。</p>
+<p><code>git diff</code>命令将会显示当前尚未暂存文件和上一次提交&#x2F;暂存文件的差别（<strong>未暂存的改动</strong>），<code>git diff --staged</code>命令显示当前暂存文件和上一次提交文件的差别（<strong>已暂存的改动</strong>）。</p>
 <p><code>git commit</code>命令将会把暂存区的快照进行提交并成为项目的一个快照（这个快照使能够完全回溯到项目的这个状态，快照是相对项目而言的，而非相对某个文件而言的；git 的版本控制指的是<strong>对项目的版本控制</strong>，而不是对各个文件的版本控制），在将来可以回退到该快照，或者进行比较等操作。也可以使用<code>git commit -a</code>来一次提交所有跟踪过的文件，而不需要进行暂存。</p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210730093849.png"></p>
 <h1 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h1><p>分支——<strong>把工作从开发主线上分离开来，以免影响开发主线</strong>。git <strong>鼓励在工作流程中频繁使用分支和合并</strong>。这是说，最好在每次要进行修改的时候都创建新分支，进行编辑和测试后合并到原分支。也可以说，分支的目的是为了更好的合并。</p>
@@ -287,26 +287,26 @@
 <ol>
 <li>为实现某需求，创建一个分支</li>
 <li>在该分支上进行工作</li>
-<li>完成工作后，合并分支到主分支 </li>
+<li>完成工作后，合并分支到主分支</li>
 </ol>
 <h2 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h2><p>合并操作显然是一个非常重要的部分。合并使用<code>git merge &lt;branchname&gt;</code>命令。合并时会将当前的分支和待合并的分支进行合并——在这里，<strong>当前的分支的指针会移动，而待合并的分支指针不动</strong>。</p>
 <p>下面是一个示例，在 C1 时，项目进行了分支以进行 bug 的修复，现在修复完了，而 main 分支也进行了更新，现在如何将 bugFix 的改动合并到当前的 main 分支上呢？</p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210731181603.png"></p>
 <p>答案是将当前分支设为 main，并进行 merge 操作，具体命令如下——</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">$</span><span class="bash"> git checkout main</span><br><span class="hljs-meta">$</span><span class="bash"> git merge bugFix</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git checkout main</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">git merge bugFix</span><br></code></pre></div></td></tr></table></figure>
 
 <p>最终会达到这样的结果——可以看到 bugFix 指针并未移动，main 则移动了。可见，<strong>main 是这次合并的主体</strong>，它把 bugFix 的内容融合进自己，让自己演进了。在进行合并操作时，应按照这样的语义来选择合并的主体。</p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210731182926.png"></p>
 <p><code>git rebase</code>也能够进行合并操作，它的作用就如其名——转移父对象，就是更改当前指针的父对象。其能造成更加线性的提交历史。</p>
 <p>下面是一个示例，展示了执行下面命令的前后状态。</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">$</span><span class="bash"> git checkout bugFix</span><br><span class="hljs-meta">$</span><span class="bash"> git rebase main</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git checkout bugFix</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">git rebase main</span><br></code></pre></div></td></tr></table></figure>
 
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210731202320.png"></p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210731202341.png"></p>
 <p>可以看到，bugFix 的父对象成为 main 了。现在只需要移动 main 到新节点即可。</p>
 <h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><p>对远程仓库进行各种操作是 git 使用中不可或缺的部分。一个 git 仓库可以有多个远程仓库。</p>
 <p><code>git remote [-v | --verbose]</code>命令允许对项目的远程仓库进行查看，其中<code>-v</code>将会显示更详细的信息。</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SHELL"><span class="hljs-meta">$</span><span class="bash"> git remote -v</span><br>bakkdoor  https://github.com/bakkdoor/grit (fetch)<br>bakkdoor  https://github.com/bakkdoor/grit (push)<br>cho45     https://github.com/cho45/grit (fetch)<br>cho45     https://github.com/cho45/grit (push)<br>defunkt   https://github.com/defunkt/grit (fetch)<br>defunkt   https://github.com/defunkt/grit (push)<br>koke      git://github.com/koke/grit.git (fetch)<br>koke      git://github.com/koke/grit.git (push)<br>origin    git@github.com:mojombo/grit.git (fetch)<br>origin    git@github.com:mojombo/grit.git (push)<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SHELL"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git remote -v</span><br>bakkdoor  https://github.com/bakkdoor/grit (fetch)<br>bakkdoor  https://github.com/bakkdoor/grit (push)<br>cho45     https://github.com/cho45/grit (fetch)<br>cho45     https://github.com/cho45/grit (push)<br>defunkt   https://github.com/defunkt/grit (fetch)<br>defunkt   https://github.com/defunkt/grit (push)<br>koke      git://github.com/koke/grit.git (fetch)<br>koke      git://github.com/koke/grit.git (push)<br>origin    git@github.com:mojombo/grit.git (fetch)<br>origin    git@github.com:mojombo/grit.git (push)<br></code></pre></div></td></tr></table></figure>
 
 <p>Continued…</p>
 

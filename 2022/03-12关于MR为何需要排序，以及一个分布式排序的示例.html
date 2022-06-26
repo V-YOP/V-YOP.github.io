@@ -250,15 +250,15 @@
 
 <p>但参考谷歌的论文对 MR 中进行排序的论述，感觉我可能想太多——</p>
 <blockquote>
-<p>我们确保在给定的分区中，中间 key/value pair 数据的处理顺序是按照 key 值增量顺序处理的。这样的顺 序保证对每个分成生成一个有序的输出文件，<strong>这对于需要对输出文件按 key 值随机存取的应用非常有意义， 对在排序输出的数据集也很有帮助</strong>。</p>
-<p>We guarantee that within a given partition, the intermediate key/value pairs are processed in increasing key order. This ordering guarantee makes it easy to generate a sorted output file per partition, <strong>which is useful when the output file format needs to support efficient random access lookups by key, or users of the output find it convenient to have the data sorted</strong>.</p>
+<p>我们确保在给定的分区中，中间 key&#x2F;value pair 数据的处理顺序是按照 key 值增量顺序处理的。这样的顺 序保证对每个分成生成一个有序的输出文件，<strong>这对于需要对输出文件按 key 值随机存取的应用非常有意义， 对在排序输出的数据集也很有帮助</strong>。</p>
+<p>We guarantee that within a given partition, the intermediate key&#x2F;value pairs are processed in increasing key order. This ordering guarantee makes it easy to generate a sorted output file per partition, <strong>which is useful when the output file format needs to support efficient random access lookups by key, or users of the output find it convenient to have the data sorted</strong>.</p>
 </blockquote>
 <blockquote>
 <p>另外，JOIN 操作对于有序的集合的复杂度为<code>O(n)</code>，这也是排序的一个必要之处。</p>
 </blockquote>
 <h2 id="为何-Partitioner-执行在-Combiner-之前？"><a href="#为何-Partitioner-执行在-Combiner-之前？" class="headerlink" title="为何 Partitioner 执行在 Combiner 之前？"></a>为何 Partitioner 执行在 Combiner 之前？</h2><p>太长不看，两个原因——整个集合排序开销大，分区后容易并行 combine</p>
 <p>MR 在执行 partitioner 后将每个分组进行排序，再传递给 Combiner，为什么不先 Combine 后再进行排序呢？我怀疑他们是想让 Reducer 和 Combiner 行为一致：接受的 key 总是按顺序的。</p>
-<p>而倘若先进行 Combine，<strong>则 Combine 之前必须进行排序</strong>，而这样开销更大，假设原记录数为 n，则时间复杂度为 nlogn，而假设分了 k 个区，对每个区进行排序，总时间复杂度为 k * (n/k) * (log n / k)，即 n * (log n / k)，这还是没有考虑到分过区后每个区可以并行地排序的情况！因此，显然分区后对每个分区进行局部排序开销更小。况且，如果两个 KEY 本就该分给不同的 Reducer，那么对它们进行排序有什么意义呢？</p>
+<p>而倘若先进行 Combine，<strong>则 Combine 之前必须进行排序</strong>，而这样开销更大，假设原记录数为 n，则时间复杂度为 nlogn，而假设分了 k 个区，对每个区进行排序，总时间复杂度为 k * (n&#x2F;k) * (log n &#x2F; k)，即 n * (log n &#x2F; k)，这还是没有考虑到分过区后每个区可以并行地排序的情况！因此，显然分区后对每个分区进行局部排序开销更小。况且，如果两个 KEY 本就该分给不同的 Reducer，那么对它们进行排序有什么意义呢？</p>
 <p>而且，分过区后，可以非常容易地对每个分区进行并行的 combine 操作（当然，不分区也能进行并行的 combine，就像 java8-stream 的 reduce 方法一样）。</p>
 <p>但这些猜测仍旧无法彻底让我信服，还得之后再研究。</p>
 <h1 id="分布式排序"><a href="#分布式排序" class="headerlink" title="分布式排序"></a>分布式排序</h1><p>当只有一个 Reducer 时，MR 可以用于进行分布式排序。它的原理利用了 MR 的执行流程。</p>

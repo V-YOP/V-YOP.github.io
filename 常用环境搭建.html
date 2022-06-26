@@ -26,7 +26,7 @@
 <meta property="og:description" content="决定记录一下搭建和配置各种常用编程环境——包括 maven，jdk，node 等——和软件环境——包括 mysql，redis，kafka 等——的过程以方便在将来进行参考和查阅，其中能使用 docker 则使用 docker。该文档将持续维护。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-21T15:15:34.051Z">
-<meta property="article:modified_time" content="2022-06-01T14:14:46.329Z">
+<meta property="article:modified_time" content="2022-06-18T14:52:55.095Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -200,7 +200,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.2k 字
+      3.5k 字
     </span>
   
 
@@ -306,7 +306,8 @@
 </li>
 </ul>
 <p>需注意：MySQL 服务器在容器启动后才会开始启动，这在使用 docker-compose 等工具时可能会出现问题，这时应当用轮询等手段待服务器启动后再进行其他操作。</p>
-<h3 id="JDBC-配置"><a href="#JDBC-配置" class="headerlink" title="JDBC 配置"></a>JDBC 配置</h3><p>TODO</p>
+<h3 id="JDBC-配置"><a href="#JDBC-配置" class="headerlink" title="JDBC 配置"></a>JDBC 配置</h3><figure class="highlight properties"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs properties"><span class="hljs-attr">spring.datasource.driverClassName</span> = <span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br><span class="hljs-attr">spring.datasource.url</span> = <span class="hljs-string">jdbc:mysql://localhost:3306/prod?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=true&amp;serverTimezone=Asia/Shanghai</span><br><span class="hljs-attr">spring.datasource.username</span> = <span class="hljs-string">root</span><br><span class="hljs-attr">spring.datasource.password</span> = <span class="hljs-string">root</span><br></code></pre></div></td></tr></table></figure>
+
 <h2 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h2><p>TODO</p>
 <h3 id="JDBC-配置-1"><a href="#JDBC-配置-1" class="headerlink" title="JDBC 配置"></a>JDBC 配置</h3><p>TODO</p>
 <h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a><a target="_blank" rel="noopener" href="https://hub.docker.com/_/redis">Redis</a></h2><ul>

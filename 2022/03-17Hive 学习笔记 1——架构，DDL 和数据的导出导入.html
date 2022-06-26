@@ -254,10 +254,10 @@
 <h1 id="为什么是-Hive"><a href="#为什么是-Hive" class="headerlink" title="为什么是 Hive"></a>为什么是 Hive</h1><p>Hadoop 的一个重要的原则就是<strong>数据本地性</strong>——我们移动计算到数据，而非移动数据到计算，从而减少网络 IO，增加吞吐量。</p>
 <p>移动计算，这点（的字面意思）在 MapReduce 的使用中非常明显——我们把自己的 MapReduce 程序打成 Jar 包，放置到 Hadoop 集群中，并要求它（分发和）运行该 Jar 包，这就是一个典型的“移动计算”的操作了。但这种操作总会让人感觉有点麻烦，即使它可以自动化。</p>
 <p>这时候就自然会想，能不能让客户端直接把程序提交给 Hadoop 集群呢？部分可行，可以通过 Hadoop Stream 做这个，但是程序一般来说总有一些自己的依赖，这时候 Hadoop 集群下必须要有相应依赖，这也引入了额外的麻烦，让人想到 JavaEE 的怪味，和当前的容器化是背道而驰的（咱提交 Docker 镜像过去吧 hhh）。</p>
-<p>自接触函数式编程伊始，将函数/过程当作数据来看待已经深入我心，但这种抽象仅在同一进程下能够屏蔽掉底层的麻烦细节，倘若想要把过程真的当作数据来序列化，持久到硬盘中，在本地或网络进行传输的话，就会遇到一万个问题，最典型的一个就是上面说的外部依赖问题。</p>
+<p>自接触函数式编程伊始，将函数&#x2F;过程当作数据来看待已经深入我心，但这种抽象仅在同一进程下能够屏蔽掉底层的麻烦细节，倘若想要把过程真的当作数据来序列化，持久到硬盘中，在本地或网络进行传输的话，就会遇到一万个问题，最典型的一个就是上面说的外部依赖问题。</p>
 <p>为了不引入额外的依赖，这时候我们就想着，能不能<strong>把 Mapper 和 Reducer 的程序形式化，结构化，抽象为一些预先定义的“指令”</strong>，从而能够被方便地解析，以及当作对象传输，从而达到目的？</p>
 <p>另外，在编写 MapReduce 程序时，也会发现，自己写的 Mapper 和 Reducer 好像在形式上有很多重复，而一些操作实现起来非常繁琐，如JOIN等，但是这些繁琐的操作实际上也能够找出模式来。这时候就会希望，有没有啥东西能把这麻烦的过程给抽象一下呢？</p>
-<p>而 Hive 就是这样的一个框架——它是一个解决海量的<strong>结构化</strong>日志的<strong>数据统计工具/数据仓库工具</strong>。<span style="color: #FF0000">它模仿 SQL，定义了一种名为 HQL 的 DSL，并能够把用户编写的 HQL 转换成对应的 MapReduce 程序</span>；它将结构化的数据文件映射成为一张表，提供<strong>类 SQL</strong> 的查询的功能。</p>
+<p>而 Hive 就是这样的一个框架——它是一个解决海量的<strong>结构化</strong>日志的<strong>数据统计工具&#x2F;数据仓库工具</strong>。<span style="color: #FF0000">它模仿 SQL，定义了一种名为 HQL 的 DSL，并能够把用户编写的 HQL 转换成对应的 MapReduce 程序</span>；它将结构化的数据文件映射成为一张表，提供<strong>类 SQL</strong> 的查询的功能。</p>
 <blockquote>
 <p>为什么是 SQL 呢？可以意识到，SQL 中常用的操作，如 select，where，order by，group，count 等，都是可以使用 map（其实是 flatmap）和 reduce 操作表达的，如 select 是 map，where 是 filter，group，count 是 reduce……</p>
 </blockquote>
@@ -370,7 +370,7 @@
 <p>更新列的信息使用 CHANGE 关键字，语法为<code>ALTER TABLE tb_name CHANGE [COLUMN] col_old_name col_new_name column_type [COMMENT col_comment] [FIRST|AFTER column_name]</code>，注意更新后的类型必须给定。</p>
 <p>添加列使用 ADD 关键字，更换列使用 REPLACE 关键字，REPLACE 实际上就是直接把所有列全部换掉了。它们的语法为<code>ALTER TABLE tb_name ADD COLUMNS (col_name column_type [COMMENT col_comment], ...);</code>。</p>
 <p>没有删除列的操作，只能使用 REPLACE。</p>
-<h1 id="DML"><a href="#DML" class="headerlink" title="DML"></a>DML</h1><p>DML（Data Manipulation language，数据操纵语言），即用于对数据库的对象（即实体，即表中的每一行）进行访问的语言，如 SELECT，DELETE，UPDATE 等语句，但 Hive 提供更丰富的操作，以满足各种导入/导出数据等的需求。</p>
+<h1 id="DML"><a href="#DML" class="headerlink" title="DML"></a>DML</h1><p>DML（Data Manipulation language，数据操纵语言），即用于对数据库的对象（即实体，即表中的每一行）进行访问的语言，如 SELECT，DELETE，UPDATE 等语句，但 Hive 提供更丰富的操作，以满足各种导入&#x2F;导出数据等的需求。</p>
 <h2 id="数据导入"><a href="#数据导入" class="headerlink" title="数据导入"></a>数据导入</h2><p>LOAD 和 INSERT 最为常用。</p>
 <h3 id="LOAD（！）"><a href="#LOAD（！）" class="headerlink" title="LOAD（！）"></a>LOAD（！）</h3><p>十分明显地，通过手动上传文件到 HDFS 上来插入数据并非是一个好的选择——元数据没有相应改变，这使得某些查询结果会出现错误，而且这样插入数据也无法在插入时得到 Hive 的校验，因此有可能插入格式错误的数据。</p>
 <p><strong>通过上传文件来插入数据</strong>可以使用所谓的 LOAD 关键字，其语法为<code>LOAD DATA [LOCAL] INPATH &#39;data_path&#39; [OVERWRITE] INTO TABLE tb_name [PARTITION (partcol1=val1,...)]</code>。</p>
@@ -398,7 +398,7 @@
     </details>
   
 
-<h4 id="INSERT（！）"><a href="#INSERT（！）" class="headerlink" title="INSERT（！）"></a>INSERT（！）</h4><p>普通的 INSERT 语句不需赘述，但 Hive 提供了一个重要的变体——<strong>通过查询结果插入/覆盖数据到表</strong>——<code>INSERT (INTO|OVERWRITE TABLE) tb_name select_clause</code>，一个例子是——</p>
+<h4 id="INSERT（！）"><a href="#INSERT（！）" class="headerlink" title="INSERT（！）"></a>INSERT（！）</h4><p>普通的 INSERT 语句不需赘述，但 Hive 提供了一个重要的变体——<strong>通过查询结果插入&#x2F;覆盖数据到表</strong>——<code>INSERT (INTO|OVERWRITE TABLE) tb_name select_clause</code>，一个例子是——</p>
 <figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">INSERT</span> OVERWRITE <span class="hljs-keyword">TABLE</span> stud <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">&gt;</span> <span class="hljs-number">15000</span>;<br></code></pre></div></td></tr></table></figure>
 
 <p>多个 INSERT 子句可以放置在一起作为单条语句，似乎在分区表中比较常用。</p>
@@ -410,7 +410,7 @@
 <p>山不去见穆罕默德，穆罕默德就去见山：LOCATION 关键字用于<strong>在已有的数据上建表</strong>的情况——它会指定表的存储位置，因而倘若该位置已经有数据，就相当于是将这些数据插入到表中了。</p>
 <h3 id="IMPORT"><a href="#IMPORT" class="headerlink" title="IMPORT"></a>IMPORT</h3><p>IMPORT 需和 EXPORT 配合使用，相当于是把一个表的数据以特定的形式导出，再导入到另一张表，语法为 <code>IMPORT TABLE tb_name FROM path</code>。用处似乎不多。IMPORT 不能使用在已有数据的表中。</p>
 <h2 id="数据导出"><a href="#数据导出" class="headerlink" title="数据导出"></a>数据导出</h2><h3 id="INSERT"><a href="#INSERT" class="headerlink" title="INSERT"></a>INSERT</h3><p>INSERT 也可以用来导出数据，语法为<code>INSERT OVERWRITE [LOCAL] DIRECTORY path [ROW FORMAT ...]  select_clause</code>。它默认导出的文件的格式是原始格式（即字段之间用<code>SOH</code>分割的那种格式），无论表的格式如何，可以使用<code>ROW FORMAT DELIMITED ...</code>进行规定。</p>
-<h3 id="EXPORT"><a href="#EXPORT" class="headerlink" title="EXPORT"></a>EXPORT</h3><p>EXPORT 需要和 IMPORT 配合使用，EXPORT 的语法为<code>EXPORT TABLE tb_name TO path</code>，EXPORT 只能导出到 HDFS 中。<strong>IMPORT/EXPORT 主要使用在数据迁移中</strong>，因为它在导出时同时会携带所有元数据。</p>
+<h3 id="EXPORT"><a href="#EXPORT" class="headerlink" title="EXPORT"></a>EXPORT</h3><p>EXPORT 需要和 IMPORT 配合使用，EXPORT 的语法为<code>EXPORT TABLE tb_name TO path</code>，EXPORT 只能导出到 HDFS 中。<strong>IMPORT&#x2F;EXPORT 主要使用在数据迁移中</strong>，因为它在导出时同时会携带所有元数据。</p>
 <h3 id="怪东西"><a href="#怪东西" class="headerlink" title="怪东西"></a>怪东西</h3><p>另外的几种导出数据的操作是，直接使用 HDFS 的命令导出数据文件，或使用<code>hive -e</code>命令，执行单行 SELECT 脚本并把输出流指向特定文件（这种方法会把表头带上）。这些操作显然不会是最佳实践。</p>
 <hr>
 <p>在这里停了一两个星期，去深入学习了 MapReduce 的编程模式，又顺势去复习了 SQL，学习了之前没有了解过的 GROUP BY，JOIN 操作，还有窗口函数，聚集函数……现在回过头来看 Hive，能更清晰些了。下一步是学习各种 SELECT，然后对这里的各个子句进行更加丰富的，结合实际的示例。</p>

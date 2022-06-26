@@ -203,7 +203,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      669 字
+      684 字
     </span>
   
 
@@ -250,10 +250,11 @@
 <p>其中，从 atom 上直接获取的 atom-slime 的 REPL 有一些问题（已解决，但是未“推送”到 atom 上……需要从 github 上手动 clone 最新的版本），导致其输出令我难以忍受，而且下方的状态栏的字体不好看，因此进行一些修改。</p>
 <ol>
 <li><p>从 github 上 clone atom-slime，并安装依赖</p>
-<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">git <span class="hljs-built_in">clone</span> https://github.com/sjlevine/atom-slime<br><span class="hljs-built_in">cd</span> ./atom-slime<br>apm install<br></code></pre></div></td></tr></table></figure></li>
-<li><p>编辑其下的 lib/atom-slime-status-view.coffee，搜索 monospace，把那个 style 删掉。</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">git <span class="hljs-built_in">clone</span> https://github.com/sjlevine/atom-slime<br><span class="hljs-built_in">cd</span> ./atom-slime<br>apm install<br></code></pre></div></td></tr></table></figure>
 </li>
-<li><p>将该文件夹移到 你的用户名/.atom/packages 下</p>
+<li><p>编辑其下的 lib&#x2F;atom-slime-status-view.coffee，搜索 monospace，把那个 style 删掉。</p>
+</li>
+<li><p>将该文件夹移到 你的用户名&#x2F;.atom&#x2F;packages 下</p>
 </li>
 <li><p>完成！</p>
 </li>

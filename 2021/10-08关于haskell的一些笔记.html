@@ -340,7 +340,7 @@
 <figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Tohu</span> t <span class="hljs-keyword">where</span></span><br>    tofu :: j a -&gt; t a j<br></code></pre></div></td></tr></table></figure>
 
 <p>这里的 Tohu typeclass，其中的 j 就是<code>* -&gt; *</code>，t 的类型根据 t a j 能够推导出来——<code>* -&gt; (* -&gt; *) -&gt; *</code></p>
-<p>一个重点是去了解函数/类型签名和函数体的关系——签名再怎么花哨也行，对函数体不会有影响。</p>
+<p>一个重点是去了解函数&#x2F;类型签名和函数体的关系——签名再怎么花哨也行，对函数体不会有影响。</p>
 <p>kind 能够形式化表述 type 的类型参数，type declaration 形式化表述 function 和 value 的参数。</p>
 <hr>
 <p>haskell 中的 Unit 使用 () 即空的 tuple 表示。</p>
@@ -348,9 +348,9 @@
 <p>return 将值包装成 Monad。这可以用在 IO Monad 里，<code>name &lt;- return xxx</code>来绑定值到……名字上，也可以用在其他 Monad 里，比如<code>return 1 :: Maybe Int</code>，能拿到一个<code>Just 1</code>。但是没必要。</p>
 <hr>
 <blockquote>
-<p>Don’t think of a function like <strong>putStrLn</strong> as a function that takes a string and prints it to the screen. Think of it as a function that takes a string and returns an I/O action.</p>
+<p>Don’t think of a function like <strong>putStrLn</strong> as a function that takes a string and prints it to the screen. Think of it as a function that takes a string and returns an I&#x2F;O action.</p>
 </blockquote>
-<p>不要把带副作用的函数看作接受参数并进行操作的“过程”，而是将这些函数看作接受参数，返回 IO action 的函数！这种看法是为了更好的组合操作，把代码/过程当作数据来看待……</p>
+<p>不要把带副作用的函数看作接受参数并进行操作的“过程”，而是将这些函数看作接受参数，返回 IO action 的函数！这种看法是为了更好的组合操作，把代码&#x2F;过程当作数据来看待……</p>
 <hr>
 <p>随机数是有副作用的——对同一个获取随机数的函数，每次调用都是不同结果。</p>
 <p>但这只是表面上的——随机数是通过某种显式或隐式的状态生成的。</p>
@@ -394,7 +394,7 @@
 <blockquote>
 <p>If a type obeys the functor laws, we know that calling <code>fmap</code> on a value of that type will only map the function over it, <strong>nothing more</strong>.</p>
 </blockquote>
-<p>也可以理解为，Functor 是在一个特定的上下文中对值进行映射/修改。这个上下文不止包括数据所对应的 value Constructor，还可以包括更多东西，比如对 IO，它包括整个世界。（这里的上下文 context 指的是计算上下文 computation context 吗？）</p>
+<p>也可以理解为，Functor 是在一个特定的上下文中对值进行映射&#x2F;修改。这个上下文不止包括数据所对应的 value Constructor，还可以包括更多东西，比如对 IO，它包括整个世界。（这里的上下文 context 指的是计算上下文 computation context 吗？）</p>
 <hr>
 <hr>
 <p>Applicative 全称是 Applicative Functor，这意味着一个 type 如果是 Applicative，则它必然也是 Functor，这可见于 Applicative 的定义——</p>

@@ -258,7 +258,7 @@
 <p>结构化的语言可以认为是用呈一定结构的自然语言来进行编程的语言，如 C#的 LINQ，Common Lisp 的 Loop 宏，其也都是一种结构化语言。</p>
 </blockquote>
 <h1 id="SELECT——检索数据"><a href="#SELECT——检索数据" class="headerlink" title="SELECT——检索数据"></a>SELECT——检索数据</h1><blockquote>
-<p>SQL 使用–进行单行注释，使用 C 风格的/**/进行多行注释。</p>
+<p>SQL 使用–进行单行注释，使用 C 风格的&#x2F;**&#x2F;进行多行注释。</p>
 </blockquote>
 <p><code>SELECT</code>语句从一个或多个表中检索信息。</p>
 <figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-comment">-- 检索一列</span><br><span class="hljs-keyword">SELECT</span> prod_name <span class="hljs-keyword">FROM</span> Products; <span class="hljs-comment">-- 这将返回所有行的 prod_name。</span><br><br><span class="hljs-comment">-- 检索多列</span><br><span class="hljs-keyword">SELECT</span> prod_id, prod_name, prod_price <br><span class="hljs-keyword">FROM</span> Products;<br><span class="hljs-comment">-- 检索所有 （实际上查询了整个表）</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Products;<br></code></pre></div></td></tr></table></figure>
@@ -271,7 +271,7 @@
 
 <h2 id="ORDER-BY——排序结果"><a href="#ORDER-BY——排序结果" class="headerlink" title="ORDER BY——排序结果"></a>ORDER BY——排序结果</h2><p>应该假定，<strong>如果不明确进行排序，则检索到的数据的顺序是无意义的</strong>。</p>
 <p><code>ORDER BY</code>子句让各记录根据其一个列或多个列的值来排序。使用<code>ASC</code>（升序排序，它是默认的）和<code>DESC</code>（降序）关键字来规定升序还是降序排序。要降序排序的每一列都需要明确给定<code>DESC</code>。</p>
-<p>需要注意的是，<code>ASC</code>/<code>DESC</code>需要给在列名后面…就像副词的用法。</p>
+<p>需要注意的是，<code>ASC</code>&#x2F;<code>DESC</code>需要给在列名后面…就像副词的用法。</p>
 <blockquote>
 <p>DESC 是 DESCENDING 的缩写，ASC 是 ASCENDING 的缩写。</p>
 </blockquote>

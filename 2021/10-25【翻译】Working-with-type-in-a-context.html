@@ -217,7 +217,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.9k 字
+      3k 字
     </span>
   
 
@@ -268,7 +268,7 @@
 <p>这个连接可以代表任何从一个类型到另一个类型的函数。它可以代表<code>(Int -&gt; Double)</code>，<code>(String -&gt; Text)</code>，<code>(Name -&gt; FirstName)</code>，诸如此类。当你试图应用一个转换时，你可以可视化地将连接器置于初始值（在当前的情形下，是一个圆形）以及期望值（一个正方形）之间；见图 3。</p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202753.png"></p>
 <p>当每个形状都正确匹配，你就能完成你所期望的转换。</p>
-<p>在这个单元，你将关注如何操作处于上下文（context）中的类型。你已经见过的两个关于上下文中的类型的最好的例子是<code>Maybe</code>类型和<code>IO</code>类型。<code>Maybe</code>类型代表这样一种上下文，即其中的值可能不存在；<code>IO</code>类型代表着这样一种上下文，即其中的值将同 I/O 交互（the value has interacted with I/O）。放到我们的可视化语言中，你可以想象上下文中的类型将像图 4 这样表述。</p>
+<p>在这个单元，你将关注如何操作处于上下文（context）中的类型。你已经见过的两个关于上下文中的类型的最好的例子是<code>Maybe</code>类型和<code>IO</code>类型。<code>Maybe</code>类型代表这样一种上下文，即其中的值可能不存在；<code>IO</code>类型代表着这样一种上下文，即其中的值将同 I&#x2F;O 交互（the value has interacted with I&#x2F;O）。放到我们的可视化语言中，你可以想象上下文中的类型将像图 4 这样表述。</p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025203400.png"></p>
 <p>这些形状可以代表诸如<code>IO Int</code>，<code>IO Double</code>，<code>Maybe String</code>，<code>Maybe Text</code>，<code>Maybe Name</code>，<code>Maybe FirstName</code>等的类型。因为这些类型是处于一定的上下文中的，你不能用你的原有的连接去进行转换。当前，在本书中你曾依赖过那些输入和输出都处在同样的上下文中的函数。而为对上下文中的类型进行转换，你需要一个类似图 5 的连接。</p>
 <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025203947.png"></p>
