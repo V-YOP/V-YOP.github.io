@@ -25,27 +25,27 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="发现《Get Programming with Haskell》这本书中对 Functor，Applicative，Monad 的概念的引入非常直观有趣，在这里进行一波翻译。我是 Haskell 初学者，且英语水平也不高，所以难免拉垮，望读者海涵并给予意见。文章最后粘贴了英文原文的图片。 在文章中，我将 type 翻译作类型，type class 翻译作类型类，但作者有时会把 Maybe，IO">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220104220223.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202006.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202336.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202753.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025203400.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025203947.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025204346.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025212503.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025213211.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025213436.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025213739.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214242.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214329.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214418.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214443.png">
+<meta property="og:image" content="http://example.com/images/oss/20220104220223.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025202006.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025202336.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025202753.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025203400.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025203947.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025204346.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025212503.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025213211.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025213436.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025213739.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025214242.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025214329.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025214418.png">
+<meta property="og:image" content="http://example.com/images/oss/20211025214443.png">
 <meta property="article:published_time" content="2021-10-25T13:58:11.000Z">
-<meta property="article:modified_time" content="2022-04-08T12:40:03.188Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.033Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220104220223.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20220104220223.png">
   
   
   <title>【翻译】Working with type in a context - 友纪V-λOP</title>
@@ -239,7 +239,7 @@
             <h1 style="display: none">【翻译】Working with type in a context</h1>
             
             <div class="markdown-body">
-              <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220104220223.png"></p>
+              <p><img src="/images/oss/20220104220223.png"></p>
 <p>发现《Get Programming with Haskell》这本书中对 Functor，Applicative，Monad 的概念的引入非常直观有趣，在这里进行一波翻译。我是 Haskell 初学者，且英语水平也不高，所以难免拉垮，望读者海涵并给予意见。文章最后粘贴了英文原文的图片。</p>
 <p>在文章中，我将 type 翻译作类型，type class 翻译作类型类，但作者有时会把 Maybe，IO 等称作类型，令人<del>感叹</del>迷惑，总之忠于原文。我一些我拿不准的地方则把英文原文也贴上了。</p>
 <span id="more"></span>
@@ -247,21 +247,21 @@
 <hr>
 <p>在这个单元里，你将关注 Haskell 的三个最具威力，但同时也最迷惑人的类型类：<code>Functor</code>，<code>Applicative</code>和<code>Monad</code>。这些类型类名字有趣，但其目的却相对的明确。它们中的每一个都建立在前一个之上，并提供你在诸如<code>IO</code>等上下文中进行操作的能力。在单元 4 里，你大量使用了<code>Monad</code>类型类以操作<code>IO</code>。在这个单元里，你将更深刻地理解其工作原理。为更好地感受这些抽象的类型类的行为，（在这里）你将把类型当作形状来看待。</p>
 <p>理解函数的一种方式是认为其将一种类型转换成另一种类型。让我们把两个类型可视化为两个形状，一个圆和一个正方形，就如图 1 所示。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202006.png"></p>
+<p><img src="/images/oss/20211025202006.png"></p>
 <p>这些形状可以代表任意两个类型，比如<code>Int</code>和<code>Double</code>，<code>String</code>和<code>Text</code>，<code>Name</code>和<code>FirstName</code>以及其他。当你试图将一个圆转换成一个正方形的时候，你就在使用函数。你可以把函数可视化为两个形状间的一种连接（connector），如图 2 所示。</p>
 <blockquote>
 <p>  译者：显然，这两个形状也可以代表同一个类型。</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202336.png"></p>
+<p><img src="/images/oss/20211025202336.png"></p>
 <p>这个连接可以代表任何从一个类型到另一个类型的函数。它可以代表<code>(Int -&gt; Double)</code>，<code>(String -&gt; Text)</code>，<code>(Name -&gt; FirstName)</code>，诸如此类。当你试图应用一个转换时，你可以可视化地将连接器置于初始值（在当前的情形下，是一个圆形）以及期望值（一个正方形）之间；见图 3。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025202753.png"></p>
+<p><img src="/images/oss/20211025202753.png"></p>
 <p>当每个形状都正确匹配，你就能完成你所期望的转换。</p>
 <p>在这个单元，你将关注如何操作处于上下文（context）中的类型。你已经见过的两个关于上下文中的类型的最好的例子是<code>Maybe</code>类型和<code>IO</code>类型。<code>Maybe</code>类型代表这样一种上下文，即其中的值可能不存在；<code>IO</code>类型代表着这样一种上下文，即其中的值将同 I&#x2F;O 交互（the value has interacted with I&#x2F;O）。放到我们的可视化语言中，你可以想象上下文中的类型将像图 4 这样表述。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025203400.png"></p>
+<p><img src="/images/oss/20211025203400.png"></p>
 <p>这些形状可以代表诸如<code>IO Int</code>，<code>IO Double</code>，<code>Maybe String</code>，<code>Maybe Text</code>，<code>Maybe Name</code>，<code>Maybe FirstName</code>等的类型。因为这些类型是处于一定的上下文中的，你不能用你的原有的连接去进行转换。当前，在本书中你曾依赖过那些输入和输出都处在同样的上下文中的函数。而为对上下文中的类型进行转换，你需要一个类似图 5 的连接。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025203947.png"></p>
+<p><img src="/images/oss/20211025203947.png"></p>
 <p>这个连接代表那些类型签名形如<code>(Maybe Int -&gt; Maybe Double)</code>，<code>(IO String -&gt; IO Text)</code>和<code>(IO Name -&gt; IO FirstName)</code>的函数。通过该连接，你很容易对上下文中的类型进行转换，就如图 6 所示。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025204346.png"></p>
+<p><img src="/images/oss/20211025204346.png"></p>
 <p>这看上去像是一个完美的解决方案，但是这里有个问题。让我们看下面这个函数<code>halve</code>，它的类型是<code>Int -&gt; Double</code>，其行为就如我们所期望的，对半分（halve）输入参数<code>Int</code>。</p>
 <figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">halve</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Double</span><br><span class="hljs-title">halve</span> n = fromIntegral n / <span class="hljs-number">2.0</span><br></code></pre></div></td></tr></table></figure>
 
@@ -273,24 +273,24 @@
 <p>  译者：为什么无法编写<code>IO</code>的包装器？你需要对<code>IO</code>类型的实例进行解构并获取它的值，再重新构造它，而解构这一步是无法做到的——这意味着 Haskell 将会提供诸如<code>IO Int -&gt; Int</code>这样签名的函数，这是不安全的——你不能保证函数是纯函数了！假设你又有一个函数<code>Int -&gt; IO Int</code>（这是容易做到的，通过<code>return</code>之类），你就可以将两个函数组合，使其具有<code>Int -&gt; Int</code>之类的函数签名，但是在内部做 dirty work。当然，Haskell 的确提供了这样的 unsafe 函数就是了。</p>
 </blockquote>
 <p>于是，我们的<code>Functor</code>，<code>Applicative</code>和<code>Monad</code>来到了！你可以认为这些类型类是适配器（adapter），它们允许你在底层（underlying）类型（圆和正方形）相同的情况下使用不同的连接（You can think of these type classes as adapters that allow you to work with different connectors so long as the underlying types (circle and square) are the same）。比如在<code>halve</code>中，你关心转换你的基本的<code>Int</code>到<code>Double</code>（的函数），使它能够适配以工作在上下文的类型中。这是<code>Functor</code>类型类的工作，如图 7。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025212503.png"></p>
+<p><img src="/images/oss/20211025212503.png"></p>
 <blockquote>
 <p>  译者：图中文字为：<code>Functor</code>类型类能够解决上下文中的类型和连接不匹配的问题。</p>
 <p>  这也就是说<code>Functor</code>能够使类型<code>a -&gt; b</code>的函数将<code>(Functor f) =&gt; f a</code>类型转化为<code>(Functor f) =&gt; f b</code>。换句话说，<code>Functor</code>能够将<code>a -&gt; b</code>转化成<code>(Functor f) =&gt; f a -&gt; f b</code>。</p>
 <p>  如果你曾了解过<code>Functor</code>的方法（是这么叫吗？）<code>fmap</code>，查看它的签名<code>fmap :: (Functor f) =&gt; (a -&gt; b) -&gt; f a -&gt; f b</code>，就容易发现上面的“换句话说”两边的描述其实就是对<code>fmap</code>的不同诠释。</p>
 </blockquote>
 <p>（<code>Functor</code>能解决一种类型不匹配问题），但仍有其它三种类型不匹配问题。<code>Applicative</code>能解决其中两种。其中第一种情况是连接的第一部分在上下文中，而结果不在，如图 8。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025213211.png"></p>
+<p><img src="/images/oss/20211025213211.png"></p>
 <p>另一种情形则是整个函数都在上下文中。比如函数<code>Maybe (Int -&gt; Double)</code>意味着这个函数本身可能不存在。这（函数被包裹在上下文中）听起来奇怪，但它很有可能发生在对<code>Maybe</code>和<code>IO</code>的偏调用中。图 9 描述了这一有趣的情形。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025213436.png"></p>
+<p><img src="/images/oss/20211025213436.png"></p>
 <p>然后还有最后一种可能的函数和上下文中类型不匹配的情形。这种情况是参数不在上下文中，而结果在上下文中。这种情形比你想象中的更加普遍。如<code>Map.lookup</code>和<code>putStrLn</code>的类型签名都是这样。这个问题被<code>Monad</code>类型类解决，见图 10。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025213739.png"></p>
+<p><img src="/images/oss/20211025213739.png"></p>
 <p>当你结合使用这三个类型类，只要底层类型匹配，你能把所有函数应用到诸如<code>Maybe</code>，<code>IO</code>等上下文。这可是件了不起的事——你可以在上下文中应用任何你想做的计算，并能够不同的上下文中重用大量的现存代码。</p>
 <hr>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214242.png"></p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214329.png"></p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214418.png"></p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20211025214443.png"></p>
+<p><img src="/images/oss/20211025214242.png"></p>
+<p><img src="/images/oss/20211025214329.png"></p>
+<p><img src="/images/oss/20211025214418.png"></p>
+<p><img src="/images/oss/20211025214443.png"></p>
 
             </div>
             <hr>

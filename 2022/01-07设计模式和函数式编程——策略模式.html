@@ -25,14 +25,14 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="半年没有学习设计模式了，这半年以来主要做的框架开发工作，也算是有一些实践经验（虽然远远不够），同时也是了解了很多函数式编程的概念，写的代码里状态越来越少，代码风格越来越声明式（好久没写过原生的 for 和 while 了 hhh），也开始觉得一些设计模式变得臃肿起来了。现在继续回来学习设计模式，顺便看看它们结合函数式编程中的概念会对样板代码有如何的简化。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210926020709.png">
+<meta property="og:image" content="http://example.com/images/oss/20210926020709.png">
 <meta property="article:published_time" content="2022-01-07T13:40:48.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.595Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.059Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210926020709.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20210926020709.png">
   
   
   <title>设计模式和函数式编程——策略模式 - 友纪V-λOP</title>
@@ -282,7 +282,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">// 首先定义 filter，map 的柯里化形式——</span><br><span class="hljs-comment">// filter : (Int -&gt; Bool) -&gt; [Int] -&gt; [Int]</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">filter</span> = algo =&gt; <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> lst.<span class="hljs-title function_">filter</span>(algo)<br><span class="hljs-comment">// map : (Int -&gt; Int) -&gt; [Int] -&gt; [Int]</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">map</span> = algo =&gt; <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> lst.<span class="hljs-title function_">map</span>(algo)<br><span class="hljs-comment">// sum : [Int] -&gt; Int</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">sum</span> = lst =&gt; lst.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a + b, <span class="hljs-number">0</span>)<br><br><span class="hljs-comment">// compose : (B -&gt; C) -&gt; (A -&gt; B) -&gt; (A -&gt; C)</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">compose</span> = b2c =&gt; <span class="hljs-function"><span class="hljs-params">a2b</span> =&gt;</span> &#123;<br>    <span class="hljs-comment">// A -&gt; C，x 类型是 A</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_">b2c</span>(<span class="hljs-title function_">a2b</span>(x))<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 考虑到 compose 这个函数太难看了（看起来像 Lisp），这里也给定了 haskell 形式的描述</span><br><span class="hljs-comment">// someAlgo : [Int] -&gt; Int = sum . map (* 3) . filter (\i -&gt; div i 2 == 1)</span><br><span class="hljs-keyword">const</span> someAlgo = compose (sum) (compose (map (<span class="hljs-function"><span class="hljs-params">i</span> =&gt;</span> i * <span class="hljs-number">3</span>)) (filter (<span class="hljs-function"><span class="hljs-params">i</span> =&gt;</span> i % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>)))<br></code></pre></div></td></tr></table></figure>
 
 <p>在 Java 中，我们对数据进行链式的处理，而在函数式编程中，我们通过组合小的，易理解、处理、证明的函数来构造最终的复杂函数并将其应用到数据上。显然后者是形式更加清晰（至少在 Haskell 里是这样的……），测试更为容易，更加容易进行复用的。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210926020709.png"></p>
+<p><img src="/images/oss/20210926020709.png"></p>
 
             </div>
             <hr>

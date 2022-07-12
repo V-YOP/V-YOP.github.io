@@ -25,13 +25,13 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="Hive 就是一种用于构造 MapReduce 的 DSL 及相关基础设施，这样的概括大概足矣。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220225225304.png">
+<meta property="og:image" content="http://example.com/images/oss/20220225225304.png">
 <meta property="article:published_time" content="2022-03-17T15:59:59.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.856Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.033Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Hive">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220225225304.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20220225225304.png">
   
   
   <title>Hive 学习笔记 1——架构，DDL 和数据的导出导入 - 友纪V-λOP</title>
@@ -285,7 +285,7 @@
 <p>Hive 的数据仍旧是以比较规范的形式存储在 HDFS 中的——它默认使用<code>/user/hive/warehouse</code>存储所有数据（Hive 的 default 数据库），其中每一张表都作为一个文件夹存放，比如我们创建表<code>create table test (id string)</code>，它就会在该目录下创建 test 文件夹；且它是以该文件夹下所有数据作为自己的数据的——如果在该文件夹下创建文件存储和表同样格式的信息，如<code>1001\n1002</code>，它是可以被<code>select</code>查到的，十分有趣（更有趣的是使用 count 查不到，这说明有的操作是通过查询元数据进行的，而有的操作则是通过查询实际数据）；<strong>这让我们很容易通过 sql 以外的方式对表进行数据插入</strong>，但显然需要同时能够对元数据进行维护。</p>
 <p>Hive 是<strong>读时模式</strong>，即在读取数据时才对数据的格式进行验证；而传统数据库是<strong>写时模式</strong>，即在数据写入时就对数据的格式进行检查。读时模式在加载（LOAD）数据时非常迅速，因为它不对数据进行任何校验操作，直接移动文件即可。</p>
 <p>读时模式的优势在于加载迅速，但在查询时则会逊色一些，且难以进行索引等操作（现在有了），但这些其实问题并不大，因为 Hive 的应用场景通常会进行全表扫描，</p>
-<h2 id="Hive-的诸服务及其相互关系"><a href="#Hive-的诸服务及其相互关系" class="headerlink" title="Hive 的诸服务及其相互关系"></a>Hive 的诸服务及其相互关系</h2><p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220225225304.png"></p>
+<h2 id="Hive-的诸服务及其相互关系"><a href="#Hive-的诸服务及其相互关系" class="headerlink" title="Hive 的诸服务及其相互关系"></a>Hive 的诸服务及其相互关系</h2><p><img src="/images/oss/20220225225304.png"></p>
 <p>接触最多的将是 hiveserver2，启动该服务能让 Hive 以 Thrift 服务的形式运行，从而让外部 Thrift，JDBC 客户端能进行连接；其次是 metastore，Hive 通过 metastore 来访问保存的元数据，而 metastore 将数据保存在关系型数据库中。</p>
 <h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>HQL 的数据类型比较类似 Java，其有如下数据类型——</p>
 <ul>

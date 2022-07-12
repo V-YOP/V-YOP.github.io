@@ -25,16 +25,16 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="使用 NFA 实现 atoi 函数">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210822082214.PNG">
+<meta property="og:image" content="http://example.com/images/oss/20210822082214.PNG">
 <meta property="og:image" content="https://i.loli.net/2020/11/12/P279vhoX3OySaGn.png">
 <meta property="og:image" content="https://i.loli.net/2020/11/12/T7AykRZrEXo632l.png">
 <meta property="article:published_time" content="2020-11-11T13:36:38.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.607Z">
+<meta property="article:modified_time" content="2022-07-12T16:00:59.969Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="算法">
 <meta property="article:tag" content="NFA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210822082214.PNG">
+<meta name="twitter:image" content="http://example.com/images/oss/20210822082214.PNG">
   
   
   <title>自动机——我的 atoi 函数 - 友纪V-λOP</title>
@@ -251,7 +251,7 @@
 <p>可以看到，这个实现是非常……臃肿的，代码并不好修改（也不好看），if 和 return 到处都是。虽然我 no bug AC 了，但是这绝对是机缘巧合。这样多分支的玩意出现 bug 轻而易举。</p>
 <p>于是去翻了下题解，卧槽？DFA？还有这种操作？原来这种流程复杂的玩意可以用自动机优雅地解决……我是没想到编译原理里的东西可以用到这里……这必须得学习一波了。</p>
 <h1 id="DFA-的实现"><a href="#DFA-的实现" class="headerlink" title="DFA 的实现"></a>DFA 的实现</h1><p>状态转移图如下，start 为初始，signed 为判断正负，in_number 则是正在处理有效数字，end 为转换失败或转换完成</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210822082214.PNG"></p>
+<p><img src="/images/oss/20210822082214.PNG"></p>
 <p>然后贴上状态转移表。这个表描述任意条件下遇到各种字符的处理方法。比如在 start 条件下，遇到 number 则跳转到 in_number 下</p>
 <table>
 <thead>

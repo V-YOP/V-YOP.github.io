@@ -26,9 +26,9 @@
 <meta property="og:description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220218215040.png">
+<meta property="og:image" content="http://example.com/images/oss/20220218215040.png">
 <meta property="article:published_time" content="2022-02-19T01:17:33.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.595Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.033Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="MapReduce">
 <meta name="twitter:card" content="summary_large_image">
@@ -274,7 +274,7 @@
 <li>各节点统计各单词出现次数，输出结果到文件中</li>
 <li>框架汇总输出文件，得到最终输出文件</li>
 </ol>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220218215040.png"></p>
+<p><img src="/images/oss/20220218215040.png"></p>
 <p>每个 ReduceTask 都包含所有 MapTask 的结果的一部分，比如说，假设它的 partitioner 是按字符串的“基数”进行分区，则 MapTask1，2，3 的结果中可能所有 A、B、C 开头的所有单词会传递给 ReduceTask1，D、E、F 开头的所有单词会传递给 ReduceTask2……<strong>但实际的 partitioner 一般使用哈希算法，以保证分区尽量均匀；而用户则需要保证每个 MapTask 的输出值尽量均匀，即每个 K 对应的 V 的数量尽量相同，从而保证每个 ReduceTask 的工作量基本相同</strong>。</p>
 <p>另外，也是由于每个 ReduceTask 都需要拿到所有 MapTask 的结果的一部分，<strong>ReduceTask 因此享受不到数据本地化的优势——MapTask 的结果必须通过网络传输给 ReduceTask</strong>。</p>
 <p>MapReduce 程序中，用户最少需要编写三个部分——<strong>Driver：程序的入口，创建配置和 job；Mapper：处理 MapTask 的业务类；Reducer：处理 ReduceTask 的业务类</strong>。</p>

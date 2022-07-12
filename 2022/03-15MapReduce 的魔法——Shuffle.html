@@ -25,14 +25,14 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="数据从每个 Mapper 到每个 Reducer 这个过程，就是 MapReduce 的魔法——Shuffle 所在之处。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220315192220.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220315191103.png">
+<meta property="og:image" content="http://example.com/images/oss/20220315192220.png">
+<meta property="og:image" content="http://example.com/images/oss/20220315191103.png">
 <meta property="article:published_time" content="2022-03-15T15:06:58.000Z">
-<meta property="article:modified_time" content="2022-03-26T15:13:52.945Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.065Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="MapReduce">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220315192220.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20220315192220.png">
   
   
   <title>MapReduce 的魔法——Shuffle - 友纪V-λOP</title>
@@ -243,7 +243,7 @@
 <p>其实 partition 在 KV 对给到环形缓冲区之前就计算出来了，见<code>MapOutputBuffer#collect</code>的签名能够看到，分区号是作为参数传递进来的，而非是自己获取的。</p>
 </blockquote>
 <p>每个 mapper 都有一个默认 100M 的<strong>环形缓冲区</strong>，输出的 KV 会进入该缓冲区；一旦缓冲区被使用超过 80%（默认值），则启动一个后台的线程把数据<strong>溢写</strong>（spill）到<strong>本地的硬盘</strong>，溢写的过程中 mapper 继续写数据，若填满则阻塞直到溢写完成，mapper 继续向缓冲区中写数据，如此反复。溢写完成后，硬盘中的结果文件将被合并成一个文件用来传递给各个 reducer。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220315192220.png"></p>
+<p><img src="/images/oss/20220315192220.png"></p>
 <p>环形缓冲区和溢写是 map shuffle 的关键部分，了解了这两个部分，就了解了 map shuffle。</p>
 <h2 id="环形缓冲区"><a href="#环形缓冲区" class="headerlink" title="环形缓冲区"></a>环形缓冲区</h2><p>关于环形缓冲区的逻辑主要在<code>org.apache.hadoop.mapred.MapTask.MapOutputBuffer#collect</code>，但它状态太多，研究起来是非常麻烦的（不如说把我看麻了，几百行底层代码，还有同步操作），就目前来说，把它当作一个黑箱来看就好，具体的学习等之后背八股文的时候再说吧。</p>
 <h2 id="Spill（溢写）"><a href="#Spill（溢写）" class="headerlink" title="Spill（溢写）"></a>Spill（溢写）</h2><p>溢写的过程并非是把数据直接写到硬盘中了事，为了减少硬盘 IO，它要在这里完成上面所说的 partition，sort，combine 操作，总的来说其过程如下——</p>
@@ -258,7 +258,7 @@
 <h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><p>所有溢写文件都创建完成，即 Mapper 的所有原始数据都进行过映射且执行过上面的操作并写到硬盘后，要将所有溢写文件合并到一个文件中，其中每个溢写文件的同一个分区要进行归并排序（仍旧使用 SortComparator）以及进行 combine 操作，直到所有操作完成，这时候该单独文件包含所有分区的所有数据，且每个分区内部有序。</p>
 <hr>
 <p>map 端的 shuffle 到此为止，它的最终目的是将 map 函数的输出键值对进行分区，排序并写到硬盘中成为一个单独的文件，其中，为了让 map 函数的执行和溢写操作能够（部分）并行以及更多优化，使用环形缓冲区来进行此操作。环形缓冲区之后还要继续研究。</p>
-<h1 id="Reduce-Shuffle"><a href="#Reduce-Shuffle" class="headerlink" title="Reduce Shuffle"></a>Reduce Shuffle</h1><p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220315191103.png"></p>
+<h1 id="Reduce-Shuffle"><a href="#Reduce-Shuffle" class="headerlink" title="Reduce Shuffle"></a>Reduce Shuffle</h1><p><img src="/images/oss/20220315191103.png"></p>
 <p>每个 Mapper shuffle 的结果都保存在其节点的本地硬盘中，Reducer 会从每个 Mapper 中<strong>拉取</strong>对应自己的 Partition（之前说的都是推，但实际上这里是拉），<strong>从每个 Mapper 中拉取 Partition 并进行归并就是 Reduce Shuffle 的任务</strong>。</p>
 <p>当 Mapper 任务完成后，它会提醒 ApplicationMaster，然后 reducer 就能够从该 Mapper 处拷贝 Partition；拷贝 Mapper 的数据这个过程可以是并行的，即同时从多个 Mapper 处拷贝数据（默认并行数为 5），且该过程不需要待所有 Mapper 都完成后才进行。</p>
 <p>reducer 像 mapper 一样，也会试图在内存中维护一个缓冲区，该缓冲区默认设置占内存的 70%，多余的数据将被溢写到硬盘中。从 mapper 处拿到的数据如果能够被放到缓冲区中则放置，否则放置到硬盘中；一旦缓冲区到达指定大小或接收到的 mapper 输出数量到达指定值，则会将其合并并溢写到硬盘中，其中可能会调用 Combiner（这里也会调用 Combiner！）以减少数量。</p>

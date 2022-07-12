@@ -25,13 +25,13 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="最近意识到 SQL 的重要性（Hive 要写 SQL，Spark 还要写 SQL，MapReduce 又可以用 SQL 来描述），并且大数据的各种平台作为分析型系统，复杂的查询是屡见不鲜的，因此打算对 SQL 进行专门学习，这里把 LeetCode 上所有免费 SQL 题目都刷一下，之后也要做做别的题目。尽量给出多于一个解决方案。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220309001948.png">
+<meta property="og:image" content="http://example.com/images/oss/20220309001948.png">
 <meta property="article:published_time" content="2022-03-13T06:56:55.000Z">
-<meta property="article:modified_time" content="2022-03-26T15:13:44.063Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.059Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="SQL">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220309001948.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20220309001948.png">
   
   
   <title>力扣 SQL 刷题笔记 - 友纪V-λOP</title>
@@ -282,7 +282,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> c.name <span class="hljs-keyword">AS</span> Customers<br><span class="hljs-keyword">FROM</span> Customers <span class="hljs-keyword">AS</span> c <span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> Orders <span class="hljs-keyword">AS</span> o <span class="hljs-keyword">ON</span> c.id <span class="hljs-operator">=</span> o.customerId <br><span class="hljs-keyword">WHERE</span> customerId <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NULL</span><br></code></pre></div></td></tr></table></figure>
 
 <h2 id="196-Delete-Duplicate-Emails"><a href="#196-Delete-Duplicate-Emails" class="headerlink" title="196. Delete Duplicate Emails"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/delete-duplicate-emails/">196. Delete Duplicate Emails</a></h2><p>一图胜千言。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220309001948.png"></p>
+<p><img src="/images/oss/20220309001948.png"></p>
 <p>在我尝试了无数次后，我突然发现，<span style="color: #FF0000">这题是删除</span>！真该仔细看看英文，下面也有老外和我犯了一样的错误 hh。</p>
 <p>但这题确实有够恶心，让人不禁想问，这真的是 Easy 难度？</p>
 <p>这题的表结构和 182 一样，但要求删除重复的邮箱，只保留 ID 最小的。</p>

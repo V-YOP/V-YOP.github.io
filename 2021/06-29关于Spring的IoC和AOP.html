@@ -25,14 +25,14 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="进行一个 Spring 的学，先去了解下它最重要的两项功能——IoC 和 AOP。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210811225149.jpg">
+<meta property="og:image" content="http://example.com/images/oss/20210811223632.png">
+<meta property="og:image" content="http://example.com/images/oss/20210811225149.jpg">
 <meta property="article:published_time" content="2021-06-29T07:21:40.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.595Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.065Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20210811223632.png">
   
   
   <title>关于 Spring 的 IoC 和 AOP - 友纪V-λOP</title>
@@ -228,7 +228,7 @@
             <div class="markdown-body">
               <!--Hello, Happy World-->
 
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210811223632.png"></p>
+<p><img src="/images/oss/20210811223632.png"></p>
 <blockquote>
 <p>这张图片非常生动形象地描述了 IoC 的性质，它还能进行更多扩展——比如图上的女孩拿到衣服后，可以烫衣服，缝补……以此说明 IoC 容器可以对 Bean 进行非常多的操作，AOP 离开了 IoC，实现也是比较麻烦的。</p>
 </blockquote>
@@ -274,7 +274,7 @@
 <figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">HelloService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// 域注入</span><br>    <span class="hljs-keyword">private</span> AbcDao abcDao;<br><br>    <span class="hljs-keyword">private</span> AnotherDao anotherDao;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// set 注入</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setAnotherDao</span><span class="hljs-params">(AnotherDao anotherDao)</span> &#123;<br>        <span class="hljs-built_in">this</span>.anotherDao = anotherDao;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> HelloDao helloDao;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// 构造器注入</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">HelloServiceImpl</span><span class="hljs-params">(</span><br><span class="hljs-params">        <span class="hljs-meta">@Qualifier(&quot;HelloDaoImpl&quot;)</span> <span class="hljs-meta">@NonNull</span> HelloDao helloDao // 如果有歧义，可以在这里用 Qualifier 注解</span><br><span class="hljs-params">    )</span> &#123;<br>        <span class="hljs-built_in">this</span>.HelloDao = helloDao;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">getHappyEnergy</span><span class="hljs-params">()</span> &#123;<br>        helloDao.getHappyEnergy();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
 <p>需要注意的是，构造器注入法可能导致循环依赖问题！</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210811225149.jpg"></p>
+<p><img src="/images/oss/20210811225149.jpg"></p>
 <h1 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h1><blockquote>
 <p>关于 AOP，我曾经以为它意义并不重大，直到最近我发现，很多地方如 Spring MVC 中都使用了 AOP，且一些可能对业务很重要的地方也是通过 AOP 实现的。比如控制器中方法的返回值将会经由切面转换成相应视图，JSON 或其它对象，这个转换是可以通过自定义切面进行自定义的，可见学习 AOP 是比较有意义的。</p>
 </blockquote>

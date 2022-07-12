@@ -25,15 +25,15 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="这玩意……也就拿来画 AST 吧。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210821222756.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210821235744.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg">
+<meta property="og:image" content="http://example.com/images/oss/20210821222756.png">
+<meta property="og:image" content="http://example.com/images/oss/20210821235744.png">
+<meta property="og:image" content="http://example.com/images/oss/20210814203458.jpg">
 <meta property="article:published_time" content="2021-08-21T16:31:37.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.595Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.065Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Graphviz">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210821222756.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20210821222756.png">
   
   
   <title>关于 graphviz 的使用（残卷） - 友纪V-λOP</title>
@@ -325,7 +325,7 @@
 </tbody></table>
 <p>下面通过一些实例和注释描述其使用。</p>
 <h1 id="List"><a href="#List" class="headerlink" title="List"></a>List</h1><p>这里试图展示 Lisp 中的 cons&#x2F;list 的结构。一般来说这种结构使用所谓的“箱子表示法 ”（box notation），如下图来自《ANSI Common Lisp》。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210821222756.png"></p>
+<p><img src="/images/oss/20210821222756.png"></p>
 <p>这里，每一个 node 都有两个“箱子”（之后都这么称呼），dot 中使用 record 类型的 shape 可以让 node 如此展示。其使用方法如下。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dot">digraph g &#123;<br>    node [shape = record]; // 可以使用这种方法设定所有 node 的属性<br>    node0[label = &quot;&#123;\&lt;interface\&gt; \n AInterface| |+ hello():void&#125;&quot;];  // 可以使用一些标识符<br>    node1[label = &quot;&lt;f0&gt; A|&lt;f1&gt; BCD&quot;]; <br>    node0 -&gt; node1:f0;<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
@@ -365,12 +365,12 @@
 <p>为实现箱型表示法，还有一点需要实现——默认排列是从上到下的，需要改成从左到右，这是通过 graph 的 rankdir 属性实现的。需要注意的是，rankdir 会改变 record 的默认方向。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dot">digraph g &#123;<br>    rankdir=LR;	// 方向<br>    node [shape = record]; // 默认所有 node 都是 record<br>    edge [tailclip=false]; // edge 不会被 clip——这是为了保证箭头从内部伸出<br>    node0[label = &quot;&#123;a | &lt;A&gt;&#125;&quot;]; <br>    node1_0[label = &quot;&#123;&lt;A&gt;|&lt;B&gt;&#125;&quot;];<br>    node1_1[label = &quot;&#123;b|&lt;B&gt;&#125;&quot;];<br>    node2[label = &quot;&#123;c|nil&#125;&quot;];<br>    node3[label = &quot;&#123;d|nil&#125;&quot;];<br>    node0:A:c -&gt; node1_0; // :c 是 node 默认提供的“锚点”，表示从中心开始<br>    node1_0:A:c -&gt; node1_1;<br>    node1_1:A:c -&gt; node2;<br>    node1_0:B:c -&gt; node3;<br>    // &#123;rank=same;node1_0;node1_1;&#125; 这玩意有 bug，对 record 会报错！<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210821235744.png"></p>
+<p><img src="/images/oss/20210821235744.png"></p>
 <p>……看起来要表达规则的图形的时候这玩意并不太适合。</p>
 <blockquote>
 <p>  先就这样吧……这玩意出现的 bug 浇灭了我继续的兴趣。反正当前学到的东西足够画 AST 了。</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203458.jpg"></p>
+<p><img src="/images/oss/20210814203458.jpg"></p>
 
             </div>
             <hr>

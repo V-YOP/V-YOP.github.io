@@ -25,16 +25,16 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="一些摘抄式的笔记，比较松散，但暂且先不深入学习了。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220220140033.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220220220408.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220220221008.png">
+<meta property="og:image" content="http://example.com/images/oss/20220220140033.png">
+<meta property="og:image" content="http://example.com/images/oss/20220220220408.png">
+<meta property="og:image" content="http://example.com/images/oss/20220220221008.png">
 <meta property="article:published_time" content="2022-02-20T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-03-22T12:53:51.852Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.064Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="ZooKeeper">
 <meta property="article:tag" content="Big Data">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20220220140033.png">
+<meta name="twitter:image" content="http://example.com/images/oss/20220220140033.png">
   
   
   <title>关于 Zookeeper 的一些笔记 - 友纪V-λOP</title>
@@ -253,7 +253,7 @@
 <li>集群节点之间数据同步实时性高</li>
 </ol>
 <h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>Zookeeper 的存储结构和 Unix 的文件系统类似，为树状结构，<strong>但不区分目录和文件，即不区分根节点和叶子节点</strong>，每个节点都称作 <code>ZNode</code>，默认存储 1M 数据，<strong>ZNode 通过路径唯一标识</strong>。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220220140033.png"></p>
+<p><img src="/images/oss/20220220140033.png"></p>
 <h2 id="生产环境下的部署"><a href="#生产环境下的部署" class="headerlink" title="生产环境下的部署"></a>生产环境下的部署</h2><p>并非集群中的每台机器都需要部署 zk 节点——</p>
 <ul>
 <li>10 台服务器：3 个 zk</li>
@@ -264,9 +264,9 @@
 <h2 id="客户端监听"><a href="#客户端监听" class="headerlink" title="客户端监听"></a>客户端监听</h2><p>客户端监听的事件分为两类：节点数据的变化；子节点的数量增减。</p>
 <p>监听是一次性的，一旦监听到了事件，触发后监听就被取消了。</p>
 <h2 id="写操作"><a href="#写操作" class="headerlink" title="写操作"></a>写操作</h2><p>写操作发送给 Leader 的情况，Leader 有写权限，直接写自己，然后向 Follower 发起写请求，等待 ACK，当写的节点超过半数，则认为写成功，向客户端发送 ACK；发送后再继续向其他 Follower 发送写请求，等待 ACK，直到所有节点都写入。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220220220408.png"></p>
+<p><img src="/images/oss/20220220220408.png"></p>
 <p>写操作发送给 Follower 的话，Follower 直接把操作转发给 Leader，让 Leader 进行处理；Leader 自己先写，然后向该 Follower 发起写请求，等待 ACK；超过半数后，<strong>Leader 向该 Follower 发起 ACK，该 Follower 再把 ACK 发送给客户端</strong>（注意 ACK 的发送者必定是客户端请求的接受者）；之后操作同上面一致。</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20220220221008.png"></p>
+<p><img src="/images/oss/20220220221008.png"></p>
 <blockquote>
 <p>猜测两个客户端同时对同一个节点进行写操作（比如分布式锁），必有一个失败，因为两个操作必须得到半数以上的节点都进行过写操作，这其中必然会出现版本号，ID 之类的冲突，这里总共有三种情况——两个操作都打到 Follower 上；两个操作都打到 Leader 上；两个操作分别打到 Follower，感觉三种情况都能在 Leader 处得到妥善处理。</p>
 </blockquote>

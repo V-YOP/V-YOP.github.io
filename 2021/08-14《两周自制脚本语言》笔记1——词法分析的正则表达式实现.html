@@ -25,15 +25,15 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="这书，香！">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203349.jpg">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814000737.png">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203324.jpg">
+<meta property="og:image" content="http://example.com/images/oss/20210814203349.jpg">
+<meta property="og:image" content="http://example.com/images/oss/20210814000737.png">
+<meta property="og:image" content="http://example.com/images/oss/20210814203324.jpg">
 <meta property="article:published_time" content="2021-08-14T12:34:36.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.606Z">
+<meta property="article:modified_time" content="2022-07-12T16:01:00.065Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="编译原理">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203349.jpg">
+<meta name="twitter:image" content="http://example.com/images/oss/20210814203349.jpg">
   
   
   <title>《两周自制脚本语言》笔记 1——基于正则表达式的词法分析 - 友纪V-λOP</title>
@@ -227,7 +227,7 @@
             <h1 style="display: none">《两周自制脚本语言》笔记 1——基于正则表达式的词法分析</h1>
             
             <div class="markdown-body">
-              <p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203349.jpg"></p>
+              <p><img src="/images/oss/20210814203349.jpg"></p>
 <!--Hello, Happy World-->
 
 <p>该书的目标是<strong>使用 Java 语言</strong>实现一门简单的脚本语言——更具体的来说，是实现一个简单的<strong>脚本语言</strong>的<strong>语言处理器</strong>，其主体是一个解释器（就像 python），但内部通过编译器提高性能。</p>
@@ -235,7 +235,7 @@
 <blockquote>
 <p>AST 是什么？联想 Lisp 罢！</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814000737.png"></p>
+<p><img src="/images/oss/20210814000737.png"></p>
 <p>该书将此语言命名为 Stone——Perl 是珍珠（大概），Ruby 是红宝石，而它则只是一颗小石子。</p>
 <blockquote>
 <p>  等什么时候我真的去写一门喜欢的语言，就自己给它取名吧。</p>
@@ -287,7 +287,7 @@
 <p>根据正则表达式，能够容易写出相应的代码，下面的是获取单行的 Token 的代码——</p>
 <figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 对一行字符串进行词法分析</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> lineNumber 字符串所处行数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> str 待分析字符串</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Token 序列</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Token&gt; <span class="hljs-title function_">analyzeLine</span><span class="hljs-params">(<span class="hljs-type">int</span> lineNumber, String str)</span> &#123;<br>  List&lt;Token&gt; res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>  <span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> FULL_PATTERN.matcher(str);<br>  <span class="hljs-keyword">while</span>(matcher.find()) &#123;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">1</span>) == <span class="hljs-literal">null</span>) <span class="hljs-keyword">break</span>;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">3</span>) != <span class="hljs-literal">null</span>) &#123;<br>      res.add(TokenFactory.of(lineNumber, TokenType.NUMBER, matcher.group(<span class="hljs-number">3</span>)));<br>    &#125;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">5</span>) != <span class="hljs-literal">null</span>) &#123;<br>      <span class="hljs-comment">// TODO 需要转义</span><br>      res.add(TokenFactory.of(lineNumber, TokenType.STRING ,matcher.group(<span class="hljs-number">5</span>)));<br>    &#125;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">7</span>) != <span class="hljs-literal">null</span>) &#123;<br>      res.add(TokenFactory.of(lineNumber, TokenType.IDENTIFIER, matcher.group(<span class="hljs-number">7</span>)));<br>    &#125;<br>  &#125;<br>  res.add(TokenFactory.EOL(lineNumber));<br>  <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> str 待分析字符串数组，将根据下标确定行数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Token 序列</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Token&gt; <span class="hljs-title function_">analyze</span><span class="hljs-params">(String[] str)</span> &#123;<br>  <span class="hljs-type">int</span>[] count = &#123;<span class="hljs-number">1</span>&#125;;<br>  <span class="hljs-keyword">return</span> Arrays.stream(str)<br>    .map(line -&gt; analyzeLine(count[<span class="hljs-number">0</span>]++, line)) <span class="hljs-comment">// 在 map 中使用会改变的参数非常不好，但这里写起来简单</span><br>    .flatMap(List::stream)<br>    .collect(Collectors.toList());<br>&#125;<br></code></pre></div></td></tr></table></figure>
 
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210814203324.jpg"></p>
+<p><img src="/images/oss/20210814203324.jpg"></p>
 <p>正则表达式用来进行词法分析感觉还是有些不太舒服的，好在实践中已经开发了许多现成的词法分析器可以直接使用，该书似乎之后还会通过有限状态自动机来进行词法分析…再议吧！下一步是学习和编写语法分析器。</p>
 <blockquote>
 <p>  感觉其实可以把 NumToken 和 StringToken 统一起来，变成 LiteralToken</p>

@@ -25,15 +25,15 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="第一次实现如此复杂的东西，让人颇为激动呢。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210904214746.svg">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210904234812.svg">
-<meta property="og:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png">
+<meta property="og:image" content="http://example.com/images/oss/20210904214746.svg">
+<meta property="og:image" content="http://example.com/images/oss/20210904234812.svg">
+<meta property="og:image" content="http://example.com/images/oss/20210822231117.png">
 <meta property="article:published_time" content="2021-08-21T16:38:27.000Z">
-<meta property="article:modified_time" content="2022-04-07T11:15:47.607Z">
+<meta property="article:modified_time" content="2022-07-12T16:00:59.959Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="编译原理">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://image-table.oss-cn-beijing.aliyuncs.com/20210904214746.svg">
+<meta name="twitter:image" content="http://example.com/images/oss/20210904214746.svg">
   
   
   <title>《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现 - 友纪V-λOP</title>
@@ -485,7 +485,7 @@
 <h2 id="元符号、-——repeat"><a href="#元符号、-——repeat" class="headerlink" title="元符号、{}——repeat"></a>元符号、{}——repeat</h2><p>首先需要明确，repeat 和 maybe 解析的结果是什么？这是容易想到的——repeat 应当返回一个 ASTList，因为其可能匹配多次，需要保存这无数次匹配之结果，maybe 可以返回一个 ASTLeaf，也可以返回一个 ASTList，通过其子树数量为 0 还是 1 来表示其是否匹配到了，这里使用 ASTList。</p>
 <blockquote>
 <p>  <code>expr : factor &#123; OP factor &#125;</code>也是一个、{}符号使用的一个典型例子，但是对其不适合直接使用 repeat 方法：能拿它的解析结果——一个 factor 和一个 ASTList——整什么花活？它生成的 AST 没有任何意义！比如对<code>1 + 2 * 3 + 4 / 5</code>，它将生成<strong>类似</strong>这样的 AST，它显然是没有任何价值的——</p>
-<p>  <img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210904214746.svg"></p>
+<p>  <img src="/images/oss/20210904214746.svg"></p>
 <p>  为此，作者专门提供了 expression 方法用来对表达式进行描述。其使用了算符优先分析法。这个在之后再进行实现（大概罢！）。</p>
 </blockquote>
 <p>repeat 的实现仍旧是简单的——匹配过程中维护一个 ASTree 的 List，不断循环进行匹配，保存匹配结果直到无法再匹配下去，然后返回一个以该 List 为子树集合的 ASTList。其关键 Java 代码如下——</p>
@@ -495,7 +495,7 @@
 <figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/*</span><br><span class="hljs-comment">    factor		:	NUMBER | &quot;(&quot; expr &quot;)&quot;</span><br><span class="hljs-comment">    term		:	factor &#123; (&quot;*&quot; | &quot;/&quot;) factor &#125;</span><br><span class="hljs-comment">    expr		:	term &#123; (&quot;+&quot; | &quot;-&quot;) term &#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">factor_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">term_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">expr_</span> <span class="hljs-operator">=</span> rule();<br><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">factor</span> <span class="hljs-operator">=</span> factor_.or(<br>    rule().number(),<br>    rule().sep(<span class="hljs-string">&quot;(&quot;</span>).ast(expr_).sep(<span class="hljs-string">&quot;)&quot;</span>)<br>);<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">term</span> <span class="hljs-operator">=</span> term_.ast(factor_).repeat(rule().token(<span class="hljs-string">&quot;*&quot;</span>, <span class="hljs-string">&quot;/&quot;</span>).ast(factor_));<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">expr</span> <span class="hljs-operator">=</span> expr_.ast(term_).repeat(<br>    rule().or(rule().token(<span class="hljs-string">&quot;+&quot;</span>, <span class="hljs-string">&quot;-&quot;</span>).ast(term_))<br>);<br></code></pre></div></td></tr></table></figure>
 
 <p>下图展示了<code>1 + 2 * 3</code>，<code>1 * 2 + 3</code>“修剪”后所代表 AST，可以看到其优先级确实被表达了，且其结构较为规整，通过后序遍历仍旧可以得到结果——</p>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210904234812.svg"></p>
+<p><img src="/images/oss/20210904234812.svg"></p>
 <p>显然，repeat 的局限性很大——它生成的 AST 结构有时候会比较复杂，难以理解。因此应当被用到<strong>有序并列</strong>结构的表达，如代码块中各语句，就极其适合使用 repeat。</p>
 <h2 id="元符号、-——maybe"><a href="#元符号、-——maybe" class="headerlink" title="元符号、[]——maybe"></a>元符号、[]——maybe</h2><p>既然 repeat 已经能够实现，maybe 的实现也不是问题——匹配到就匹配到，匹配不到就给个空的 ASTList。</p>
 <figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-title class_">Optional</span>&lt;<span class="hljs-title class_">ASTree</span>&gt; <span class="hljs-title function_">parse</span>(<span class="hljs-params">Lexer lexer</span>) &#123;<br>	<span class="hljs-keyword">if</span> (pattern.<span class="hljs-title function_">match</span>(lexer))<br>    	<span class="hljs-keyword">return</span> pattern.<span class="hljs-title function_">parse</span>(lexer);<br>    <span class="hljs-keyword">return</span> <span class="hljs-title class_">Optional</span>.<span class="hljs-title function_">of</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTList</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;()));<br>&#125;<br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-built_in">boolean</span> <span class="hljs-title function_">match</span>(<span class="hljs-params">Lexer lexer</span>) &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
@@ -507,7 +507,7 @@
 <blockquote>
 <p>  决定就到这里，虽然对这个语法分析器生成器的实现很不满意，但是我认为没必要钻得更深，使用现成的如 JavaCC 之类的开源工具即可。对这本书的学习也告一段落，去研究 DSL 去，这对框架编写可能会有帮助。</p>
 </blockquote>
-<p><img src="https://image-table.oss-cn-beijing.aliyuncs.com/20210822231117.png"></p>
+<p><img src="/images/oss/20210822231117.png"></p>
 
             </div>
             <hr>
