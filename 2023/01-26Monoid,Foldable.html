@@ -1,0 +1,547 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Monoid这个数学结构和折叠有点相关，是非常有趣的部分，值得学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Monoid 和 Foldable">
+<meta property="og:url" content="http://example.com/2023/01-26Monoid,Foldable.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="Monoid这个数学结构和折叠有点相关，是非常有趣的部分，值得学习">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-26T15:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.305Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Haskell">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Monoid 和 Foldable - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Monoid 和 Foldable">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-01-26 23:00" pubdate>
+        2023年1月26日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      12k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Monoid 和 Foldable</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>又要工作了……</p>
+</blockquote>
+<h1 id="Monoid"><a href="#Monoid" class="headerlink" title="Monoid"></a>Monoid</h1><p>Monoid 在 Haskell 中有很多应用，且和折叠操作比较相关，值得学习。</p>
+<p>幺半群 Monoid，或者说半群 with 幺元，那首先得了解半群和幺元是什么玩意。</p>
+<p>半群 Semigroup 是这样一种数学结构，对非空集合 S，对 S 上的二元运算<code>·: S x S -&gt; S</code>，其满足结合律（即对集合 S 上的元素 a，b，c，有<code>a · (b · c) = (a · b) · c</code>），则二元组<code>(S, ·)</code>为半群；幺半群则在半群的基础上添加了一个幺元 identity element——任何元素对其作运算·仍旧得到它自身，这是说假如令幺元为 e，则对 S 上任意元素 a，有<code>a · e = a = e · a</code>，三元组<code>(S, ·, e)</code>为幺半群。</p>
+<p>数学定义抽象且无聊，但幺半群的几个实例是非常明显的：</p>
+<ol>
+<li><code>（Int，+, 0)</code>是幺半群——结合律：<code>1 + (2 + 3) = (1 + 2) + 3</code>, 幺元：<code>1 + 0 = 0 + 1 = 1</code></li>
+<li><code>（Int，*, 1)</code>是幺半群——结合律：<code>1 * (2 * 3) = (1 * 2) * 3</code>, 幺元：<code>2 * 1 = 1 * 2 = 2</code></li>
+<li><code>([a], ++, [])</code>是幺半群——结合律：<code>[1,2] ++ ([3] ++ [4]) = ([1,2] ++ [3]) ++ [4]</code>，幺元：<code>[1,2] ++ [] = [] ++ [1,2] = [1,2]</code></li>
+<li><code>（String，++, &quot;&quot;)</code>是幺半群，同上</li>
+</ol>
+<blockquote>
+<p>结合律允许以任意顺序去执行这样的运算，这允许对其去并行计算。</p>
+</blockquote>
+<p>Haskell 中定义了相应的 typeclass 用来表示幺半群：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- | The class of monoids (types with an associative binary operation that</span><br><span class="hljs-comment">-- has an identity).  Instances should satisfy the following:</span><br><span class="hljs-comment">--</span><br><span class="hljs-comment">-- [Right identity] @x &#x27;&lt;&gt;&#x27; &#x27;mempty&#x27; = x@</span><br><span class="hljs-comment">-- [Left identity]  @&#x27;mempty&#x27; &#x27;&lt;&gt;&#x27; x = x@</span><br><span class="hljs-comment">-- [Associativity]  @x &#x27;&lt;&gt;&#x27; (y &#x27;&lt;&gt;&#x27; z) = (x &#x27;&lt;&gt;&#x27; y) &#x27;&lt;&gt;&#x27; z@ (&#x27;Semigroup&#x27; law)</span><br><span class="hljs-comment">-- [Concatenation]  @&#x27;mconcat&#x27; = &#x27;foldr&#x27; (&#x27;&lt;&gt;&#x27;) &#x27;mempty&#x27;@</span><br><span class="hljs-comment">--</span><br><span class="hljs-comment">-- The method names refer to the monoid of lists under concatenation,</span><br><span class="hljs-comment">-- but there are many other instances.</span><br><span class="hljs-comment">--</span><br><span class="hljs-comment">-- Some types can be viewed as a monoid in more than one way,</span><br><span class="hljs-comment">-- e.g. both addition and multiplication on numbers.</span><br><span class="hljs-comment">-- In such cases we often define @newtype@s and make those instances</span><br><span class="hljs-comment">-- of &#x27;Monoid&#x27;, e.g. &#x27;Data.Semigroup.Sum&#x27; and &#x27;Data.Semigroup.Product&#x27;.</span><br><span class="hljs-comment">--</span><br><span class="hljs-comment">-- __NOTE__: &#x27;Semigroup&#x27; is a superclass of &#x27;Monoid&#x27; since /base-4.11.0.0/.</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Semigroup</span> a =&gt; <span class="hljs-type">Monoid</span> a <span class="hljs-keyword">where</span></span><br>        <span class="hljs-comment">-- | Identity of &#x27;mappend&#x27;</span><br>        <span class="hljs-comment">--</span><br>        <span class="hljs-comment">-- &gt;&gt;&gt; &quot;Hello world&quot; &lt;&gt; mempty</span><br>        <span class="hljs-comment">-- &quot;Hello world&quot;</span><br>        mempty  :: a<br><br>        <span class="hljs-comment">-- | An associative operation</span><br>        <span class="hljs-comment">--</span><br>        <span class="hljs-comment">-- __NOTE__: This method is redundant and has the default</span><br>        <span class="hljs-comment">-- implementation @&#x27;mappend&#x27; = (&#x27;&lt;&gt;&#x27;)@ since /base-4.11.0.0/.</span><br>        <span class="hljs-comment">-- Should it be implemented manually, since &#x27;mappend&#x27; is a synonym for</span><br>        <span class="hljs-comment">-- (&#x27;&lt;&gt;&#x27;), it is expected that the two functions are defined the same</span><br>        <span class="hljs-comment">-- way. In a future GHC release &#x27;mappend&#x27; will be removed from &#x27;Monoid&#x27;.</span><br>        mappend :: a -&gt; a -&gt; a<br>        mappend = (&lt;&gt;)<br>        <span class="hljs-meta">&#123;-# INLINE mappend #-&#125;</span><br><br>        <span class="hljs-comment">-- | Fold a list using the monoid.</span><br>        <span class="hljs-comment">--</span><br>        <span class="hljs-comment">-- For most types, the default definition for &#x27;mconcat&#x27; will be</span><br>        <span class="hljs-comment">-- used, but the function is included in the class definition so</span><br>        <span class="hljs-comment">-- that an optimized version can be provided for specific types.</span><br>        <span class="hljs-comment">--</span><br>        <span class="hljs-comment">-- &gt;&gt;&gt; mconcat [&quot;Hello&quot;, &quot; &quot;, &quot;Haskell&quot;, &quot;!&quot;]</span><br>        <span class="hljs-comment">-- &quot;Hello Haskell!&quot;</span><br>        mconcat :: [a] -&gt; a<br>        mconcat = foldr mappend mempty<br>        <span class="hljs-meta">&#123;-# INLINE mconcat #-&#125;</span><br>        <span class="hljs-comment">-- INLINE in the hope of fusion with mconcat&#x27;s argument (see !4890)</span><br></code></pre></div></td></tr></table></figure>
+
+<p>实现其只需要指定二元运算（在半群实例中）和幺元即可，下面定义数字加法幺半群：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Plus</span> = <span class="hljs-type">Plus</span> <span class="hljs-type">Int</span></span><br><span class="hljs-class"></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> <span class="hljs-type">Plus</span> <span class="hljs-keyword">where</span></span><br>  (&lt;&gt;) :: <span class="hljs-type">Plus</span> -&gt; <span class="hljs-type">Plus</span> -&gt; <span class="hljs-type">Plus</span><br>  (<span class="hljs-type">Plus</span> a) &lt;&gt; (<span class="hljs-type">Plus</span> b) = <span class="hljs-type">Plus</span> $ a + b<br><span class="hljs-class"></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> <span class="hljs-type">Plus</span> <span class="hljs-keyword">where</span></span><br>  mempty :: <span class="hljs-type">Plus</span><br>  mempty = <span class="hljs-type">Plus</span> <span class="hljs-number">0</span><br></code></pre></div></td></tr></table></figure>
+
+<p>Monoid 的实例需要满足下面的定律：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell">(x &lt;&gt; y) &lt;&gt; z = x &lt;&gt; (y &lt;&gt; z) <span class="hljs-comment">-- associativity</span><br><span class="hljs-title">mempty</span> &lt;&gt; x = x               <span class="hljs-comment">-- left identity</span><br><span class="hljs-title">x</span> &lt;&gt; mempty = x               <span class="hljs-comment">-- right identity</span><br></code></pre></div></td></tr></table></figure>
+
+<p>容易发现，<code>(Bool, &amp;&amp;, True)</code>和<code>(Bool, ||, False)</code>也是幺半群：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- 在标准库中，这里的 And 名称为 All，Or 名称为 Any</span><br><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">And</span> = <span class="hljs-type">And</span> <span class="hljs-type">Bool</span></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> <span class="hljs-type">And</span> <span class="hljs-keyword">where</span></span><br>  (&lt;&gt;) :: <span class="hljs-type">And</span> -&gt; <span class="hljs-type">And</span> -&gt; <span class="hljs-type">And</span><br>  (<span class="hljs-type">And</span> a) &lt;&gt; (<span class="hljs-type">And</span> b) = <span class="hljs-type">And</span> $ a &amp;&amp; b<br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> <span class="hljs-type">And</span> <span class="hljs-keyword">where</span></span><br>  mempty :: <span class="hljs-type">And</span><br>  mempty = <span class="hljs-type">And</span> <span class="hljs-type">True</span><br><br><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Or</span> = <span class="hljs-type">Or</span> <span class="hljs-type">Bool</span></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> <span class="hljs-type">Or</span> <span class="hljs-keyword">where</span></span><br>  (&lt;&gt;) :: <span class="hljs-type">Or</span> -&gt; <span class="hljs-type">Or</span> -&gt; <span class="hljs-type">Or</span><br>  (<span class="hljs-type">Or</span> a) &lt;&gt; (<span class="hljs-type">Or</span> b) = <span class="hljs-type">Or</span> $ a || b<br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> <span class="hljs-type">Or</span> <span class="hljs-keyword">where</span></span><br>  mempty :: <span class="hljs-type">Or</span><br>  mempty = <span class="hljs-type">Or</span> <span class="hljs-type">False</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>Monoid 的定义很简单，但其的使用的地方还是很多的，下面列一些可能常用的：</p>
+<ol start="0">
+<li><p>列表是 Monoid。</p>
+</li>
+<li><p>Data.Text 是更高性能的字符串，其也是 Monoid 的实例，其无法像<code>[Char]</code>一样使用++去拼接，因此需要使用半群的<code>&lt;&gt;</code>去进行拼接：</p>
+</li>
+</ol>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">str</span> = (<span class="hljs-string">&quot;Hello, &quot;</span> :: <span class="hljs-type">Text</span>) &lt;&gt; <span class="hljs-string">&quot;World!&quot;</span><br></code></pre></div></td></tr></table></figure>
+
+<ol start="2">
+<li>Data.Monoid 包下定义了 newtype <code>First</code> 和 <code>Last</code>，用于将<code>Maybe m</code>视为 Monoid，二元运算为取第一个或最后一个 Just 值，取不到则为 Nothing（Nothing 为幺元）；其特别适用于“取变量 x，如果 x 为 null，取变量 y”的需求（更抽象地说，对于变量 a,b,c,d,e…，从前往后或从后往前取第一个非 null 的变量）：</li>
+</ol>
+<blockquote>
+<p>注意，Data.Semigroup 包下也定义了 First 和 Last，但其行为和 Data.Monoid 包下的同名 newtype 不同，Semigroup 包下的 First 和 Last 仅是半群且和 Maybe 无关，二元运算为取前者或后者！（坑啊！</p>
+</blockquote>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">First</span> (<span class="hljs-type">Just</span> <span class="hljs-number">234</span>) &lt;&gt; <span class="hljs-type">First</span> (<span class="hljs-type">Just</span> <span class="hljs-number">123</span>) = <span class="hljs-type">First</span> (<span class="hljs-type">Just</span> <span class="hljs-number">234</span>)<br><span class="hljs-type">Last</span> (<span class="hljs-type">Just</span> <span class="hljs-number">234</span>) &lt;&gt; <span class="hljs-type">Last</span> (<span class="hljs-type">Just</span> <span class="hljs-number">123</span>) = <span class="hljs-type">Last</span> (<span class="hljs-type">Just</span> <span class="hljs-number">123</span>)<br><span class="hljs-type">Last</span> (<span class="hljs-type">Just</span> <span class="hljs-number">234</span>) &lt;&gt; <span class="hljs-type">Last</span> <span class="hljs-type">Nothing</span> = <span class="hljs-type">Last</span> (<span class="hljs-type">Just</span> <span class="hljs-number">234</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>First 也可以直接用类型类<code>Alternative</code>中的<code>&lt;|&gt;</code>替代，这样更清晰些：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Just</span> <span class="hljs-number">234</span> &lt;|&gt; <span class="hljs-type">Just</span> <span class="hljs-number">123</span> = <span class="hljs-type">Just</span> <span class="hljs-number">234</span><br></code></pre></div></td></tr></table></figure>
+
+<p>顺便，对于<code>Maybe m</code>，若类型变量 m 是 Semigroup，则<code>Maybe m</code>为 Monoid，二元运算行为是将包含的值进行拼接，其中 <code>Nothing</code> 为幺元：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Nothing</span> &lt;&gt; <span class="hljs-type">Just</span> <span class="hljs-string">&quot;Hello&quot;</span> = <span class="hljs-type">Just</span> <span class="hljs-string">&quot;Hello&quot;</span><br><span class="hljs-type">Just</span> <span class="hljs-string">&quot;Hello&quot;</span> &lt;&gt; <span class="hljs-type">Just</span> <span class="hljs-string">&quot;, World!&quot;</span> = <span class="hljs-type">Just</span> <span class="hljs-string">&quot;Hello, World!&quot;</span> <br></code></pre></div></td></tr></table></figure>
+
+<ol start="3">
+<li><code>Ordering</code> 类型，即 compare 函数的返回值类型，也是 Monoid，其幺元是<code>EQ</code>，二元运算的行为类似 First，其非常适合这种需求——先比较 x，如果 x 相等，比较 y。比如这里写一个函数比较两个字符串的长度大小，其中规定若两个字符串等长，则比较两个字符串内容：</li>
+</ol>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">lengthCompare</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Ordering</span><br><span class="hljs-title">lengthCompare</span> a b = (length a `compare` length b) &lt;&gt; (a `compare` b)<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="同态"><a href="#同态" class="headerlink" title="同态"></a>同态</h2><p>乘法有一个所谓的分配律，这是说对实数 a，b，c，有 <code>a * (b + c) = a * b + a * c</code>，定义<code>f(x) = a * x</code>，有<code>f(b + c) = f(b) + f(c)</code>，又能看到，<code>f(0) = 0</code>，这时称函数 f 是一个加法幺半群到加法幺半群上的同态 Homomorphism，抽象地说，对于 Monoid a 和 b，有：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">f</span> :: (<span class="hljs-type">Monoid</span> a, <span class="hljs-type">Monoid</span> b) =&gt; a -&gt; b<br><span class="hljs-title">f</span> mempty   = mempty<br><span class="hljs-title">f</span> (x &lt;&gt; y) = f x &lt;&gt; f y<br></code></pre></div></td></tr></table></figure>
+
+<p>如，length 是<code>([a], ++, [])</code>到<code>(Int, +, 0)</code>的同伦映射：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">length</span> :: [a] -&gt; <span class="hljs-type">Int</span><br><span class="hljs-title">length</span> [] = <span class="hljs-number">0</span><br><span class="hljs-title">length</span> (xs ++ ys) = length xs + length ys <span class="hljs-comment">-- 伪代码</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这玩意有什么用呢？简单来说，若有变量 a，b 是一个幺半群的元素且二元运算为+，求<code>f(a + b)</code>的值，若 f 是同伦映射，就可以并行地计算<code>f(a)</code>和<code>f(b)</code>，然后使用对应二元运算得到结果。</p>
+<p>但或许更有趣的地方是，Monoid 和折叠操作相关。</p>
+<h1 id="Foldable，但是-foldMap"><a href="#Foldable，但是-foldMap" class="headerlink" title="Foldable，但是 foldMap"></a>Foldable，但是 foldMap</h1><p>Foldable 是列表的折叠操作的一般化，从而使任意类型具有折叠的能力。要实现 Foldable，需要实现 foldr 或者 foldMap，foldr 是老朋友了，foldMap 是何方神圣？</p>
+<p>foldMap 的类型签名是<code>foldMap :: (Foldable t, Monoid m) =&gt; (a -&gt; m) -&gt; t a -&gt; m</code>，这是说，对于可折叠类型 t，如果有将其中元素映射成为某 Monoid 类型 m 的映射，就能把 t 折叠成 m。how？</p>
+<p>考虑<code>foldr f z [a, b, c]</code>，其可以表述为<code>a `f` (b `f` (c `f` z))</code>，若令<code>f = (&lt;&gt;), z = mempty</code>，就得到了<code>a &lt;&gt; (b &lt;&gt; (c &lt;&gt; mempty))</code>，这正好是 mconcat 的定义：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">mconcat</span> :: <span class="hljs-type">Monoid</span> m =&gt; [m] -&gt; m<br><span class="hljs-title">mconcat</span> xs = foldr (&lt;&gt;) mempty xs<br></code></pre></div></td></tr></table></figure>
+
+<p>可以看到，对于一个幺半群的列表，总是有一种方式去对它进行折叠操作，即是使用幺元作为初始值，使用二元运算作为操作符；将这泛化一步——若某列表中的元素能映射成为特定幺半群，则这个列表可以使用这个幺半群的方式去折叠，这就是 foldMap——先映射成为特定幺半群，再折叠：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">foldMap</span> :: <span class="hljs-type">Monoid</span> m =&gt; (a -&gt; m) -&gt; [a] -&gt; m<br><span class="hljs-title">foldMap</span> f xs = mconcat $ map f xs<br></code></pre></div></td></tr></table></figure>
+
+<p>foldMap 有一些非常有趣的玩法，比如定义 sum，product，all，any 等：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">sum</span> :: <span class="hljs-type">Num</span> a =&gt; [a] -&gt; a<br><span class="hljs-title">sum</span> = getSum . foldMap <span class="hljs-type">Sum</span><br><br><span class="hljs-title">product</span> :: <span class="hljs-type">Num</span> a =&gt; [a] -&gt; a<br><span class="hljs-title">product</span> = getProduct . foldMap <span class="hljs-type">Product</span><br><br><span class="hljs-title">all</span> :: [<span class="hljs-type">Bool</span>] -&gt; <span class="hljs-type">Bool</span><br><span class="hljs-title">all</span> = getAll . foldMap <span class="hljs-type">All</span><br><br><span class="hljs-title">any</span> :: [<span class="hljs-type">Bool</span>] -&gt; <span class="hljs-type">Bool</span><br><span class="hljs-title">any</span> = getAny . foldMap <span class="hljs-type">Any</span><br></code></pre></div></td></tr></table></figure>
+
+<p>因为 mconcat 可以由 foldr 定义（实际上对左折叠也行，因为半群的结合性，但二元运算可能需要flip一下——半群不要求二元运算满足交换律），所以 foldMap 可以由 foldr 定义。这是对折叠操作的一种新的视角——先把列表元素类型映射成幺半群，再用二元运算去 concat 成一个值。</p>
+<p>这里去使用 foldMap 去实现一个 reverse，同时也给出 foldr 的版本：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">reverseByFoldr</span> :: <span class="hljs-type">Foldable</span> t =&gt; t a -&gt; [a]<br><span class="hljs-title">reverseByFoldr</span> = foldr (\x acc -&gt; acc ++ [x]) [] <span class="hljs-comment">-- 忘掉效率！</span><br><br><span class="hljs-comment">-- 使用 foldMap 去实现 reverse，重点就是要识别和创建出相应幺半群</span><br><span class="hljs-comment">-- 容易发现，这里需要这样一个列表的幺半群，它的幺元仍是空集，但二元操作为 flip (++)（应当测试几个用例证明该二元操作满足结合律）</span><br><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Reverse</span> a = <span class="hljs-type">Reverse</span> &#123;<span class="hljs-title">getReverse</span> :: [<span class="hljs-title">a</span>]&#125;</span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> (<span class="hljs-type">Reverse</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span><br>  (&lt;&gt;) :: <span class="hljs-type">Reverse</span> a -&gt; <span class="hljs-type">Reverse</span> a -&gt; <span class="hljs-type">Reverse</span> a<br>  (<span class="hljs-type">Reverse</span> a) &lt;&gt; (<span class="hljs-type">Reverse</span> b) = <span class="hljs-type">Reverse</span> $ b ++ a<br><span class="hljs-class"></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">Reverse</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span><br>  mempty :: <span class="hljs-type">Reverse</span> a<br>  mempty = <span class="hljs-type">Reverse</span> []<br><br><span class="hljs-comment">-- 实际使用的时候，要把列表中的元素映射成为这个幺半群（即成为列表）</span><br><span class="hljs-title">reverseByFoldMap</span> :: [a] -&gt; [a]<br><span class="hljs-title">reverseByFoldMap</span> xs = getReverse $ foldMap (<span class="hljs-type">Reverse</span> . (:[])) xs<br></code></pre></div></td></tr></table></figure>
+
+<p>foldMap 的这种对折叠操作的看待方式相当有趣——每次进行列表或其它结构的折叠操作的时候，实际上都是定义了一个新的幺半群，将结构中的值映射到幺半群的类型，并使用幺半群的二元运算去做拼接。那么，是否有可能根据 foldMap 去定义折叠操作？</p>
+<p>观察 foldr 的签名：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">foldr</span> :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b<br></code></pre></div></td></tr></table></figure>
+
+<p>考虑折叠操作<code>a -&gt; b -&gt; b</code>，为返回值加上括号得到 <code>a -&gt; (b -&gt; b)</code>……唔姆唔姆，从这个角度上看 foldr，我们就是把列表中的元素 a 映射成为<code>b -&gt; b</code>，然后将其不断地应用在初始值 b 上，得到最终结果，于是，如何处理列表<code>b -&gt; b</code>和初始值 b？</p>
+<p>好玩的地方来了：函数本身也是幺半群，幺元是 id，二元运算是函数组合，所以，我们可以<strong>先把<code>b -&gt; b</code>列表折成一个<code>b -&gt; b</code>，再应用它到初始值 b</strong> 上（也就是说，利用函数是幺半群这个性质先拼接一下），下面是定义：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- 不知道为何 Haskell 没有识别出函数是幺半群，这里直接显式地定义一个幺半群 Endo：</span><br><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Endo</span> b = <span class="hljs-type">Endo</span> &#123;<span class="hljs-title">appEndo</span> :: <span class="hljs-title">b</span> -&gt; <span class="hljs-title">b</span>&#125;</span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> (<span class="hljs-type">Endo</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span><br>  (&lt;&gt;) :: <span class="hljs-type">Endo</span> b -&gt; <span class="hljs-type">Endo</span> b -&gt; <span class="hljs-type">Endo</span> b<br>  (<span class="hljs-type">Endo</span> g) &lt;&gt; (<span class="hljs-type">Endo</span> f) = <span class="hljs-type">Endo</span> $ g . f<br><span class="hljs-class"></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">Endo</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span><br>  mempty :: <span class="hljs-type">Endo</span> b<br>  mempty = <span class="hljs-type">Endo</span> id<br><br><span class="hljs-comment">-- foldMap :: Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m，替换 m 为 b -&gt; b，替换结果为 Endo b</span><br><span class="hljs-title">foldComposing</span> :: (a -&gt; (b -&gt; b)) -&gt; [a] -&gt; <span class="hljs-type">Endo</span> b<br><span class="hljs-title">foldComposing</span> f = foldMap (<span class="hljs-type">Endo</span> . f)<br><br><span class="hljs-comment">-- 先把`b -&gt; b`列表折成一个 Endo b（即 b -&gt; b），再应用它到初始值 b</span><br><span class="hljs-title">foldr</span> :: (a -&gt; (b -&gt; b)) -&gt; b -&gt; [a] -&gt; b<br><span class="hljs-title">foldr</span> f z xs = appEndo (foldComposing f xs) z<br><br><span class="hljs-comment">-- 如果 Haskell 能识别 b -&gt; b 为幺半群的话，直接下面这样就行了</span><br><span class="hljs-title">foldComposing</span> :: (a -&gt; (b -&gt; b)) -&gt; [a] -&gt; (b -&gt; b)<br><span class="hljs-title">foldComposinng</span> f = foldMap f<br><br><span class="hljs-title">foldr</span> :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b<br><span class="hljs-title">foldr</span> f z xs = foldComposing f xs z<br></code></pre></div></td></tr></table></figure>
+
+<p>这说明可以用 foldMap 去实现 foldr，前面又用 foldr 去实现 foldMap，它们可以互相实现；Haskell 中提供折叠操作的类型类是 Foldable，其允许仅定义 foldMap 或 foldr 去实例化它，这里给出列表的递归的 foldMap 实现：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">foldMap</span> :: (<span class="hljs-type">Monoid</span> m) =&gt; (a -&gt; m) -&gt; [a] -&gt; m<br><span class="hljs-title">foldMap</span> _ [] = mempty<br><span class="hljs-title">foldMap</span> f (x:xs) = f x &lt;&gt; foldMap f xs<br></code></pre></div></td></tr></table></figure>
+
+<p>Foldable 中还有许多有趣的玩意，比如用 foldr 去实现 foldl，foldr1 等，以及转换到列表，检查是否为空，获取容器长度，求最大最小值等：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- Abridged definition, with just the method signatures.</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Foldable</span> t <span class="hljs-keyword">where</span></span><br>    foldMap :: <span class="hljs-type">Monoid</span> m =&gt; (a -&gt; m) -&gt; t a -&gt; m<br>    foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b<br><br>    <span class="hljs-comment">-- All of the following have default implementations:</span><br>    fold :: <span class="hljs-type">Monoid</span> m =&gt; t m -&gt; m <span class="hljs-comment">-- generalised mconcat</span><br>    foldr&#x27; :: (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b<br>    foldl :: (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b<br>    foldl&#x27; :: (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b<br>    foldr1 :: (a -&gt; a -&gt; a) -&gt; t a -&gt; a<br>    foldl1 :: (a -&gt; a -&gt; a) -&gt; t a -&gt; a<br>    toList :: t a -&gt; [a]<br>    null :: t a -&gt; <span class="hljs-type">Bool</span><br>    length :: t a -&gt; <span class="hljs-type">Int</span><br>    elem :: <span class="hljs-type">Eq</span> a =&gt; a -&gt; t a -&gt; <span class="hljs-type">Bool</span><br>    maximum :: <span class="hljs-type">Ord</span> a =&gt; t a -&gt; a<br>    minimum :: <span class="hljs-type">Ord</span> a =&gt; t a -&gt; a<br>    sum :: <span class="hljs-type">Num</span> a =&gt; t a -&gt; a<br>    product :: <span class="hljs-type">Num</span> a =&gt; t a -&gt; a<br></code></pre></div></td></tr></table></figure>
+
+<p>toList 非常有趣，其证明任何可折叠的类型都可以转换成为列表，这借用了列表是幺半群这个特性：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">toList</span> :: (<span class="hljs-type">Foldable</span> t) =&gt; t a -&gt; [a]<br><span class="hljs-title">toList</span> = foldMap (\x -&gt; [x])<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>toList reflects the fact that lists are the free monoid for Haskell types. “Free” here means any value can be promoted to the monoid in a way which neither adds nor erases any information (we can convert values of type a to [a] lists with a single element and back through (\x-&gt;[x]) and head in a lossless way). </p>
+</blockquote>
+<h2 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h2><p>所以，在什么情况下 foldMap 会比 foldr 更香？</p>
+<p>考虑二叉树：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">BiTree</span> a = <span class="hljs-type">BiTree</span> a (<span class="hljs-type">Maybe</span> (<span class="hljs-type">BiTree</span> <span class="hljs-title">a</span>)) (<span class="hljs-type">Maybe</span> (<span class="hljs-type">BiTree</span> <span class="hljs-title">a</span>)) <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)</span><br></code></pre></div></td></tr></table></figure>
+
+<p>能对这个树做什么操作呢？比如，对每个子树都应用相同操作，比如获取它以及所有子树的和，获取它的最大深度……</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- 对所有元素进行相同操作，这显然是 Functor，类似列表：</span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">BiTree</span> <span class="hljs-keyword">where</span></span><br>  fmap :: (a -&gt; b) -&gt; <span class="hljs-type">BiTree</span> a -&gt; <span class="hljs-type">BiTree</span> b<br>  fmap f (<span class="hljs-type">BiTree</span> v l r) = <span class="hljs-type">BiTree</span> (f v) (fmap f &lt;$&gt; l) (fmap f &lt;$&gt; r) <span class="hljs-comment">-- &lt;$&gt; 提升这个 fmap f 到 Maybe 上下文</span><br><br><span class="hljs-comment">-- 求所有子树的和</span><br><span class="hljs-comment">-- maybe 函数类似于 orElse</span><br><span class="hljs-title">sumTree</span> :: <span class="hljs-type">BiTree</span> <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span><br><span class="hljs-title">sumTree</span> (<span class="hljs-type">BiTree</span> v l r) = maybe <span class="hljs-number">0</span> sumTree l + maybe <span class="hljs-number">0</span> sumTree r + v<br><br><span class="hljs-comment">-- 获取最大深度</span><br><span class="hljs-title">maxDepth</span> :: <span class="hljs-type">BiTree</span> a -&gt; <span class="hljs-type">Int</span><br><span class="hljs-title">maxDepth</span> (<span class="hljs-type">BiTree</span> _ <span class="hljs-type">Nothing</span> <span class="hljs-type">Nothing</span>) = <span class="hljs-number">1</span><br><span class="hljs-title">maxDepth</span> (<span class="hljs-type">BiTree</span> _ l r) = maybe <span class="hljs-number">0</span> maxDepth l `max` maybe <span class="hljs-number">0</span> maxDepth r + <span class="hljs-number">1</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这两个操作显然都是折叠操作，所以，树是可以折叠的！那如何折叠呢？如果尝试去编写 foldr，那代码会显得比较（或者相当？）繁琐，但若使用 foldMap 的话，则会很容易：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- 可以发现，这同时也是一个前序遍历，显然还能有中序遍历，后序遍历，还能有广度优先遍历</span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Foldable</span> <span class="hljs-type">BiTree</span> <span class="hljs-keyword">where</span></span><br>  foldMap :: <span class="hljs-type">Monoid</span> m =&gt; (a -&gt; m) -&gt; <span class="hljs-type">BiTree</span> a -&gt; m<br>  foldMap f (<span class="hljs-type">BiTree</span> v l r) = f v &lt;&gt; maybe mempty (foldMap f) l &lt;&gt; maybe mempty (foldMap f) r<br><br></code></pre></div></td></tr></table></figure>
+
+<p>定义了 Foldable 的实例后，定义 sumTree 就很简单了：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">sumTree</span> :: <span class="hljs-type">BiTree</span> <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span><br><span class="hljs-title">sumTree</span> = getSum . foldMap <span class="hljs-type">Sum</span><br></code></pre></div></td></tr></table></figure>
+
+<p>问题在于，maxDepth 无法使用这个 foldMap 去表述——从中无法抽象出合适的幺半群（是否真的如此？？）。为什么如此呢？天知道。解决方案是编写一种树专属的折叠函数，其对每个值先做一次映射，再对每个子树进行合并，参数带上根结点和左右子树的值：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">treeFold</span> :: b -&gt; (a -&gt; b) -&gt; (b -&gt; b -&gt; b -&gt; b) -&gt; <span class="hljs-type">BiTree</span> a -&gt; b<br><span class="hljs-comment">-- z 为默认值，在子树为空的情况下填充，mapper 为映射，combiner 为合并函数</span><br><span class="hljs-title">treeFold</span> z mapper combiner (<span class="hljs-type">BiTree</span> v l r) = combiner (mapper v) l&#x27; r&#x27;<br>  <span class="hljs-keyword">where</span> l&#x27; = maybe z (treeFold z mapper combiner) l <br>        r&#x27; = maybe z (treeFold z mapper combiner) r<br><br><span class="hljs-title">maxDepth&#x27;</span> :: (<span class="hljs-type">Num</span> b, <span class="hljs-type">Ord</span> b) =&gt; <span class="hljs-type">BiTree</span> b -&gt; b<br><span class="hljs-title">maxDepth&#x27;</span> = treeFold <span class="hljs-number">0</span> (const <span class="hljs-number">1</span>) (\_ l r -&gt; l `max` r + <span class="hljs-number">1</span>)<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="Bonus"><a href="#Bonus" class="headerlink" title="Bonus"></a>Bonus</h1><p>下面在 typescript 里利用 foldMap 去实现了 sum 和 groupBy，使用了 type class 模式，比较有趣：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Monoid</span>&lt;T&gt; &#123;<br>  <span class="hljs-title function_">mempty</span>() : T,<br>  <span class="hljs-title function_">mappend</span>(<span class="hljs-attr">a</span>: T, <span class="hljs-attr">b</span>: T): T<br>&#125;<br><span class="hljs-comment">// 将一个幺半群的序列用其上的二元操作进行拼接</span><br><span class="hljs-keyword">function</span> mconcat&lt;T&gt;(xs : T[], <span class="hljs-title class_">Monoid</span> : <span class="hljs-title class_">Monoid</span>&lt;T&gt;) &#123;<br>  <span class="hljs-keyword">return</span> xs.<span class="hljs-title function_">reduceRight</span>(<span class="hljs-title class_">Monoid</span>.<span class="hljs-property">mappend</span>, <span class="hljs-title class_">Monoid</span>.<span class="hljs-title function_">mempty</span>())<br>&#125;<br><br><span class="hljs-keyword">function</span> foldMap&lt;T, A&gt;(<span class="hljs-attr">f</span>: <span class="hljs-function">(<span class="hljs-params">t: A</span>) =&gt;</span> T, <span class="hljs-attr">xs</span>: A[], <span class="hljs-title class_">MonoidT</span>: <span class="hljs-title class_">Monoid</span>&lt;T&gt;) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">mconcat</span>(xs.<span class="hljs-title function_">map</span>(f), <span class="hljs-title class_">MonoidT</span>)<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sum</span>(<span class="hljs-params">xs: <span class="hljs-built_in">number</span>[]</span>): <span class="hljs-built_in">number</span> &#123;<br>  <span class="hljs-comment">// 数字上的加法幺半群，幺元为 0，二元运算为加法</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-title class_">SumMonoid</span>: <span class="hljs-title class_">Monoid</span>&lt;<span class="hljs-built_in">number</span>&gt; = &#123;<br>    <span class="hljs-title function_">mempty</span>(<span class="hljs-params"></span>) &#123; <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> &#125;, <span class="hljs-title function_">mappend</span>(<span class="hljs-params">a, b</span>) &#123; <span class="hljs-keyword">return</span> a + b &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">foldMap</span>(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x, xs, <span class="hljs-title class_">SumMonoid</span>) <span class="hljs-comment">// 在这里等价于 mconcat(xs, SumMonoid)</span><br>&#125;<br><br><span class="hljs-keyword">function</span> groupBy&lt;T&gt;(<span class="hljs-attr">keyMapper</span>: <span class="hljs-function">(<span class="hljs-params">x: T</span>) =&gt;</span> <span class="hljs-built_in">string</span>, <span class="hljs-attr">xs</span>: T[]): <span class="hljs-title class_">Record</span>&lt;<span class="hljs-built_in">string</span>, T[]&gt; &#123;<br>    <span class="hljs-comment">// Record&lt;string, T[]&gt;上的幺半群，幺元为&#123;&#125;，二元运算为合并两个 Record，其中对同名的 key，拼接它们的值数组作为新的值</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-title class_">RecordMergeMonoid</span>: <span class="hljs-title class_">Monoid</span>&lt;<span class="hljs-title class_">Record</span>&lt;<span class="hljs-built_in">string</span>, T[]&gt;&gt; = &#123;<br>      <span class="hljs-title function_">mempty</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-keyword">return</span> &#123;&#125; <span class="hljs-keyword">as</span> <span class="hljs-title class_">Record</span>&lt;<span class="hljs-built_in">string</span>, T[]&gt;<br>      &#125;,<br>      <span class="hljs-title function_">mappend</span>(<span class="hljs-params">a, b</span>) &#123;<br>        <span class="hljs-comment">// 找到所有 key，对每个 key，合并两个 Record</span><br>        <span class="hljs-keyword">const</span> result = &#123;&#125; <span class="hljs-keyword">as</span> <span class="hljs-title class_">Record</span>&lt;<span class="hljs-built_in">string</span>, T[]&gt;<br>        <span class="hljs-keyword">const</span> keys = [...<span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>([...<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(a), ...<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(b)])]<br>        keys.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;<br>          <span class="hljs-keyword">const</span> arrA = a[key] ?? []<br>          <span class="hljs-keyword">const</span> arrB = b[key] ?? []<br>          result[key] = [...arrA, ...arrB]<br>        &#125;)<br>        <span class="hljs-keyword">return</span> result<br>      &#125;,<br>    &#125;<br>    <span class="hljs-comment">// 需要把元素 x 映射成 Record&lt;string, T[]&gt;</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">foldMap</span>(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> (&#123;[<span class="hljs-title function_">keyMapper</span>(x)]: [x]&#125;), xs, <span class="hljs-title class_">RecordMergeMonoid</span>)<br>&#125;<br><span class="hljs-keyword">const</span> objs = [&#123;<span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Haruka&quot;</span>, <span class="hljs-attr">clazz</span>: <span class="hljs-string">&quot;765&quot;</span>&#125;, &#123;<span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Chihaya&quot;</span>, <span class="hljs-attr">clazz</span>: <span class="hljs-string">&quot;765&quot;</span>&#125;, &#123;<span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Miki&quot;</span>, <span class="hljs-attr">clazz</span>: <span class="hljs-string">&quot;961&quot;</span>&#125;]<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">groupBy</span>(<span class="hljs-function"><span class="hljs-params">obj</span> =&gt;</span> obj.<span class="hljs-property">clazz</span>, objs))<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikibooks.org/wiki/Haskell/Monoids">Haskell&#x2F;Monoids - Wikibooks</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikibooks.org/wiki/Haskell/Foldable">Haskell&#x2F;Foldable - Wikibooks</a></li>
+<li>《Haskell 趣学指南》</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Haskell/">Haskell</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01-30%E5%9C%A8js%E4%B8%AD%E4%BD%BF%E7%94%A8generator%E6%A8%A1%E6%8B%9Fdo%E8%AF%AD%E6%B3%95.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">在 js 中使用 generator 模拟 do 语法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01-18State,Reader,Writer.html">
+                        <span class="hidden-mobile">State, Reader 和 Writer Monad</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

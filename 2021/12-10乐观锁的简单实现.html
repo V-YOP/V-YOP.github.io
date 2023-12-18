@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="基于线程和共享内存的并发模型向来都是难于编写，难于调试的。但是在 Web 应用里它又是如此常见，因此仍旧有必要去做深入了解。更现代的并发模型（Actor，Channel，函数式，STM……）要学，线程和锁的并发模型也要学，这才称得上是健全！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="乐观锁的简单实现">
+<meta property="og:url" content="http://example.com/2021/12-10%E4%B9%90%E8%A7%82%E9%94%81%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="基于线程和共享内存的并发模型向来都是难于编写，难于调试的。但是在 Web 应用里它又是如此常见，因此仍旧有必要去做深入了解。更现代的并发模型（Actor，Channel，函数式，STM……）要学，线程和锁的并发模型也要学，这才称得上是健全！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/2021/07/142021-07-14.gif">
+<meta property="article:published_time" content="2021-12-10T11:42:10.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.291Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="并发">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/2021/07/142021-07-14.gif">
+  
+  
+  <title>乐观锁的简单实现 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="乐观锁的简单实现">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-12-10 19:42" pubdate>
+        2021年12月10日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">乐观锁的简单实现</h1>
+            
+            <div class="markdown-body">
+              <p>基于线程和共享内存的并发模型向来都是难于编写，难于调试的。但是在 Web 应用里它又是如此常见，因此仍旧有必要去做深入了解。更现代的并发模型（Actor，Channel，函数式，STM……）要学，线程和锁的并发模型也要学，这才称得上是健全！</p>
+<span id="more"></span>
+
+<p>这里记录一下对乐观锁的学习以及对使用乐观锁的<code>AtomicInteger</code>简单实现。我自认为我的实现会比网络上流传的更通俗易懂些（使用递归进行自旋而非无限循环）。但考虑到我们无法在代码层面直接实现原子的 CAS，这里必须得加锁。所以这里的代码其实并无任何实用意义，仅能用作学习了。</p>
+<h2 id="乐观和悲观"><a href="#乐观和悲观" class="headerlink" title="乐观和悲观"></a>乐观和悲观</h2><blockquote>
+<p>  Happy，Lucky，Smile，Yeah！</p>
+</blockquote>
+<p>就看待 data race 的态度（同样也是方式）而言，锁可以分为悲观锁和乐观锁。其中，悲观锁假设自己在操作数据时一定有其他线程试图对数据进行修改，所以必须要能够独占数据；而乐观锁假设操作时数据不会被修改，仅在最终修改数据前检查数据是否被改变。</p>
+<p>悲观锁在 Java 中即为常见，如 synchronized 关键字就是给方法或代码块加上这种悲观锁。当一个线程进入 synchronized 的代码块，它就将获得对应（对象）的锁，从而便能够独占数据，保证当前操作是同步、原子的。而乐观锁的典型实现是 concurrent 包下的各种 Atomic 类，其使用乐观锁保证对其的操作为原子操作，从而保证对其使用是线程安全的。其最常使用在计数等操作中。</p>
+<h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><p>乐观锁的实现依赖所谓的 CAS（Compare And Set）操作，即在操作数据前，先将数据的原始值保存，再对数据进行拷贝和操作，获取结果值，然后检查这过程中数据是否改变，如果未改变则设置数据为新值，否则认为操作失败，进行自旋或其他操作（自旋其实就是递归执行自己，这时的基线条件就是操作成功，但使用循环应该会性能更高）。其中该检查和设置的过程即为 CAS，其必须是原子的。它的代码描述比文字描述或许更通俗易懂——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">volatile</span> <span class="hljs-type">int</span> <span class="hljs-variable">counter</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; <span class="hljs-comment">// 不知道究竟有无必要保证可见性，但是加了其实也没啥损失</span><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">increment</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">oldCounter</span> <span class="hljs-operator">=</span> counter; <span class="hljs-comment">// 获取数据</span><br>    <span class="hljs-type">int</span> <span class="hljs-variable">newCounter</span> <span class="hljs-operator">=</span> oldCounter + <span class="hljs-number">1</span>; <span class="hljs-comment">// 操作</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">success</span> <span class="hljs-operator">=</span> compareAndSet(oldCounter, newCounter);<br>    <span class="hljs-keyword">if</span> (success) &#123;<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    increment(); <span class="hljs-comment">// 自旋</span><br>&#125;<br><span class="hljs-comment">// 注意加了锁！在 Java 中，该操作利用了现代处理器上相应指令，因而是原子操作，性能远好于锁</span><br><span class="hljs-keyword">synchronized</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(<span class="hljs-type">int</span> oldValue, <span class="hljs-type">int</span> newValue)</span> &#123;<br>    <span class="hljs-keyword">if</span> (oldValue == counter) &#123; <span class="hljs-comment">// compare</span><br>        counter = newValue; <span class="hljs-comment">// set</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>上面的代码实际上已经可以跑了 w，这里的“操作”也可以看出一种模式，我们来进行一些抽象——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-title function_">operateAndGet</span><span class="hljs-params">(IntUnaryOperator operation)</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">oldCounter</span> <span class="hljs-operator">=</span> counter;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">newCounter</span> <span class="hljs-operator">=</span> operation.applyAsInt(oldCounter);<br>    <span class="hljs-keyword">if</span> (compareAndSet(oldCounter, newCounter))<br>        <span class="hljs-keyword">return</span> newCounter; <span class="hljs-comment">// 如果是 getAndOperate，则返回 oldCounter</span><br>    <span class="hljs-keyword">return</span> operateAndGet(operation); <span class="hljs-comment">// 自旋</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="ABOAOBA"><a href="#ABOAOBA" class="headerlink" title="ABOAOBA"></a>ABOAOBA</h2><p>上面的 CAS 操作已能满足大多数需求，但仍旧存在一个问题——如果当前线程在操作数据时，数据从 A 变成 B 再变成 A，当前线程在 CAS 操作时是感受不到这种变化的，它会认为数据没有被改变，因此会应用自己的操作。这称为 ABA 问题，它在某些场景下可能造成问题。</p>
+<p>ABA 问题的解决方案是使用一个单独的数据（称为 Version）来描述数据的状态，对数据的任何操作都将改变 Version，从而利用 Version 而非数据本身来检查数据是否改变。下面的代码是一个<code>AtomicInteger</code>的实现，其使用版本号来进行比较。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyAtomicInteger</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">volatile</span> <span class="hljs-type">int</span> <span class="hljs-variable">counter</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">volatile</span> <span class="hljs-type">long</span> <span class="hljs-variable">version</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> counter;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">operateAndGet</span><span class="hljs-params">(IntUnaryOperator operation)</span> &#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">oldVersion</span> <span class="hljs-operator">=</span> version;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">oldCounter</span> <span class="hljs-operator">=</span> counter;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">newCounter</span> <span class="hljs-operator">=</span> operation.applyAsInt(oldCounter);<br>        <span class="hljs-keyword">if</span> (compareAndSet(oldVersion, newCounter))<br>            <span class="hljs-keyword">return</span> newCounter;<br>        <span class="hljs-keyword">return</span> operateAndGet(operation);<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">compareAndSet</span><span class="hljs-params">(<span class="hljs-type">long</span> oldVersion, <span class="hljs-type">int</span> newValue)</span> &#123;<br>        <span class="hljs-keyword">if</span> (oldVersion == version) &#123;<br>            counter = newValue; <span class="hljs-comment">// 设置数据</span><br>            version = oldVersion + <span class="hljs-number">1</span>; <span class="hljs-comment">// 设置 Version</span><br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 进行简单的测试，使用并行流模拟并发情况</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">MyAtomicInteger</span> <span class="hljs-variable">counter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyAtomicInteger</span>();<br>        IntStream.range(<span class="hljs-number">0</span>, <span class="hljs-number">10000</span>).parallel().forEach(__ -&gt; counter.operateAndGet(i -&gt; i + <span class="hljs-number">1</span>));<br>        System.out.println(counter.get());<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>乐观锁在数据库中也比较常用，Mybatis-Plus 提供了对乐观锁的插件支持，其原理是使用实体的其中一个字段充当 Version，在 Update 时将版本号也作为查询条件，这时若影响行数为 0，便说明版本号不对应，操作失败了。</p>
+<p>顺便，对上面的 AtomicInteger 的实现，concurrent 包下的 AtomicInteger 的实现和使用 synchronized 对操作进行包装的 int 进行比较，检查其执行一亿次自增所耗时间，得到了如下的结果——</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">MyAtomicInteger:</span> <span class="hljs-number">4996</span><br><span class="hljs-attr">AtomicInteger:</span>   <span class="hljs-number">1675</span><br><span class="hljs-attr">synchronized:</span>    <span class="hljs-number">4841</span><br></code></pre></div></td></tr></table></figure>
+
+<p>funny，这说明 compareAndSet 操作是这里的性能瓶颈，毕竟加了锁。</p>
+<p><img src="/images/oss/2021/07/142021-07-14.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01-07%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E2%80%94%E2%80%94%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">设计模式和函数式编程——策略模式</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/12-07%E3%80%8A%E4%B8%83%E5%91%A8%E4%B8%83%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94ruby.html">
+                        <span class="hidden-mobile">《七周七语言》笔记——Ruby</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,518 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="决定记录一下搭建和配置各种常用编程环境——包括 maven，jdk，node 等——和软件环境——包括 mysql，redis，kafka 等——的过程以方便在将来进行参考和查阅，其中能使用 docker 则使用 docker。该文档将持续维护。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用环境搭建">
+<meta property="og:url" content="http://example.com/%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="决定记录一下搭建和配置各种常用编程环境——包括 maven，jdk，node 等——和软件环境——包括 mysql，redis，kafka 等——的过程以方便在将来进行参考和查阅，其中能使用 docker 则使用 docker。该文档将持续维护。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-12T03:44:40.550Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.550Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="环境搭建">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>常用环境搭建 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="常用环境搭建">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-11-12 11:44" pubdate>
+        2023年11月12日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">常用环境搭建</h1>
+            
+            <div class="markdown-body">
+              <p>决定记录一下搭建和配置各种常用<strong>编程环境</strong>，包括 maven，jdk，node 等，和<strong>软件环境</strong>，包括 mysql，redis，kafka 等的过程以方便在将来进行参考和查阅，能使用 docker 则使用 docker。该文档将持续维护。</p>
+<p>需注意：该文档目的是为了之后搭建本地开发环境时能更加方便，不需要反复去查阅文档和博客，并非为了生产目的，因此（对一些中间件）不考虑安全性等问题。</p>
+<h1 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h1><h2 id="关于解压"><a href="#关于解压" class="headerlink" title="关于解压"></a>关于解压</h2><p>*nix 系统使用命令行进行解压，因此有一些必要去介绍一下使用。</p>
+<p>对于 tar.xz 和 tar.gz，使用 tar 命令，模版如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs stylus">tar xvf <span class="hljs-selector-attr">[要解压的文件名]</span> <span class="hljs-attr">--directory</span>=<span class="hljs-selector-attr">[要解压到的文件夹]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>比如，解压当前目录的一个压缩文件到当前目录的 test 文件夹（该文件夹需提前创建）：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs crmsh">tar xvf <span class="hljs-keyword">node</span><span class="hljs-title">-v14</span>.<span class="hljs-number">19.2</span>-linux-arm64.tar.gz --<span class="hljs-attr">directory=</span>./test<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>tar.gz其实上是2个工具。tar是打包工具，把很多文件打包成一个文件，gz是压缩格式。</p>
+</blockquote>
+<p>对于 zip，使用 unzip 命令，模板如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs css">unzip <span class="hljs-selector-attr">[要解压的文件]</span> -d <span class="hljs-selector-attr">[要解压到的文件夹]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>示例如下，要解压的文件夹不需要提前创建：</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">unzip</span> ttf-iosevka-curly-slab-<span class="hljs-number">15</span>.<span class="hljs-number">3</span>.<span class="hljs-number">0</span>.zip -d some_dir <br></code></pre></div></td></tr></table></figure>
+
+<h2 id="docker-run-的使用示例"><a href="#docker-run-的使用示例" class="headerlink" title="docker run 的使用示例"></a>docker run 的使用示例</h2><p>拷贝自<code>tldr docker-run</code>命令。</p>
+<p>docker run</p>
+<p>Run a command in a new Docker container.<br>More information: <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/commandline/run/">https://docs.docker.com/engine/reference/commandline/run/</a>.</p>
+<ul>
+<li><p>Run command in a new container from a tagged image:<br><code>docker run image:tag command</code></p>
+</li>
+<li><p>Run command in a new container in background and display its ID:<br><code>docker run -d image command</code></p>
+</li>
+<li><p>Run command in a one-off container in interactive mode and pseudo-TTY:<br><code>docker run --rm -it image command</code></p>
+</li>
+<li><p>Run command in a new container with passed environment variables:<br><code>docker run -e &#39;variable=value&#39; -e variable image command</code></p>
+</li>
+<li><p>Run command in a new container with bind mounted volumes:<br><code>docker run -v /path/to/host_path:/path/to/container_path image command</code></p>
+</li>
+<li><p>Run command in a new container with published ports:<br><code>docker run -p host_port:container_port image command</code></p>
+</li>
+<li><p>Run command in a new container overwriting the entrypoint of the image:<br><code>docker run --entrypoint command image</code></p>
+</li>
+<li><p>Run command in a new container connecting it to a network:<br><code>docker run --network network image</code></p>
+</li>
+</ul>
+<h1 id="编程环境"><a href="#编程环境" class="headerlink" title="编程环境"></a>编程环境</h1><p>对于编程环境，尽量从国内镜像站去下载以保证速度。</p>
+<blockquote>
+<p>小 tip: Windows 系统可以按 win 键，输入“env”或“path”并回车，能直接打开“编辑系统环境变量”窗口</p>
+</blockquote>
+<h2 id="JDK-8"><a href="#JDK-8" class="headerlink" title="JDK 8"></a>JDK 8</h2><p><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/">在这里</a> 下载对应架构和系统的 JDK 的压缩包并解压到特定位置，将其 <code>bin</code> 和 <code>jre\bin</code> 目录加入 PATH，并添加变量 JAVA_HOME，以其目录作为值即可。</p>
+<p>比如，将该压缩包解压至<code>E:\env</code>，此时目录结构为：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs mipsasm">E:\env\<span class="hljs-keyword">jdk8u332-b09</span><br><span class="hljs-keyword"></span>  ├─<span class="hljs-keyword">bin</span><br><span class="hljs-keyword"></span>  ├─include<br>  ├─<span class="hljs-keyword">jre</span><br><span class="hljs-keyword"></span>  ├─lib<br>  └─sample<br></code></pre></div></td></tr></table></figure>
+
+<p>此时，在 PATH 中添加：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs moonscript"><span class="hljs-name">E</span>:\env\jdk8u332-b09\bin<br><span class="hljs-name">E</span>:\env\jdk8u332-b09\jre\bin<br></code></pre></div></td></tr></table></figure>
+
+<p>添加 JAVA_HOME 变量，值为：<code>E:\env\jdk8u332-b09</code>。</p>
+<blockquote>
+<p>虽然很多资料说 JAVA_HOME 已经不需要设置了，但事实证明很多环境，如 maven 的一些插件，hadoop 等都是依赖这个变量的，仍旧有必要进行配置。</p>
+</blockquote>
+<h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><p>TODO</p>
+<h3 id="修改镜像源"><a href="#修改镜像源" class="headerlink" title="修改镜像源"></a>修改镜像源</h3><p>TODO</p>
+<h2 id="Sbt"><a href="#Sbt" class="headerlink" title="Sbt"></a>Sbt</h2><p>TODO</p>
+<h3 id="修改镜像源-1"><a href="#修改镜像源-1" class="headerlink" title="修改镜像源"></a>修改镜像源</h3><p>TODO</p>
+<h1 id="软件环境"><a href="#软件环境" class="headerlink" title="软件环境"></a>软件环境</h1><p>mysql，redis 等环境虽然也能够直接安装环境，但其总是比较麻烦的，且 win 下可能会出现更多问题，为此使用 docker 减轻负担是非常合适的。</p>
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a><a target="_blank" rel="noopener" href="https://hub.docker.com/_/mysql">MySQL</a></h2><ul>
+<li><p>创建 MySQL 8 容器，其 hostname 为 some-mysql，使用 root 账户作为用户，密码为 root，启动时创建 database db：<br><code>docker run --name some-mysql --hostname some-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=db -d mysql:8</code></p>
+</li>
+<li><p>在命令行下连接到 mysql 8 服务器，其 host 为 some-mysql，使用 root 用户（好像需要在同一个 network 下，且 bridge 不行）：<br><code>docker run --rm -it mysql:8 mysql -hsome-mysql -uroot -proot</code></p>
+</li>
+<li><p>使用自定义的 mysql 配置文件：<br><code>docker run --name some-mysql -v /my/custom:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:8</code></p>
+</li>
+<li><p>使用命令行的方式进行配置：<br><code>docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci</code></p>
+</li>
+<li><p>启动时执行特定 sql 文件：<br><code>docker run --name some-mysql -v /my/custom/sql/dir:/docker-entrypoint-initdb.d -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:8</code></p>
+</li>
+</ul>
+<p>需注意：MySQL 服务器在容器启动后才会开始启动，这在使用 docker-compose 等工具时可能会出现问题，这时应当用轮询等手段待服务器启动后再进行其他操作。</p>
+<h3 id="JDBC-配置"><a href="#JDBC-配置" class="headerlink" title="JDBC 配置"></a>JDBC 配置</h3><figure class="highlight properties"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs properties"><span class="hljs-attr">spring.datasource.driverClassName</span> = <span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br><span class="hljs-attr">spring.datasource.url</span> = <span class="hljs-string">jdbc:mysql://localhost:3306/prod?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=true&amp;serverTimezone=Asia/Shanghai</span><br><span class="hljs-attr">spring.datasource.username</span> = <span class="hljs-string">root</span><br><span class="hljs-attr">spring.datasource.password</span> = <span class="hljs-string">root</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h2><p>TODO</p>
+<h3 id="JDBC-配置-1"><a href="#JDBC-配置-1" class="headerlink" title="JDBC 配置"></a>JDBC 配置</h3><p>TODO</p>
+<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a><a target="_blank" rel="noopener" href="https://hub.docker.com/_/redis">Redis</a></h2><ul>
+<li><p>跑个 Redis 实例：<br><code>docker run --name some-redis -d redis</code></p>
+</li>
+<li><p>使用 redis-cli 连接 hostname 为<code>some-redis</code>的实例：<br><code>docker run -it --rm redis redis-cli -h some-redis</code></p>
+</li>
+<li><p>把默认配置文件拷出来：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">docker run --<span class="hljs-built_in">rm</span> -it -v $(<span class="hljs-built_in">pwd</span>):/shareFiles redis bash<br><span class="hljs-built_in">cp</span> /usr/local/etc/redis/ /shareFiles/redis<br><span class="hljs-built_in">exit</span> <br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>自定义配置：<br>可以使用 Dockerfile 直接替换：</p>
+<div class="hljs code-wrapper"><pre class="language-dockerfile" style="" tabindex="0"><code id="57308e3e" class="language-dockerfile" data-prism-hydrate="{&quot;element&quot;:&quot;57308e3e&quot;,&quot;language&quot;:&quot;dockerfile&quot;,&quot;code&quot;:&quot;\nFROM redis\nCOPY redis.conf /usr/local/etc/redis/redis.conf\nCMD [ \&quot;redis-server\&quot;, \&quot;/usr/local/etc/redis/redis.conf\&quot; ]\n&quot;,&quot;highlightedCode&quot;:&quot;\n\u003cspan class=\&quot;token instruction\&quot;\u003e<span class=\&quot;token keyword\&quot;>FROM</span> redis</span>\n<span class=\&quot;token instruction\&quot;><span class=\&quot;token keyword\&quot;>COPY</span> redis.conf /usr/local/etc/redis/redis.conf</span>\n<span class=\&quot;token instruction\&quot;><span class=\&quot;token keyword\&quot;>CMD</span> [ <span class=\&quot;token string\&quot;>\&quot;redis-server\&quot;</span>, <span class=\&quot;token string\&quot;>\&quot;/usr/local/etc/redis/redis.conf\&quot;</span> ]</span>\n&quot;}">
+<span class="token instruction"><span class="token keyword">FROM</span> redis</span>
+<span class="token instruction"><span class="token keyword">COPY</span> redis.conf /usr/local/etc/redis/redis.conf</span>
+<span class="token instruction"><span class="token keyword">CMD</span> [ <span class="token string">"redis-server"</span>, <span class="token string">"/usr/local/etc/redis/redis.conf"</span> ]</span>
+</code></pre></div>  
+<p>或者使用<code>-v</code>：<br><code>docker run -v /myredis/conf:/usr/local/etc/redis --name myredis redis redis-server /usr/local/etc/redis/redis.conf</code></p>
+</li>
+</ul>
+<p>TODO 还有哨兵，集群模式</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12-18%E3%80%8ACrafting%20Interpreters%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94Tree-Walk%20Interpreter.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09-17Perl%E5%85%A5%E9%97%A8.html">
+                        <span class="hidden-mobile">Perl 入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

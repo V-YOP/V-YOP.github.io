@@ -1,0 +1,461 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一言以蔽之，TypeReference 使我们能够在运行时获取包含泛型的类型信息，以使用在序列化等场合中。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 TypeReference">
+<meta property="og:url" content="http://example.com/2022/01-08%E5%85%B3%E4%BA%8ETypeReference.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="一言以蔽之，TypeReference 使我们能够在运行时获取包含泛型的类型信息，以使用在序列化等场合中。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-08T08:59:49.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.291Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 TypeReference - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 TypeReference">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-08 16:59" pubdate>
+        2022年1月8日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 TypeReference</h1>
+            
+            <div class="markdown-body">
+              <p>Java 中的 TypeReference 的使用方法比较奇怪，想要寻根问底，必须要更加了解 Java 的泛型擦除机制。</p>
+<p>我们知道，Java 中的泛型是编译期的，在运行时其会被擦除掉，比如我们编写代码<code>List&lt;Integer&gt; lst = new ArrayList&lt;&gt;();</code>，从运行时看来将会是<code>List lst = new ArrayList();</code>，只留下了原始类型（raw type）。</p>
+<p>但考虑这样的情况：在一个 servlet 应用里（为什么是 servlet？因为 spring mvc 遇不到这个问题），我们要求前端使用 JSON 来发送请求，并规定了请求的格式——</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span><span class="hljs-string">&quot;search&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;data&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;该字段可自定义&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>为此，对应的 POJO 为——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@Data</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">RequestDto</span>&lt;T&gt; &#123;<br>    String type;<br>    T data;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>在 servlet 中，我们需要将请求体字符串转换为特定的<code>RequestDto&lt;T&gt;</code>。比如某个接口要求前端发送<code>RequestDto&lt;List&lt;Integer&gt;&gt;</code>。我们在 servlet 中可能得这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// ...</span><br><span class="hljs-type">String</span> <span class="hljs-variable">requestBody</span> <span class="hljs-operator">=</span> getBody(request);<br><span class="hljs-type">ObjectMapper</span> <span class="hljs-variable">objectMapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectMapper</span>();<br><br><span class="hljs-comment">// 转换 string 为相应对象</span><br>RequestDto&lt;List&lt;Integer&gt;&gt; req = objectMapper.readValue(requestBody, RequestDto&lt;List&lt;Integer&gt;&gt;.class);<br><span class="hljs-comment">// ...</span><br></code></pre></div></td></tr></table></figure>
+
+<p>但这个通不过编译——所谓的<code>RequestDto&lt;List&lt;Integer&gt;&gt;.class</code>是不存在的，因为在运行时不存在泛型类型，我们只能得到<code>RequestDto.class</code>，所以只能这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">RequestDto&lt;List&lt;Integer&gt;&gt; req = objectMapper.readValue(requestBody, RequestDto.class);<br></code></pre></div></td></tr></table></figure>
+
+<p>虽然有个恼火的警告，但至少能编译了。我们整个 demo 试试——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">RequestDto&lt;List&lt;Integer&gt;&gt; req = objectMapper.readValue(<br>    <span class="hljs-string">&quot;&#123;\&quot;type\&quot;: \&quot;search\&quot;, \&quot;data\&quot;: [1, 2, 3]&#125;&quot;</span>, RequestDto.class);<br>req.getData().forEach(System.out::println);<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">1</span><br><span class="hljs-comment">2</span><br><span class="hljs-comment">3</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>成了！我们再试试错误的输入？</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">RequestDto&lt;List&lt;Integer&gt;&gt; req = objectMapper.readValue(<br>    <span class="hljs-string">&quot;&#123;\&quot;type\&quot;:\&quot;search\&quot;, \&quot;data\&quot;: \&quot;hello world!\&quot;&#125;&quot;</span>, RequestDto.class);<br>req.getData().forEach(System.out::println);<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">Exception in thread &quot;main&quot; java.lang.ClassCastException: class java.lang.String cannot be cast to class java.util.List (java.lang.String and java.util.List are in module java.base of loader &#x27;bootstrap&#x27;)</span><br><span class="hljs-comment">	at com.optimagrowth.license.LicenseServiceApplication.main(LicenseServiceApplication.java:41)</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>抛异常了！这符合预期，但是却是在<code>req.getData()</code>时抛的 cast 异常，而非 json 转换时抛出异常。</p>
+<p>这是肿么回事呢？从运行时看来，我们是在试图将字符串<code>&#123;&quot;type&quot;:&quot;search&quot;, &quot;data&quot;: &quot;hello world!&quot;&#125;</code>转换成类型 RequestDto，即——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">RequestDto</span> &#123;<br>    String type;<br>    Object data;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这河里吗？可太合理了，既然是<code>Object</code>，那是任何类型都是可以的了。但这显然是不符合我们的需要的——如果类型的错误必须要在我们使用的时候才能暴露出来，那这和动态类型语言何异？</p>
+<p>问题就出在 Java 的泛型擦除机制。我们有什么手段来规避它吗？库函数的设计者告诉我们，有！</p>
+<p>Java 的泛型擦除机制实际上至少在两个地方没有擦掉——方法的参数和返回值；继承泛型类的类。</p>
+<p>获取其的 demo 如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Foo</span> &#123;<br>	List&lt;List&lt;Integer&gt;&gt; <span class="hljs-title function_">someMethod</span><span class="hljs-params">(List&lt;Boolean&gt; lst)</span> &#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>; &#125;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>		<span class="hljs-type">Method</span> <span class="hljs-variable">method</span> <span class="hljs-operator">=</span> Foo.class.getDeclaredMethods()[<span class="hljs-number">0</span>];<br>		System.out.printf(<span class="hljs-string">&quot;方法参数：%s\n&quot;</span>, method.getGenericParameterTypes()[<span class="hljs-number">0</span>]);<br>		System.out.printf(<span class="hljs-string">&quot;方法返回值：%s\n&quot;</span>,method.getGenericReturnType());<br>	&#125;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">方法参数：java.util.List&lt;java.lang.Boolean&gt;</span><br><span class="hljs-comment">方法返回值：java.util.List&lt;java.util.List&lt;java.lang.Integer&gt;&gt;</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Bar</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RequestDto</span>&lt;Integer&gt; &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>		System.out.printf(<span class="hljs-string">&quot;父类的泛型类型：%s\n&quot;</span>, Bar.class.getGenericSuperclass());<br>	&#125;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">父类的泛型类型：me.ykn.RequestDto&lt;java.lang.Integer&gt;</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>前者显然为 Spring mvc 所利用——控制器的接口能够正确处理泛型类，而后者则是为所谓的 TypeReference 所利用的——通过继承的方式来保存泛型信息。我们可以通过匿名实现类来在行内（inline）直接拿到该信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-comment">// 这里向下转型是为 demo 展示需要，实际使用时一般只需要使用 Type 类型即可</span><br>    <span class="hljs-type">ParameterizedType</span> <span class="hljs-variable">genericType</span> <span class="hljs-operator">=</span> (ParameterizedType) <span class="hljs-keyword">new</span> <span class="hljs-title class_">RequestDto</span>&lt;Integer&gt;()&#123;&#125;.getClass().getGenericSuperclass();<br>    System.out.printf(<span class="hljs-string">&quot;实际类型：%s\n&quot;</span>, genericType);<br>    System.out.printf(<span class="hljs-string">&quot;泛型参数：%s\n&quot;</span>, genericType.getActualTypeArguments()[<span class="hljs-number">0</span>]);<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">实际类型：me.ykn.RequestDto&lt;java.lang.Integer&gt;</span><br><span class="hljs-comment">泛型参数：class java.lang.Integer</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这样，我们实际上就能够间接地表示<code>RequestDto&lt;Integer&gt;.class</code>了。对上面的 json 反序列化的代码，我们可以使用 TypeReference 的匿名实现类而非 class 来保留泛型信息——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">RequestDto&lt;List&lt;Integer&gt;&gt; req = objectMapper.readValue(<br>    <span class="hljs-string">&quot;&#123;\&quot;type\&quot;:\&quot;search\&quot;, \&quot;data\&quot;: \&quot;hello world!\&quot;&#125;&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">TypeReference</span>&lt;RequestDto&lt;List&lt;Integer&gt;&gt;&gt;()&#123;&#125;);<br>req.getData().forEach(System.out::println);<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">Exception in thread &quot;main&quot; com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize instance of `java.util.ArrayList&lt;java.lang.Integer&gt;` out of VALUE_STRING token</span><br><span class="hljs-comment"> at [Source: (String)&quot;&#123;&quot;type&quot;:&quot;search&quot;, &quot;data&quot;: &quot;hello world!&quot;&#125;&quot;; line: 1, column: 27] (through reference chain: com.optimagrowth.license.RequestDto[&quot;data&quot;])</span><br><span class="hljs-comment">	...</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>我们仍旧会得到一个异常，但这个异常是符合预期的，容易理解的，是在进行反序列化中抛出的！这说明泛型信息确实得到利用了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01-16%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F%EF%BC%8C%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%EF%BC%8C%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">设计模式笔记——命令模式，状态模式，访问者模式</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01-07%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E2%80%94%E2%80%94%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.html">
+                        <span class="hidden-mobile">设计模式和函数式编程——策略模式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

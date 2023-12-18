@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="关于语法分析的方式，算法，以及一个 LL(1) 四则运算的语法分析器和解释器的实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《两周自制脚本语言》笔记 3——LL(1) 语法分析及一个四则运算语言的实现">
+<meta property="og:url" content="http://example.com/2021/08-19%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B03%E2%80%94%E2%80%94LL(1)%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97%E8%AF%AD%E8%A8%80%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="关于语法分析的方式，算法，以及一个 LL(1) 四则运算的语法分析器和解释器的实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210821134802.png">
+<meta property="og:image" content="http://example.com/images/oss/20210821134952.png">
+<meta property="og:image" content="http://example.com/images/oss/20210820001704.png">
+<meta property="article:published_time" content="2021-08-19T15:56:44.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.287Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="编译原理">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210821134802.png">
+  
+  
+  <title>《两周自制脚本语言》笔记 3——LL(1) 语法分析及一个四则运算语言的实现 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《两周自制脚本语言》笔记 3——LL(1) 语法分析及一个四则运算语言的实现">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-19 23:56" pubdate>
+        2021年8月19日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《两周自制脚本语言》笔记 3——LL(1) 语法分析及一个四则运算语言的实现</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>前面提到使用 BNF 来进行语法分析，实际上正则表达式也可用作语法表述，其能够表达部分 BNF 定义的语法（我们知道，正则表达式不能表达一些嵌套或递归的语法，比如括号匹配）。正则表达式表述的语法称为<strong>正则文法</strong>，BNF 表述的语法成为<strong>上下文无关文法</strong>。</p>
+<p>正则用于字符串匹配，BNF 用于 Token 序列匹配，但若是将一个个字符作为 Token 看待，则 BNF 可以和正则本质相同——都是模式匹配。比如下面是一个例子。这里，number 可以是<code>digit</code>，可以是<code>digit digit</code>，可以是<code>digit digit digit</code>… 总之能够这样无限展开，无限递归下去。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs applescript">[<span class="hljs-number">0</span><span class="hljs-number">-9</span>]+ <span class="hljs-comment"># 或 [0-9][0-9]*</span><br>digit: <span class="hljs-string">&quot;0&quot;</span> | <span class="hljs-string">&quot;1&quot;</span> | <span class="hljs-string">&quot;2&quot;</span> | ... | <span class="hljs-string">&quot;8&quot;</span> | <span class="hljs-string">&quot;9&quot;</span><br><span class="hljs-built_in">number</span>: digit | digit <span class="hljs-built_in">number</span> <span class="hljs-comment"># 使用 EBNF 的话就是 digit &#123; digit &#125; ……兄啊这不是数字啊</span><br></code></pre></div></td></tr></table></figure>
+
+<p>能够像 number 这样进行<strong>尾部递归</strong>，或者<strong>循环展开</strong>的定义都可以通过正则文法表示。但若是像<code>expr : &quot;(&quot; expr &quot;)&quot; | ...</code>这样的就无法通过正则表达了。</p>
+<h1 id="语法分析的算法"><a href="#语法分析的算法" class="headerlink" title="语法分析的算法"></a>语法分析的算法</h1><p>如果某种 BNF 定义的语法不是正则文法，则必须使用特定算法进行语法分析。</p>
+<p>常见的语法分析算法可以分为<strong>向上分析算法</strong>和<strong>向下分析算法</strong>，其分别称为<strong>自底向上语法分析</strong>和<strong>自顶向下语法分析</strong>。</p>
+<p>向上分析算法首先组合相邻单词，创建子表达式，并逐步组合，构造出整体结构，LR（Left-to-right，Rightmost derivation）算法是一个著名的自底向上分析算法，但其实现比较复杂。著名的 yacc 使用 LALR 语法分析。（gcc，JavaCC 使用什么算法？）</p>
+<p>向下分析算法则是从整体结构开始向下分析。LL 语法分析（Left-to-right，Leftmost derivation）是其代表。LL 语法分析实现简单，是<strong>利用递归调用</strong>实现的<strong>递归下降语法分析器</strong>。</p>
+<p>在学习编译原理时（我们好像只学了递归下降语法分析？），曾看到过 LL(1) 这样的术语，其意义为使用向下分析算法，但仅允许<strong>预读</strong>一次。LL(k) 似乎能满足大部分需要。关于预读的意义，这里先不阐述。</p>
+<h1 id="四则运算的-LL-1-语法"><a href="#四则运算的-LL-1-语法" class="headerlink" title="四则运算的 LL(1) 语法"></a>四则运算的 LL(1) 语法</h1><p>下面对四则运算的 LL(1) 递归下降分析进行实现。</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">factor</span>		:	NUMBER | <span class="hljs-string">&quot;(&quot;</span> <span class="hljs-built_in">expr</span> <span class="hljs-string">&quot;)&quot;</span><br>term		:	<span class="hljs-built_in">factor</span> &#123; (<span class="hljs-string">&quot;*&quot;</span> | <span class="hljs-string">&quot;/&quot;</span>) <span class="hljs-built_in">factor</span> &#125;<br><span class="hljs-built_in">expr</span>		:	term &#123; (<span class="hljs-string">&quot;+&quot;</span> | <span class="hljs-string">&quot;-&quot;</span>) term &#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>再次确认——语法分析的意义是什么？生成抽象语法树。四则运算的抽象语法树是容易理解的——每一个子树都以加减乘除为根结点，以值为子树（或者只有一个值），其结果为一个值。</p>
+<p>自底向下分析的大体流程是什么？前面说到，是“从整体结构向下分析”。也就是说，首先将源代码（Token 序列）看作一个整体——在这里当然是 expr 了，然后通过这个整体不断细分，尝试划分出更细的“单元”，这个过程同时也是不断构造 AST 的过程，直到完全由终结符组成。</p>
+<h1 id="一个栗子"><a href="#一个栗子" class="headerlink" title="一个栗子"></a>一个栗子</h1><p>其的代码实现也是容易的——每个非终结符都对应一个函数&#x2F;方法，其将试图获取 Token，查看其是否匹配其对应的模式。其中，{}和|元符号也是能够转换成相应的代码模式的。比如，下面展示了 term 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> ASTree <span class="hljs-title function_">term</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">ASTree</span> <span class="hljs-variable">leftOrRootTree</span> <span class="hljs-operator">=</span> factor(); <span class="hljs-comment">// 根据 BNF 来的。这里故意使用了长命名，因为 term 可能有两种情况——如果后面接了操作符，则这个变量将为生成的 AST 的左结点（为什么？因为四则运算符的语法树就是这样！），如果后面没接操作符，那么这个变量的值就为生成 AST 的根结点</span><br>    <span class="hljs-keyword">while</span> (isToken(<span class="hljs-string">&quot;*&quot;</span>) || isToken(<span class="hljs-string">&quot;/&quot;</span>)) &#123;<br>        <span class="hljs-type">ASTree</span> <span class="hljs-variable">op</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTree</span>(readAToken());<br>        <span class="hljs-type">ASTree</span> <span class="hljs-variable">right</span> <span class="hljs-operator">=</span> factor();<br>        leftOrRootTree = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BinaryExpr</span>(leftOrRootTree, op, right); <span class="hljs-comment">// 递归定义，无论哪次迭代，leftOrRootTree 总为根结点，而前次的 leftOrRootTree 则为本次的左子树。</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> leftOrRootTree;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>该方法首先调用 factor 方法——对 factor 非终结符进行识别的方法。这方法将会通过词法分析器读取一个或多个 Token 并试图获取一个 factor。获取后返回结果——也就是说，它是有副作用的（！）。</p>
+<blockquote>
+<p>   需要注意的是，读取 Token 后，词法分析器的“指针”将会移动。isToken 方法除外——它只负责“瞧”一下指针当前所处位置的 Token。</p>
+</blockquote>
+<p>获取一个 factor 后，其有两种可能——这个 term 已经结束了，可直接返回；这 term 还有内容，需要进一步操作。究竟是哪种可能，看一眼其后的 token 便可——如果它是乘号或除号，则必定仍旧有内容，需要继续操作。</p>
+<blockquote>
+<p>  看来，在编写语法分析树的时候，需要考虑最后拿到的 Token 要生成怎样的 AST。就比如这里操作符是放在中间的，如果是 lisp 那样的前缀表达式，运算符就放到第一个了（但生成的 AST 还是一样的）</p>
+</blockquote>
+<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><p>下面是四则运算的语法分析器的全部代码。在这里，所谓的预读指的就是 peek 方法。为了能够进行分支，语法分析必须进行预读。这里只调用了 peek(0)——其的意义是获取<strong>下一个</strong>会获取到的 Token，**因此该实现为 LL(1)**。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 负责四则运算的语法分析器——实际工作中不应当使用这种方式，而是通过工具生成</span><br><span class="hljs-comment">// 这里不为 Token 进行更复杂抽象——书中抽象出了双目运算符进行使用，仅通过原始 ASTree 对象进行使用。</span><br><span class="hljs-comment">// 这里的 AST 是一个典型的二叉树，节点的值为 Token</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExprParser</span> &#123;<br>    <span class="hljs-keyword">private</span> Lexer lexer;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ExprParser</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-built_in">this</span>.lexer = lexer;<br>    &#125;<br>    <span class="hljs-keyword">public</span> ASTree <span class="hljs-title function_">parse</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> expr();<br>    &#125;<br><br>	<span class="hljs-comment">// expr		:	term &#123; (&quot;+&quot; | &quot;-&quot;) term &#125;</span><br>    <span class="hljs-keyword">public</span> ASTree <span class="hljs-title function_">expr</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">ASTree</span> <span class="hljs-variable">leftOrRootTree</span> <span class="hljs-operator">=</span> term();<br>        <span class="hljs-keyword">while</span> (isIdentifierNamed(<span class="hljs-string">&quot;+&quot;</span>) || isIdentifierNamed(<span class="hljs-string">&quot;-&quot;</span>)) &#123;<br>            <span class="hljs-type">Token</span> <span class="hljs-variable">op</span> <span class="hljs-operator">=</span> lexer.read();<br>            <span class="hljs-type">ASTree</span> <span class="hljs-variable">right</span> <span class="hljs-operator">=</span> term();<br>            leftOrRootTree = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTree</span>(op, leftOrRootTree, right);<br>        &#125;<br>        <span class="hljs-keyword">return</span> leftOrRootTree;<br>    &#125;<br>        <br>	<span class="hljs-comment">// term		:	factor &#123; (&quot;*&quot; | &quot;/&quot;) factor &#125;</span><br>    <span class="hljs-keyword">public</span> ASTree <span class="hljs-title function_">term</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">ASTree</span> <span class="hljs-variable">leftOrRootTree</span> <span class="hljs-operator">=</span> factor();<br>        <span class="hljs-keyword">while</span> (isIdentifierNamed(<span class="hljs-string">&quot;*&quot;</span>) || isIdentifierNamed(<span class="hljs-string">&quot;/&quot;</span>)) &#123;<br>            <span class="hljs-type">Token</span> <span class="hljs-variable">op</span> <span class="hljs-operator">=</span> lexer.read();<br>            <span class="hljs-type">ASTree</span> <span class="hljs-variable">right</span> <span class="hljs-operator">=</span> factor();<br>            leftOrRootTree = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTree</span>(op, leftOrRootTree, right);<br>        &#125;<br>        <span class="hljs-keyword">return</span> leftOrRootTree;<br>    &#125;<br>    <span class="hljs-comment">// factor		:	NUMBER | &quot;(&quot; expr &quot;)&quot;</span><br>    <span class="hljs-keyword">public</span> ASTree <span class="hljs-title function_">factor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Token</span> <span class="hljs-variable">nextToken</span> <span class="hljs-operator">=</span> lexer.peek(<span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">if</span> (nextToken.isNumber()) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTree</span>(lexer.read());<br>        ignoreToken(<span class="hljs-string">&quot;(&quot;</span>);<br>        <span class="hljs-type">ASTree</span> <span class="hljs-variable">tree</span> <span class="hljs-operator">=</span> expr();<br>        ignoreToken(<span class="hljs-string">&quot;)&quot;</span>);<br>        <span class="hljs-keyword">return</span> tree;<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">ignoreToken</span><span class="hljs-params">(String tokenName)</span> &#123;<br>        <span class="hljs-keyword">if</span> (isIdentifierNamed(tokenName))<br>            lexer.read();<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LSException</span>(<span class="hljs-string">&quot;ignored Token have false Name &quot;</span> + tokenName);<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isIdentifierNamed</span><span class="hljs-params">(String name)</span> &#123;<br>        <span class="hljs-type">Token</span> <span class="hljs-variable">currentToken</span> <span class="hljs-operator">=</span> lexer.peek(<span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">return</span> currentToken.isIdentifier() &amp;&amp; currentToken.getText().equals(name);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ASTree</span> <span class="hljs-variable">tree</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ExprParser</span>(Lexer.fromLines(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]&#123;<span class="hljs-string">&quot;(1+2)*3+4&quot;</span>&#125;)).parse();<br>        System.out.println(ExprEvaluator.eval(tree));<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>下面是对 AST 进行解释的代码，其实现是非常容易的——对二叉树后序遍历并运算。这过程实际上是进行<strong>语义分析</strong>并执行的过程。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExprEvaluator</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">eval</span><span class="hljs-params">(ASTree tree)</span> &#123;<br>        <span class="hljs-keyword">if</span> (tree.isLeaf()) <span class="hljs-keyword">return</span> tree.getValue().getNumber();<br>        <span class="hljs-type">int</span> <span class="hljs-variable">leftValue</span> <span class="hljs-operator">=</span> eval(tree.getLeft());<br>        <span class="hljs-type">int</span> <span class="hljs-variable">rightValue</span> <span class="hljs-operator">=</span> eval(tree.getRight());<br>        <span class="hljs-type">String</span> <span class="hljs-variable">op</span> <span class="hljs-operator">=</span> tree.getValue().getText();<br>        <span class="hljs-keyword">switch</span> (op) &#123;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;+&quot;</span>:<br>                <span class="hljs-keyword">return</span> leftValue + rightValue;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;-&quot;</span>:<br>                <span class="hljs-keyword">return</span> leftValue - rightValue;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;*&quot;</span>:<br>                <span class="hljs-keyword">return</span> leftValue * rightValue;<br>            <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;/&quot;</span>:<br>                <span class="hljs-keyword">return</span> leftValue / rightValue;<br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;这不可能！&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>关于数学运算和表达式运算，还存在一种名为<strong>算符优先分析法</strong>（operator precedence parsing），其是一个弱化的 LR(1)，非常适合用来对表达式进行语法分析，实际上其也在很多情况下嵌入到自底向下语法分析器中。但是这里先不赘述了。</p>
+<h1 id="关于实现中的问题"><a href="#关于实现中的问题" class="headerlink" title="关于实现中的问题"></a>关于实现中的问题</h1><p>一个需要注意的地方是，这里生成的 AST 的结构是固定的二叉树——根结点为操作符，左右两个子树为值，<strong>这样的结构是和四则运算的规律紧紧耦合的</strong>。复杂语言的 AST 是不能这样的——它一般来说不是二叉树，且计算所需信息一般都存储在子节点中。这时，根结点就负责表示 AST 节点的类型（这也意味着其的处理方法被规定了）。</p>
+<p>AST 树中每个节点都有其类型，有其计算法。比如，一个 if 语句块的 AST 可能这样表示——</p>
+<p><img src="/images/oss/20210821134802.png"></p>
+<p>标识双目运算的 AST 可能这样表示——</p>
+<p><img src="/images/oss/20210821134952.png"></p>
+<p>面对这样的树，它的计算方法是容易编写的，下面试图编写 IfStatement 的 eval 方法，其中 children 为子树的 List。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">Result <span class="hljs-title function_">eval</span><span class="hljs-params">(ASTree ifStatement)</span> &#123;<br>    <span class="hljs-keyword">if</span> (ifStatement.children.get(<span class="hljs-number">0</span>).eval()) &#123; <span class="hljs-comment">// Condition 的值</span><br>        eval(ifStatement.children.get(<span class="hljs-number">1</span>));<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">if</span> (Statement.children.length == <span class="hljs-number">3</span>) &#123; <span class="hljs-comment">// 如果有 elseCase</span><br>            eval(ifStatement.children.get(<span class="hljs-number">2</span>));<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> UnitResult; <span class="hljs-comment">// If 对 Java 来说没有返回值</span><br>&#125; <br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>  <del>关于下一步的目标，我打算学习 stone 中的语法分析器（的生成器）的实现，编写一个内部 DSL 用以生成语法分析器代码。这流程是复杂的，可能是难以实现，需要借助外力（指书上的实现）的，但是学习它是有趣的 w</del>。</p>
+<p>  <del>本想先继续跟着它的进度来，然后发现了一个麻烦的问题——我用的抽象结构和它的不一样，导致不能直接使用它提供的 Parser，这搞得有点尴尬。现在考虑跟着另一本书《自制编译器》进行学习，在完成后回过头来，从头再来，带着自己更为深刻的理解重新学习。</del></p>
+<p>  还是继续吧，从它的代码继续——我可不想再次重蹈当初学习并发编程的覆辙了。</p>
+</blockquote>
+<p><img src="/images/oss/20210820001704.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08-21%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B04%E2%80%94%E2%80%94Stone%E8%AF%AD%E6%B3%95%E7%9A%84%E8%AE%BE%E8%AE%A1.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 4——Stone 语法的设计</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-17%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8CBNF.html">
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 2——语法分析和 BNF</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一个非常有趣的画画的光影教程，其提出的色温理论至少看上去非常具有实践性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《CGMA colour and light》笔记">
+<meta property="og:url" content="http://example.com/2020/07-30%E3%80%8ACGMA%20colour%20and%20light%E3%80%8B%E7%AC%94%E8%AE%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="一个非常有趣的画画的光影教程，其提出的色温理论至少看上去非常具有实践性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/05/24/Jg4mlrx6zWQGeIZ.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/24/v63Ir4GPeCMNRb5.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/24/HZ4oaz9en1XhMbk.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/24/gW2AruynUNlTM5o.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/24/awhefNQXWLbzGd9.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/24/pJtudPiqg1a8cVK.png">
+<meta property="og:image" content="https://i.loli.net/2020/07/25/hfJY3Ruq1CvMWce.png">
+<meta property="og:image" content="https://i.loli.net/2020/07/25/9VhnixT3dGjHODR.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/25/Ovlz2sdU4xVqjtL.png">
+<meta property="article:published_time" content="2020-07-30T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.276Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="画画">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/24/Jg4mlrx6zWQGeIZ.png">
+  
+  
+  <title>《CGMA colour and light》笔记 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《CGMA colour and light》笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-07-30 08:00" pubdate>
+        2020年7月30日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《CGMA colour and light》笔记</h1>
+            
+            <div class="markdown-body">
+              <h1 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h1><h2 id="week-1-the-inportant-of-values-part-1-design-a-picture"><a href="#week-1-the-inportant-of-values-part-1-design-a-picture" class="headerlink" title="week 1 the inportant of values, part 1: design a picture"></a>week 1 the inportant of values, part 1: design a picture</h2><p>一个色彩课程为什么要从构图入手？因为——</p>
+<blockquote>
+<p>simple values and simple shapes（shape 侧重剪影，平面，form 侧重三维的事物的形状） are the driving force behind every good composition.<br><strong>简单的色值和简单的形状是好的作品的背后的驱动力</strong></p>
+</blockquote>
+<p>构图，<strong>实际上包括不止是形状，还有色值</strong>。</p>
+<h2 id="week-2-the-inportant-of-values-part-2-painting-form"><a href="#week-2-the-inportant-of-values-part-2-painting-form" class="headerlink" title="week 2 the inportant of values, part 2: painting form"></a>week 2 the inportant of values, part 2: painting form</h2><p>第一周和第二周只关注 value，学习<strong>五大调子</strong>，或者说 values——allow us to paint even the most complex forms in nature.</p>
+<h2 id="week-3-color-temperature"><a href="#week-3-color-temperature" class="headerlink" title="week 3 color temperature"></a>week 3 color temperature</h2><p>the holy grail of color theory——color temperature</p>
+<p>这个教程最不同的地方在于，它从色温入手来学习颜色。我们没必要死扣现实中的那种真实的色彩（这种色彩，实际上可以认为是太阳光，或者其他光源作用下的色彩，它实际上<strong>是受色温规律支配的</strong>（当然，究竟是不是，我不在乎），而在实际绘画中，有多少人是真的按照完全写实的来？很多画师都会把色彩的调子拉开（亮面和暗面的颜色），或压平，但是色温规律是不会变的）。<br>但同时也要记住，这里的色温规律也只是一般的规律。不能拿来直接使用，而是作为一种理论，融合在实践中，指导我们绘制和分析画作。同时它也不是教条（真正普适的只有素描的五大调子吧），可以在一定的情况下去破坏它。</p>
+<h2 id="week-4-color-keys"><a href="#week-4-color-keys" class="headerlink" title="week 4 color keys"></a>week 4 color keys</h2><p>color key 是一种概念艺术，类似概念图之类的玩意，在小画布上，细节较抽象，快速表现色彩，情绪，氛围（显然这就很适合拿来做学习，就像色彩的小色稿）。</p>
+<h2 id="week-5-concept-art-part-1-planning"><a href="#week-5-concept-art-part-1-planning" class="headerlink" title="week 5 concept art, part 1: planning"></a>week 5 concept art, part 1: planning</h2><p>概念艺术，使用我们脑子里的一个 idea，开始绘制一幅 concept art 图</p>
+<h2 id="week-6-concept-art-part-2-Painting-the-final"><a href="#week-6-concept-art-part-2-Painting-the-final" class="headerlink" title="week 6 concept art, part 2: Painting the final"></a>week 6 concept art, part 2: Painting the final</h2><p>动员前面所学的所有东西，色值，色温，构图……来完成这幅图</p>
+<h2 id="week-7-materials-and-mark-making"><a href="#week-7-materials-and-mark-making" class="headerlink" title="week 7 materials and mark-making"></a>week 7 materials and mark-making</h2><p>似乎是创造质感，纹理？还不太明确，等学到这里的时候再改。</p>
+<p>mark 似乎是构图的元素，C 线，S 线和直线</p>
+<p>TODO: 摸了</p>
+<h2 id="week-8-master-study"><a href="#week-8-master-study" class="headerlink" title="week 8 master study"></a>week 8 master study</h2><p><strong>遵循几个世纪以来的艺术教育传统</strong>，通过一张杰作，对它进行全面的研究，来扩展我们的知识 </p>
+<h2 id="goal"><a href="#goal" class="headerlink" title="goal"></a>goal</h2><p>significantly raise your level of competency and skill, and put you on the path of accelerated learning<br>显著提高你的能力和技能水平， 让你走上加速学习的道路</p>
+<p>and after years of good practice…</p>
+<p>mastery!</p>
+<h1 id="week-1-the-inportant-of-values-part-1-design-a-picture-1"><a href="#week-1-the-inportant-of-values-part-1-design-a-picture-1" class="headerlink" title="week 1 the inportant of values, part 1: design a picture"></a>week 1 the inportant of values, part 1: design a picture</h1><blockquote>
+<p>maybe <strong>the most important week</strong> of the class. </p>
+</blockquote>
+<p>构图这么重要？因为 simple values and simple shapes are the driving force behind every good composition.    </p>
+<blockquote>
+<p>art is based on a mastery of the basics and there is nothing more <strong>fundamental</strong> (than values and shapes).</p>
+</blockquote>
+<p>可见，好的，简单的色值和形状是<strong>基础的</strong>（fundamental 而非 basic，基础！基础指所有其它的具体的，复杂的内容都搭在这上面，就像骨架，像低级，而基本指的是简单，入门等，这两个是有区别的，基础不一定基本……甚至不一定好学。就像机器语言，汇编语言是一切高级语言的基础……）。</p>
+<h2 id="goal-1"><a href="#goal-1" class="headerlink" title="goal"></a>goal</h2><blockquote>
+<p>after this week you will have——<br>an understanding of <strong>what makes an effective picture works</strong><br>a procedure（过程） for better designing your own pictures<br>An understanding of <strong>simplification</strong>（简化，不用说就知道，这个非常非常非常非常非常重要）: what it is and how to achieve it<br>The ability to imbue a <strong>strong emotional idea</strong> into your compositions<br>A method for deciding <strong>where to place elements</strong> within a composition <strong>for maximum impact</strong><br>An editor’s sense for <strong>detecting what doesn’t work</strong>  </p>
+</blockquote>
+<ol>
+<li>了解什么让画作有……味道</li>
+<li>更好设计画作的过程</li>
+<li>理解简化，它是什么，如何实现</li>
+<li>如何让作品富有感情</li>
+<li>决定如何放置画作中的元素，让它效果最大化</li>
+<li>编辑者的意识——理解什么无法起作用（删繁就简？）</li>
+</ol>
+<h2 id="designing-principle"><a href="#designing-principle" class="headerlink" title="designing principle"></a>designing principle</h2><p>从一开始作画，就确定整幅画的 designing principle，设计原则，或者说构图？（确定 shape，或者说剪影之类的，这是通过对比实现的）</p>
+<p>通过亮暗对比（明暗交界线）的三角构图，它坚实，<strong>易读</strong>。<br><img src="https://i.loli.net/2020/05/24/Jg4mlrx6zWQGeIZ.png"></p>
+<p>将 designing principle 视为——the simple idea behind a composition, its <strong>DNA</strong>. </p>
+<p>它应当是简单的，因为整个画作都要从它开始构建。any sense of detail or any intricacy, any little color change or value shift or a shape intricacy is hinges on the design principle. <strong>任何细节或任何复杂性，任何微小的颜色变化或值偏移或形状复杂性都取决于设计原理</strong>。</p>
+<p>它的三个属性（可以共有）——</p>
+<ol>
+<li>shape-based（上面的就是这样的，通过形状来构图）</li>
+<li>path（引导人的视线）</li>
+<li>value pattern（明暗模式？？）</li>
+</ol>
+<p>我觉得吧，1 和 3 都是依靠对比来体现的，2 是依靠疏密啊，相近色啊之类的来实现的。</p>
+<h3 id="basic-marks"><a href="#basic-marks" class="headerlink" title="basic marks"></a>basic marks</h3><ul>
+<li>C-curve</li>
+<li>S-curve</li>
+<li>Stright</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/24/v63Ir4GPeCMNRb5.png"></p>
+<p>curve 是线条，curve 组成的封闭图形，就是 shape，形状。</p>
+<p>我们应当使用 mark，<strong>记号</strong>来简化自然界中的复杂形状。</p>
+<p><img src="https://i.loli.net/2020/05/24/HZ4oaz9en1XhMbk.png"><br><strong>简单&#x3D;漂亮</strong>。自然界的形状总是过于复杂，就像地图上的路线图。</p>
+<p>因此，我们需要简化，我们一直在简化。</p>
+<p>而通过这种简化，通过这三种记号，我们将通向** design**。</p>
+<p><strong>design——Simplifying the shapes found in the real world, and using them as the foundation for our work.</strong><br><strong>设计——简化真实世界的形状，以它们作为我们的作品的基础。</strong></p>
+<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><h4 id="design-gives-things-a-reason-to-exist"><a href="#design-gives-things-a-reason-to-exist" class="headerlink" title="design, gives things a reason to exist"></a>design, gives things a reason to exist</h4><p><img src="https://i.loli.net/2020/05/24/gW2AruynUNlTM5o.png"><br>显然的 S 曲线。或者说，这幅图的设计原则，DNA，就是 S 曲线。但是同时，不能完全符合某个记号，必须要增添戏剧性，真实性，也就是说必须要去主动破坏（添加波澜）这曲线。<strong>设计原则和画面元素，就像特殊和一般的关系，设计原则要隐藏在画面元素后，由画面元素来表示，而这种表示也不能是直接的，是带有偶然性的</strong>。</p>
+<p><strong>design, gives things a reason to exist</strong>.<br><strong>画面元素应当有存在的理由</strong>。<br>构成记号的元素有构成的理由，破坏（这种破坏不能是全盘推倒，而只是小小的变化）记号的元素也有破坏的理由。不能添加对设计原则起损害作用的元素，除非你改变了心意，突然想表达其他东西 w。</p>
+<p>突然感觉，他们实际上和我们对待艺术是不同的，他们将表达作为第一位，对情绪和氛围更加看重，而我们则注重正确与否，注重真实，技法等作为第一位……从这方面上来说，倒也没有孰优孰劣。但是从我的目标而言，我是要两手抓，两手硬的……</p>
+<h4 id="focus-point"><a href="#focus-point" class="headerlink" title="focus point"></a>focus point</h4><p><img src="https://i.loli.net/2020/05/24/awhefNQXWLbzGd9.png"><br>经典，Z 字构图。它引导人的视线从前景到背景，给画面深度感。</p>
+<p>同时，这个 Z 曲线也突出了画面顶上的骑士。因为他起了破坏这个 Z 曲线的作用。而右边的骑士则不被重视，因为他处在次要地位。</p>
+<p>这引出了一个概念——focus point。</p>
+<p>focus point is——<br><strong>The singular thing the picture is about</strong><br><strong>The reason the picture exists</strong>  </p>
+<p>焦点是画作（镜头）的中心，是作品的存在理由，是作品中的奇特之处（当然，这种“奇特”是其它部分的元素对比出来的）。</p>
+<p><strong>设计原则应当决定于焦点</strong>，也就是说，构图啊，色彩啊，色调啊，一切其它的东西，都要服务于焦点，服务于你想表达的东西。</p>
+<p>焦点可以不止一个，可以有主要的，有次要的，同样，构图也可以不止是一个记号，可以是多个记号的混合，比如上面那幅就是三个直线的组合。</p>
+<p><img src="https://i.loli.net/2020/05/24/pJtudPiqg1a8cVK.png"><br>比如这幅的焦点。</p>
+<p>画面可以只要焦点吗？不是不可以。<strong>画面中的其他元素起着影响氛围和感情的作用</strong>。而实际上焦点只所以是焦点，也是因为有其它次要元素。但是次要元素不能喧宾夺主，比如这副，后面的山啊，树啊，都很虚（所以这里没有说山是一个 C 曲线）。</p>
+<h4 id="如何看待一幅画？"><a href="#如何看待一幅画？" class="headerlink" title="如何看待一幅画？"></a>如何看待一幅画？</h4><p>看待一幅画，最首要的是看待两个方面——<strong>色值和形状</strong>，这两方面并非孤立，而是要相互联系地看待。</p>
+<p>所谓色值，就是看待不同色值的分配，是否符合三大面五大调子？能够造成一个焦点（当然，这是和形状共同看待的）？</p>
+<p>所谓形状，就是看待不同形状（形状的区分是根据色值来的）的分配，放置等，是否大，中，小形状分配得当？是否运用 C 曲线，S 曲线和直线来引导视线和确定焦点？</p>
+<p><img src="https://i.loli.net/2020/07/25/hfJY3Ruq1CvMWce.png"></p>
+<p>两个反面例子。</p>
+<p>色值问题是毋庸置疑的，这个太过明显了。<br>首先，它们<strong>没有充分利用空间</strong>，画中充斥着大量的<strong>“死亡空间”</strong>，（我认为这两幅画都可以将地平线调高，在这些没有被利用的死亡空间里多做一些文章）简单的修改是首先让构图符合三分法则，对两幅画，将树和树叶往左挪一下，移到 3&#x2F;2 的位置。<br>然后，它们<strong>形状的区分</strong>做的不好，整幅画只有大形状和中形状，没有小形状，因此构图很不自然，让两幅画毫无生气和焦点。</p>
+<p><img src="https://i.loli.net/2020/07/25/9VhnixT3dGjHODR.png"></p>
+<p>一个不是完全正面的例子。它形状分配不错，能引导人的视线，值也比较正确，但是它<strong>缺乏焦点</strong>，同时缺少小形状来中和中大形状（显得缺乏细节），或许最近的这一片饱和度比较高的绿，应该更加强调饱和度，并且提高亮度，总之就是提高前景的对比。同时这一条道路或许也得修改一下。然后，左下三分之一的位置，应当放置一些小形状作为焦点，比如马，动物，etc</p>
+<h1 id="week-2"><a href="#week-2" class="headerlink" title="week 2"></a>week 2</h1><p>TODO: 摸了</p>
+<h1 id="week-3"><a href="#week-3" class="headerlink" title="week 3"></a>week 3</h1><p>这一周要学到——</p>
+<ul>
+<li>An understanding of how color and light work together in nature</li>
+<li>An understanding of color temperature as natures color theory</li>
+<li>Various methods of interpreting and applying color temperatures to your painting practice</li>
+<li>An understanding of how color acts in light and shadow families</li>
+<li>An appreciation of the power of grays</li>
+<li>The answer to the question, “What color should I choose?</li>
+<li>对现实中的光和色的理解</li>
+<li>对以色温作为自然的色彩理论的理解</li>
+<li>在绘画练习中解释和应用色温原理的多种方法</li>
+<li>对光家族和影家族里颜色的作用的理解</li>
+<li>对灰的力量的理解</li>
+<li>对“我该选择什么颜色”的理解</li>
+</ul>
+<p><strong>颜色只有在明暗正确的情况下起作用。当你不知道怎么选择颜色的时候，当你觉得你颜色怪怪的的时候，先去看看你的调子对不对</strong>。</p>
+<h2 id="color-terminology"><a href="#color-terminology" class="headerlink" title="color terminology"></a>color terminology</h2><p>色彩的术语。各种颜色的名称，我觉得实际上保留六种就可以了，红黄蓝，橙，绿，紫，然后用冷暖，亮暗，灰（非灰即纯）等形容词来修饰它们。这实际上就是概括了** HSV——色相，饱和度和明度——色彩的三个属性<strong>，非常具有</strong>实践意义**。</p>
+<h2 id="color-temperature"><a href="#color-temperature" class="headerlink" title="color temperature"></a>color temperature</h2><p>色温。色温无法测量，它是相对的，需要上下文（当然，对于单一的颜色，或者当我们把色环一分为二，分为冷暖色的时候，它的上下文就是白色。</p>
+<p>色温的范畴是<strong>冷暖</strong>。我们对冷暖的认识应该是天生的，但是这种天生也是人类长期生产生活实践中发展来的，但是应该仍旧属于自然性…就如手部的复杂肌肉和骨骼也是跟随着生产生活实践的发展而发展的。动物怕火，而人类不怕，应当就是这样的例证。而我们所谓的暖色也是和火相关的。比如红色，橙色，黄色。</p>
+<p>冷和暖是相对的，互为依存的。没有暖就没有冷，没有冷就没有暖；冷和暖在一定情况下是可以共存的，除了最暖的色和最冷的色，每一个色都能作为冷色和暖色，当它的上下文比他更暖或更冷时。</p>
+<p><img src="https://i.loli.net/2020/05/25/Ovlz2sdU4xVqjtL.png"><br>将 RYB 色环分为 12 色，我认为，最符合实践需要的方式是用四个色作为分界，黄绿色，黄色，紫色，紫红色，这样能给每一个颜色的冷暖方向都找到依据。</p>
+<p>因此，色环分为冷暖两个家族……我选择用集合这个词。冷暖的集合和光影的集合的区别在于，后者有清晰的界限（明暗交界线），而前者的差异更加微妙，不止是色相，<strong>饱和度的改变也会改变冷暖</strong>。暖灰色在暖色中会显得冷，因而它就属于冷的集合，可是它的色相又在暖的集合……总之很微妙，根据实际来，具体分析。</p>
+<p>同时，因为色温总是相对的，我们应当对每一个颜色都添加上冷暖这样的形容词，红色总是抽象的，冷红，暖红，就比较有实践意义。</p>
+<p>需要注意的是，<strong>蓝色要变成暖色，要从紫红色方向走</strong>。</p>
+<h2 id="色温的表现"><a href="#色温的表现" class="headerlink" title="色温的表现"></a>色温的表现</h2><p>就如颜色有温度，光也有温度，也有冷光和暖光（当然，也有中性光），画画应当从确定光源温度开始。</p>
+<p><strong>物体的受光面总是往光源色上靠拢</strong>。</p>
+<p>画画从固有色开始，从平庸的开始。</p>
+<p>TODO: 摸了</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%94%BB%E7%94%BB/">画画</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/08-15%E4%B8%96%E7%95%8C%E8%AF%AD%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于一些世界语的学习资源</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06-30Atom%E4%B8%8Bcommon%20lisp%E7%9A%84%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+                        <span class="hidden-mobile">Atom 下 common lisp 的环境搭建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

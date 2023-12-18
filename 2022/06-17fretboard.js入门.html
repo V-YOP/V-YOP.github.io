@@ -1,0 +1,729 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="为了之后画指板图方便，学一下这个通过 js 代码生成指板图的工具库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fretboard.js 入门">
+<meta property="og:url" content="http://example.com/2022/06-17fretboard.js%E5%85%A5%E9%97%A8.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="为了之后画指板图方便，学一下这个通过 js 代码生成指板图的工具库">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-16T17:01:08.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.300Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="吉他">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>fretboard.js 入门 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="fretboard.js 入门">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-06-17 01:01" pubdate>
+        2022年6月17日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">fretboard.js 入门</h1>
+            
+            <div class="markdown-body">
+              <script src="/js/fretboard.js"></script>
+
+<p><a target="_blank" rel="noopener" href="https://moonwave99.github.io/fretboard.js/documentation-fretboard.html">Fretboard.js</a> 是一个使用 js 生成 svg 形式的指板图的工具，之后可能要做一些关于吉他的笔记，所以对它进行一些学习。要在浏览器中使用，直接下载 <a href="/js/fretboard.js">该 js 文件</a>，在 html 中引用即可。</p>
+<p>该库具体的使用细节应当参照官方文档，其中提供了很多供参考的 <a target="_blank" rel="noopener" href="https://moonwave99.github.io/fretboard.js/examples-systems.html">例子</a>，这里只是做一些最简单的示例。</p>
+<p>该库的基本使用方式为定义一个 figure 标签并给定 id，然后创建相应的 Fretboard 对象，在配置后调用 render 方法，比如下面的代码会定义一个空白的指板。</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">figure</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;empty-fretboard&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">figure</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">const</span> &#123; <span class="hljs-title class_">Fretboard</span> &#125; = globalThis.<span class="hljs-property">fretboard</span></span><br><span class="language-javascript"><span class="hljs-keyword">const</span> fretboard = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Fretboard</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#empty-fretboard&#x27;</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">stringWidth</span>: [<span class="hljs-number">1</span>,<span class="hljs-number">1.5</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>] <span class="hljs-comment">// 为了好看！</span></span><br><span class="language-javascript"></span><br><span class="language-javascript">&#125;);</span><br><span class="language-javascript">fretboard.<span class="hljs-title function_">render</span>()</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>效果如下：</p>
+<figure id="empty-fretboard"></figure>
+<script>
+const { Fretboard } = globalThis.fretboard
+const emptyFretboard = new Fretboard({
+  el: '#empty-fretboard',
+  stringWidth: [1,1.5,2,3,4,5]
+});
+emptyFretboard.render()
+</script>
+
+<p>下面列出了 Fretboard 的构造函数的全部配置，为了描述方便，下面的 instrument 仍旧称为吉他（但它也能够描述其它弦乐器），相较于官方文档，这里进行了一些重排序：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数</th>
+<th align="center">类型</th>
+<th align="center">默认值</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">el</td>
+<td align="center">string</td>
+<td align="center">‘#fretboard’</td>
+<td align="center">对应的标签，使用选择器语法</td>
+</tr>
+<tr>
+<td align="center">fretCount</td>
+<td align="center">number</td>
+<td align="center">15</td>
+<td align="center">展示的品数</td>
+</tr>
+<tr>
+<td align="center">crop</td>
+<td align="center">boolean</td>
+<td align="center">false</td>
+<td align="center">是否对指板图进行剪切，如果为 true，则剪掉左边空余的品位，其实就是说不从 1 品开始，从第一个有指位的品开始进行渲染，这是非常有用的</td>
+</tr>
+<tr>
+<td align="center">fretLeftPadding</td>
+<td align="center">number</td>
+<td align="center">0</td>
+<td align="center">似乎在 crop 为 true 时起作用，表示左边在最低把位的音前空开多少品</td>
+</tr>
+<tr>
+<td align="center">tuning</td>
+<td align="center">string[]</td>
+<td align="center">[“E2”, “A2”, “D3”, “G3”, “B3”, “E4”]</td>
+<td align="center">吉他的 <a target="_blank" rel="noopener" href="https://moonwave99.github.io/fretboard.js/documentation-fretboard.html#tuning">调音</a></td>
+</tr>
+<tr>
+<td align="center">stringCount</td>
+<td align="center">number</td>
+<td align="center">6</td>
+<td align="center">吉他的弦数，必须和调音的数组的长度相等</td>
+</tr>
+<tr>
+<td align="center">dotText</td>
+<td align="center">{string: number, fret: number} &#x3D;&gt; string</td>
+<td align="center">(dot) &#x3D;&gt; ‘’</td>
+<td align="center">特定指位的文字，注意这里的 string 是属性名</td>
+</tr>
+<tr>
+<td align="center">stringWidth</td>
+<td align="center">number | [number]</td>
+<td align="center">1</td>
+<td align="center">弦的宽度，可以去传入一个数组，如 [1, 1.5, 2, 3, 4, 5]，设置好了挺美观的</td>
+</tr>
+<tr>
+<td align="center">fretWidth</td>
+<td align="center">string</td>
+<td align="center">1</td>
+<td align="center"><strong>品丝</strong>的宽度</td>
+</tr>
+<tr>
+<td align="center">showFretNumbers</td>
+<td align="center">string</td>
+<td align="center">true</td>
+<td align="center">是否展示品数</td>
+</tr>
+<tr>
+<td align="center">middleFretWidth</td>
+<td align="center">string</td>
+<td align="center">3</td>
+<td align="center">12 品品丝宽度</td>
+</tr>
+<tr>
+<td align="center">scaleFrets</td>
+<td align="center">string</td>
+<td align="center">true</td>
+<td align="center">如果为 true，则品格的宽度按对数增长（现实如此），否则按线性增长</td>
+</tr>
+<tr>
+<td align="center">stringColor</td>
+<td align="center">string</td>
+<td align="center">‘#666’</td>
+<td align="center">弦的颜色</td>
+</tr>
+<tr>
+<td align="center">fretColor</td>
+<td align="center">string</td>
+<td align="center">‘#666’</td>
+<td align="center">品丝的颜色</td>
+</tr>
+<tr>
+<td align="center">nutWidth</td>
+<td align="center">string</td>
+<td align="center">7</td>
+<td align="center">上弦枕的宽度</td>
+</tr>
+<tr>
+<td align="center">nutColor</td>
+<td align="center">string</td>
+<td align="center">‘#666’</td>
+<td align="center">上弦枕颜色</td>
+</tr>
+<tr>
+<td align="center">disabledOpacity</td>
+<td align="center">string</td>
+<td align="center">0.9</td>
+<td align="center">无效（disabled）的指位的不透明度</td>
+</tr>
+<tr>
+<td align="center">middleFretColor</td>
+<td align="center">string</td>
+<td align="center">‘#ff636c’</td>
+<td align="center">12 品品丝颜色</td>
+</tr>
+<tr>
+<td align="center">dotSize</td>
+<td align="center">string</td>
+<td align="center">20</td>
+<td align="center">指位的直径</td>
+</tr>
+<tr>
+<td align="center">dotStrokeColor</td>
+<td align="center">string</td>
+<td align="center">‘#555’</td>
+<td align="center">指位边框的颜色</td>
+</tr>
+<tr>
+<td align="center">dotStrokeWidth</td>
+<td align="center">string</td>
+<td align="center">2</td>
+<td align="center">指位边框宽度</td>
+</tr>
+<tr>
+<td align="center">dotTextSize</td>
+<td align="center">string</td>
+<td align="center">12</td>
+<td align="center">指位上的文字大小</td>
+</tr>
+<tr>
+<td align="center">dotFill</td>
+<td align="center">string</td>
+<td align="center">‘white’</td>
+<td align="center">指位填充颜色</td>
+</tr>
+<tr>
+<td align="center">fretNumbersColor</td>
+<td align="center">string</td>
+<td align="center">‘#00000099’</td>
+<td align="center">品数的颜色</td>
+</tr>
+<tr>
+<td align="center">topPadding</td>
+<td align="center">string</td>
+<td align="center">20</td>
+<td align="center">Top padding（相对于 SVG 容器）</td>
+</tr>
+<tr>
+<td align="center">bottomPadding</td>
+<td align="center">string</td>
+<td align="center">15</td>
+<td align="center">Bottom padding</td>
+</tr>
+<tr>
+<td align="center">leftPadding</td>
+<td align="center">string</td>
+<td align="center">20</td>
+<td align="center">Left padding</td>
+</tr>
+<tr>
+<td align="center">rightPadding</td>
+<td align="center">string</td>
+<td align="center">20</td>
+<td align="center">Right padding</td>
+</tr>
+<tr>
+<td align="center">height</td>
+<td align="center">string</td>
+<td align="center">150</td>
+<td align="center">SVG element height</td>
+</tr>
+<tr>
+<td align="center">width</td>
+<td align="center">string</td>
+<td align="center">960</td>
+<td align="center">SVG element width</td>
+</tr>
+<tr>
+<td align="center">fretNumbersHeight</td>
+<td align="center">string</td>
+<td align="center">40</td>
+<td align="center">Fret numbers container height</td>
+</tr>
+<tr>
+<td align="center">fretNumbersMargin</td>
+<td align="center">string</td>
+<td align="center">20</td>
+<td align="center">Fret number container top margin</td>
+</tr>
+<tr>
+<td align="center">font</td>
+<td align="center">string</td>
+<td align="center">‘Arial’</td>
+<td align="center">文字的字体</td>
+</tr>
+<tr>
+<td align="center">barresColor</td>
+<td align="center">string</td>
+<td align="center">‘#666’</td>
+<td align="center">未见效果，似乎是关于大横按的，描述错误了：Amount of empty frets to display before dots.</td>
+</tr>
+</tbody></table>
+<hr>
+<p>我们的目的当然不仅仅是去展示空白的指板，还得在上面放指位才能起参照作用。</p>
+<p>放置指位使用 setDots 方法，它接受一个<code>&#123;string: number, fret: number&#125;</code>，比如下面的代码展示了一个开放 C 和弦，并在指位上显示其音高：</p>
+<figure id="c-chord"></figure>
+<script>
+const cChord = new Fretboard({
+  el: '#c-chord',
+  stringWidth: [1,1.5,2,3,4,5],
+  fretCount: 3,
+    dotText({string, fret}) {
+    if (string === 5 && fret === 3) return 'C'
+    if (string === 4 && fret === 2) return 'B'
+    if (string === 2 && fret === 1) return 'C'
+  }
+});
+cChord.setDots([{
+    string: 5,
+    fret: 3,
+  },
+  {
+    string: 4,
+    fret: 2,
+  },
+  {
+    string: 2,
+    fret: 1,
+  }])
+cChord.render()
+</script>
+
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">figure</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;c-chord&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">figure</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">const</span> cChord = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Fretboard</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#c-chord&#x27;</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">stringWidth</span>: [<span class="hljs-number">1</span>,<span class="hljs-number">1.5</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],</span><br><span class="language-javascript">  <span class="hljs-attr">fretCount</span>: <span class="hljs-number">3</span>,</span><br><span class="language-javascript">  <span class="hljs-title function_">dotText</span>(<span class="hljs-params">&#123;string, fret&#125;</span>) &#123;</span><br><span class="language-javascript">    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(string)</span><br><span class="language-javascript">    <span class="hljs-keyword">if</span> (string === <span class="hljs-number">5</span> &amp;&amp; fret === <span class="hljs-number">3</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;C&#x27;</span></span><br><span class="language-javascript">    <span class="hljs-keyword">if</span> (string === <span class="hljs-number">4</span> &amp;&amp; fret === <span class="hljs-number">2</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;B&#x27;</span></span><br><span class="language-javascript">    <span class="hljs-keyword">if</span> (string === <span class="hljs-number">2</span> &amp;&amp; fret === <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;C&#x27;</span></span><br><span class="language-javascript">  &#125;</span><br><span class="language-javascript">&#125;);</span><br><span class="language-javascript">cChord.<span class="hljs-title function_">setDots</span>([&#123;</span><br><span class="language-javascript">    <span class="hljs-attr">string</span>: <span class="hljs-number">5</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fret</span>: <span class="hljs-number">3</span>,</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">string</span>: <span class="hljs-number">4</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fret</span>: <span class="hljs-number">2</span>,</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">string</span>: <span class="hljs-number">2</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fret</span>: <span class="hljs-number">1</span>,</span><br><span class="language-javascript">  &#125;])</span><br><span class="language-javascript">cChord.<span class="hljs-title function_">render</span>()</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>也可以使用 style 方法，style 方法<strong>需要在 render 后被调用</strong>，可以用来规定特定情况的样式，它的签名如下，满足 filter 的指位会被影响。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-title function_">style</span>(&#123;<br>  filter = (): <span class="hljs-function"><span class="hljs-params">boolean</span> =&gt;</span> <span class="hljs-literal">true</span>, <span class="hljs-comment">// filter 用于进行筛选，它不止可以传递指位，也可以传递</span><br>  text,<br>  fontSize, <span class="hljs-comment">// 文字大小</span><br>  fontFill, <span class="hljs-comment">// 文字颜色</span><br>  ...opts   <span class="hljs-comment">// 各种其他配置，会被应用到指位上，这里的配置好像是来自 svg 的……</span><br>&#125;: &#123;<br>  filter?: <span class="hljs-function">(<span class="hljs-params">position: Position</span>) =&gt;</span> boolean | <span class="hljs-title class_">Record</span>&lt;string, string|number|boolean&gt;;<br>  text?: <span class="hljs-function">(<span class="hljs-params">position: Position</span>) =&gt;</span> string;<br>  fontSize?: number;<br>  fontFill?: string;<br>  [<span class="hljs-attr">key</span>: string]: string | number | <span class="hljs-title class_">Function</span>;<br>&#125;): <span class="hljs-title class_">Fretboard</span><br></code></pre></div></td></tr></table></figure>
+
+<p>比如，我们展示一个开放 G 和弦，其中食指为黄色，中指为蓝色，无名指为红色：</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">figure</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;g-chord&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">figure</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">const</span> gChord = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Fretboard</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#g-chord&#x27;</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">stringWidth</span>: [<span class="hljs-number">1</span>,<span class="hljs-number">1.5</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],</span><br><span class="language-javascript">  <span class="hljs-attr">fretCount</span>: <span class="hljs-number">3</span></span><br><span class="language-javascript">&#125;);</span><br><span class="language-javascript">gChord.<span class="hljs-title function_">setDots</span>([&#123;</span><br><span class="language-javascript">    <span class="hljs-attr">string</span>: <span class="hljs-number">5</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fret</span>: <span class="hljs-number">2</span>,</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">string</span>: <span class="hljs-number">6</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fret</span>: <span class="hljs-number">3</span>,</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">string</span>: <span class="hljs-number">1</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fret</span>: <span class="hljs-number">3</span>,</span><br><span class="language-javascript">  &#125;])</span><br><span class="language-javascript">gChord.<span class="hljs-title function_">render</span>().<span class="hljs-title function_">style</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">filter</span>: <span class="hljs-function">(<span class="hljs-params">&#123;string, fret&#125;</span>) =&gt;</span> string === <span class="hljs-number">5</span> &amp;&amp; fret === <span class="hljs-number">2</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">fill</span>: <span class="hljs-string">&quot;yellow&quot;</span></span><br><span class="language-javascript">&#125;).<span class="hljs-title function_">style</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">filter</span>: <span class="hljs-function">(<span class="hljs-params">&#123;string, fret&#125;</span>) =&gt;</span> string === <span class="hljs-number">6</span> &amp;&amp; fret === <span class="hljs-number">3</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">fill</span>: <span class="hljs-string">&quot;blue&quot;</span></span><br><span class="language-javascript">&#125;).<span class="hljs-title function_">style</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">filter</span>: <span class="hljs-function">(<span class="hljs-params">&#123;string, fret&#125;</span>) =&gt;</span> string === <span class="hljs-number">1</span> &amp;&amp; fret === <span class="hljs-number">3</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">fill</span>: <span class="hljs-string">&quot;red&quot;</span></span><br><span class="language-javascript">&#125;)</span><br></code></pre></div></td></tr></table></figure>
+
+<figure id="g-chord"></figure>
+<script>
+const gChord = new Fretboard({
+  el: '#g-chord',
+  stringWidth: [1,1.5,2,3,4,5],
+  fretCount: 3
+});
+gChord.setDots([{
+    string: 5,
+    fret: 2,
+  },
+  {
+    string: 6,
+    fret: 3,
+  },
+  {
+    string: 1,
+    fret: 3,
+  }])
+gChord.render().style({
+  filter: ({string, fret}) => string === 5 && fret === 2,
+  fill: "yellow"
+}).style({
+  filter: ({string, fret}) => string === 6 && fret === 3,
+  fill: "blue"
+}).style({
+  filter: ({string, fret}) => string === 1 && fret === 3,
+  fill: "red"
+})
+</script>
+
+<p>显然，style 方法的自定义性是最高的。</p>
+<hr>
+<p>关于和弦，各种调式的音阶，CAGED 和 TNPS 系统等，这里就先略过了，因为考虑到我当前没有使用其的需要，且官网示例已经足够丰富。下一步是运用这里学到的东西去描述一下蔡文展的指板系统中每个模块主音分别在 6，5，4，3 弦上的形状。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%90%89%E4%BB%96/">吉他</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06-18%E5%85%B3%E4%BA%8E%E9%9F%B3%E9%98%B6%E7%9A%84%E6%8C%87%E5%9E%8B.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于音阶的指型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06-10%E5%AF%B9Spring%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%9A%84%E7%B4%A2%E5%BC%95.html">
+                        <span class="hidden-mobile">对 Spring 一些工具类的索引</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

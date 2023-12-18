@@ -1,0 +1,434 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="学一下 C#，参考 Learn X in Y minutes 的形式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习 C# Part 1——基础类型，控制流，函数，集合类型">
+<meta property="og:url" content="http://example.com/2022/09-28LearnCSharp_1.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="学一下 C#，参考 Learn X in Y minutes 的形式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-28T07:30:30.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.303Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="C#">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>学习 C# Part 1——基础类型，控制流，函数，集合类型 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="学习 C# Part 1——基础类型，控制流，函数，集合类型">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-09-28 15:30" pubdate>
+        2022年9月28日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">学习 C# Part 1——基础类型，控制流，函数，集合类型</h1>
+            
+            <div class="markdown-body">
+              <p>学一下 C#，参考 Learn X in Y minutes 的形式，后面的部分可能遥遥无期了，混个脸熟先。</p>
+<h1 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h1><figure class="highlight csharp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs csharp"><span class="hljs-comment">// 注释的形式同 Java</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">以及 Scala 等各种 C 系语言</span><br><span class="hljs-comment">文档注释形式后面另说</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-comment">// 打印一行</span><br>Console.WriteLine(<span class="hljs-string">&quot;Hello, World&quot;</span>);<br><br><span class="hljs-comment">// 基本类型包括 byte, short, int, long, double, float, decimal, bool, char</span><br><span class="hljs-comment">// 其中，除 byte 之外所有数字类型都为有符号，byte 默认无符号</span><br><span class="hljs-comment">// 因此另外提供了 sbyte，表示有符号（signed）byte</span><br><span class="hljs-comment">// 其它数字类型提供 uXXX，比如 uint，ulong，表示无符号（unsigned）类型</span><br><span class="hljs-built_in">byte</span> fooByte = <span class="hljs-number">1</span>;<br><span class="hljs-built_in">short</span> fooShort = <span class="hljs-number">32767</span>; <span class="hljs-comment">// 2^15 - 1</span><br><span class="hljs-built_in">long</span> fooLong = <span class="hljs-number">9223372036854775807L</span>; <span class="hljs-comment">// 使用 L 后缀</span><br><br><span class="hljs-comment">// decimal 是 128 位浮点数，使用 m 后缀（就如 float 使用 f 后缀）</span><br><span class="hljs-built_in">decimal</span> fooDecimal = <span class="hljs-number">100.00000123123</span>m;<br><br><span class="hljs-built_in">bool</span> fooBool = <span class="hljs-literal">true</span>; <span class="hljs-comment">// or false</span><br><span class="hljs-built_in">char</span> a = <span class="hljs-string">&#x27;c&#x27;</span>;<br><br><span class="hljs-comment">// 数学运算如 java</span><br>Console.WriteLine(<span class="hljs-number">1</span> + <span class="hljs-number">2</span>);<br>Console.WriteLine(<span class="hljs-number">42</span> != <span class="hljs-number">42</span>);<br>Console.WriteLine(<span class="hljs-number">3</span> / <span class="hljs-number">2</span>);<br>Console.WriteLine(<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">2</span>);<br>Console.WriteLine(<span class="hljs-literal">true</span> ? <span class="hljs-number">1</span> : <span class="hljs-number">2</span>)<br><br><span class="hljs-comment">// 使用 var 让编译器去推断变量类型，var 在某些时候是必须的，当类型没有名字的时候</span><br><span class="hljs-keyword">var</span> someInt = <span class="hljs-number">1</span>;<br><span class="hljs-keyword">var</span> someString = <span class="hljs-string">&quot;rrr&quot;</span>;<br><br><span class="hljs-comment">// 字符串类型 string，同 java 的一样，string 也是引用类型，且不可变。</span><br><span class="hljs-built_in">string</span> foolString = <span class="hljs-string">&quot;hello \t world&quot;</span>;<br><span class="hljs-comment">// 多行字符串的形式，使用@前缀，内容中使用&quot;&quot;来表示&quot;</span><br><span class="hljs-built_in">string</span> multipleLineString = <span class="hljs-string">@&quot;</span><br><span class="hljs-string"># Hello</span><br><span class="hljs-string">Me: &quot;&quot;Hello&quot;&quot;!</span><br><span class="hljs-string">&quot;</span>;<br><br><span class="hljs-comment">// 字符串重载了 []，可以像 js 和 C++一样通过下标访问字符串特定索引的字符</span><br><span class="hljs-built_in">char</span> foolChar =  foolString[<span class="hljs-number">0</span>]; <span class="hljs-comment">// &#x27;h&#x27;</span><br><br><span class="hljs-comment">// 元组类型也是非常重要的，它形式和 kotlin 以及 scala 的一样，且能够进行解构</span><br><span class="hljs-keyword">var</span> (item1, item2, item3) = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br><span class="hljs-keyword">var</span> somePair = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);<br><span class="hljs-comment">// 字符串</span><br><span class="hljs-built_in">string</span> stringA = <span class="hljs-string">&quot;abc&quot;</span>;<br><span class="hljs-built_in">string</span> stringB = <span class="hljs-string">&quot;abc&quot;</span>;<br>Console.WriteLine(stringA == stringB); <span class="hljs-comment">// True,</span><br><span class="hljs-comment">// 注意！ ==的默认行为同 Java，但是可以被重载！</span><br><br><span class="hljs-comment">// 字符串的比较使用 string.Compare（一个静态方法）</span><br><span class="hljs-built_in">string</span>.Compare(<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;HELLO&quot;</span>, StringComparison.OrdinalIgnoreCase);<br><br><span class="hljs-comment">// 格式化</span><br><span class="hljs-built_in">string</span> helloStr = <span class="hljs-built_in">string</span>.Format(<span class="hljs-string">&quot;Hello, &#123;0&#125;&quot;</span>, <span class="hljs-string">&quot;World&quot;</span>); <br><span class="hljs-comment">// 但既然有模板字符串，还用啥格式化呢？</span><br><span class="hljs-built_in">string</span> name = <span class="hljs-string">&quot;Yuuki&quot;</span>;<br><span class="hljs-built_in">string</span> helloStr1 = <span class="hljs-string">$&quot;Hello, $<span class="hljs-subst">&#123;name&#125;</span>&quot;</span>;<br><span class="hljs-comment">// 日期以及格式化</span><br>DateTime fooDate = DateTime.Now;<br>Console.WriteLine(fooDate.ToString(<span class="hljs-string">&quot;hh:mm, dd MMM yyyy&quot;</span>));<br><br><span class="hljs-comment">// 控制结构，如 if，for，while，do-while，switch 语法同 java 一致</span><br><span class="hljs-keyword">if</span> (<span class="hljs-number">42</span> == <span class="hljs-number">42</span>)<br>&#123;<br>    Console.WriteLine(<span class="hljs-string">&quot;correct!&quot;</span>);<br>&#125;<br><span class="hljs-keyword">else</span><br>&#123;<br>    Console.WriteLine(<span class="hljs-string">&quot;never!&quot;</span>);<br>&#125;<br><br><span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">while</span> (i++ &lt; <span class="hljs-number">10</span>)<br>&#123;<br>    Console.WriteLine(<span class="hljs-string">&quot;rrr&quot;</span>);<br>&#125;<br><br><span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">10</span>; j++)<br>&#123;<br>    Console.WriteLine(<span class="hljs-string">&quot;rrr&quot;</span>);<br>&#125;<br><br><span class="hljs-comment">// 高阶 for 循环有单独的关键字 foreach</span><br><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> elem <span class="hljs-keyword">in</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[]&#123; <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> &#125;) <span class="hljs-comment">// 数组字面量，这里的类型 int 可以省去，编译器可以推断</span><br>&#123;<br>    Console.WriteLine(elem);<br>&#125;<br><br><span class="hljs-comment">// 类型转换方法在 Convert 类，以及各个基本类型的方法中</span><br>Console.WriteLine(<span class="hljs-built_in">int</span>.Parse(<span class="hljs-string">&quot;123&quot;</span>));<br>Console.WriteLine(Convert.ToInt32(<span class="hljs-string">&quot;123&quot;</span>));<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="函数定义，Lambda，柯里化"><a href="#函数定义，Lambda，柯里化" class="headerlink" title="函数定义，Lambda，柯里化"></a>函数定义，Lambda，柯里化</h1><figure class="highlight csharp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs csharp"><span class="hljs-comment">// 函数定义，语法同 Java，注意首字母大写（方法也如此），且花括号换行</span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">Hello</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name</span>)</span><br>&#123;<br>    Console.Write(<span class="hljs-string">&quot;Hello, &#123;0&#125;&quot;</span>, name); <span class="hljs-comment">// printf</span><br>&#125;<br>Hello(<span class="hljs-string">&quot;Yuuki&quot;</span>); <span class="hljs-comment">// 函数调用</span><br><br><span class="hljs-comment">// 默认值参数，和不定参数</span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">someFn</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name, <span class="hljs-built_in">int</span> age = <span class="hljs-number">18</span>, <span class="hljs-keyword">params</span> <span class="hljs-built_in">string</span>[] otherParams</span>)</span> &#123;&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">manyArgFn</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> name, <span class="hljs-built_in">int</span> age, <span class="hljs-built_in">string</span> clazz = <span class="hljs-string">&quot;765&quot;</span>, <span class="hljs-built_in">string</span> description = <span class="hljs-string">&quot;&quot;</span></span>)</span> &#123;&#125;<br><br><span class="hljs-comment">// 调用时通过名称来传递参数以跳过默认值参数</span><br>manyArgFn(<span class="hljs-string">&quot;haruka&quot;</span>, <span class="hljs-number">18</span>, description: <span class="hljs-string">&quot;TOP IDOL!&quot;</span>);<br><br><span class="hljs-comment">// 函数的参数还能够使用 ref 和 out 去修饰</span><br><span class="hljs-comment">// ref 表示传递引用（就如 c++的&amp;）</span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">inc</span>(<span class="hljs-params"><span class="hljs-keyword">ref</span> <span class="hljs-built_in">int</span> n</span>)</span><br>&#123;<br>    n = n + <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>;<br>inc(<span class="hljs-keyword">ref</span> i); <span class="hljs-comment">// 调用时必须给定 ref 关键字表示传递引用</span><br>Console.WriteLine(i); <span class="hljs-comment">// 1</span><br><br><span class="hljs-comment">// out 关键字可以认为是一个只写的引用，用来传递函数调用的结果到一个变量中</span><br><span class="hljs-comment">// C#提供的一些类型转换操作使用的就是这种方式，如 int.TryParse，这应该是 C#没有元组的时代返回多个值的处理方式</span><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">TryParseInt</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> str, <span class="hljs-keyword">out</span> <span class="hljs-built_in">int</span> result</span>)</span><br>&#123;<br>    <span class="hljs-keyword">try</span><br>    &#123;<br>        <span class="hljs-keyword">var</span> i1 = <span class="hljs-built_in">int</span>.Parse(str);<br>        result = i1;<br>    &#125;<br>    <span class="hljs-keyword">catch</span> (Exception e)<br>    &#123;<br>        result = <span class="hljs-built_in">int</span>.MinValue;<br>    &#125;<br>&#125;<br><br><span class="hljs-built_in">int</span> result;<br>TryParseInt(<span class="hljs-string">&quot;123&quot;</span>, <span class="hljs-keyword">out</span> result);<br>Console.WriteLine(result);<br><br><span class="hljs-comment">// 也可以即席定义 out 输出的变量……WTF？</span><br>TryParseInt(<span class="hljs-string">&quot;234&quot;</span>, <span class="hljs-keyword">out</span> <span class="hljs-keyword">var</span> result1);<br>Console.WriteLine(result1);<br><br><span class="hljs-comment">// 函数类型如 Java 的函数式接口，这里用了泛型语法，和 Java 的一致</span><br><span class="hljs-comment">// int =&gt; int，或者说 Function&lt;Integer, Integer&gt;</span><br>Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt; doubleFn = n =&gt; &#123; <span class="hljs-keyword">return</span> n * <span class="hljs-number">2</span>; &#125;; <span class="hljs-comment">// 或者 n =&gt; n * 2</span><br><br><span class="hljs-comment">// 函数变量可以直接调用，这是重载了 () 吗？</span><br>Console.WriteLine(doubleFn(<span class="hljs-number">3</span>));<br><br><span class="hljs-comment">// (int, int) =&gt; int，或者说 BiFunction&lt;Integer, Integer, Integer&gt;</span><br>Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt; plus = (x, y) =&gt; x + y;<br><br><span class="hljs-comment">// () =&gt; int, 或者说 Supplier&lt;Integer&gt;</span><br>Func&lt;<span class="hljs-built_in">int</span>&gt; supplier = () =&gt; <span class="hljs-number">42</span>;<br><br><span class="hljs-comment">// int =&gt; void, 或者说 Consumer&lt;Integer&gt;</span><br>Action&lt;<span class="hljs-built_in">int</span>&gt; consumer = (<span class="hljs-built_in">int</span> n) =&gt; Console.Write(<span class="hljs-string">&quot;me a &#123;0&#125;&quot;</span>, n);<br><br><span class="hljs-comment">// 方法引用，直接取名字即可</span><br>Action&lt;<span class="hljs-built_in">string</span>&gt; print = Console.Write;<br><br><span class="hljs-comment">// 函数的参数是逆变的，返回值是协变的，这是说——</span><br><span class="hljs-comment">// 考虑一个函数 object =&gt; string</span><br>Func&lt;<span class="hljs-built_in">object</span>, <span class="hljs-built_in">string</span>&gt; fn0 = obj =&gt; <span class="hljs-string">&quot;42&quot;</span>;<br><br><span class="hljs-comment">// 因为参数是逆变的，且 string 是 object 的子类型，因此 object =&gt; string 是 string =&gt; string 的子类型</span><br><span class="hljs-comment">// 因此，可以把 object =&gt; string 对象赋值给 string =&gt; string 类型变量：</span><br>Func&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">string</span>&gt; fn1 = fn0;<br><br><span class="hljs-comment">// 因为返回值是协变的，且 string 是 object 的子类型，因此 object =&gt; string 是 object =&gt; object 的子类型</span><br><span class="hljs-comment">// 因此，可以把 object =&gt; string 对象赋值给 object =&gt; object 类型变量：</span><br>Func&lt;<span class="hljs-built_in">object</span>, <span class="hljs-built_in">object</span>&gt; fn2 = fn0;<br><br><span class="hljs-comment">// 简单来说，入参可以更狭窄，返回值可以更广泛：</span><br>Func&lt;<span class="hljs-built_in">string</span>, <span class="hljs-built_in">object</span>&gt; fn3 = fn0;<br><br><span class="hljs-comment">// 闭包没有任何限制：</span><br>Func&lt;Func&lt;<span class="hljs-built_in">int</span>&gt;&gt; Counter = () =&gt;<br>&#123;<br>    <span class="hljs-built_in">int</span> count = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">return</span> () =&gt; count++;<br>&#125;;<br><span class="hljs-keyword">var</span> fooCounter = Counter();<br>Console.WriteLine(fooCounter());<br><br><span class="hljs-comment">// 函数变量也可以递归，只要能够容忍警告（建议还是定义函数）</span><br>Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt; fib = <span class="hljs-literal">null</span>;<br>fib = x =&gt; x &lt;= <span class="hljs-number">1</span> ? x : fib(x - <span class="hljs-number">1</span>) + fib(x - <span class="hljs-number">2</span>);<br>Console.WriteLine(fib(<span class="hljs-number">10</span>));<br><br><span class="hljs-comment">// 柯里化形式和 Java 的一样，但调用的时候更舒服一些</span><br>Func&lt;<span class="hljs-built_in">int</span>, Func&lt;<span class="hljs-built_in">int</span>, Func&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>&gt;&gt;&gt; xPyPz = x =&gt; y =&gt; z =&gt; x + y + z;<br>Console.WriteLine(xPyPz(<span class="hljs-number">1</span>)(<span class="hljs-number">2</span>)(<span class="hljs-number">3</span>));<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="集合类型的使用"><a href="#集合类型的使用" class="headerlink" title="集合类型的使用"></a>集合类型的使用</h1><figure class="highlight csharp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs csharp"><span class="hljs-comment">// 数组定义和使用方式和 java 一致</span><br><br><span class="hljs-keyword">using</span> System.Collections;<br><br><span class="hljs-built_in">int</span>[] arr0 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[]&#123;&#125;;<br><span class="hljs-built_in">int</span>[] arr1 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">int</span>[<span class="hljs-number">3</span>] &#123; <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> &#125;;<br><span class="hljs-built_in">int</span>[] arr2 = &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br><br><span class="hljs-built_in">string</span>[] strArr = &#123;<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;world&quot;</span>&#125;;<br><span class="hljs-comment">// 数组是协变的，但编译器会给出警告</span><br><span class="hljs-built_in">object</span>[] objArr = strArr;<br><br><span class="hljs-comment">// 多维数组第一印象可以这么定义</span><br><span class="hljs-built_in">int</span> [][] multiDArr = &#123;<span class="hljs-keyword">new</span> []&#123;<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>&#125;, <span class="hljs-keyword">new</span> []&#123;<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>&#125;&#125;;<br><br><span class="hljs-comment">// 但对于任意维度等长的多维数组，C#提供了原生的方式：</span><br><span class="hljs-built_in">int</span>[,] multiDArr1 = &#123; &#123; <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span> &#125;, &#123; <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span> &#125; &#125;;<br><span class="hljs-comment">// 访问其只需要一个 []：</span><br>Console.WriteLine(multiDArr1[<span class="hljs-number">0</span>, <span class="hljs-number">1</span>]); <span class="hljs-comment">// 1</span><br><br><span class="hljs-comment">// 但什么年代了，谁还用数组呢？</span><br><span class="hljs-comment">// C# 也有一套完整的集合类型，其中包括带泛型和不带泛型各一套，这里只考虑带泛型的版本</span><br><br><span class="hljs-comment">// 对于列表，包括 List&lt;T&gt;（对应 Java 的 ArrayList&lt;T&gt;），Queue&lt;T&gt;，Stack&lt;T&gt;，SortedList&lt;T&gt;，LinkedList&lt;T&gt;，其均和 Java 的类似</span><br><span class="hljs-comment">// 但不像 Java，并没有像 List，Map 这样大而全的接口来作为基类</span><br><span class="hljs-keyword">var</span> a = <span class="hljs-keyword">new</span> List&lt;<span class="hljs-built_in">int</span>&gt;();<br>a.Add(<span class="hljs-number">1</span>);<br>a.Add(<span class="hljs-number">2</span>);<br><span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> i <span class="hljs-keyword">in</span> a)<br>&#123;<br>    Console.WriteLine(i);<br>&#125;<br><br><span class="hljs-comment">// 列表可以用对象初始化器语法构造，其将被编译成一连串 Add 调用（如何实现的？）</span><br><span class="hljs-keyword">var</span> b = <span class="hljs-keyword">new</span> List&lt;<span class="hljs-built_in">int</span>&gt;<br>&#123;<br>    <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span><br>&#125;;<br><br><span class="hljs-comment">// 然后是 Set 和 Map，在 C#中 Set 包括 HashSet，SortedSet，Map 包括 Dictionary，SortedDictionary，容易发现和 Java 版本的对应关系</span><br><span class="hljs-comment">// 同样可以使用对象初始化器构造，其都分别调用各自的 Add 方法</span><br><span class="hljs-keyword">var</span> someSet = <span class="hljs-keyword">new</span> HashSet&lt;<span class="hljs-built_in">int</span>&gt;<br>&#123;<br>    <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span><br>&#125;;<br><span class="hljs-comment">// Map 的 Add 方法有两个参数 key 和 value，使用数组的形式去包裹</span><br><span class="hljs-keyword">var</span> someMap = <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">string</span>&gt;<br>&#123;<br>    &#123;<span class="hljs-number">1</span>, <span class="hljs-string">&quot;hello&quot;</span>&#125;,<br>    &#123;<span class="hljs-number">2</span>, <span class="hljs-string">&quot;world&quot;</span>&#125;<br>&#125;;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="map-filter-reduce"><a href="#map-filter-reduce" class="headerlink" title="map-filter-reduce"></a>map-filter-reduce</h1><figure class="highlight csharp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs csharp"><span class="hljs-comment">// IEnumerable 接口中提供了 map-filter-reduce 等方法，使 C#对函数式编程有很舒服的支持（更酷炫的在后面）</span><br><span class="hljs-comment">// 并且，这些操作均是惰性的，也就是说其将有同 Java 的 Stream 一样的性能</span><br><span class="hljs-comment">// Map 和数组也继承了该接口</span><br><span class="hljs-keyword">var</span> lst = <span class="hljs-keyword">new</span> List&lt;<span class="hljs-built_in">int</span>&gt;<br>&#123;<br>  <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>  <br>&#125;;<br><span class="hljs-keyword">var</span> map = <span class="hljs-keyword">new</span> Dictionary&lt;<span class="hljs-built_in">int</span>, <span class="hljs-built_in">string</span>&gt;<br>&#123;<br>  &#123;<span class="hljs-number">1</span>, <span class="hljs-string">&quot;hello&quot;</span>&#125;,<br>  &#123;<span class="hljs-number">2</span>, <span class="hljs-string">&quot;world&quot;</span>&#125;,<br>&#125;;<br><br><span class="hljs-comment">// map 即 Select 方法，对每个元素进行同样操作</span><br><span class="hljs-keyword">var</span> lstPlus1 = lst.Select(i =&gt; i + <span class="hljs-number">1</span>).ToList(); <span class="hljs-comment">// [2, 3, 4, 5, 6]</span><br><span class="hljs-keyword">var</span> keys = map.Select(pair =&gt; <span class="hljs-comment">// [1, 2]</span><br>&#123;<br>  <span class="hljs-comment">// 解构语法！</span><br>  <span class="hljs-keyword">var</span> (key, <span class="hljs-keyword">value</span>) = pair;<br>  <span class="hljs-keyword">return</span> key;<br>&#125;).ToList();<br><br><span class="hljs-comment">// flatMap 即 SelectMany 方法，对每个元素进行同样操作得到一个集合，将所有集合展平作为结果</span><br><span class="hljs-keyword">var</span> doubleList = lst.SelectMany(i =&gt; <span class="hljs-keyword">new</span>[] &#123; i, i &#125;).ToList(); <span class="hljs-comment">//  [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]</span><br><br><span class="hljs-comment">// filter 即 Where 方法，对集合进行筛选，筛选出满足条件的新元素组成集合</span><br><span class="hljs-keyword">var</span> oddList = lst.Where(i =&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>).ToList(); <span class="hljs-comment">// [1, 3, 5]</span><br><br><span class="hljs-comment">// reduce 即 Aggregate 方法，顾名思义，将整个集合折叠成一个值，C#似乎只有左折叠</span><br><span class="hljs-keyword">var</span> lstSum = lst.Aggregate(<span class="hljs-number">0</span>, (acc, x) =&gt; acc + x); <span class="hljs-comment">// 15</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="LINQ-的使用"><a href="#LINQ-的使用" class="headerlink" title="LINQ 的使用"></a>LINQ 的使用</h1><figure class="highlight csharp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs csharp"><span class="hljs-comment">// LINQ，C#提供的一种类似 SQL 的对数组，数据库，以及其它种类数据进行查询的方式</span><br><span class="hljs-comment">// LINQ 其本质类似 Scala 的 for 语句，或 Haskell 的 do 语句，也就是说，它能够用来操作 Monad</span><br><span class="hljs-comment">// 这里只学习能使用 flatMap 以及 map 描述的部分</span><br><span class="hljs-keyword">var</span> nums = <span class="hljs-keyword">new</span> [] &#123;<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>&#125;;<br><span class="hljs-comment">// 基本使用类似于：</span><br>IEnumerable&lt;<span class="hljs-built_in">int</span>&gt; someQuery0 = <br>    <span class="hljs-keyword">from</span> num <span class="hljs-keyword">in</span> nums <br>    <span class="hljs-keyword">where</span> num % <span class="hljs-number">2</span> == <span class="hljs-number">0</span><br>    <span class="hljs-keyword">select</span> num + <span class="hljs-number">1</span>;<br><span class="hljs-comment">// 其对应下面语句：</span><br><span class="hljs-keyword">var</span> someQuery1 =<br>    nums.Where(num =&gt; num % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) <span class="hljs-comment">// 或者仅用一个 SelectMany 描述</span><br>        .Select(num =&gt; num + <span class="hljs-number">1</span>);<br><br><span class="hljs-comment">// 当然，若仅能操作单个集合，那就有点弱智了，我们可以给两个数组做个 join：</span><br><span class="hljs-keyword">var</span> nums2 = <span class="hljs-keyword">new</span>[] &#123; <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span> &#125;;<br><span class="hljs-keyword">var</span> someQuery2 =<br>    <span class="hljs-function"><span class="hljs-keyword">from</span> num1 <span class="hljs-keyword">in</span> nums</span><br><span class="hljs-function">    <span class="hljs-keyword">from</span> num2 <span class="hljs-keyword">in</span> nums2</span><br><span class="hljs-function">    <span class="hljs-title">where</span> (<span class="hljs-params">num1 + num2</span>) % 2</span> == <span class="hljs-number">0</span><br>    <span class="hljs-keyword">select</span> (num1, num2);<br><span class="hljs-comment">// 等价于：</span><br><span class="hljs-keyword">var</span> someQuery3 =<br>    nums.SelectMany(num1 =&gt;<br>        nums2.Where(num2 =&gt; (num1 + num2) % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) <span class="hljs-comment">// 或者用一个 SelectMany 描述</span><br>            .Select(num2 =&gt; (num1, num2)));<br><br><span class="hljs-comment">// 但 LINQ 的功能更多，它还有 join，order by，group by 等语法，这就无法单纯使用 flatMap 去描述了，这里先不表</span><br><span class="hljs-comment">// 但应该都可以描述成为两个/多个集合做笛卡尔积后进行各种操作</span><br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/C/">C#</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10-05LearnZodByExamole.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Learn Zod By Examole</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09-11%E5%85%B3%E4%BA%8E%E6%9C%80%E8%BF%91%E7%9A%84%E6%80%BB%E7%BB%93%E5%92%8C%E5%B1%95%E6%9C%9B.html">
+                        <span class="hidden-mobile">关于最近的总结和展望</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

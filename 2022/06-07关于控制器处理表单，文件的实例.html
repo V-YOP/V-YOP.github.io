@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在之前的实践中一直都是用的 json 来作为前后端交互的格式，而公司的项目中有些地方使用了表单和文件，这点我还不太熟悉，因此来了解一下 Sprinng MVC 处理表单和文件的方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Spring MVC 处理 form 和文件的实例">
+<meta property="og:url" content="http://example.com/2022/06-07%E5%85%B3%E4%BA%8E%E6%8E%A7%E5%88%B6%E5%99%A8%E5%A4%84%E7%90%86%E8%A1%A8%E5%8D%95%EF%BC%8C%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%9E%E4%BE%8B.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="在之前的实践中一直都是用的 json 来作为前后端交互的格式，而公司的项目中有些地方使用了表单和文件，这点我还不太熟悉，因此来了解一下 Sprinng MVC 处理表单和文件的方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-07T11:30:54.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.299Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="Real World">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 Spring MVC 处理 form 和文件的实例 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 Spring MVC 处理 form 和文件的实例">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-06-07 19:30" pubdate>
+        2022年6月7日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      9.1k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 Spring MVC 处理 form 和文件的实例</h1>
+            
+            <div class="markdown-body">
+              <h1 id="关于-MediaType"><a href="#关于-MediaType" class="headerlink" title="关于 MediaType"></a>关于 MediaType</h1><p>在此之前，得先了解下 HTTP 的 MediaType，<strong>MediaType 用来标识内容，即请求体和响应体的编码格式</strong>，HTTP 请求的 Header 中的 Accept 和 Content-Type，HTTP 响应的 Header 中的 Content-Type 都使用 MediaType 来标识，其中 Accept 表示请求者希望响应者发送的数据的格式，Content-Type 代表请求体和响应体的内容格式，一些<strong>最</strong>常见的格式见下。</p>
+<blockquote>
+<p><strong>GET 请求不应当携带请求体！</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">MediaType</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">text&#x2F;html</td>
+<td align="left">HTML 文本</td>
+</tr>
+<tr>
+<td align="center">text&#x2F;plain</td>
+<td align="left">纯文本，空格转换为+</td>
+</tr>
+<tr>
+<td align="center">application&#x2F;json</td>
+<td align="left">序列化的 JSON 格式</td>
+</tr>
+<tr>
+<td align="center">application&#x2F;x-www-form-urlencoded</td>
+<td align="left">键值对形式</td>
+</tr>
+<tr>
+<td align="center">multipart&#x2F;form-data</td>
+<td align="left">似乎啥都有</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>MediaType 包含三个部分——type，subtype 和 charset，其中 type 是&#x2F;前的值，subtype 是&#x2F;后的值，比如对于 text&#x2F;html，它的全格式是 <code>text/html; charset=UTF-8</code>，它的 type 是 text，subtype 是 html。</p>
+</blockquote>
+<p>在这里，<code>application/x-www-form-urlencoded</code>和<code>multipart/form-data</code>是这篇笔记的主角。</p>
+<h1 id="x-www-form-urlencoded"><a href="#x-www-form-urlencoded" class="headerlink" title="x-www-form-urlencoded"></a>x-www-form-urlencoded</h1><p>application&#x2F;x-www-form-urlencoded 是最经典的格式了，它是键值对集合，其中键和值使用&#x3D;分隔，键值对之间使用&amp;分隔。容易意识到，URL 中？后面的部分就是这种格式，而实际上确实如此。</p>
+<p>application&#x2F;x-www-form-urlencoded 是浏览器原生发送表单的默认格式，比如当前端编写这样的表单时，默认发送的就是这样的格式。<strong>application&#x2F;x-www-form-urlencoded 对于 GET 请求和 POST 请求，其行为不一样，处理方法也不一样</strong>。</p>
+<p>form 元素有两个属性，method 和 enctype 需要配置，method 默认是 get，enctype 默认是 application&#x2F;x-www-form-urlencoded，但对于 GET 请求，enctype 是无效的，</p>
+<h2 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h2><p>考虑下面这个表单。</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;//localhost:8080/something&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>firstName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;fname&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>lastName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;lname&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;Submit&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>点击按钮后，会发出这样的请求，其中<strong>表单数据通过请求体去发送了</strong>，因此有 Content-Type。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs makefile">POST /something2 HTTP/1.1<br><span class="hljs-section">Host: localhost:8080</span><br><span class="hljs-section">Content-Type: application/x-www-form-urlencoded</span><br><span class="hljs-section">Content-Length: 23</span><br>......<br></code></pre></div></td></tr></table></figure>
+
+<p>相应接口的编写有这几种方式，可以看到这里<strong>一直都使用 RequestParam 去接受参数</strong>，这可能有些反直觉，因为在之前的实践中，我是认为 RequestParam 是专门用于获取 ? 后面的 kv 对的。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE 可以省略</span><br><span class="hljs-meta">@PostMapping(value = &quot;/something&quot;, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)</span><br>String <span class="hljs-title function_">something</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam</span> String fname, <span class="hljs-meta">@RequestParam</span> String lname)</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br><br><span class="hljs-meta">@PostMapping(value = &quot;/something1&quot;)</span><br>String <span class="hljs-title function_">something2</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam</span> Map&lt;String, Object&gt; kvPairs)</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br><br><span class="hljs-comment">// 使用 RequestBody 就是破坏游戏规则了——这里它不管是什么 Content-Type，直接拿到原始数据，在这里是</span><br><span class="hljs-comment">// fname=hello&amp;lname=world</span><br><span class="hljs-meta">@PostMapping(value = &quot;/something2&quot;)</span><br>String <span class="hljs-title function_">something1</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> String body)</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h2><p>然后看 get，考虑下面的这个表单。</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;//localhost:8080/something&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>firstName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;fname&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>lastName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;lname&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;Submit&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>点击 submit 后，会发出这个请求：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs curl">GET /something?fname=hello&amp;lname=world HTTP/1.1<br>Host: localhost:8080<br>...... 总之没有 Content-type<br></code></pre></div></td></tr></table></figure>
+
+<p>需注意：<strong>请求中没有 Content-type 属性，该表单的数据通过 url 传递</strong>！</p>
+<p>因此，对于使用 get 请求的表单，相应的接口需这样编写：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(value = &quot;/something&quot;)</span><br>Object <span class="hljs-title function_">something</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam</span> String fname, <span class="hljs-meta">@RequestParam</span> String lname)</span> &#123;<br>  <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>可见，其编写方式和暴露一个普通的 GET 接口别无二致。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于 x-www-form-urlencoded，无论是 GET 请求还是 POST 请求，都使用 RequestParam 去拿到参数，最好应显式指定要接受的 MediaType。</p>
+<h1 id="form-data"><a href="#form-data" class="headerlink" title="form-data"></a>form-data</h1><p>form-data 也是键值对集合，但其相较于 x-www-form-urlencoded，能够方便地传递二进制数据（特别是文件），下面的实例不考虑 GET 请求。</p>
+<p>考虑下面这样的表单。</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;//localhost:8080/form&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">&quot;multipart/form-data&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>firstName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;fname&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>lastName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;lname&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>file: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;Submit&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>点击 submit 按钮时，发送的请求的请求头如下：</p>
+<figure class="highlight http"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/form</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>localhost:8080<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate, br<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>multipart/form-data; boundary=---------------------------54702276814275734151962949294<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>272849<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://localhost:8081<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>keep-alive<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://localhost:8081/<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>_ga=GA1.1.1104277080.1651411886<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><span class="hljs-attribute">Sec-Fetch-Dest</span><span class="hljs-punctuation">: </span>document<br><span class="hljs-attribute">Sec-Fetch-Mode</span><span class="hljs-punctuation">: </span>navigate<br><span class="hljs-attribute">Sec-Fetch-Site</span><span class="hljs-punctuation">: </span>same-site<br><span class="hljs-attribute">Sec-Fetch-User</span><span class="hljs-punctuation">: </span>?1<br></code></pre></div></td></tr></table></figure>
+
+<p>请求体如下：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs fortran">-----------------------------<span class="hljs-number">54702276814275734151962949294</span><br>Content-Disposition: <span class="hljs-keyword">form</span>-<span class="hljs-keyword">data</span>; <span class="hljs-keyword">name</span>=<span class="hljs-string">&quot;fname&quot;</span><br><br>hello<br>-----------------------------<span class="hljs-number">54702276814275734151962949294</span><br>Content-Disposition: <span class="hljs-keyword">form</span>-<span class="hljs-keyword">data</span>; <span class="hljs-keyword">name</span>=<span class="hljs-string">&quot;lname&quot;</span><br><br>world<br>-----------------------------<span class="hljs-number">54702276814275734151962949294</span><br>Content-Disposition: <span class="hljs-keyword">form</span>-<span class="hljs-keyword">data</span>; <span class="hljs-keyword">name</span>=<span class="hljs-string">&quot;file&quot;</span>; filename=<span class="hljs-string">&quot;DC03A61BC35DBE767234514D3184BC84.jpg&quot;</span><br>Content-<span class="hljs-keyword">Type</span>: image/jpeg<br><br>...<br></code></pre></div></td></tr></table></figure>
+
+<p>处理其的接口如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@PostMapping(value = &quot;/form&quot;, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br>String <span class="hljs-title function_">form</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam</span> String lname, <span class="hljs-meta">@RequestParam</span> String fname, <span class="hljs-meta">@RequestPart</span> MultipartFile file)</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>可见，这里使用 RequestPart 去拿到值，文件使用 MultipartFile 去拿。但仍旧可以使用 RequestParam，下面对注释的摘录介绍了 Requestparam 和 RequestPart 的区别：</p>
+<blockquote>
+<p>In Spring MVC, “request parameters” map to query parameters, form data, and parts in multipart requests. This is because the Servlet API combines query parameters and form data into a single map called “parameters”, and that includes automatic parsing of the request body.</p>
+<p>Note that @RequestParam annotation can also be used to associate the part of a “multipart&#x2F;form-data” request with a method argument supporting the same method argument types. The main difference is that when the method argument is not a String or raw MultipartFile &#x2F; Part, @RequestParam relies on type conversion via a registered Converter or PropertyEditor while RequestPart relies on HttpMessageConverters taking into consideration the ‘Content-Type’ header of the request part. RequestParam is likely to be used with name-value form fields while RequestPart is likely to be used with parts containing more complex content e.g. JSON, XML).</p>
+</blockquote>
+<p>一些更复杂的使用需参考官方文档（tmd 这里全是宝啊！），有两点需注意：</p>
+<ul>
+<li>form-data 和 x-www-form-urlencoded 都允许重名的参数，可以通过 List 去全部获取到（<strong>需要使用 RequestParam</strong>）</li>
+<li>多个文件能在同一个参数里，同一个参数的所有文件通过<code>List&lt;MultipartFile&gt;</code>去获取到，所有文件通过<code>MultiValueMap&lt;String, MultipartFile&gt;</code>去获取到（<strong>需要用 RequestParam</strong>）</li>
+</ul>
+<p>另外，对于这两种表单类型，想使用自定义类型（包括 Map）去接受参数时 Spring 会抱怨<code>no matching editors or conversion strategy found</code>，需要去在控制器中去自定义相应带 InitBinder 注解的方法并（定义和）注册相应 PropertyEditor，下面的代码注册了一个从字符串到 SomeBean 的 Binder，<strong>这个配置仅用于获取 query param 或 form data，使用 RequestBody 时不会被影响</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// SomeBean.class</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeBean</span> &#123;<br>    <span class="hljs-keyword">public</span> String a;<br>    <span class="hljs-keyword">public</span> String b;<br>&#125;<br><br><span class="hljs-meta">@InitBinder</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">initBinder</span><span class="hljs-params">(WebDataBinder binder)</span> &#123;<br>    <span class="hljs-type">JsonMapper</span> <span class="hljs-variable">jsonMapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">JsonMapper</span>();<br>    binder.registerCustomEditor(SomeBean.class, <span class="hljs-keyword">new</span> <span class="hljs-title class_">PropertyEditorSupport</span>() &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setAsText</span><span class="hljs-params">(String text)</span> <span class="hljs-keyword">throws</span> IllegalArgumentException &#123;<br>            System.out.println(<span class="hljs-string">&quot;rua!!!!!!!!&quot;</span>);<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-built_in">super</span>.setValue(jsonMapper.readValue(text, SomeBean.class));<br>            &#125; <span class="hljs-keyword">catch</span> (JsonProcessingException e) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e);<br>            &#125;<br>        &#125;<br>    &#125;);<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>只要定义了类型 T 的<code>PropertyEditor</code>，则对<code>List&lt;T&gt;</code> Spring MVC 也能处理。</p>
+<h1 id="关于文件的下载"><a href="#关于文件的下载" class="headerlink" title="关于文件的下载"></a>关于文件的下载</h1><p>前端上传文件说到底只有通过表单以 MultipartFile 上传这一种方式，而下载文件的方法也是需要学习的，Spring MVC 向前端返回文件有数种方式，这里都列举一下。</p>
+<h2 id="HttpServletResponse"><a href="#HttpServletResponse" class="headerlink" title="HttpServletResponse"></a>HttpServletResponse</h2><p>直接把 InputStream 写入 HttpServletResponse 的流是使用最多，但最不优雅的方式，如果要使用它的话，就必须得把 HttpServletResponse 传递到服务层（如果保证控制器层不负责业务的话），这实在让人难以接受：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">fileName</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;...&quot;</span>;<br><span class="hljs-keyword">try</span>(<span class="hljs-type">InputStream</span> <span class="hljs-variable">fileStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;...&quot;</span>);<br>    <span class="hljs-type">ServletOutputStream</span> <span class="hljs-variable">stream</span> <span class="hljs-operator">=</span> response.getOutputStream()) &#123;<br>    response.setContentType(<span class="hljs-string">&quot;application/octet-stream&quot;</span>);<br>    response.setCharacterEncoding(<span class="hljs-string">&quot;utf-8&quot;</span>);<br>    response.setHeader(<span class="hljs-string">&quot;Content-disposition&quot;</span>, <span class="hljs-string">&quot;attachment; filename=&quot;</span> + URLEncoder.encode(fileName, <span class="hljs-string">&quot;UTF-8&quot;</span>));<br>    StreamUtils.copy(fileStream, stream); <span class="hljs-comment">// 这个函数来自 org.springframework.util.StreamUtils，用于把输入流的值写到输出流</span><br>&#125; <br></code></pre></div></td></tr></table></figure>
+
+<h2 id="Resource，byte"><a href="#Resource，byte" class="headerlink" title="Resource，byte[]"></a>Resource，byte[]</h2><p><code>org.springframework.core.io.Resource</code>可以用来返回文件，可能常用的实现包括<code>ByteArrayResource</code>，<code>ClassPathResource</code>，<code>FileSystemResource</code>，<code>InputStreamResource</code>。虽然是题外话，但 <strong>Resource 类读取文件非常方便，应当代替直接使用 ClassLoader 去读取文件的行为</strong>。</p>
+<blockquote>
+<p>虽然<code>ClassPathResource</code>，<code>FileSystemResource</code>能拿到文件名，<strong>但是 Spring 仍会将其当作<code>text/html</code>来返回</strong>！</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(value = &quot;/resource&quot;)</span><br>Resource <span class="hljs-title function_">resource</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">ClassPathResource</span> <span class="hljs-variable">resource</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassPathResource</span>(<span class="hljs-string">&quot;application.properties&quot;</span>);<br>    <span class="hljs-keyword">return</span> resource;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>也可以直接返回<code>byte[]</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(value = &quot;/byteArr&quot;)</span><br><span class="hljs-type">byte</span>[] byteArr() <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello&quot;</span>.getBytes(StandardCharsets.UTF_8);<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这两种都会默认按<code>text/html</code>去返回，如果想要它们返回文件，则需要在注解上添加<code>produces = MediaType.APPLICATION_OCTET_STREAM_VALUE</code>，这样虽然能让用户去下载到文件，但是<strong>文件名是无法修改的</strong>，这显然不太合适。</p>
+<p>InputStream 作为返回值似乎是非法的。</p>
+<h2 id="ResponseEntity"><a href="#ResponseEntity" class="headerlink" title="ResponseEntity"></a>ResponseEntity</h2><p>要想自定义文件名，就需要能够对响应头进行更多自定义，如果不想注入 HttpResponse，就只能去返回一个 ResponseEntity 了，而 ResponseEntity 用于返回文件是轻而易举的：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/resource&quot;)</span><br>ResponseEntity&lt;Resource&gt; <span class="hljs-title function_">entity</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Resource</span> <span class="hljs-variable">file</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassPathResource</span>(<span class="hljs-string">&quot;aloha.txt&quot;</span>);<br>    <span class="hljs-keyword">return</span> ResponseEntity.ok()<br>            .headers(header -&gt; &#123;<br>                header.setContentDisposition(<br>                    ContentDisposition.attachment()<br>                        .filename(file.getFilename()).build());<br>                header.setContentType(MediaType.APPLICATION_OCTET_STREAM);<br>            &#125;)<br>            .body(file);<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>我觉着这几乎是最友好的解决方案了，全程都没有使用魔法常量，并且符合通过返回值来回应前端请求这样的直觉，或许这就是最佳实践。</p>
+<hr>
+<p>实际上可以再发散一下，操作文件总是和操作流有着密不可分的关系，Spring 对流作为请求体这种情景有很好的支持，包括但不限于异步等的支持，对其进行学习是有些必要的。</p>
+<p>这里其实还有一个比较重要的问题：上面所介绍的方法在 OpenFeign 中可用吗？之后再说吧。</p>
+<h1 id="参考阅读"><a href="#参考阅读" class="headerlink" title="参考阅读"></a>参考阅读</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/456921996">知乎：HTTP GET 请求可以有 body 吗？</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013827143/article/details/86222486">CSDN：form-data 和 x-www-form-urlencoded 的区别</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-multipart-forms">Spring MVC 官方文档中关于 Multipart 的内容</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-initbinder">Spring MVC 官方文档中关于 Data Binder 的内容</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/6463916/spring-mvc-no-matching-editors-or-conversion-strategy-found">Spring MVC no matching editors or conversion strategy found</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-async-output-stream">Spring MVC 官方文档中关于 HTTP 流的内容</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Spring/">Spring</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Real-World/">Real World</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06-08%E5%85%B3%E4%BA%8EExcel%E7%9A%84%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 Excel 的导入导出</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06-01log4j2%E9%85%8D%E7%BD%AE%E5%AE%9E%E8%B7%B5.html">
+                        <span class="hidden-mobile">log4j2 配置实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

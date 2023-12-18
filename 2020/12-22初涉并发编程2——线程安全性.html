@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="此节讲述如何通过同步避免多个线程同一时刻访问相同的数据。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初涉并发编程 2——线程安全性">
+<meta property="og:url" content="http://example.com/2020/12-22%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B2%E2%80%94%E2%80%94%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="此节讲述如何通过同步避免多个线程同一时刻访问相同的数据。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s3.ax1x.com/2020/12/22/rDeJHg.png">
+<meta property="article:published_time" content="2020-12-22T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.280Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="并发">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s3.ax1x.com/2020/12/22/rDeJHg.png">
+  
+  
+  <title>初涉并发编程 2——线程安全性 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="初涉并发编程 2——线程安全性">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-22 08:00" pubdate>
+        2020年12月22日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">初涉并发编程 2——线程安全性</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<h1 id="线程安全性"><a href="#线程安全性" class="headerlink" title="线程安全性"></a>线程安全性</h1><p>此章节讲解线程安全性以及 Java 提供的一些加锁机制。</p>
+<h2 id="多线程程序编写的核心"><a href="#多线程程序编写的核心" class="headerlink" title="多线程程序编写的核心"></a>多线程程序编写的核心</h2><p>线程和锁之于并发编程，就如工字钢和铆钉之于房屋建筑。要想建筑坚固，钢材和铆钉的正确使用是必要的。要编写<strong>线程安全</strong>的代码，<strong>其核心就在于要对状态访问操作进行管理，特别是对共享的（shared）和可变的（Mutable）状态的访问</strong>。这里的状态指的是存储在状态变量（如静态&#x2F;实例域）中的数据。其也可能包括其他依赖对象的域，比如 Map 的状态不仅保存在 HashMap 对象本身，也抱存在无数个 Map.Entry 对象中。对象的状态包含任何<strong>外部可见</strong>的数据。</p>
+<p>“共享”意味着对象能够被多个线程<strong>同时</strong>访问，“可变”指对象的值在生命周期内会发生变化。线程安全要求各线程以同步机制来协调对可变状态的访问。</p>
+<p><del>Java 提供的主要同步机制是 synchronized 关键字，但是 volatile，显式锁（Explicit Lock）和原子变量等也是同步机制的一部分。</del>（这句话可能已经过时了）</p>
+<h2 id="线程安全类"><a href="#线程安全类" class="headerlink" title="线程安全类"></a>线程安全类</h2><p>当访问一个可变状态又没有使用合适的同步，就容易出现错误，有三种方法修复它——</p>
+<ol>
+<li>不共享该状态</li>
+<li>更改其为不可变状态</li>
+<li>使用同步机制（大多数情况下……只有这个选择了吧）</li>
+</ol>
+<p>这些方法或许会导致代码的重大更改，所以应当<strong>从一开始就设计一个线程安全的类</strong>。同时，<strong>良好的封装</strong>也让线程安全更容易实现——访问某个变量的代码越少，越容易确保对变量的访问实现正确同步。然后，性能优化只有在必须优化，且优化必定有效果时才进行。“提前优化是万恶之源”。</p>
+<p>（我认为）线程安全类可以这样定义——<strong>其实际行为和其应当的行为完全一致，而无论单线程环境或是多线程环境，无论不同线程对其的调用顺序如何，无论有无采取同步机制</strong>。也就是说，不需要外界的程序（类）进行任何额外的同步或协同操作，这个类总是正确工作的（其实这时候在外界看来，线程安全类提供的所有操作都是原子的）。</p>
+<p>无状态的对象一定是线程安全的，因为它和其它对象没有共享状态，各玩各的，不会相互影响。</p>
+<h2 id="加锁机制"><a href="#加锁机制" class="headerlink" title="加锁机制"></a>加锁机制</h2><p>（注意，这里说的是机制，它并不局限于语言！）</p>
+<p>线程安全性要求，多个线程之间的操作无论采用何种执行时序或交替方式，都要保证<strong>不变性</strong>不被破坏。（“不变”是指在某个线程执行该操作的这整个周期中不变）</p>
+<p>考虑下面的代码，它描述了一个非线程安全的 Servlet，其功能为返回一个整型变量的因数分解（它是一个数组），同时缓存上一次的值，如果为同一个值，则直接返回缓存中的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@NotThreadSafe</span> <span class="hljs-comment">// 这是作者定义的注解，只起描述作用</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UnsafeCachingFactorizer</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Servlet</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> AtomicReference&lt;BigInteger&gt; lastNumber = <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicReference</span>&lt;&gt;(); <span class="hljs-comment">// 先无论这是什么玩意</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> AtomicReference&lt;BigInteger[]&gt; lastFactors = <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicReference</span>&lt;&gt;();<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">service</span><span class="hljs-params">(ServletRequest reg, ServletResponse resp)</span> &#123;<br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> extractFromRequest(reg);<br>        <span class="hljs-keyword">if</span> (i.equals(lastNumber.get())) <span class="hljs-comment">// 缓存命中</span><br>            encodeIntoResponse(resp, lastFactors.get()); <span class="hljs-comment">// 这些原子类的所有操作都是原子的</span><br>        <span class="hljs-keyword">else</span> &#123;<br>            BigInteger[] factors = factor(i);<br>            lastNumber.set(i);<br>            lastFactors.set(factors);<br>            encodeIntoResponse(resp, factors);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里的不变性的条件之一是，lastNumber 缓存的值的因数之积应当等于 lastFactors 中的值（这个条件在一个线程执行这个操作的整个周期中都不能被改变），这里显然是线程不安全的。通过加锁机制，可以简单地为操作提供原子性，从而保证线程安全性。</p>
+<h3 id="内置锁"><a href="#内置锁" class="headerlink" title="内置锁"></a>内置锁</h3><p>Java 提供了一种内置的锁来支持原子性——同步代码块（Synchronized Block）。它可以作为关键字来修饰一个方法（对于静态方法，它使用 Class 对象作为对象，对于实例方法，使用 this 来作为对象），也可以以这种形式来规定一个代码块，这里的 lock 可以是任何类型的对象（书中说是 Class 对象，我觉得是翻译错误，它没理由接受一个<code>java.lang.Class</code>对象）——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">synchronized</span> (lock) &#123;<br>    . . .<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里对象的作用是提供一个实现同步的锁，他称为<strong>内置锁</strong>（Intrinsic Lock）或<strong>监视器锁</strong>（Monitor Lock，这个似乎是用的更多的术语）。<strong>该锁为其保护起来的代码块提供原子性——每次只能有一个线程执行代码块</strong>。当有一个线程进入该代码块，它将获得该代码块的锁，即使该线程被切换出去，其它线程也无法进入代码块，直到该线程执行完代码块并释放锁。因此，这里的一组语句是作为一个<strong>不可分割的单元</strong>执行的。</p>
+<p>上面的 Servlet 中的 service 方法如果使用 synchronized 关键字修饰的话，就能正确地缓存了——每一时刻仅有一个线程能执行该方法，但是它的并发性是非常糟糕的（不过这不是线程安全问题，是性能问题），因为当多个请求到来的时候，它只能串行处理，即使有多处理器也无济于事。</p>
+<p>内置锁是可<strong>重入</strong>的，也就是说，<strong>一个线程如果持有了一个对象的锁，它还能再次获取这个对象的锁并保证不会发生死锁</strong>。重入的一个实现是给锁关联一个计数器和其所有者线程，如果计数器值为 0 则说明其未被持有，当线程请求一个未被持有的锁时，JVM 记录锁的持有者，将计数器值设为 1, 如果该线程再次请求，则计数器递增，每次退出代码块时，计数器递减，计数器为 0 时锁被释放。</p>
+<blockquote>
+<p>可重入锁的粒度是“线程”而不是“调用”。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 因为对象锁是可重入的，所以这样使用不会产生死锁。</span><br><span class="hljs-comment">// 这里把 doSomething 方法设为实例方法而非静态方法，是因为如果是静态方法，则相当于是先获取 Son 的 Class 对象锁（这个似乎叫类锁？），再获取 Super 的 Class 对象锁，它只能证明一个线程能同时持有多个锁，而不能证明内置锁是可重入的。</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Super</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;do something&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Son</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Super</span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;do some preparation&quot;</span>);<br>        <span class="hljs-built_in">super</span>.doSomething();<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Son</span>().doSomething();<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 上面的例子不明显，换一个</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>            <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>                <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>                    <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>                        <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>                            System.out.println(<span class="hljs-string">&quot;hello, world!&quot;</span>);<br>                        &#125;<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="用锁保护状态"><a href="#用锁保护状态" class="headerlink" title="用锁保护状态"></a>用锁保护状态</h2><p>锁要求其保护的代码被串行访问，因此可以通过锁构造一些<strong>协议</strong>来实现对共享状态的独占访问（就如上面的 Servlet 中的缓存）。</p>
+<p><strong>访问共享对象的复合操作必须是原子操作以避免产生竞态条件</strong>。如果用同步来协调对某个变量的访问，则在访问该变量的所有位置都应当使用同步。当使用锁来协调对某个变量的访问时，在访问变量的所有地方都应当使用同一个锁。这种情况下，称状态变量被这个锁<strong>保护</strong>。<strong>如果对象的不变性涉及多个状态变量时，不变性条件中的每一个变量都必须被同一个锁保护</strong>。</p>
+<p>一种约定是，<strong>将所有可变状态封装到对象的内部并通过内置锁对所有访问可变状态的代码路径进行同步以避免并发访问</strong>。这种加锁协议是非强制的。</p>
+<p>为什么不给每一个方法都设置<code>synchronized</code>关键字？因为这会导致许多多余的同步，而且<strong>并不能保证外界对其的复合操作是原子的</strong>，比如线程安全的<code>Vector</code>类，这样使用的话，仍然会出现竞态条件，还会导致活跃性和性能问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">if</span> (!vector.contains(element))<br>    vector.add(element);<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="活跃性和性能"><a href="#活跃性和性能" class="headerlink" title="活跃性和性能"></a>活跃性和性能</h2><p>上面的 Servlet 是<strong>不良并发</strong>（Poor Concurrency）的。下面的新的实现进行了更改。它重新引入了两个计数器，分别计数调用次数和缓存命中次数。它引入两个同步代码块，第一个同步代码块检查是否命中，第二个同步代码块更新缓存。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@ThreadSafe</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CachingFactorizer</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Servlet</span> &#123;<br>    <span class="hljs-meta">@GuardedBy(&quot;this&quot;)</span> <span class="hljs-keyword">private</span> BigInteger lastNumber; <span class="hljs-comment">//这里不需要使用原子引用了</span><br>    <span class="hljs-meta">@GuardedBy(&quot;this&quot;)</span> <span class="hljs-keyword">private</span> BigInteger[] lastFactors;<br>    <span class="hljs-meta">@GuardedBy(&quot;this&quot;)</span> <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> counts;<br>    <span class="hljs-meta">@GuardedBy(&quot;this&quot;)</span> <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> hits;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-type">long</span> <span class="hljs-title function_">getHits</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> counts;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-type">double</span> <span class="hljs-title function_">getCacheHitRatio</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> (<span class="hljs-type">double</span>) hits / (<span class="hljs-type">double</span>) counts;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">service</span><span class="hljs-params">(ServletRequest reg, ServletResponse resp)</span> &#123;<br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> extractFromRequest(reg);<br>        BigInteger[] factors = <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>            counts++;  <span class="hljs-comment">// 对于两个计数器的操作其实也可以分解在更细的代码块中，但是这样会带来不必要的锁的切换的开销。</span><br>            <span class="hljs-keyword">if</span> (i.equals(lastNumber)) &#123; <span class="hljs-comment">//缓存命中</span><br>                hits++;<br>                factors = lastFactors.clone(); <span class="hljs-comment">// 我怀疑这个 clone 的必要性！</span><br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (factors == <span class="hljs-literal">null</span>) &#123; <span class="hljs-comment">// 未命中</span><br>            factors = factor(i); <span class="hljs-comment">// 因数分解操作可能是耗时的，并且它不需要状态变量，因此可以不包裹在同步代码块中，以尽量提高并发性。</span><br>            <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123; <span class="hljs-comment">// 缓存的因数分解和值必须同时被更新，这是毫无疑问的。</span><br>                lastNumber = i;<br>                lastFactors = factors.clone(); <span class="hljs-comment">// 同样，这里的 clone 我也持怀疑态度。</span><br>            &#125;<br>        &#125;<br>        encodeIntoResponse(resp, factors); <span class="hljs-comment">//这里应当返回 factors，如果返回 lastFactors，则也需要包裹在同步代码块中。</span><br>    &#125;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>我认为这里使用 clone 是没有必要的。毕竟，若不使用 clone，在不在同步代码块时若 lastFactors 被赋了新值，只不过是它指向了一个新的地址，原来的地址仍旧是被 factors 引用着的，所以用不用 clone 无关紧要。这里没有任何代码调用过 lastFactors 的 setter 吧？</p>
+</blockquote>
+<p>重新构造后的该类<strong>取得了在简单性（对整个方法进行同步）与并发性（对尽可能短的代码路径进行同步）中的平衡</strong>。不要盲目地为了性能而放弃简单性，因为这会导致维护困难，破坏线程安全性。</p>
+<blockquote>
+<p>执行时间较长的计算或可能无法快速完成的操作（如 I&#x2F;O），<strong>一定不要持有锁</strong>。</p>
+</blockquote>
+<p><img src="https://s3.ax1x.com/2020/12/22/rDeJHg.png"></p>
+<p>换个图床……</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12-23%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B3%E2%80%94%E2%80%94%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%B1%E4%BA%AB.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">初涉并发编程 3——对象的共享</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12-21SQL%E5%BF%AB%E9%80%9F%E5%A4%8D%E4%B9%A0.html">
+                        <span class="hidden-mobile">SQL 语句快速复习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="数据从每个 Mapper 到每个 Reducer 这个过程，就是 MapReduce 的魔法——Shuffle 所在之处。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce 的魔法——Shuffle">
+<meta property="og:url" content="http://example.com/2022/03-15MapReduce%20%E7%9A%84%E9%AD%94%E6%B3%95%E2%80%94%E2%80%94Shuffle.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="数据从每个 Mapper 到每个 Reducer 这个过程，就是 MapReduce 的魔法——Shuffle 所在之处。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20220315192220.png">
+<meta property="og:image" content="http://example.com/images/oss/20220315191103.png">
+<meta property="article:published_time" content="2022-03-15T15:06:58.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.295Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="MapReduce">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20220315192220.png">
+  
+  
+  <title>MapReduce 的魔法——Shuffle - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="MapReduce 的魔法——Shuffle">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-15 23:06" pubdate>
+        2022年3月15日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.6k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MapReduce 的魔法——Shuffle</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>实际上，Shuffle这个术语也存在于Spark这样其他的分布式计算引擎中，所以这里说的Shuffle的概念应该更加广泛一些，我觉得可以说：<strong>汇聚不同节点的数据到特定节点就是Shuffle操作</strong>，这种操作通常发生在按KEY的折叠操作，以及join等情况。</p>
+</blockquote>
+<p>来自 HDFS 或其他地方的输入数据被切割成多个切片，每个切片交由一个 Mapper 负责，每个 Mapper 都将原始的数据映射（map，但实质是 flatMap）成为键值对的形式，这些键值对会经历某种魔法的过程以分发给各个 Reducer，然后每个 Reducer 处理它收到的 KEY 以及与这些 KEY 相关（associated）的键值对，并得到最终结果，保存在 HDFS 或其他地方；Mapper 的输出数据分发给各个 Reducer，<strong>这整个魔法的过程就是所谓的 Shuffle</strong>，今天对它进行一些了解，串联一下之前所学习到的东西。</p>
+<p>Shuffle 分为 Mapper 端和 Reducer 端，称为 Map Shuffle 和 Reduce Shuffle。Shuffle 阶段解决的问题就是，如何尽量高效地将各个 Mapper 的输出传递给各个 Reducer，同时最大化减少 IO 和网络损耗，以及方便 reduce 方法的执行。</p>
+<h1 id="Map-Shuffle"><a href="#Map-Shuffle" class="headerlink" title="Map Shuffle"></a>Map Shuffle</h1><blockquote>
+<p>我经常把一个 map task 说成一个 Mapper，这在当前的大部分时候没有引起过歧义。</p>
+</blockquote>
+<p>一个切片对应一个 Mapper，Mapper 会处理切片中的所有 KV 对形式的原始数据并映射成为输出的 KV 对，而 <strong>Map Shuffle 则是对输出的 KV 对进行处理，使其 partition，sort，combine，保存在本地硬盘中的过程</strong>。</p>
+<blockquote>
+<p>切片是 MR 的抽象，它和 HDFS 的 block 默认是一对一的关系，但若是使用某种压缩小文件的 InputFormat，可能会成为一对多的关系；如果减少切片的大小，则可能是多对一的关系。</p>
+</blockquote>
+<p>用户定义的 map 函数开始进行输出（<code>context.write</code>）时，输出数据并非被直接写入到硬盘中（我们知道，之后这些数据还得 partition，sort，combine，如果直接放到硬盘里，就得增加两倍时间的硬盘 IO 了）。出于效率，它会将结果缓存在一个缓冲区中以备处理。</p>
+<blockquote>
+<p>其实 partition 在 KV 对给到环形缓冲区之前就计算出来了，见<code>MapOutputBuffer#collect</code>的签名能够看到，分区号是作为参数传递进来的，而非是自己获取的。</p>
+</blockquote>
+<p>每个 mapper 都有一个默认 100M 的<strong>环形缓冲区</strong>，输出的 KV 会进入该缓冲区；一旦缓冲区被使用超过 80%（默认值），则启动一个后台的线程把数据<strong>溢写</strong>（spill）到<strong>本地的硬盘</strong>，溢写的过程中 mapper 继续写数据，若填满则阻塞直到溢写完成，mapper 继续向缓冲区中写数据，如此反复。溢写完成后，硬盘中的结果文件将被合并成一个文件用来传递给各个 reducer。</p>
+<p><img src="/images/oss/20220315192220.png"></p>
+<p>环形缓冲区和溢写是 map shuffle 的关键部分，了解了这两个部分，就了解了 map shuffle。</p>
+<h2 id="环形缓冲区"><a href="#环形缓冲区" class="headerlink" title="环形缓冲区"></a>环形缓冲区</h2><p>关于环形缓冲区的逻辑主要在<code>org.apache.hadoop.mapred.MapTask.MapOutputBuffer#collect</code>，但它状态太多，研究起来是非常麻烦的（不如说把我看麻了，几百行底层代码，还有同步操作），就目前来说，把它当作一个黑箱来看就好，具体的学习等之后背八股文的时候再说吧。</p>
+<h2 id="Spill（溢写）"><a href="#Spill（溢写）" class="headerlink" title="Spill（溢写）"></a>Spill（溢写）</h2><p>溢写的过程并非是把数据直接写到硬盘中了事，为了减少硬盘 IO，它要在这里完成上面所说的 partition，sort，combine 操作，总的来说其过程如下——</p>
+<ol>
+<li>每个 KV 对按分区号进行分区，分区号在 KV 对传递给环形缓冲区之前由 Partitioner 计算得出。</li>
+<li>每个分区内的 KV 对按 KEY 进行排序（使用 SortComparator），传递给 Combiner（如果有的话）。</li>
+<li>将溢写文件写到磁盘中，每次溢写都会产生一个溢写文件，每个溢写文件都包含每个分区的 KV 对，不同分区的数据能够被区分。（也就是说，达到 80% 这个阈值多少次，就会溢写多少次，出现多少个溢写文件）</li>
+</ol>
+<blockquote>
+<p> 有趣的是，在源代码里，调用的方法其实叫 sortAndSpill，是先排序再溢写，所以这里只取 Spill 其实不太合适。</p>
+</blockquote>
+<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><p>所有溢写文件都创建完成，即 Mapper 的所有原始数据都进行过映射且执行过上面的操作并写到硬盘后，要将所有溢写文件合并到一个文件中，其中每个溢写文件的同一个分区要进行归并排序（仍旧使用 SortComparator）以及进行 combine 操作，直到所有操作完成，这时候该单独文件包含所有分区的所有数据，且每个分区内部有序。</p>
+<hr>
+<p>map 端的 shuffle 到此为止，它的最终目的是将 map 函数的输出键值对进行分区，排序并写到硬盘中成为一个单独的文件，其中，为了让 map 函数的执行和溢写操作能够（部分）并行以及更多优化，使用环形缓冲区来进行此操作。环形缓冲区之后还要继续研究。</p>
+<h1 id="Reduce-Shuffle"><a href="#Reduce-Shuffle" class="headerlink" title="Reduce Shuffle"></a>Reduce Shuffle</h1><p><img src="/images/oss/20220315191103.png"></p>
+<p>每个 Mapper shuffle 的结果都保存在其节点的本地硬盘中，Reducer 会从每个 Mapper 中<strong>拉取</strong>对应自己的 Partition（之前说的都是推，但实际上这里是拉），<strong>从每个 Mapper 中拉取 Partition 并进行归并就是 Reduce Shuffle 的任务</strong>。</p>
+<p>当 Mapper 任务完成后，它会提醒 ApplicationMaster，然后 reducer 就能够从该 Mapper 处拷贝 Partition；拷贝 Mapper 的数据这个过程可以是并行的，即同时从多个 Mapper 处拷贝数据（默认并行数为 5），且该过程不需要待所有 Mapper 都完成后才进行。</p>
+<p>reducer 像 mapper 一样，也会试图在内存中维护一个缓冲区，该缓冲区默认设置占内存的 70%，多余的数据将被溢写到硬盘中。从 mapper 处拿到的数据如果能够被放到缓冲区中则放置，否则放置到硬盘中；一旦缓冲区到达指定大小或接收到的 mapper 输出数量到达指定值，则会将其合并并溢写到硬盘中，其中可能会调用 Combiner（这里也会调用 Combiner！）以减少数量。</p>
+<p>待所有 mapper 的输出均已保存在磁盘中（如果全部输出占的足够小，可能会一直在内存中进行维护，不持久化），则开始进行所谓的排序阶段，该阶段仍旧是合并操作，其将对所有 mapper 的输出进行归并，默认归并因子是 10，也就是说 10 路归并，最后一趟归并会直接传给 reduce 方法。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MapReduce/">MapReduce</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-17Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%201%E2%80%94%E2%80%94%E6%9E%B6%E6%9E%84%EF%BC%8CDDL%20%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AF%BC%E5%87%BA%E5%AF%BC%E5%85%A5.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hive 学习笔记 1——架构，DDL 和数据的导出导入</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-14MapReduce%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F2%E2%80%94%E2%80%94ORDER-BY%EF%BC%8CJOIN.html">
+                        <span class="hidden-mobile">MapReduce 开发模式 2——排序，二次排序，JOIN</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

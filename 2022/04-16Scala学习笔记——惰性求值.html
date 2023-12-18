@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="惰性求值的重要性在于，它能够使我们操作集合时在使用原有的高阶函数进行操作的基础上尽量保证性能，不用在操作过程中临时创建集合，从而能兼顾抽象性和性能。那么代价是什么呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scala 学习笔记——惰性求值">
+<meta property="og:url" content="http://example.com/2022/04-16Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%83%B0%E6%80%A7%E6%B1%82%E5%80%BC.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="惰性求值的重要性在于，它能够使我们操作集合时在使用原有的高阶函数进行操作的基础上尽量保证性能，不用在操作过程中临时创建集合，从而能兼顾抽象性和性能。那么代价是什么呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-16T14:21:30.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.297Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta property="article:tag" content="Scala">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Scala 学习笔记——惰性求值 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Scala 学习笔记——惰性求值">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-16 22:21" pubdate>
+        2022年4月16日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Scala 学习笔记——惰性求值</h1>
+            
+            <div class="markdown-body">
+              <p>继续阅读《Scala 函数式编程》，记录些有趣的新玩意。这书某些地方的翻译实在连机翻都不如，但原书实在太好了，之后去看英文版。</p>
+<p>该篇笔记记录关于惰性求值以及传名调用，传值调用等概念的学习。惰性求值的重要性在于，它能够使我们操作集合时在使用原有的高阶函数进行操作的基础上<strong>尽量保证性能，不用在操作过程中临时创建集合</strong>。而这种优化在不使用命令式的代码时是很难做到的。惰性求值使我们能同时保证抽象性和性能。<del>那代价是什么呢？</del></p>
+<span id="more"></span>
+
+<h1 id="关于-Call-By-Value-Call-By-Name"><a href="#关于-Call-By-Value-Call-By-Name" class="headerlink" title="关于 Call By Value, Call By Name"></a>关于 Call By Value, Call By Name</h1><p>某些语句或操作符具有<strong>短路</strong>的特性，比如对 if 语句，如果 cond 为<code>true</code>，则 else 子句就不会被求值；对<code>&amp;&amp;</code>，如果前一个参数为<code>false</code>，则后一个参数不会被求值；对<code>||</code>，如果前一个参数是<code>true</code>，则第二个参数不会被求值。借助短路特性，我们甚至可以写出<code>false &amp;&amp; 1 / 0 == 0</code>这样合法且不会抛出异常的表达式。</p>
+<p>在大多数语言里，我们无法定义具有 if，<code>&amp;&amp;</code>，<code>||</code>这样的语句&#x2F;操作符的行为的函数，比如，假如我们试图定义一个 <code>and</code>，并利用这个 <code>and</code> 去编写一个 <code>head</code> 函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">boolean</span> <span class="hljs-title function_">and</span><span class="hljs-params">(<span class="hljs-type">boolean</span> condA, <span class="hljs-type">boolean</span> condB)</span> &#123;<br>  <span class="hljs-keyword">return</span> condA &amp;&amp; condB;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">head</span><span class="hljs-params">(List&lt;Integer&gt; lst)</span> &#123;<br>  <span class="hljs-keyword">if</span> (and(lst != <span class="hljs-literal">null</span>, lst.size() != <span class="hljs-number">0</span>)) &#123;<br>    <span class="hljs-keyword">return</span> lst.get(<span class="hljs-number">0</span>);<br>  &#125;<br>  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;list can&#x27;t be null!&quot;</span>)<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>当我们试图调用这里的 <code>head</code> 函数时：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Java">List&lt;Integer&gt; lst = <span class="hljs-literal">null</span>; <span class="hljs-comment">// 生产环境可不能这么干！</span><br>System.out.println(head(lst));<br></code></pre></div></td></tr></table></figure>
+
+<p>能够发现，该代码抛出了空指针异常，这发生在 <code>and</code> 函数调用时。为什么会这样呢？这是因为大多数语言都是 <strong>Call By Value</strong>（传值调用），这是说，<strong>在函数调用之前，它会对各个参数进行求值并将结果值传递给函数</strong>，在这里，就是先求值<code>lst != null</code>和<code>lst.size() != 0</code>这两个表达式，将其结果传递给 <code>and</code> 函数，其中在求值<code>lst.size()</code>时就会抛出空指针异常。</p>
+<p>与此相对的就是 <strong>Call By Name</strong>（传名调用），这是说，<strong>函数参数的表达式会被原样传递给函数，直到被求值时才真正对表达式执行计算</strong>，换句话说，在这个情形中，传值调用传递给函数的是<code>false</code>和<code>Nothing</code>，传名调用传递给函数的是<code>lst != null</code>和<code>lst.size() != 0</code>。</p>
+<p><strong>Call By Name 的行为和<code>() =&gt; A</code>的函数完全一致</strong>，比如我们可以这样实现 if——</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-comment">// 考虑到清晰性的需要，使用 Scala 描述，但行为仍旧同 java 的 if 一致。使用 Java 的话得写 Runnable，不太痛快</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">myIf</span></span>(cond: <span class="hljs-type">Boolean</span>, onTrue: () =&gt; <span class="hljs-type">Unit</span>, onFalse: () =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Unit</span> &#123;<br>  <span class="hljs-keyword">if</span> (cond) &#123;<br>    onTrue()<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    onFalse()<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>可以认为 Call By Value 就是严格求值，Call By Name 就是非严格求值或惰性求值。说它是非严格求值，是因为<strong>函数调用时可以不对一个或多个参数进行求值</strong>，而严格求值的函数对所有参数都将求值。Scala 为非严格求值提供了独特的语法（类型定义）<code>=&gt; A</code>，<strong>这样定义的参数只有在被调用的时候才会被求值</strong>，但其使用方法没有任何改变，比如我们可以定义一个类似 Rust 中的 loop 语句——</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">loop</span></span>(block: =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Unit</span> = <br>  <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>) &#123;<br>    block <span class="hljs-comment">// 直接写出来就是调用了</span><br>  &#125;<br><br>loop &#123;<br>  println(<span class="hljs-string">&quot;hello!&quot;</span>)<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>非严格求值中表达式的未求值形式称为<code>thunk</code>。</p>
+<p>也需注意，<code>=&gt; A</code>定义的变量每次调用时其都会被求值，这在某些时候可能并非我们想要的，有时候我们会想要把值只执行一次并缓存，之后都用缓存的值，这时候我们就可以结合<code>lazy val</code>进行使用。</p>
+<p>严格求值在很多时候都是满足需求的，但在某些时候会有性能问题。比如，我们经常会对列表进行链式调用，如果是严格求值，则每次调用时我们都创建了一个新的列表，这在性能上可能会很差，更别说我们无法中途中断某些函数，无法表达无限长度列表等。以现有的工具，如果想要优化的话只能将操作都组合在同一个函数调用中，比如通过 <code>reduce</code> 可以模拟其它所有操作，或者使用命令式的方式。</p>
+<p>于是，在像 Lodash，Spark 的 RDD 或 Java8 的 Stream 等场景&#x2F;技术里，它们进行链式调用时，中途的操作并非是立刻就进行的，所有计算都在最后的行动&#x2F;终端&#x2F;取值操作中才进行，因而可以进行各种优化。</p>
+<p>而函数式编程中对于这种情况的优化可以使用惰性求值去实现，对列表的每一个元素，只有在求值时才会被计算，Scala 默认就提供了惰性的列表——<code>Stream</code>（当前已过期，使用<code>LazyList</code>替代），它的行为和 Haskell 中的一致。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-keyword">sealed</span> <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Stream</span>[+<span class="hljs-type">A</span>] </span>&#123;<br>  <span class="hljs-comment">/* ... */</span><br>&#125;<br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Empty</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Stream</span>[<span class="hljs-type">Nothing</span>]</span><br><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cons</span>[+<span class="hljs-type">A</span>](<span class="hljs-params">h: (</span>) <span class="hljs-title">=&gt;</span> <span class="hljs-title">A</span>, <span class="hljs-title">t</span></span>: () =&gt; <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>]) <span class="hljs-keyword">extends</span> <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>]<br></code></pre></div></td></tr></table></figure>
+
+<p>我们可以对 Stream 定义一个惰性的右折叠（以方法的形式），它的行为和 Haskell 中的一致但比 Haskell 中更容易看出来——如果没有对 <code>f</code> 的第二个参数进行求值，则 <code>tail</code> 的部分根本不会被计算。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">foldRight</span></span>[<span class="hljs-type">B</span>](z: =&gt; <span class="hljs-type">B</span>)(f: (<span class="hljs-type">A</span>, =&gt; <span class="hljs-type">B</span>) =&gt; <span class="hljs-type">B</span>): <span class="hljs-type">B</span> = <span class="hljs-keyword">this</span> <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Cons</span>(h, t) =&gt; f(h(), t().foldRight(z)(f))<br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">Empty</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>借助 <code>foldRight</code>，我们可以对无限的列表进行折叠操作，只要在其中某一步中没有对 <code>tail</code> 进行求值即可，比如这里拷贝一个自然数列表：</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Nat</span></span>: <span class="hljs-type">Stream</span>[<span class="hljs-type">Int</span>] = &#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">go</span></span>(n: <span class="hljs-type">Int</span>): <span class="hljs-type">Stream</span>[<span class="hljs-type">Int</span>] =<br>    cons(n, go(n + <span class="hljs-number">1</span>))<br>  go(<span class="hljs-number">0</span>)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">copy</span></span>[<span class="hljs-type">A</span>](l: <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>]): <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>] = <br>  l.foldRight(<span class="hljs-type">Empty</span>)(cons(_, _))<br><br>println(copy(<span class="hljs-type">Nat</span>).take(<span class="hljs-number">10</span>).toList()) <span class="hljs-comment">// List(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)</span><br></code></pre></div></td></tr></table></figure>
+
+<p>但更重要的是，考虑到 <code>map</code>，<code>filter</code> 操作也是使用折叠去定义的，我们可以去对无限列表进行<code>map-filter-reduce</code>操作！比如下面定义了 <code>filter</code>，并定义了自然数中奇数的集合：</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">filter</span></span>[<span class="hljs-type">A</span>](f: <span class="hljs-type">A</span> =&gt; <span class="hljs-type">Boolean</span>)(l: <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>]): <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>] =<br>  l.foldRight(<span class="hljs-type">Empty</span>: <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>])((x, acc) =&gt; <span class="hljs-keyword">if</span> (f(x)) cons(x, acc) <span class="hljs-keyword">else</span> acc)<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">Odd</span></span>: <span class="hljs-type">Stream</span>[<span class="hljs-type">Int</span>] =<br>  filter[<span class="hljs-type">Int</span>](_ % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>)(<span class="hljs-type">Nat</span>)<br>println(<span class="hljs-type">Odd</span>.take(<span class="hljs-number">10</span>).toList())<br></code></pre></div></td></tr></table></figure>
+
+<p>关于foldRight为何能处理无限流，可以考虑这样的场景，对<code>Nat.takeWhile(_ &lt; 5)</code>，会得到这样的序列：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Haskell"><span class="hljs-number">0</span> &lt;=&lt; <span class="hljs-number">1</span> &lt;=&lt; <span class="hljs-number">2</span> &lt;=&lt; <span class="hljs-number">3</span> &lt;=&lt; ... &lt;=&lt; n &lt;=&lt; []<br></code></pre></div></td></tr></table></figure>
+
+<p>对后面的任意大于等于5的n，<code>n &lt;=&lt; []</code>都返回<code>[]</code>，因此最后得到的计算序列仍旧是：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Haskell"><span class="hljs-number">0</span> &lt;=&lt; <span class="hljs-number">1</span> &lt;=&lt; <span class="hljs-number">2</span> &lt;=&lt; <span class="hljs-number">3</span> &lt;=&lt; <span class="hljs-number">4</span> &lt;=&lt; <span class="hljs-number">5</span> &lt;=&lt; []<br></code></pre></div></td></tr></table></figure>
+
+<p>在特定情况下<code>&lt;=&lt;</code>会返回<code>[]</code>，这是处理无穷列表的关键之处。</p>
+<h1 id="推导-Stream-的链式调用"><a href="#推导-Stream-的链式调用" class="headerlink" title="推导 Stream 的链式调用"></a>推导 Stream 的链式调用</h1><p>要真正理解 Stream 在链式调用时的行为，我们需要对一些示例去进行推导以去增长感性经验。根据之前的感觉，使用 OOP 的形式进行的推导好像更容易一些，为此我们先实现作为方法的 <code>map</code> 和 <code>filter</code>，使用递归的形式：</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>[<span class="hljs-type">B</span>](f: <span class="hljs-type">A</span> =&gt; <span class="hljs-type">B</span>): <span class="hljs-type">Stream</span>[<span class="hljs-type">B</span>] = <span class="hljs-keyword">this</span> <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Empty</span> =&gt; <span class="hljs-type">Empty</span><br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Cons</span>(h, t) =&gt; <span class="hljs-type">Stream</span>.cons(f(h()), t().map(f))<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">filter</span></span>(p: <span class="hljs-type">A</span> =&gt; <span class="hljs-type">Boolean</span>): <span class="hljs-type">Stream</span>[<span class="hljs-type">A</span>] = <span class="hljs-keyword">this</span> <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Empty</span> =&gt; <span class="hljs-type">Empty</span><br>  <span class="hljs-keyword">case</span> <span class="hljs-type">Cons</span>(h, t) =&gt; &#123;<br>    <span class="hljs-keyword">val</span> head = h()<br>    <span class="hljs-keyword">if</span> (p(head)) <span class="hljs-type">Stream</span>.cons(h(), t().filter(p))<br>    <span class="hljs-keyword">else</span> t().filter(p)<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>对<code>Stream(1,2,3,4).filter(_ % 2 == 0).map(_ + 10).toList()</code>，推导如下，其中 Cons 忽略了<code>() =&gt;</code>的部分。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-type">Stream</span>(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()<br><span class="hljs-type">Cons</span>(<span class="hljs-number">1</span>, <span class="hljs-type">Stream</span>(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()         <span class="hljs-comment">// 解构 Stream</span><br><span class="hljs-type">Stream</span>(<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()                  <span class="hljs-comment">// 应用 filter，容易发现，元素 1 在这里直接扔掉了</span><br><span class="hljs-type">Cons</span>(<span class="hljs-number">2</span>, <span class="hljs-type">Stream</span>(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>)).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()          <span class="hljs-comment">// 解构 Stream</span><br><span class="hljs-type">Cons</span>(<span class="hljs-number">2</span>, <span class="hljs-type">Stream</span>(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>)).map(_ + <span class="hljs-number">10</span>).toList()          <span class="hljs-comment">// 应用 filter</span><br><span class="hljs-type">Cons</span>(<span class="hljs-number">12</span>, <span class="hljs-type">Stream</span>(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>)).toList()         <span class="hljs-comment">// 应用 map</span><br><span class="hljs-number">12</span> :: <span class="hljs-type">Stream</span>(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()             <span class="hljs-comment">// 应用 toList</span><br><span class="hljs-number">12</span> :: <span class="hljs-type">Cons</span>(<span class="hljs-number">3</span>, <span class="hljs-type">Cons</span>(<span class="hljs-number">4</span>, <span class="hljs-type">Empty</span>)).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()  <span class="hljs-comment">// 解构 Stream，并对 Stream(4) 转换为 Cons 的模式</span><br><span class="hljs-number">12</span> :: <span class="hljs-type">Cons</span>(<span class="hljs-number">4</span>, <span class="hljs-type">Empty</span>).filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()           <span class="hljs-comment">// 应用 filter，丢弃 3</span><br><span class="hljs-number">12</span> :: <span class="hljs-type">Cons</span>(<span class="hljs-number">4</span>, <span class="hljs-type">Empty</span>.filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>)).map(_ + <span class="hljs-number">10</span>).toList()           <span class="hljs-comment">// 应用 filter</span><br><span class="hljs-number">12</span> :: <span class="hljs-type">Cons</span>(<span class="hljs-number">14</span>, <span class="hljs-type">Empty</span>.filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>)).toList()          <span class="hljs-comment">// 应用 map</span><br><span class="hljs-number">12</span> :: <span class="hljs-number">14</span> :: <span class="hljs-type">Empty</span>.filter(_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).map(_ + <span class="hljs-number">10</span>).toList()              <span class="hljs-comment">// 应用 toList</span><br><span class="hljs-number">12</span> :: <span class="hljs-number">14</span> :: <span class="hljs-type">Nil</span><br>[<span class="hljs-number">12</span>, <span class="hljs-number">14</span>]<br></code></pre></div></td></tr></table></figure>
+
+<p>这种推导感觉挺容易写错的，但容易发现，它的行为就像构造了一个管道，对每个元素，它都将依序通过这些管子并执行各种操作。</p>
+<p><strong>惰性列表使许多方法的定义在保持原有性能的基础上可以使用高阶函数去组合出来</strong>，比如考虑一个 find 方法，我们可以直接结合 <code>filter</code> 和 <code>headOption</code> 去定义它（实际上，我们在 Java 的 Stream 里也可以这么玩嘛！新玩具 get），这无论在性能上还是在优雅性上都是十分高的，因为对于 Stream，filter 等操作是惰性的，并不会真的遍历整个列表。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">find</span></span>(p: <span class="hljs-type">A</span> =&gt; <span class="hljs-type">Boolean</span>): <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = <br>  filter(p).headOption<br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Scala/">Scala</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04-18%E5%85%B3%E4%BA%8EfoldRight%E4%B8%BA%E4%BD%95%E8%83%BD%E6%93%8D%E4%BD%9C%E6%97%A0%E7%A9%B7%E5%88%97%E8%A1%A8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 foldRight 为何能操作无穷列表</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04-10%E4%B8%80%E4%B8%AA%E7%82%B9%E5%87%BB%E7%BF%BB%E8%AF%91%E6%96%87%E5%AD%97%E6%9F%A5%E7%9C%8B%E5%8E%9F%E6%96%87%E7%9A%84hexo%E6%A0%87%E7%AD%BE%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+                        <span class="hidden-mobile">一个点击翻译文字查看原文的 hexo 标签的实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

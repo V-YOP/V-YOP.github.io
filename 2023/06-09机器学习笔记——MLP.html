@@ -1,0 +1,560 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="来点新活">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习笔记——MLP">
+<meta property="og:url" content="http://example.com/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="来点新活">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_14_0.png">
+<meta property="og:image" content="http://example.com/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_22_1.png">
+<meta property="og:image" content="http://example.com/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_26_0.png">
+<meta property="article:published_time" content="2023-06-09T13:23:47.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.416Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="ML">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_14_0.png">
+  
+  
+  <title>机器学习笔记——MLP - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="机器学习笔记——MLP">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-06-09 21:23" pubdate>
+        2023年6月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      13k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">机器学习笔记——MLP</h1>
+            
+            <div class="markdown-body">
+              <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> seaborn <span class="hljs-keyword">as</span> sns<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Callable</span>, <span class="hljs-type">Tuple</span><br><span class="hljs-comment"># 下面的数组均使用numpy的多维数组</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="神经元"><a href="#神经元" class="headerlink" title="神经元"></a>神经元</h1><p>神经元是神经网络中的基础单元，它包含输入，权重，偏置，输出，激活函数等概念；一个神经元有多个<strong>输入</strong>，每个输入端均有自己的<strong>权重</strong>，将神经元的每一个输入都和自己的权重相乘，将结果相加，最后再和<strong>偏置</strong>相加，将结果传递给<strong>激活函数</strong>，得到的便是神经元的输出；神经元可以有多个输出，它们的值相同。使用代码表达的话，神经元的输出为：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">output</span>(<span class="hljs-params">xs, ws, bs, activate_fn</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    :param xs: 输入，为n维实数数组</span><br><span class="hljs-string">    :param ws: 权重，为n维实数数组</span><br><span class="hljs-string">    :param bs: 偏置，为实数</span><br><span class="hljs-string">    :param activate_fn: 激活函数</span><br><span class="hljs-string">    :return:   输出值</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-comment"># 将输入，权重均看作是向量，因此它们的点乘就是每一个输入和对应权重相乘并相加</span><br>    <span class="hljs-keyword">return</span> activate_fn(xs.dot(ws) + bs)<br></code></pre></div></td></tr></table></figure>
+
+<p>在想象特定神经元的时候，应该想象神经元本身和它的输入，就像<strong>水母</strong>。</p>
+<h1 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h1><p>激活函数是接受实数返回实数的一元函数，<strong>激活函数不能是线性函数</strong>（线性函数就是满足对任意a，b，有<code>f(a + b) = f(a) + f(b)</code>的函数，比如<code>f(x)=2x</code>），常用的激活函数有 sigmoid，ReLU等，它们的定义分别如下：</p>
+<p>$$ sigmoid(x) &#x3D; \frac{1}{1 + e^{-x}} $$</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">sigmoid</span>(<span class="hljs-params">x</span>):<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> / (<span class="hljs-number">1</span> + np.exp(-x))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ReLU</span>(<span class="hljs-params">x</span>):<br>    <span class="hljs-keyword">return</span> np.<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, x)<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h1><p>神经网络由多层神经元组成，一层神经元由多个神经元组成，第一层和最后一层称为输入层和输出层。神经网络的层数有多种计数方式，这里只计数<strong>拥有权重</strong>的层。</p>
+<p>假如上一层的输出为<code>[x1, x2, x3]</code>，当前层有两个神经元，偏置和权重分别为<code>w11, w12, w13, b1</code>，<code>w21, w22, w23, b2</code>，则两个神经元的在<strong>执行激活函数前</strong>的输出为：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs armasm"><span class="hljs-symbol">a1</span> = <span class="hljs-built_in">x1</span> * <span class="hljs-built_in">w11</span> + <span class="hljs-built_in">x2</span> * <span class="hljs-built_in">w12</span> + <span class="hljs-built_in">x3</span> * <span class="hljs-built_in">w13</span> + b1<br><span class="hljs-symbol">a2</span> = <span class="hljs-built_in">x1</span> * <span class="hljs-built_in">w21</span> + <span class="hljs-built_in">x2</span> * <span class="hljs-built_in">w22</span> + <span class="hljs-built_in">x3</span> * <span class="hljs-built_in">w23</span> + b2<br></code></pre></div></td></tr></table></figure>
+
+<p>显然，这可以使用矩阵乘法和加法来描述：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs armasm">[<span class="hljs-built_in">a1</span>, <span class="hljs-built_in">a2</span>] = [<span class="hljs-built_in">x1</span>, <span class="hljs-built_in">x2</span>, <span class="hljs-built_in">x3</span>] * [[<span class="hljs-built_in">w11</span>, <span class="hljs-built_in">w21</span>], + [b1,<br>                           [<span class="hljs-built_in">w12</span>, <span class="hljs-built_in">w22</span>],    b2]<br>                           [<span class="hljs-built_in">w13</span>, <span class="hljs-built_in">w23</span>]]<br></code></pre></div></td></tr></table></figure>
+
+<p>只需要将<code>[a1, a2]</code>中每一个元素执行一下激活函数即可得到该层的神经元的输出。这证明，<strong>除输入层以外，每一层神经元都可以用一个权重矩阵和一个偏置矩阵来表示。权重矩阵中，每个神经元的权重作为一列并横向拼接，偏置矩阵是一个每个神经元组成的行向量。输入和输出也是行向量</strong>。输入层没有输入和偏置，它的输出由外界给定。</p>
+<p>下面会将权重矩阵和偏置矩阵统称为权重矩阵。</p>
+<p>输出层使用的激活函数可以与中间层不同，比如对分类问题，可以使用softmax函数，对回归问题，即根据已有的数据去<strong>预测</strong>特定输入下的输出的问题，可以使用恒等函数。softmax的实现如下，它的性质是每个输出和该层其它神经元的输出相关联，所有神经元的输出总和为1，这让我们能够赋予每个神经元的输出以“概率”的语义。</p>
+<p>$$ softmax(k) &#x3D; \frac{e^{a_k}}{\sum_{i &#x3D; 1}^{n} e^{a_i}} &#x3D; \frac{Ce^{a_k}}{C\sum_{i &#x3D; 1}^{n} e^{a_i}} &#x3D; \frac{e^{a_k + \log_{}{C}}}{\sum_{i &#x3D; 1}^{n} e^{a_i + \log_{}{C}}} &#x3D; \frac{e^{a_k + C’}}{\sum_{i &#x3D; 1}^{n} e^{a_i + C’}} $$</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 这里对softmax的公式进行一些转换（所有值减去其中最大的），避免e^ai太大导致越界</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">softmax</span>(<span class="hljs-params">x</span>):<br>    c = np.<span class="hljs-built_in">max</span>(x)<br>    exp_a = np.exp(x - c)<br>    <span class="hljs-keyword">return</span> exp_a / np.<span class="hljs-built_in">sum</span>(exp_a)<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="前向传播-x2F-推理"><a href="#前向传播-x2F-推理" class="headerlink" title="前向传播 &#x2F; 推理"></a>前向传播 &#x2F; 推理</h1><p>把输入丢给神经网络，去获得它的输出，就是所谓的前向传播&#x2F;推理，下面是一个三层神经网络（中间层第一、二层，输出层，这三层有权重）推理的函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">x, w1, b1, w2, b2, w3, b3, activate_fn, output_activate_fn = <span class="hljs-keyword">lambda</span> x: x</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    :param x:  输入</span><br><span class="hljs-string">    :param w1: 第一层的权重矩阵，列数为神经元的数量，行数为输入的数量</span><br><span class="hljs-string">    :param b1: 第一层的偏置行向量，大小为神经元数量</span><br><span class="hljs-string">    :param w2: 第二层的权重矩阵，列数为神经元的数量，行数为第一层的神经元的数量</span><br><span class="hljs-string">    :param b2: 第二层的偏置，大小为神经元数量</span><br><span class="hljs-string">    :param w3: 输出层的权重矩阵，列数为神经元的数量，行数为第二层的神经元的数量</span><br><span class="hljs-string">    :param b3: 输出层的偏置，大小为神经元数量</span><br><span class="hljs-string">    :param activate_fn: 中间层的激活函数</span><br><span class="hljs-string">    :param output_activate_fn: 输出层的激活函数，比如恒等函数</span><br><span class="hljs-string">    :return: 输出</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    a1 = x @ w1 + b1<br>    z1 = activate_fn(a1)<br>    a2 = z1 @ w2 + b2<br>    z2 = activate_fn(a2)<br>    a3 = z2 @ w3 + b3<br>    z3 = output_activate_fn(a3)<br>    <span class="hljs-keyword">return</span> z3<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="梯度"><a href="#梯度" class="headerlink" title="梯度"></a>梯度</h1><p>导数，即函数在特定位置上的变化程度，根据数学公式去化简求导所求得的结果称为解析解，去近似地算出的结果称为数值解，数值解是很容易求的——给定尽量小的dx，求出<code>(f(x + dx) - f(x)) / dx</code>即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">numerical_diff</span>(<span class="hljs-params">f, x, h=<span class="hljs-number">1e-4</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    求函数f在位置x上的导数，该操作称为数值微分 numerical differentiation</span><br><span class="hljs-string">    :param f: 一元函数</span><br><span class="hljs-string">    :param x: 函数入参</span><br><span class="hljs-string">    :param h: dx</span><br><span class="hljs-string">    :return: 函数f在x处的导数</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-comment"># (f(x + dx) - f(x)) / dx 称为前向差分，(f(x + dx) - f(x - dx)) / 2dx 称为中心差分，能减少误差</span><br>    <span class="hljs-keyword">return</span> (f(x + h) - f(x - h)) / (<span class="hljs-number">2</span> * h)<br><br><span class="hljs-comment"># 如，函数f(x) = x^2 在 x=1处的导数为：</span><br>numerical_diff(<span class="hljs-keyword">lambda</span> x: x ** <span class="hljs-number">2</span>, <span class="hljs-number">1</span>) <span class="hljs-comment"># 1.9999999999992246，非常接近 f&#x27;(x) = 2x, f&#x27;(1) = 2</span><br></code></pre></div></td></tr></table></figure>
+
+
+
+
+<div class="hljs code-wrapper"><pre><code class="hljs">1.9999999999992246
+</code></pre></div>
+<p>但光处理一元函数是不够的，我们需要处理多元函数的导数，即该函数对每一个参数的偏导数；求特定参数序列下任意一个参数的偏导数，就是固定其它参数，对该参数求导数，这个行为很像<strong>柯里化</strong>。所有偏导数组成的序列称为梯度。</p>
+<p>下面是求梯度的函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">gradient</span>(<span class="hljs-params">f, x, h=<span class="hljs-number">1e-4</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    :param f: 要求梯度的函数</span><br><span class="hljs-string">    :param x: 函数参数，以任意维数组的形式</span><br><span class="hljs-string">    :param h: dx</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    res = np.zeros_like(x) <span class="hljs-comment"># zeros_like返回形状和x相同，全为0的数组</span><br>    <span class="hljs-keyword">for</span> i, _ <span class="hljs-keyword">in</span> np.ndenumerate(x): <span class="hljs-comment"># ndenumerate函数能够迭代任意维数组，比如对三维数组，i会分别为(0, 0, 0), (0, 0, 1), (0, 1, 0)...</span><br>        <span class="hljs-comment"># 计算第i个参数的偏导，这里直接修改x</span><br>        ori = x[i]<br>        x[i] = ori + h<br>        f1 = f(x)<br>        x[i] = ori - h<br>        f0 = f(x)<br>        x[i] = ori<br>        res[i] = (f1 - f0) / (<span class="hljs-number">2</span> * h)<br>    <span class="hljs-keyword">return</span> res<br></code></pre></div></td></tr></table></figure>
+
+<p>显然，该方法能够尽量减少对象拷贝，移动的损失，但它同时是线程不安全的，无法并发执行，将来必须改良。</p>
+<h1 id="梯度下降法"><a href="#梯度下降法" class="headerlink" title="梯度下降法"></a>梯度下降法</h1><p>梯度表明了函数在当前“位置”上的运动的“趋势”，对每一个偏导数，当它大于0时，就意味着向该方向运动时，该方向的值会变大，小于0时，向该方向运动时，该方向的值会变小。这意味着，只要向梯度的符号相反的方向运动，值必定会减小，这意味着我们能够找到函数的（可能是局部也可能是全局的）<strong>最小值</strong>（或者最大值，这无关紧要）。根据梯度找到函数的最小值的方法称为梯度下降法。</p>
+<p>下面的函数使用梯度下降法实现了求解平方根，思路是<strong>构造这样一个函数，它的最小值即为所求的平方根，然后找到一个初始值，不断往梯度下降的方向去移动，最终会找到函数的局部或全局的最小值</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 这个例子其实不太恰当，因为这里用的函数是不光滑的，函数值为0的位置前后的梯度有一个阶跃，但通过梯度下降法确实能求得结果</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sqrt</span>(<span class="hljs-params">x, lr=<span class="hljs-number">1e-3</span>, step_num=<span class="hljs-number">1000</span></span>) -&gt; <span class="hljs-built_in">float</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    使用梯度法求平方根</span><br><span class="hljs-string">    :param x: 入参</span><br><span class="hljs-string">    :param lr: learn rate，学习率</span><br><span class="hljs-string">    :param step_num: 步数</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-comment"># d的初始值不能设为0，因为函数在这里的梯度为0且前后对称，配合上中心差分，它就不动了</span><br>    <span class="hljs-comment"># d也必须是可变的，不然gradient函数无法修改d了（因为下面的trick），这里的一维数组起着box的作用</span><br>    d = np.array([<span class="hljs-number">1</span>], dtype=np.float64)<br>    <span class="hljs-comment"># 该函数即为所需函数，在d=sqrt(x)的位置下它的值为0</span><br>    <span class="hljs-comment"># 这里用了一个trick——函数通过闭包而非参数去引用d，函数的参数是无意义的，仅用于适配梯度函数中f的形式</span><br>    <span class="hljs-comment"># 在使用该函数调用梯度时，即调用 gradient(h, np.array([d])) 时，梯度函数会尝试修改 d 再执行函数 h，其行为和改变函数参数是一致的</span><br>    <span class="hljs-comment"># 这个trick特别适用于不知道函数的入参具体形式的情况下</span><br>    <span class="hljs-comment"># 这里使用这个trick，因为后面求神经网络的损失函数的时候同样使用这种操作</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">h</span>(<span class="hljs-params">_</span>):<br>        <span class="hljs-keyword">return</span> np.<span class="hljs-built_in">abs</span>(x - d[<span class="hljs-number">0</span>] * d[<span class="hljs-number">0</span>])<br>    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(step_num):<br>        grad = gradient(h, d)<br>        d = d - grad * lr<br>    <span class="hljs-keyword">return</span> d[<span class="hljs-number">0</span>]<br><br><span class="hljs-comment"># 画点图验证一下，使用函数避免污染全局作用域</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">drawSqrt</span>():<br>    xs = np.linspace(<span class="hljs-number">0</span>, <span class="hljs-number">1000</span>, <span class="hljs-number">500</span>)<br>    <span class="hljs-comment"># 使用之前定义的sqrt的话性能会很差，因为它无法利用到numpy的并行计算功能，必须要使用for循环去调用</span><br>    <span class="hljs-comment"># vectorize将函数从处理单元素的函数变为numpy数组的函数，但本质上仍旧是for循环，没有提高性能</span><br><br>    <span class="hljs-comment"># 这在神经网络中无关紧要，因为计算损失函数的梯度时每趟训练只需要计算一次，不需要并发计算，但这里需要对多个位置同时计算它的梯度，这本该去并发计算</span><br>    <span class="hljs-comment"># 这里实现一个更高性能的sqrt，不使用trick，使用适应一元函数的numerical_diff，</span><br>    <span class="hljs-comment"># 它定义的形式因此能够适应numpy的并行计算，速度是上面的sqrt的百倍</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">sqrt</span>(<span class="hljs-params">x,lr,step_num</span>):<br>        <span class="hljs-keyword">def</span> <span class="hljs-title function_">h</span>(<span class="hljs-params">d</span>):<br>            <span class="hljs-keyword">return</span> np.<span class="hljs-built_in">abs</span>(x - d * d)<br>        d = <span class="hljs-number">1</span><br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(step_num):<br>            grad = numerical_diff(h, d)<br>            d = d - grad * lr<br>        <span class="hljs-keyword">return</span> d<br>    <span class="hljs-comment"># datas = pd.DataFrame(&#123;</span><br>    <span class="hljs-comment">#     &#x27;x&#x27;: xs,</span><br>    <span class="hljs-comment">#     &#x27;my.sqrt(lr=1e-3,step_num=1e3)&#x27;: np.vectorize(lambda x: sqrt(x, lr=1e-3,step_num=int(1e3)))(xs),</span><br>    <span class="hljs-comment">#     &#x27;my.sqrt(lr=1e-2,step_num=1e3)&#x27;: np.vectorize(lambda x: sqrt(x, lr=1e-2,step_num=int(1e3)))(xs),</span><br>    <span class="hljs-comment">#     &#x27;np.sqrt&#x27;: np.sqrt(xs)</span><br>    <span class="hljs-comment"># &#125;)</span><br>    datas = pd.DataFrame(&#123;<br>        <span class="hljs-string">&#x27;x&#x27;</span>: xs,<br>        <span class="hljs-string">&#x27;my.sqrt(lr=5e-3,step_num=1e3)&#x27;</span>: sqrt(xs, lr=<span class="hljs-number">1e-3</span>, step_num=<span class="hljs-built_in">int</span>(<span class="hljs-number">1e3</span>)),<br>        <span class="hljs-string">&#x27;my.sqrt(lr=1e-2,step_num=1e3)&#x27;</span>: sqrt(xs, lr=<span class="hljs-number">1e-2</span>, step_num=<span class="hljs-built_in">int</span>(<span class="hljs-number">1e3</span>)),<br>        <span class="hljs-string">&#x27;my.sqrt(lr=1e-2,step_num=1e4)&#x27;</span>: sqrt(xs, lr=<span class="hljs-number">1e-2</span>, step_num=<span class="hljs-built_in">int</span>(<span class="hljs-number">1e4</span>)),<br>        <span class="hljs-string">&#x27;np.sqrt&#x27;</span>: np.sqrt(xs)<br>    &#125;)<br>    sns.lineplot(data=datas.melt(<span class="hljs-string">&#x27;x&#x27;</span>), x=<span class="hljs-string">&#x27;x&#x27;</span>, y=<span class="hljs-string">&#x27;value&#x27;</span>, hue=<span class="hljs-string">&#x27;variable&#x27;</span>)<br>drawSqrt()<br></code></pre></div></td></tr></table></figure>
+
+
+<p><img src="/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_14_0.png" alt="png"></p>
+<p>梯度下降法有两个<strong>超参数</strong>（超参数即非神经网络通过训练得到，而是手动设定的参数）：学习率和步数，学习率表示每次要向梯度下降的方向移动多大距离，步数表示移动的次数，学习率需要被合适地设定，过大和过小都会导致无法得到正确结果，比如上面的例子。</p>
+<h1 id="反向传播-x2F-神经网络的学习"><a href="#反向传播-x2F-神经网络的学习" class="headerlink" title="反向传播&#x2F;神经网络的学习"></a>反向传播&#x2F;神经网络的学习</h1><p>正向传播就是把输入喂给神经网络，得到输出的过程，<strong>反向传播就是给定输入和期望的输出，根据期望的输出和实际的输出的关系去反向更新权重的过程</strong>。神经网络中，可以使用梯度下降法进行反向传播。</p>
+<p>首先需要定义我们需要应用梯度下降法的函数。<strong>该函数的参数为权重矩阵，返回值代表期望输出和实际输出的“距离”</strong>。该函数称为<strong>损失函数</strong>，我们可以通过梯度下降法逐渐逼近损失函数的最小值，<strong>即让期望输出和实际输出最小的权重矩阵</strong>，一趟训练的一般过程如下，和sqrt的形式基本一致：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">W, x, t, lr, step_num</span>):<br>    <span class="hljs-comment"># W 是权重，x是输入，t是预测输出，lr是学习率，step_num是执行次数</span><br>    <span class="hljs-comment"># 实际操作时，损失函数使用闭包去捕获权重矩阵</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">loss</span>(<span class="hljs-params">W</span>):<br>        <span class="hljs-keyword">return</span> distance(precict(x, W), t)<br>    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(step_num):<br>        grad = gradient(loss, W)<br>        W = W - grad * lr<br>    <span class="hljs-keyword">return</span> W<br></code></pre></div></td></tr></table></figure>
+
+<p>在实际操作中，我们不会对每一个训练数据都去进行梯度下降法，而是每次找到n个比如100个数据去做批处理，这既是去避免单个数据的特殊性，也能减少计算量。但同时也不会选择所有数据去进行学习，这又会增加计算量。<strong>每次随机选择特定数量的数据去训练的方法称为mini-batch，训练过程中使用梯度下降法进行反向传播，这整个称为随机梯度下降法SGD</strong>。</p>
+<h1 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h1><p>损失函数需要求得期望输出和实际输出的“距离”，在处理多个输出时，损失函数需要求得每一个输出的“平均损失”，这个除以N就行。</p>
+<p>常用的损失函数包括均方误差，交叉熵误差，它们的定义如下：</p>
+<p>$$ mean_squared_error(y, t) &#x3D; \frac{1}{2}\sum(y_k - t_k)^2 $$</p>
+<p>$$ cross_entropy_error(y, t) &#x3D; -\sum_{k}^{} t_{k}\log_{}{y_{k} } $$</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 注意这个定义只能处理单个数据</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">mean_squared_error</span>(<span class="hljs-params">y, t</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    均方误差，为“距离”的平方的一半</span><br><span class="hljs-string">    :param y: 实际输出</span><br><span class="hljs-string">    :param t: 期望输出</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> np.<span class="hljs-built_in">sum</span>((y - t) ** <span class="hljs-number">2</span>) / <span class="hljs-number">2</span><br><br><span class="hljs-comment"># 交叉熵误差 ，修改了使之能处理一组数据的平均损失</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cross_entropy_error</span>(<span class="hljs-params">y, t</span>):<br>    <span class="hljs-keyword">if</span> y.ndim == <span class="hljs-number">1</span>:<br>        t = t.reshape(<span class="hljs-number">1</span>, t.size)<br>        y = y.reshape(<span class="hljs-number">1</span>, y.size)<br>    batch_size = y.shape[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">return</span> -np.<span class="hljs-built_in">sum</span>(t * np.log(y + <span class="hljs-number">1e-7</span>)) / batch_size<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="capstone-0-MNIST-识别手写数字"><a href="#capstone-0-MNIST-识别手写数字" class="headerlink" title="capstone 0: MNIST 识别手写数字"></a>capstone 0: MNIST 识别手写数字</h1><p>Hello, World! 这恐怕是最复杂的Hello World了。</p>
+<p>MNIST数据集中的数据为28x28灰度像素表示的手写数字，其有60000条训练数据，10000条测试数据，每条数据包含该像素矩阵和对应数字值，下面拿它开刀，训练一个识别手写数字的神经网络。</p>
+<p>数据文件从<a target="_blank" rel="noopener" href="https://www.kaggle.com/datasets/hojjatk/mnist-dataset">这里</a>下载，读取数据的代码拷贝自<a target="_blank" rel="noopener" href="https://www.kaggle.com/code/hojjatk/read-mnist-dataset?cellIds=1&kernelSessionId=9466282">这里</a>。</p>
+<p>首先设计神经网络的大小，这里设计一个两层神经网络（输入层，一个有权重的隐藏层，有权重的输出层），其中输入层的大小为28x28&#x3D;784，即每个像素（这里丢掉长宽信息），第一个隐藏层为100个神经元，输出层为10个神经元，它们的输出分别表示数字为0-9的概率；隐藏层的激活函数使用sigmoid，输出层的激活函数使用softmax（这是个分类问题）。</p>
+<p>在计算损失函数时，目标输出采用one-hot的形式，即只有一个元素为1的数组，如7会表示成<code>[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]</code>。</p>
+<p>一般流程如下：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs markdown">设置超参数（批大小，训练次数，训练集大小，学习率）<br>初始化神经网络<br><br>对每一次训练：<br><span class="hljs-code">    随机抽取mini-batch</span><br><span class="hljs-code"></span><br><span class="hljs-code">    计算这批数据的损失函数的梯度</span><br><span class="hljs-code">    根据梯度和学习率更新参数 # 每一个mini-batch只移动一次梯度！</span><br><span class="hljs-code"></span><br><span class="hljs-code">    记录当前的损失函数的返回值供统计</span><br></code></pre></div></td></tr></table></figure>
+
+<p>整个代码实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">TwoLayerNet</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self,</span><br><span class="hljs-params">                 input_size: <span class="hljs-built_in">int</span>,</span><br><span class="hljs-params">                 hidden_size: <span class="hljs-built_in">int</span>,</span><br><span class="hljs-params">                 output_size: <span class="hljs-built_in">int</span>,</span><br><span class="hljs-params">                 activation_function: <span class="hljs-type">Callable</span> = sigmoid,</span><br><span class="hljs-params">                 loss_function: <span class="hljs-type">Callable</span> = cross_entropy_error,</span><br><span class="hljs-params">                 output_activation_function: <span class="hljs-type">Callable</span> = softmax</span>):<br>        self.loss_function = loss_function<br>        self.output_activation_function = output_activation_function<br>        self.activation_function = activation_function<br>        <span class="hljs-comment"># 权重矩阵使用标准正态分布随机取值，偏置矩阵初始全为0</span><br>        self.w1 = np.random.randn(input_size, hidden_size)<br>        self.b1 = np.zeros(hidden_size)<br>        self.w2 = np.random.randn(hidden_size, output_size)<br>        self.b2 = np.zeros(output_size)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">self, x</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        正向传播</span><br><span class="hljs-string">        :param x: 入参数组，需为二维，每一行为一个输入</span><br><span class="hljs-string">        :return:</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        t1 = self.activation_function(x @ self.w1 + self.b1)<br>        <span class="hljs-keyword">return</span> self.output_activation_function(t1 @ self.w2 + self.b2)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">self, x, t, lr=<span class="hljs-number">0.1</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        一次批训练，流程是根据输入，输出数据集去构造损失函数（它的参数是权重），然后求出此时的权重的梯度，将权重向梯度方向移动</span><br><span class="hljs-string">        需注意的是，这里对每一个mini-batch，只移动一次！</span><br><span class="hljs-string">        :param x: 输入数据集</span><br><span class="hljs-string">        :param t: 期望输出数据集</span><br><span class="hljs-string">        :param lr: 学习率</span><br><span class="hljs-string">        :return: 当前的损失，以及梯度</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">def</span> <span class="hljs-title function_">loss</span>(<span class="hljs-params">_</span>):<br>            <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">            损失函数</span><br><span class="hljs-string">            :param _: 权重，这里通过闭包引入，在predict中被使用</span><br><span class="hljs-string">            :return: 当前权重下的损失</span><br><span class="hljs-string">            &quot;&quot;&quot;</span><br>            <span class="hljs-keyword">return</span> self.loss_function(self.predict(x), t)<br><br>        w1 = gradient(loss, self.w1) <span class="hljs-comment"># 该函数会尝试不断改变self.w1的值并调用loss函数，这里因为loss函数通过闭包引用了self.w1，即使参数没有改变/使用，输出值也会不同，因此能正常计算梯度</span><br>        b1 = gradient(loss, self.b1)<br>        w2 = gradient(loss, self.w2)<br>        b2 = gradient(loss, self.b2)<br>        self.w1 = self.w1 - w1 * lr<br>        self.b1 = self.b1 - b1 * lr<br>        self.w2 = self.w2 - w2 * lr<br>        self.b2 = self.b2 - b2 * lr<br><br>        <span class="hljs-keyword">return</span> loss(<span class="hljs-number">0</span>), (w1, b1, w2, b2)<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">accuracy</span>(<span class="hljs-params">self, x, t</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        根据测试数据计算准确率</span><br><span class="hljs-string">        :param x: 测试数据输入</span><br><span class="hljs-string">        :param t: 测试数据期望输出</span><br><span class="hljs-string">        :return:</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        y = self.predict(x)<br>        y = np.argmax(y, axis=<span class="hljs-number">1</span>) <span class="hljs-comment"># one hot转实际值</span><br>        t = np.argmax(t, axis=<span class="hljs-number">1</span>)<br>        accuracy = np.<span class="hljs-built_in">sum</span>(y == t) / <span class="hljs-built_in">float</span>(x.shape[<span class="hljs-number">0</span>])<br>        <span class="hljs-keyword">return</span> accuracy<br></code></pre></div></td></tr></table></figure>
+
+<p>下面加载数据集，让银河燃烧吧。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 需要将四个数据文件以及MnistDataloader.py都拷贝到 工作目录/mnist 才能执行这个cell</span><br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> mnist.MnistDataloader <span class="hljs-keyword">import</span> MnistDataloader<br><br><span class="hljs-comment"># xx_images 为三维列表，第一维为每个图像，第二维为每个图像的每一行， 第三维为每一行的每一列</span><br><span class="hljs-comment"># xx_labels 为一维列表，其表示对应图像的取值</span><br><span class="hljs-comment"># 这里把图像全部展平，让每个图像成为长度为784的一维列表，把标签全部转换为one-hot形式</span><br><span class="hljs-comment"># 同时也缓存读取的数据，避免每次都读</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">readMnist</span>() -&gt; <span class="hljs-type">Tuple</span>[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:<br>    <span class="hljs-keyword">if</span> os.path.exists(<span class="hljs-string">&#x27;mnist/data.pickle&#x27;</span>):<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;mnist/data.pickle&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            <span class="hljs-keyword">return</span> pickle.load(f)<br>    (train_images, train_labels), (test_images, test_labels) = MnistDataloader(<br>        training_images_filepath = <span class="hljs-string">&#x27;mnist/train-images.idx3-ubyte&#x27;</span>,<br>        training_labels_filepath = <span class="hljs-string">&#x27;mnist/train-labels.idx1-ubyte&#x27;</span>,<br>        test_images_filepath     = <span class="hljs-string">&#x27;mnist/t10k-images.idx3-ubyte&#x27;</span>,<br>        test_labels_filepath     = <span class="hljs-string">&#x27;mnist/t10k-labels.idx1-ubyte&#x27;</span>).load_data()<br>    train_images = np.array(train_images).reshape(<span class="hljs-number">60000</span>, <span class="hljs-number">784</span>)<br>    test_images = np.array(test_images).reshape(<span class="hljs-number">10000</span>, <span class="hljs-number">784</span>)<br>    train_labels = np.eye(<span class="hljs-number">10</span>)[train_labels] <span class="hljs-comment"># np.eye(10) 生成10x10的对角数组，它的每一行正好是该行对应的one-hot表示</span><br>    test_labels = np.eye(<span class="hljs-number">10</span>)[test_labels]<br>    res = (train_images, train_labels, test_images, test_labels)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;mnist/data.pickle&#x27;</span>, <span class="hljs-string">&#x27;xb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        pickle.dump(res, f)<br>    <span class="hljs-keyword">return</span> res<br>train_images, train_labels, test_images, test_labels = readMnist()<br></code></pre></div></td></tr></table></figure>
+
+<p>先检查一下是否正确读取了，读取一下第一张图片看看效果：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">img_show</span>(<span class="hljs-params">img</span>):<br>    <span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br>    <span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br>    pil_img = Image.fromarray(np.uint8(img))<br>    plt.imshow(pil_img)<br>    plt.axis(<span class="hljs-string">&#x27;on&#x27;</span>) <span class="hljs-comment"># 关掉坐标轴为 off</span><br>    plt.title(<span class="hljs-string">&#x27;image&#x27;</span>) <span class="hljs-comment"># 图像题目</span><br>    plt.show()<br><span class="hljs-built_in">print</span>(np.argmax(train_labels[<span class="hljs-number">0</span>])) <span class="hljs-comment"># argmax 函数返回最大值的下标，使用其可以从one-hot还原到数字表示</span><br>img_show(train_images[<span class="hljs-number">0</span>].reshape(<span class="hljs-number">28</span>, <span class="hljs-number">28</span>))<br></code></pre></div></td></tr></table></figure>
+
+<div class="hljs code-wrapper"><pre><code class="hljs">5
+</code></pre></div>
+<p><img src="/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_22_1.png" alt="png"></p>
+<p>开干！下面的代码同样做了缓存，保证每次测试都能用上上一次的结果。</p>
+<p>在执行该代码时，会发现其执行速率是极为缓慢的，瓶颈可能在计算梯度时，计算梯度的时候会对每一个参数进行两次前向传播，在这里每一次计算梯度需要进行 <code>(w1.size + w2.size + b1.size + b2.size) * 2 = (784 * 100 + 100 * 10 + 100 + 10) * 2 = 159020</code>次前向传播……这效率是令人崩溃的。因此这里修改了隐藏层神经元的数量到10，把计算量基本降低了一个数量级，但好像仍然跑的通？？</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 诸超参数</span><br>train_size = train_images.shape[<span class="hljs-number">0</span>] <span class="hljs-comment"># 训练集大小</span><br>batch_size = <span class="hljs-number">200</span> <span class="hljs-comment"># mini-batch大小</span><br>iter_num = <span class="hljs-number">500</span> <span class="hljs-comment"># 迭代次数</span><br>learn_rate = <span class="hljs-number">0.1</span> <span class="hljs-comment"># 学习率</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">doTraining</span>():<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">createNet</span>():<br>        <span class="hljs-keyword">if</span> os.path.exists(<span class="hljs-string">&#x27;mnist/net.pickle&#x27;</span>):<br>            <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;mnist/net.pickle&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>                <span class="hljs-keyword">return</span> pickle.load(f)<br>        net = TwoLayerNet(<span class="hljs-number">784</span>, <span class="hljs-number">10</span>, <span class="hljs-number">10</span>)<br>        <span class="hljs-keyword">return</span> net<br><br>    net = createNet()<br><br>    train_loss_list = []<br><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(iter_num):<br>        <span class="hljs-comment"># 每次从训练集中随意抽出batch_size个下标，获取对应图片和需求输出</span><br>        idxs = np.random.choice(train_size, batch_size)<br>        imgs = train_images[idxs]<br>        labels = train_labels[idxs]<br>        start = time.time()<br>        (loss, *_) = net.train(imgs, labels, learn_rate)<br>        end = time.time()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;i + <span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;iter_num&#125;</span>: <span class="hljs-subst">&#123;end - start:<span class="hljs-number">.2</span>f&#125;</span>s, loss: <span class="hljs-subst">&#123;loss:<span class="hljs-number">.3</span>f&#125;</span>, acc: <span class="hljs-subst">&#123;net.accuracy(test_images, test_labels):<span class="hljs-number">.4</span>f&#125;</span>&#x27;</span>)<br><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;mnist/net.pickle&#x27;</span>, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>                pickle.dump(net, f)<br><span class="hljs-comment"># doTraining()</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这种全连接的，稀松平常的神经网络似乎称为MLP（多层感知机）。而这篇笔记或许就到这里了，因为下一章会对当前架构大改……看来这个是出不了成果了。但知识留着了。</p>
+<p>最后的最后，必须得拿真实的数据去实践一下，无论效果如何，下面是一张28x112的png文件，内容是手写的2026，看看我们的人工智障会输出什么东西。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 实现来自chatGPT</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">split_image</span>(<span class="hljs-params">image_path</span>):<br>    <span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br>    img = Image.<span class="hljs-built_in">open</span>(image_path)<br>    width, height = img.size<br>    result = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, height, <span class="hljs-number">28</span>):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, width, <span class="hljs-number">28</span>):<br>            box = (j, i, j+<span class="hljs-number">28</span>, i+<span class="hljs-number">28</span>)<br>            gray_pixels = []<br>            <span class="hljs-keyword">for</span> pixel <span class="hljs-keyword">in</span> img.crop(box).getdata():<br>                gray = <span class="hljs-built_in">round</span>(<span class="hljs-number">0.299</span> * pixel[<span class="hljs-number">0</span>] + <span class="hljs-number">0.587</span> * pixel[<span class="hljs-number">1</span>] + <span class="hljs-number">0.114</span> * pixel[<span class="hljs-number">2</span>])<br>                gray_pixels.append(gray)<br>            result.append(<span class="hljs-number">255</span> - np.array(gray_pixels))<br>    <span class="hljs-keyword">return</span> np.array(result)<br><br>images = split_image(<span class="hljs-string">&#x27;mnist/2026.png&#x27;</span>)<br>img_show(np.concatenate(images.reshape(<span class="hljs-number">4</span>, <span class="hljs-number">28</span>, <span class="hljs-number">28</span>), axis=<span class="hljs-number">1</span>))<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;mnist/net.pickle&#x27;</span>, <span class="hljs-string">&#x27;rb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>    net = pickle.load(f)<br><span class="hljs-built_in">print</span>(np.argmax(net.predict(images), axis=<span class="hljs-number">1</span>))<br></code></pre></div></td></tr></table></figure>
+
+
+<p><img src="/2023/06-09%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94MLP/output_26_0.png" alt="png"></p>
+<div class="hljs code-wrapper"><pre><code class="hljs">[2 7 2 5]
+</code></pre></div>
+<p>哈哈哈哈哈哈哈哈哈哈哈哈哈</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/ML/">ML</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08-31GLSL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">GLSL 学习笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06-03%E7%BB%98%E5%88%B6%E4%BB%BB%E6%84%8F%E6%B7%B1%E5%BA%A6%E7%9A%84%E7%BA%BF%E6%9D%A1%E2%80%94%E2%80%94%E8%B7%AF%E7%B1%B3%E6%96%AF%E6%96%B9%E6%B3%95.html">
+                        <span class="hidden-mobile">绘制任意深度的线条——路米斯的方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

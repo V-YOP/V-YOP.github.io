@@ -1,0 +1,603 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Hive 就是一种用于构造 MapReduce 的 DSL 及相关基础设施，这样的概括大概足矣。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive 学习笔记 1——架构，DDL 和数据的导出导入">
+<meta property="og:url" content="http://example.com/2022/03-17Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%201%E2%80%94%E2%80%94%E6%9E%B6%E6%9E%84%EF%BC%8CDDL%20%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AF%BC%E5%87%BA%E5%AF%BC%E5%85%A5.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="Hive 就是一种用于构造 MapReduce 的 DSL 及相关基础设施，这样的概括大概足矣。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20220225225304.png">
+<meta property="article:published_time" content="2022-03-17T15:59:59.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.296Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20220225225304.png">
+  
+  
+  <title>Hive 学习笔记 1——架构，DDL 和数据的导出导入 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Hive 学习笔记 1——架构，DDL 和数据的导出导入">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-17 23:59" pubdate>
+        2022年3月17日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      9.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hive 学习笔记 1——架构，DDL 和数据的导出导入</h1>
+            
+            <div class="markdown-body">
+              <p>下面的笔记基本上是根据尚硅谷的视频做的，回过头来看看，这样学习的效率是很低的，之后要避免这种手册式的学习和笔记。考虑之后对常用子句多记录一些示例。</p>
+<hr>
+<blockquote class="blockquote-center">
+            <i class="fa fa-quote-left"></i>
+            <p>Form is liberating</p>
+
+            <i class="fa fa-quote-right"></i>
+          </blockquote>
+
+<p>Hive 就是一种用于构造 MapReduce 的 DSL 及相关基础设施，这样的概括大概足矣。</p>
+<p>Hive 的文档见 <a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual">此</a>。</p>
+<blockquote>
+<p>突然想到，在之前写业务代码的时候，我基本不会去关心代码的性能（至少不会关注常数级的性能），对人的可读性比对机器的可读性更重要；但在大数据领域上这就不一样了——大数据所写的代码，很可能将会被应用上千万次，这时候任何一点常数倍的复杂度的差别就会引起很大的性能问题，</p>
+</blockquote>
+<h1 id="为什么是-Hive"><a href="#为什么是-Hive" class="headerlink" title="为什么是 Hive"></a>为什么是 Hive</h1><p>Hadoop 的一个重要的原则就是<strong>数据本地性</strong>——我们移动计算到数据，而非移动数据到计算，从而减少网络 IO，增加吞吐量。</p>
+<p>移动计算，这点（的字面意思）在 MapReduce 的使用中非常明显——我们把自己的 MapReduce 程序打成 Jar 包，放置到 Hadoop 集群中，并要求它（分发和）运行该 Jar 包，这就是一个典型的“移动计算”的操作了。但这种操作总会让人感觉有点麻烦，即使它可以自动化。</p>
+<p>这时候就自然会想，能不能让客户端直接把程序提交给 Hadoop 集群呢？部分可行，可以通过 Hadoop Stream 做这个，但是程序一般来说总有一些自己的依赖，这时候 Hadoop 集群下必须要有相应依赖，这也引入了额外的麻烦，让人想到 JavaEE 的怪味，和当前的容器化是背道而驰的（咱提交 Docker 镜像过去吧 hhh）。</p>
+<p>自接触函数式编程伊始，将函数&#x2F;过程当作数据来看待已经深入我心，但这种抽象仅在同一进程下能够屏蔽掉底层的麻烦细节，倘若想要把过程真的当作数据来序列化，持久到硬盘中，在本地或网络进行传输的话，就会遇到一万个问题，最典型的一个就是上面说的外部依赖问题。</p>
+<p>为了不引入额外的依赖，这时候我们就想着，能不能<strong>把 Mapper 和 Reducer 的程序形式化，结构化，抽象为一些预先定义的“指令”</strong>，从而能够被方便地解析，以及当作对象传输，从而达到目的？</p>
+<p>另外，在编写 MapReduce 程序时，也会发现，自己写的 Mapper 和 Reducer 好像在形式上有很多重复，而一些操作实现起来非常繁琐，如JOIN等，但是这些繁琐的操作实际上也能够找出模式来。这时候就会希望，有没有啥东西能把这麻烦的过程给抽象一下呢？</p>
+<p>而 Hive 就是这样的一个框架——它是一个解决海量的<strong>结构化</strong>日志的<strong>数据统计工具&#x2F;数据仓库工具</strong>。<span style="color: #FF0000">它模仿 SQL，定义了一种名为 HQL 的 DSL，并能够把用户编写的 HQL 转换成对应的 MapReduce 程序</span>；它将结构化的数据文件映射成为一张表，提供<strong>类 SQL</strong> 的查询的功能。</p>
+<blockquote>
+<p>为什么是 SQL 呢？可以意识到，SQL 中常用的操作，如 select，where，order by，group，count 等，都是可以使用 map（其实是 flatmap）和 reduce 操作表达的，如 select 是 map，where 是 filter，group，count 是 reduce……</p>
+</blockquote>
+<p>顺带一提，Pig 框架也是和 Hive 一样的思想的产物，但 Pig 使用一种特定的脚本语言，且似乎已经不再流行。</p>
+<h2 id="Hive-的特色"><a href="#Hive-的特色" class="headerlink" title="Hive 的特色"></a>Hive 的特色</h2>
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 Hive 的优缺点</span></summary>
+        <blockquote><p>优点——</p>
+<ul>
+<li>语法类 SQL，CRUD 程序员能快速上手（但是数据类型则是类似 Java 的，和其它 SQL 不一样）</li>
+<li>使能够免去编写 MapReduce 程序的麻烦</li>
+<li>善于处理大数据（十亿，百亿级），这是传统的 OLTP 数据库做不到的；但处理小数据无优势</li>
+<li>支持用户自定义函数</li>
+</ul>
+<p>缺点——</p>
+<ul>
+<li>HQL 表达能力有限<ul>
+<li>无法表达迭代式算法（SQL 嘛）</li>
+<li>不擅长数据挖掘</li>
+</ul>
+</li>
+<li>效率差<ul>
+<li>MapReduce 自动生成的，因而性能很大程度上要仰仗“编译器”的优化，不够智能</li>
+<li>调优困难</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+        
+    </details>
+  
+
+<p>Hive 和 Hadoop 平台紧密结合——Hive 处理的数据存储在 HDFS；Hive 的底层仍旧是 MapReduce（也可以换成 Spark）；Hive 通过 Yarn 来执行程序。</p>
+<p>Hive 的数据存储在 HDFS，这意味着更新操作是很昂贵的，因此 Hive 不建议修改操作。</p>
+<p>Hive 不需要集群部署，只需要一个节点即可，它相较于 Hadoop 集群，更像是一个客户端（但从外部来看，它仍旧是服务端）。</p>
+<p>Hive 有自己的元数据——不然它如何把文件和表做映射呢？Hive 的元数据存储在传统的数据库中，它默认使用一种嵌入式的数据库，名为 Derby（爱马仕欢喜），但一般都会使用 MySQL 等在工程实践中常用的数据库来保存。</p>
+<p>Hive 的数据仍旧是以比较规范的形式存储在 HDFS 中的——它默认使用<code>/user/hive/warehouse</code>存储所有数据（Hive 的 default 数据库），其中每一张表都作为一个文件夹存放，比如我们创建表<code>create table test (id string)</code>，它就会在该目录下创建 test 文件夹；且它是以该文件夹下所有数据作为自己的数据的——如果在该文件夹下创建文件存储和表同样格式的信息，如<code>1001\n1002</code>，它是可以被<code>select</code>查到的，十分有趣（更有趣的是使用 count 查不到，这说明有的操作是通过查询元数据进行的，而有的操作则是通过查询实际数据）；<strong>这让我们很容易通过 sql 以外的方式对表进行数据插入</strong>，但显然需要同时能够对元数据进行维护。</p>
+<p>Hive 是<strong>读时模式</strong>，即在读取数据时才对数据的格式进行验证；而传统数据库是<strong>写时模式</strong>，即在数据写入时就对数据的格式进行检查。读时模式在加载（LOAD）数据时非常迅速，因为它不对数据进行任何校验操作，直接移动文件即可。</p>
+<p>读时模式的优势在于加载迅速，但在查询时则会逊色一些，且难以进行索引等操作（现在有了），但这些其实问题并不大，因为 Hive 的应用场景通常会进行全表扫描，</p>
+<h2 id="Hive-的诸服务及其相互关系"><a href="#Hive-的诸服务及其相互关系" class="headerlink" title="Hive 的诸服务及其相互关系"></a>Hive 的诸服务及其相互关系</h2><p><img src="/images/oss/20220225225304.png"></p>
+<p>接触最多的将是 hiveserver2，启动该服务能让 Hive 以 Thrift 服务的形式运行，从而让外部 Thrift，JDBC 客户端能进行连接；其次是 metastore，Hive 通过 metastore 来访问保存的元数据，而 metastore 将数据保存在关系型数据库中。</p>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>HQL 的数据类型比较类似 Java，其有如下数据类型——</p>
+<ul>
+<li>TINYINT，对应 Java 的 byte</li>
+<li>SMALLINT，对应 short</li>
+<li>INT</li>
+<li>BIGINT，对应 long</li>
+<li>BOOLEAN</li>
+<li>FLOAT</li>
+<li>DOUBLE</li>
+<li>DECIMAL，任意精度的有符号数，如 DECIMAL(10, 2) 表示小数点左部 10 位，右部 2 位。</li>
+<li>STRING，同 String，可变长</li>
+<li>TIMESTAMP，时间类型，精度为纳秒，应该对应 Java 的 Datetime</li>
+<li>DATE，日期类型，类似 LocalDate？</li>
+<li>BINARY，对应 byte[]，用途应为存储一些二进制数据</li>
+</ul>
+<p>还有一些集合数据类型——</p>
+<ul>
+<li>STRUCT，类似 C 的结构体，Java 的 Record，类型的语法形如<code>STRUCT&lt;data1:INT, data2:STRING&gt;</code></li>
+<li>MAP，键值对的映射，语法形如<code>MAP&lt;STRING, INT&gt;</code></li>
+<li>ARRAY，语法形如<code>ARRAY&lt;INT&gt;</code></li>
+<li>UNION，类似 C 的联合体，怀疑它的存在意义</li>
+</ul>
+<p>比如，对一个这样的 JSON 串进行建模，相应的语句见下。</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// 虽然没啥必要，但是这里指出一下，JSON 没法写注释，假装这是 js 吧</span><br>&#123;<br>  <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;yuuki&quot;</span>, <span class="hljs-comment">// STRING</span><br>  <span class="hljs-string">&quot;friends&quot;</span>: [<span class="hljs-string">&quot;asuna&quot;</span>, <span class="hljs-string">&quot;kirito&quot;</span>], <span class="hljs-comment">// ARRAY&lt;STRING&gt;</span><br>  <span class="hljs-string">&quot;parents&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;father&quot;</span> : <span class="hljs-number">45</span>,<br>    <span class="hljs-string">&quot;mother&quot;</span> : <span class="hljs-number">40</span><br>  &#125;, <span class="hljs-comment">// STRUCT&lt;father:INT, mother:INT&gt;，父母是确定的</span><br>  <span class="hljs-string">&quot;pets&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;meowmeow&quot;</span> : <span class="hljs-number">3</span>,<br>    <span class="hljs-string">&quot;nyanya&quot;</span> : <span class="hljs-number">2</span><br>  &#125; <span class="hljs-comment">// MAP&lt;STRING, INT&gt;，宠物是不确定的</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> person_t(<br>  name STRING,<br>  friends <span class="hljs-keyword">ARRAY</span><span class="hljs-operator">&lt;</span>STRING<span class="hljs-operator">&gt;</span>,<br>  parents STRUCT<span class="hljs-operator">&lt;</span>father:<span class="hljs-type">INT</span>, mother:<span class="hljs-type">INT</span><span class="hljs-operator">&gt;</span>,<br>  pets MAP<span class="hljs-operator">&lt;</span>STRING, <span class="hljs-type">INT</span><span class="hljs-operator">&gt;</span><br>)<br><span class="hljs-type">row</span> format delimited <span class="hljs-comment">-- 下面的部分均为&quot;row format delimited&quot;的子句</span><br>fields terminated <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;,&#x27;</span>  <span class="hljs-comment">-- （表）字段和字段之间使用 , 分割，字段分隔符似乎强制是一个字符</span><br>collection items terminated <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;_&#x27;</span>  <span class="hljs-comment">-- 集合（三种集合类型）中的元素使用 _ 分割 </span><br>map keys terminated <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;:&#x27;</span>  <span class="hljs-comment">-- MAP 的 KV 之间用 : 分割（STRUCT 里不包括 K，因此其各字段顺序是一定的）</span><br>lines terminated <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;\n&#x27;</span>;  <span class="hljs-comment">-- 行分隔符，默认为 \n</span><br></code></pre></div></td></tr></table></figure>
+
+<p><strong>STRUCT 类型通过<code>.</code>来访问字段，MAP 和 ARRAY 通过<code>[]</code>来访问元素</strong>，同 js 一致。</p>
+<p>插入该表的语句如下。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> person_t <span class="hljs-keyword">values</span><br>(&quot;yuuki&quot;, <span class="hljs-keyword">array</span>(&quot;asuna&quot;, &quot;kirito&quot;), named_struct(&quot;father&quot;, <span class="hljs-number">45</span>, &quot;mother&quot;, <span class="hljs-number">40</span>), <br>str_to_map(&quot;meowmeow:3,nyanya:2&quot;)); <br></code></pre></div></td></tr></table></figure>
+
+<h2 id="集合类型的字面量"><a href="#集合类型的字面量" class="headerlink" title="集合类型的字面量"></a>集合类型的字面量</h2><blockquote>
+<p>这些语法只有看书才能找到……Hive的文档和社区一言难尽。</p>
+</blockquote>
+<p>集合类型没有提供直接的字面量，都是使用函数来进行表述的，我认为这是很好的设计。</p>
+<p>数组的字面量形如<code>array(1, 2)</code>，类型需要保证一致。</p>
+<p>结构体的字面量形如<code>struct(&#39;hello&#39;, 1)</code>，最终得到的实际的结构体为<code>&#123;&quot;col1&quot;:&quot;hello&quot;,&quot;col2&quot;:1&#125;</code>，这不一定符合我们的需求，因此还有另一个语法（函数），形如<code>named_struct(&#39;name&#39;, &#39;yuuki&#39;, &#39;age&#39;, 16)</code>，得到<code>&#123;&quot;name&quot;:&quot;yuuki&quot;,&quot;age&quot;:16&#125;</code>。</p>
+<p>哈希表的字面量形如<code>map(&#39;yuuki&#39;, 16, &#39;honoka&#39;, 17)</code>，各键值对的类型需要保证一致。也有一个函数<code>str_to_map(&quot;meowmeow:3,nyanya:2&quot;)</code>，该函数能通过字符串构造哈希表，但类型似乎只能是<code>MAP&lt;STRING,STRING&gt;</code>。</p>
+<h1 id="DDL"><a href="#DDL" class="headerlink" title="DDL"></a>DDL</h1><blockquote>
+<p>Web 开发里使用 CREATE 之外的 DDL 的机会实际上并不多，因为 Web 开发对表的设计慎之又慎毕竟一改可能就需要改非常多的东西。而大数据的话可能用的情况会稍多些？但是估计也只是仅限于在尾部多加个字段啥的。</p>
+</blockquote>
+<p>DDL（Data Definition Language，数据定义语言），即创建和查询，操作<strong>表结构</strong>的语言，它相较于 DML 不那么重要。这里尽量把麻烦的语法都写出来，方便之后可以查询。</p>
+<h2 id="关于数据库"><a href="#关于数据库" class="headerlink" title="关于数据库"></a>关于数据库</h2><p>USE 关键字用于切换使用数据库。</p>
+<p>SHOW 关键字用于对表，数据库等信息进行展示，也可用于展示 SQL 语句的实际信息（带上所有参数的）。</p>
+<p>比如，创建一个表<code>create table test(id string);</code>，可以使用<code>show create table test;</code>查看建表时的实际语句——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> test<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `test`(<br>  `id` string)<br><span class="hljs-type">ROW</span> FORMAT SERDE <br>  <span class="hljs-string">&#x27;org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe&#x27;</span> <br>STORED <span class="hljs-keyword">AS</span> INPUTFORMAT <br>  <span class="hljs-string">&#x27;org.apache.hadoop.mapred.TextInputFormat&#x27;</span> <br>OUTPUTFORMAT <br>  <span class="hljs-string">&#x27;org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat&#x27;</span><br>LOCATION<br>  <span class="hljs-string">&#x27;hdfs://hdp1.local:8020/user/hive/warehouse/test&#x27;</span><br>TBLPROPERTIES (<br>  <span class="hljs-string">&#x27;bucketing_version&#x27;</span><span class="hljs-operator">=</span><span class="hljs-string">&#x27;2&#x27;</span>, <br>  <span class="hljs-string">&#x27;transient_lastDdlTime&#x27;</span><span class="hljs-operator">=</span><span class="hljs-string">&#x27;1645953957&#x27;</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>CREATE DATABASE 语句创建数据库，语法如下，<code>[]</code>内内容为可选项，大写的单词为关键字，小写为变量。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">CREATE</span> DATABASE [IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span>] db_name <span class="hljs-comment">-- 字面意思</span><br>[COMMENT description] <span class="hljs-comment">-- 字面意思</span><br>[LOCATION hdfs_path] <span class="hljs-comment">-- 指定数据库在 hdfs 上的存储路径</span><br>[<span class="hljs-keyword">WITH</span> DBPROPERTIES (property_name<span class="hljs-operator">=</span>property_value, ...)]; <span class="hljs-comment">-- 一些额外信息，似乎没有和配置相关的</span><br></code></pre></div></td></tr></table></figure>
+
+<p>自己创建的数据库默认存在<code>/user/hive/warehouse/DB_NAME.db/</code>，数据库上所有表都将在该文件夹下。但 default 就存在<code>/user/hie/warehouse/</code>下，没有另外建立文件夹。</p>
+<p>查询数据库使用 SHOW 关键字，其语法为 <code>SHOW DATABASES [LIKE search_str];</code>，可以使用 like 关键字查询名称符合特定模式的数据库。</p>
+<p>查询数据库信息用<code>DESC DATABASE db_name</code>。</p>
+<p>修改数据库使用<code>ALTER DATABASE db_name SET DBPROPERTIES(&#39;properties_name&#39; = &#39;properties_value&#39;)</code>，只能修改<code>DBPROPERTIES</code>。</p>
+<p>删除用<code>DROP DATABASE [IF EXISTS] db_name [CASCADE]</code>，DROP 默认只能删除空的数据库，若要删除非空的数据库需要使用 CASCADE 关键字。</p>
+<h2 id="表的创建"><a href="#表的创建" class="headerlink" title="表的创建"></a>表的创建</h2><p>CREATE 关键字用于创建表，它或许是最重要的 DDL 的关键字了。</p>
+<p>下面的语法并非全部，还有更多的未列出（比如上面的建表的示例展示的）</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">CREATE</span> [<span class="hljs-keyword">EXTERNAL</span>] <span class="hljs-keyword">TABLE</span> [IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span>] table_name<br>[(col_name data_type [COMMENT col_comment], ...)]<br>[PARTITIONED <span class="hljs-keyword">BY</span> (col_name data_type [COMMENT col_comment], ...)] <span class="hljs-comment">-- 分区表的配置</span><br>[CLUSTERED <span class="hljs-keyword">BY</span> (col_name, ...)] <span class="hljs-comment">-- 分桶表</span><br>[SORTED <span class="hljs-keyword">BY</span> (col_name, [<span class="hljs-keyword">ASC</span><span class="hljs-operator">|</span><span class="hljs-keyword">DESC</span>], ...) [<span class="hljs-keyword">INTO</span> num_buckets BUCKETS]] <span class="hljs-comment">-- TODO 视频的方括号不匹配，也是分桶表的配置</span><br>[<span class="hljs-type">ROW</span> FORMAT row_format] <span class="hljs-comment">-- 行的格式化方式</span><br>[STORED <span class="hljs-keyword">AS</span> file_format] <span class="hljs-comment">-- 使用什么文件格式存放，如文本，压缩……</span><br>[LOCATION hdfs_path] <span class="hljs-comment">-- 字面意思</span><br>[TBLPROPERTIES (property_name<span class="hljs-operator">=</span>property_value, ...)]<br>[<span class="hljs-keyword">AS</span> select_statement]; <span class="hljs-comment">-- 通过查询的方式建表，如 create table abc as (select ...);</span><br></code></pre></div></td></tr></table></figure>
+
+<p>EXTERNAL 关键字标识表是外部表，默认的表称为管理表（Managed table）<span class="heimu">其实应该叫“被管理表”</span>。</p>
+<p>管理表的特点是，表的元数据的生命周期和实际数据的生命周期一致，也就是说当我们<strong>删除一张管理表的时候，存储在 HDFS 上的实际数据也会同时被删除</strong>。删除外部表的时候，HDFS 的数据不会被删除。</p>
+<p>倘若某数据是同其它系统共享的，应当使用外部表。外部表比管理表更为常用。</p>
+<blockquote>
+<p>使用<code>ALTER TABLE tb_name SET TBLPROPERTIES(&quot;EXTERNAL&quot;=&quot;TRUE&quot;);</code>设置表为外部表，属性大小写敏感。</p>
+</blockquote>
+<p>使用<code>DESC FORMATTED tb_name</code>查询表的信息。</p>
+<h2 id="表的修改，删除"><a href="#表的修改，删除" class="headerlink" title="表的修改，删除"></a>表的修改，删除</h2><p>重命名表使用 RENAME TO 关键字，语法为<code>ALTER TABLE tb_name RENAME TO new_name</code>。</p>
+<p>修改列的信息主要包括列名和列类型。</p>
+<p>更新列的信息使用 CHANGE 关键字，语法为<code>ALTER TABLE tb_name CHANGE [COLUMN] col_old_name col_new_name column_type [COMMENT col_comment] [FIRST|AFTER column_name]</code>，注意更新后的类型必须给定。</p>
+<p>添加列使用 ADD 关键字，更换列使用 REPLACE 关键字，REPLACE 实际上就是直接把所有列全部换掉了。它们的语法为<code>ALTER TABLE tb_name ADD COLUMNS (col_name column_type [COMMENT col_comment], ...);</code>。</p>
+<p>没有删除列的操作，只能使用 REPLACE。</p>
+<h1 id="DML"><a href="#DML" class="headerlink" title="DML"></a>DML</h1><p>DML（Data Manipulation language，数据操纵语言），即用于对数据库的对象（即实体，即表中的每一行）进行访问的语言，如 SELECT，DELETE，UPDATE 等语句，但 Hive 提供更丰富的操作，以满足各种导入&#x2F;导出数据等的需求。</p>
+<h2 id="数据导入"><a href="#数据导入" class="headerlink" title="数据导入"></a>数据导入</h2><p>LOAD 和 INSERT 最为常用。</p>
+<h3 id="LOAD（！）"><a href="#LOAD（！）" class="headerlink" title="LOAD（！）"></a>LOAD（！）</h3><p>十分明显地，通过手动上传文件到 HDFS 上来插入数据并非是一个好的选择——元数据没有相应改变，这使得某些查询结果会出现错误，而且这样插入数据也无法在插入时得到 Hive 的校验，因此有可能插入格式错误的数据。</p>
+<p><strong>通过上传文件来插入数据</strong>可以使用所谓的 LOAD 关键字，其语法为<code>LOAD DATA [LOCAL] INPATH &#39;data_path&#39; [OVERWRITE] INTO TABLE tb_name [PARTITION (partcol1=val1,...)]</code>。</p>
+<ul>
+<li>LOCAL: 表示从本地文件系统加载数据，否则从 HDFS 中加载</li>
+<li>OVERWRITE: 表示覆盖原有数据，或者追加数据</li>
+<li>PARTITION: 关于分区信息的设置</li>
+</ul>
+<p>注意！当从 HDFS 中加载数据的时候，它执行的是一种 mv 操作——<strong>移动了文件的位置</strong>！这种移动是逻辑上的，因为 HDFS 的路径中的文件夹是虚拟的，只是改一下路径即可，因此性能和文件大小无关。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">一个例子</span></summary>
+        <blockquote><p>考虑对下面创建的表执行 LOAD 操作——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">EXTERNAL</span> <span class="hljs-keyword">TABLE</span> student(<br>  id <span class="hljs-type">INT</span>,<br>  name STRING<br>)<br><span class="hljs-type">ROW</span> FORMAT DELIMITED<br>FIELDS TERMINATED <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;,&#x27;</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p>一个插入文件的示例为如下，注意其和表的列格式的配置一致。</p>
+<figure class="highlight"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs">15332,yuuki<br>15333,rin<br>15200,asuna<br>15900,haruka<br>15901,chihaya<br></code></pre></div></td></tr></table></figure>
+
+<p>假设该文件保存在本地文件目录<code>/home/yuuki/data.txt</code>，则相应插入语句为——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL">LOAD DATA <span class="hljs-keyword">LOCAL</span> INPATH <span class="hljs-string">&#x27;/home/yuuki/data.txt&#x27;</span> <span class="hljs-keyword">INTO</span> <span class="hljs-keyword">TABLE</span> student;<br></code></pre></div></td></tr></table></figure>
+
+<p><strong>注意——LOAD 操作没有走 MR 操作，它是直接把文件放到 HDFS 上的相应路径并修改元信息（元数据中的 numfiles 的值），因此操作非常快</strong>。插入后再运行<code>select count(*) from student</code>，就会发现该操作跑 MR 而非直接查元数据了。</p>
+</blockquote>
+        
+    </details>
+  
+
+<h4 id="INSERT（！）"><a href="#INSERT（！）" class="headerlink" title="INSERT（！）"></a>INSERT（！）</h4><p>普通的 INSERT 语句不需赘述，但 Hive 提供了一个重要的变体——<strong>通过查询结果插入&#x2F;覆盖数据到表</strong>——<code>INSERT (INTO|OVERWRITE TABLE) tb_name select_clause</code>，一个例子是——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">INSERT</span> OVERWRITE <span class="hljs-keyword">TABLE</span> stud <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">&gt;</span> <span class="hljs-number">15000</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p>多个 INSERT 子句可以放置在一起作为单条语句，似乎在分区表中比较常用。</p>
+<p>可以使用FROM子句进行插入，示例如下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">FROM</span> idols<br><span class="hljs-keyword">INSERT</span> OVERWRITE <span class="hljs-keyword">TABLE</span> idols_961 <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">WHERE</span> clazz <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;961&#x27;</span><br><span class="hljs-keyword">INSERT</span> OVERWRITE <span class="hljs-keyword">TABLE</span> idols_765 <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">WHERE</span> clazz <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;765&#x27;</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p><strong>该操作只会对原表进行一次查询</strong>，因而效率更高。</p>
+<h3 id="CREATE"><a href="#CREATE" class="headerlink" title="CREATE"></a>CREATE</h3><p>CREATE 关键字也有几个能用于<strong>建表的同时插入数据</strong>的操作，比如<code>CREATE TABLE [IF NOT EXISTS] tb_name AS select_clause</code>语句能够通过查询结果创建表，这和 insert 是类似的，区别在于 insert 是向已有的表进行操作，而该操作是通过数据创建表，表的字段由查询结果决定。</p>
+<p>山不去见穆罕默德，穆罕默德就去见山：LOCATION 关键字用于<strong>在已有的数据上建表</strong>的情况——它会指定表的存储位置，因而倘若该位置已经有数据，就相当于是将这些数据插入到表中了。</p>
+<h3 id="IMPORT"><a href="#IMPORT" class="headerlink" title="IMPORT"></a>IMPORT</h3><p>IMPORT 需和 EXPORT 配合使用，相当于是把一个表的数据以特定的形式导出，再导入到另一张表，语法为 <code>IMPORT TABLE tb_name FROM path</code>。用处似乎不多。IMPORT 不能使用在已有数据的表中。</p>
+<h2 id="数据导出"><a href="#数据导出" class="headerlink" title="数据导出"></a>数据导出</h2><h3 id="INSERT"><a href="#INSERT" class="headerlink" title="INSERT"></a>INSERT</h3><p>INSERT 也可以用来导出数据，语法为<code>INSERT OVERWRITE [LOCAL] DIRECTORY path [ROW FORMAT ...]  select_clause</code>。它默认导出的文件的格式是原始格式（即字段之间用<code>SOH</code>分割的那种格式），无论表的格式如何，可以使用<code>ROW FORMAT DELIMITED ...</code>进行规定。</p>
+<h3 id="EXPORT"><a href="#EXPORT" class="headerlink" title="EXPORT"></a>EXPORT</h3><p>EXPORT 需要和 IMPORT 配合使用，EXPORT 的语法为<code>EXPORT TABLE tb_name TO path</code>，EXPORT 只能导出到 HDFS 中。<strong>IMPORT&#x2F;EXPORT 主要使用在数据迁移中</strong>，因为它在导出时同时会携带所有元数据。</p>
+<h3 id="怪东西"><a href="#怪东西" class="headerlink" title="怪东西"></a>怪东西</h3><p>另外的几种导出数据的操作是，直接使用 HDFS 的命令导出数据文件，或使用<code>hive -e</code>命令，执行单行 SELECT 脚本并把输出流指向特定文件（这种方法会把表头带上）。这些操作显然不会是最佳实践。</p>
+<hr>
+<p>在这里停了一两个星期，去深入学习了 MapReduce 的编程模式，又顺势去复习了 SQL，学习了之前没有了解过的 GROUP BY，JOIN 操作，还有窗口函数，聚集函数……现在回过头来看 Hive，能更清晰些了。下一步是学习各种 SELECT，然后对这里的各个子句进行更加丰富的，结合实际的示例。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Hive/">Hive</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-15MapReduce%20%E7%9A%84%E9%AD%94%E6%B3%95%E2%80%94%E2%80%94Shuffle.html">
+                        <span class="hidden-mobile">MapReduce 的魔法——Shuffle</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

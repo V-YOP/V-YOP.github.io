@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近又又又又开始学习 Haskell，之前学习的时候都使用单文件的形式，这对使用第三方库产生了很大的障碍（最终也没学下去），最近研究了通过 Docker 去配置 Haskell 环境的方式，这里记录一下，并且同时也去使用 Stack 创建空项目和 Yesod 项目、配置 plfa 环境。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Docker 搭建 Haskell 开发环境">
+<meta property="og:url" content="http://example.com/2023/01-15Haskell%E7%BC%96%E7%A8%8B%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="最近又又又又开始学习 Haskell，之前学习的时候都使用单文件的形式，这对使用第三方库产生了很大的障碍（最终也没学下去），最近研究了通过 Docker 去配置 Haskell 环境的方式，这里记录一下，并且同时也去使用 Stack 创建空项目和 Yesod 项目、配置 plfa 环境。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-15T07:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.305Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Haskell">
+<meta property="article:tag" content="Real World">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>使用 Docker 搭建 Haskell 开发环境 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="使用 Docker 搭建 Haskell 开发环境">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-01-15 15:00" pubdate>
+        2023年1月15日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用 Docker 搭建 Haskell 开发环境</h1>
+            
+            <div class="markdown-body">
+              <p>最近又又又又开始学习 Haskell，之前学习的时候都使用单文件的形式，这对使用第三方库产生了很大的障碍（最终也没学下去），最近研究了通过 Docker 去配置 Haskell 环境的方式，这里记录一下，并且同时也去使用 Stack 创建空项目和 Yesod 项目、配置 plfa 环境。</p>
+<p>前置条件：</p>
+<ul>
+<li>安装 Docker</li>
+<li>安装 VS Code，以及 Dev Containers 扩展</li>
+<li>闲</li>
+</ul>
+<h1 id="创建-linux-容器，安装依赖"><a href="#创建-linux-容器，安装依赖" class="headerlink" title="创建 linux 容器，安装依赖"></a>创建 linux 容器，安装依赖</h1><p>首先要创建 linux 容器，使用 fedora 做例子：</p>
+<blockquote>
+<p>我曾尝试过 ubuntu 镜像，但其在创建 Yesod 项目的时候遇到奇怪的编码问题（表现在编译 language-javascript 库时 getContents 报错），应该是系统区域相关的玩意被裁剪的原因</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker run -di -p 8080:8080 --name haskell-container fedora<br></code></pre></div></td></tr></table></figure>
+
+<p>然后打开本机的 VSCode，点击左下角蓝色图标，选择 Attach to Running Container，选择该容器。</p>
+<p>打开后，参考<a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/fedora.html">https://mirrors.ustc.edu.cn/help/fedora.html</a>，执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sed -e <span class="hljs-string">&#x27;s|^metalink=|#metalink=|g&#x27;</span> \<br>         -e <span class="hljs-string">&#x27;s|^#baseurl=http://download.example/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g&#x27;</span> \<br>         -i.bak \<br>         /etc/yum.repos.d/fedora.repo \<br>         /etc/yum.repos.d/fedora-modular.repo \<br>         /etc/yum.repos.d/fedora-updates.repo \<br>         /etc/yum.repos.d/fedora-updates-modular.repo<br>dnf makecache<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="安装-Ghcup，修改-Ghcup，cabal，stack-源"><a href="#安装-Ghcup，修改-Ghcup，cabal，stack-源" class="headerlink" title="安装 Ghcup，修改 Ghcup，cabal，stack 源"></a>安装 Ghcup，修改 Ghcup，cabal，stack 源</h1><p>这里参考<a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/ghcup.html">https://mirrors.ustc.edu.cn/help/ghcup.html</a>。</p>
+<p>首先安装 ghc 所需依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">dnf install -y gcc gcc-c++ gmp gmp-devel make ncurses ncurses-compat-libs xz perl<br></code></pre></div></td></tr></table></figure>
+
+<p>执行下面的命令，一路 y 下去：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">curl --proto <span class="hljs-string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://mirrors.ustc.edu.cn/ghcup/sh/bootstrap-haskell | BOOTSTRAP_HASKELL_YAML=https://mirrors.ustc.edu.cn/ghcup/ghcup-metadata/ghcup-0.0.7.yaml sh<br></code></pre></div></td></tr></table></figure>
+
+<p>如果上面这个命令出现了奇怪的错误，或许得使用官方的脚本（注意网络）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">curl --proto <span class="hljs-string">&#x27;=https&#x27;</span> --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh<br></code></pre></div></td></tr></table></figure>
+
+<p>安装后，尝试执行 ghci：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">ghci</span>&gt; putStrLn <span class="hljs-string">&quot;Hello, Happy World!&quot;</span><br><span class="hljs-type">Hello</span>, <span class="hljs-type">Happy</span> <span class="hljs-type">World</span>!<br></code></pre></div></td></tr></table></figure>
+
+<p>bingo!</p>
+<h1 id="配置-Ghcup，Cabal，Stack-源"><a href="#配置-Ghcup，Cabal，Stack-源" class="headerlink" title="配置 Ghcup，Cabal，Stack 源"></a>配置 Ghcup，Cabal，Stack 源</h1><p>这节参考<a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/ghcup.html">https://mirrors.ustc.edu.cn/help/ghcup.html</a>，<a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/hackage.html">https://mirrors.ustc.edu.cn/help/hackage.html</a>，<a target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/stackage.html">https://mirrors.ustc.edu.cn/help/stackage.html</a>。</p>
+<p>（用 vi 或者 VSCode）编辑<code>~/.ghcup/config.yaml</code>，添加：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">url-source:</span><br>    <span class="hljs-attr">OwnSource:</span> <span class="hljs-string">https://mirrors.ustc.edu.cn/ghcup/ghcup-metadata/ghcup-0.0.7.yaml</span><br></code></pre></div></td></tr></table></figure>
+
+<p>编辑<code>~/.stack/config.yaml</code>，添加：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">package-indices:</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">download-prefix:</span> <span class="hljs-string">https://mirrors.ustc.edu.cn/hackage/</span><br>  <span class="hljs-attr">hackage-security:</span><br>    <span class="hljs-attr">keyids:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">0a5c7ea47cd1b15f01f5f51a33adda7e655bc0f0b0615baa8e271f4c3351e21d</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">1ea9ba32c526d1cc91ab5e5bd364ec5e9e8cb67179a471872f6e26f0ae773d42</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">280b10153a522681163658cb49f632cde3f38d768b736ddbc901d99a1a772833</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">2a96b1889dc221c17296fcc2bb34b908ca9734376f0f361660200935916ef201</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">2c6c3627bd6c982990239487f1abd02e08a02e6cf16edb105a8012d444d870c3</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">51f0161b906011b52c6613376b1ae937670da69322113a246a09f807c62f6921</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">772e9f4c7db33d251d5c6e357199c819e569d130857dc225549b40845ff0890d</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">aa315286e6ad281ad61182235533c41e806e5a787e0b6d1e7eef3f09d137d2e9</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">fe331502606802feac15e514d9b9ea83fee8b6ffef71335479a2e68d84adc6b0</span><br>    <span class="hljs-attr">key-threshold:</span> <span class="hljs-number">3</span> <span class="hljs-comment"># number of keys required</span><br><br>    <span class="hljs-comment"># ignore expiration date, see https://github.com/commercialhaskell/stack/pull/4614</span><br>    <span class="hljs-attr">ignore-expiry:</span> <span class="hljs-literal">true</span><br><br><span class="hljs-attr">setup-info-locations:</span><br>   <span class="hljs-bullet">-</span> <span class="hljs-string">http://mirrors.ustc.edu.cn/stackage/stack-setup.yaml</span><br><span class="hljs-attr">urls:</span><br>  <span class="hljs-attr">latest-snapshot:</span> <span class="hljs-string">http://mirrors.ustc.edu.cn/stackage/snapshots.json</span><br><span class="hljs-attr">snapshot-location-base:</span> <span class="hljs-string">http://mirrors.ustc.edu.cn/stackage/stackage-snapshots/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>编辑<code>~/.cabal/config</code>，找到<code>repository hackage.haskell.org</code>一行，编辑为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-string">repository</span> <span class="hljs-string">mirrors.ustc.edu.cn</span><br>  <span class="hljs-attr">url:</span> <span class="hljs-string">https://mirrors.ustc.edu.cn/hackage/</span><br>  <span class="hljs-attr">secure:</span> <span class="hljs-literal">True</span><br></code></pre></div></td></tr></table></figure>
+
+<p>然后执行下列命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> ~/.stack/pantry<br>curl https://mirrors.ustc.edu.cn/stackage/stackage-content/stack/global-hints.yaml &gt; ~/.stack/pantry/global-hints-cache.yaml<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="使用-Stack-创建项目"><a href="#使用-Stack-创建项目" class="headerlink" title="使用 Stack 创建项目"></a>使用 Stack 创建项目</h1><p>执行<code>stack new project-name</code>可以创建空项目，创建后进入该文件夹，执行<code>stack build</code>检查是否正常。</p>
+<p>执行<code>stack build</code>若出现”Could not load module ‘Distribution.Simple’”的错误，移除<code>~/.ghc/相应版本 GHC/environments/default</code>应当能解决，参照<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/70994294/problem-with-loading-module-distribution-simple">https://stackoverflow.com/questions/70994294/problem-with-loading-module-distribution-simple</a>。</p>
+<p>给 VSCode 安装 Haskell 扩展，打开项目目录并打开特定 hs 文件就应当可以开始编码了，可以尝试打开 src&#x2F;Lib.hs 文件，起空行输入<code>-- &gt;&gt;&gt; show &quot;Aloha&quot;</code>，若出现 Evaluate 按钮则证明工作正常。</p>
+<h2 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h2><blockquote>
+<p>添加依赖时不要使用 cabal，可能会出现上一节的问题</p>
+</blockquote>
+<p>但这还不够，如果能识别到 Stack 项目的依赖并给与补全才更好。</p>
+<p>编辑 package.yaml，在 dependencies 配置下加入 random 依赖：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">dependencies:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">base</span> <span class="hljs-string">&gt;=</span> <span class="hljs-number">4.7</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">&lt;</span> <span class="hljs-number">5</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-string">random</span><br></code></pre></div></td></tr></table></figure>
+
+<p>然后，执行<code>stack build</code>，在另起一个文件 Playground.hs，添加下添加下列内容，导入所有所需依赖并点击 Evaluate：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-keyword">module</span> Playground (  ) <span class="hljs-keyword">where</span><br><span class="hljs-keyword">import</span> System.Random ( <span class="hljs-title">uniformR</span>, <span class="hljs-title">mkStdGen</span>, <span class="hljs-type">RandomGen</span>, <span class="hljs-type">StdGen</span> )<br><span class="hljs-keyword">import</span> Data.List ( <span class="hljs-title">unfoldr</span> )<br><br><span class="hljs-title">roll</span> :: <span class="hljs-type">RandomGen</span> g =&gt; g -&gt; (<span class="hljs-type">Word</span>, g)<br><span class="hljs-title">roll</span> = uniformR (<span class="hljs-number">1</span>, <span class="hljs-number">6</span>) <br><span class="hljs-title">rolls</span> :: <span class="hljs-type">RandomGen</span> g =&gt; g -&gt; [<span class="hljs-type">Word</span>]<br><span class="hljs-title">rolls</span> = unfoldr (<span class="hljs-type">Just</span> . roll) <br><span class="hljs-title">pureGen</span> :: <span class="hljs-type">StdGen</span><br><span class="hljs-title">pureGen</span> = mkStdGen <span class="hljs-number">42</span><br><br><span class="hljs-comment">-- &gt;&gt;&gt; take 10 (rolls pureGen)        </span><br></code></pre></div></td></tr></table></figure>
+
+<p>不管你能不能跑，反正我是能跑了 w。</p>
+<hr>
+<h1 id="一些书籍-x2F-框架环境的搭建"><a href="#一些书籍-x2F-框架环境的搭建" class="headerlink" title="一些书籍&#x2F;框架环境的搭建"></a>一些书籍&#x2F;框架环境的搭建</h1><h2 id="使用-Stack-创建-Yesod-项目"><a href="#使用-Stack-创建-Yesod-项目" class="headerlink" title="使用 Stack 创建 Yesod 项目"></a>使用 Stack 创建 Yesod 项目</h2><p>参考<a target="_blank" rel="noopener" href="https://www.yesodweb.com/page/quickstart">https://www.yesodweb.com/page/quickstart</a>，执行 <code>stack build</code> 的时候会出错，查询日志发现缺失 zlib 头文件，使用 dnf 安装<code>zlib-static</code>, <code>zlib-devel</code>两个依赖即可。</p>
+<p>执行完毕后，创建文件<code>src/HelloWorld.hs</code>，粘贴下面的代码（这类型安全的 html 模板和路由定义，震撼）：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-meta">&#123;-# LANGUAGE OverloadedStrings     #-&#125;</span><br><span class="hljs-meta">&#123;-# LANGUAGE QuasiQuotes           #-&#125;</span><br><span class="hljs-meta">&#123;-# LANGUAGE TemplateHaskell       #-&#125;</span><br><span class="hljs-meta">&#123;-# LANGUAGE TypeFamilies          #-&#125;</span><br><span class="hljs-keyword">import</span> Yesod<br>    ( warp,<br>      mkYesod,<br>      whamlet,<br>      parseRoutes,<br>      <span class="hljs-type">Html</span>,<br>      <span class="hljs-type">Yesod</span>(defaultLayout),<br>      <span class="hljs-type">RenderRoute</span>(renderRoute) )<br><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">HelloWorld</span> = <span class="hljs-type">HelloWorld</span></span><br><br><span class="hljs-title">mkYesod</span> <span class="hljs-string">&quot;HelloWorld&quot;</span> [parseRoutes|<br>/ <span class="hljs-type">HomeR</span> <span class="hljs-type">GET</span><br>|]<br><span class="hljs-class"></span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Yesod</span> <span class="hljs-type">HelloWorld</span></span><br><span class="hljs-class"></span><br><span class="hljs-class">getHomeR :: <span class="hljs-type">Handler</span> <span class="hljs-type">Html</span></span><br><span class="hljs-class">getHomeR = defaultLayout [whamlet|</span><br><span class="hljs-class">&lt;p&gt;<span class="hljs-type">Hello</span>, <span class="hljs-type">Happy</span> <span class="hljs-type">World</span>!</span><br><span class="hljs-class">|]</span><br><span class="hljs-class"></span><br><span class="hljs-class">main :: <span class="hljs-type">IO</span> ()</span><br><span class="hljs-class">main = warp 8080 <span class="hljs-type">HelloWorld</span></span><br></code></pre></div></td></tr></table></figure>
+
+<p>然后，执行<code>stack runhaskell src/HelloWorld.hs</code>，在本机访问<code>localhost:8080</code>，若能成功访问，bingo！</p>
+<h2 id="The-Haskell-School-of-Music"><a href="#The-Haskell-School-of-Music" class="headerlink" title="The Haskell School of Music"></a>The Haskell School of Music</h2><p>首先安装需要的系统库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">dnf install -y alsa-lib-devel GLC_lib-devel<br></code></pre></div></td></tr></table></figure>
+
+<p>创建新 stack 项目，编辑 package.yaml 中 dependencies：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">dependencies:</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">base</span> <span class="hljs-string">&gt;=</span> <span class="hljs-number">4.7</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">&lt;</span> <span class="hljs-number">5</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">Euterpea</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">HSoM</span><br></code></pre></div></td></tr></table></figure>
+
+<p>编辑 stack.yaml 中 extra-deps 配置（默认是注释掉的），并配置allow-newer为true：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">allow-newer:</span> <span class="hljs-literal">true</span><br><span class="hljs-attr">extra-deps:</span><br><span class="hljs-bullet">-</span> <span class="hljs-attr">git:</span> <span class="hljs-string">https://github.com/Euterpea/Euterpea2.git</span><br>  <span class="hljs-attr">commit:</span> <span class="hljs-string">55f78907ad29ce35e7e0b5ca101b60cd0efca555</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">PortMidi-0.2.0.0</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">HSoM-1.0.0</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">UISF-0.4.0.0</span><br><span class="hljs-bullet">-</span> <span class="hljs-string">pure-fft-0.2.0</span><br></code></pre></div></td></tr></table></figure>
+
+<p>为何要修改 stack.yaml 呢？因为这些依赖不在 LTS 里，它们的版本号没有被指定，且Euterpea的最新版不在Stackage里；allow-newer表示无视版本的上界约束。</p>
+<h2 id="plfa"><a href="#plfa" class="headerlink" title="plfa"></a>plfa</h2><p>参考<a target="_blank" rel="noopener" href="https://agda-zh.github.io/PLFA-zh/GettingStarted">https://agda-zh.github.io/PLFA-zh/GettingStarted</a>，以及<a target="_blank" rel="noopener" href="https://schneide.blog/2020/09/21/compiling-agda-2-6-2-on-fedora-32">https://schneide.blog/2020/09/21/compiling-agda-2-6-2-on-fedora-32</a>。</p>
+<p>执行下面的命令去：</p>
+<ul>
+<li>安装 git</li>
+<li>对一个系统库进行链接（Haskell 为什么这么麻烦？）</li>
+<li>安装 agda</li>
+<li>获取 agda 标准库和 plfa 库</li>
+<li>拷贝库到指定位置</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">dnf install -y git<br><span class="hljs-built_in">ln</span> -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so<br>stack install Agda-2.6.2.2<br>git <span class="hljs-built_in">clone</span> --depth 1 --recurse-submodules --shallow-submodules https://github.com/plfa/plfa.github.io ~/plfa<br><span class="hljs-built_in">mkdir</span> -p ~/.agda<br><span class="hljs-built_in">cp</span> ~/plfa/data/dotagda/* ~/.agda<br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Haskell/">Haskell</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Real-World/">Real World</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01-18State,Reader,Writer.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">State, Reader 和 Writer Monad</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12-11LambdaInAction.html">
+                        <span class="hidden-mobile">lambda 实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

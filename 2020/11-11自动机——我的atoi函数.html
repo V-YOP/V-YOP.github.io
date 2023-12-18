@@ -1,0 +1,731 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="使用 NFA 实现 atoi 函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自动机——我的 atoi 函数">
+<meta property="og:url" content="http://example.com/2020/11-11%E8%87%AA%E5%8A%A8%E6%9C%BA%E2%80%94%E2%80%94%E6%88%91%E7%9A%84atoi%E5%87%BD%E6%95%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="使用 NFA 实现 atoi 函数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210822082214.PNG">
+<meta property="og:image" content="https://i.loli.net/2020/11/12/P279vhoX3OySaGn.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/12/T7AykRZrEXo632l.png">
+<meta property="article:published_time" content="2020-11-11T13:36:38.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.277Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="NFA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210822082214.PNG">
+  
+  
+  <title>自动机——我的 atoi 函数 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="自动机——我的 atoi 函数">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-11-11 21:36" pubdate>
+        2020年11月11日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      9.2k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">自动机——我的 atoi 函数</h1>
+            
+            <div class="markdown-body">
+              <p>编译原理没好好听（不如说脑子里没有那种思维），现在要遭重啦！</p>
+<h1 id="题目介绍"><a href="#题目介绍" class="headerlink" title="题目介绍"></a>题目介绍</h1><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/string-to-integer-atoi/">这道题</a> 要求实现 atoi 函数，它要求将一个字符串转成整型，并且有以下要求——</p>
+<ul>
+<li>如果转换失败，返回 0</li>
+<li>忽略不限数量的前置零</li>
+<li>能判断正负</li>
+<li>有效的整数后可能有非法字符，应当能够处理所有有效整数</li>
+<li>如果整型溢出，则返回整型的最大值或最小值</li>
+</ul>
+<p>比如，对输入“      -42”，返回-42，对输入“  +43hello”，返回 43，对”he is a 5”，返回 0</p>
+<h1 id="我的实现——一万个条件判断"><a href="#我的实现——一万个条件判断" class="headerlink" title="我的实现——一万个条件判断"></a>我的实现——一万个条件判断</h1><p>这里是我之前写的代码——</p>
+<p>首先检查输入，如果输入为空，或者长度为 1，则直接返回结果。</p>
+<p>然后排除前置零，找到第一个非零元素。判断该元素是否是+，-或数字。</p>
+<p>然后找到数字的第一个有效位置，从此处开始找到数字的最后一个有效位置。</p>
+<p>此时，数字的符号，开始位置和结束位置已经决定，下面就不言自明了。</p>
+<p>关于溢出的判断，可以看到每次递增都是 res &#x3D; res * 10 + temp，在计算前对 res 进行判断。</p>
+<p>对于正数，需要看是否大于 MAX_VALUE&#x2F;10，如果大于，则必定越界。如果等于，则判断 temp 是否小于 7（整型的上界的个位是 7），如果 temp 小于 7 则不越界，如果其小于 MAX_VALUE&#x2F;10 则也不越界。</p>
+<p>负数遵循相似的判断方法，如果 temp 小于-8（整型的下界的个位是 8），则必定越界。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-title function_">myAtoi</span><span class="hljs-params">(String s)</span> &#123;<br>    <span class="hljs-comment">//对输入进行判断</span><br>    <span class="hljs-keyword">if</span> (s.isEmpty())<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (s.length()==<span class="hljs-number">1</span>) &#123; <span class="hljs-comment">// 长度为 1</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">temp</span> <span class="hljs-operator">=</span> s.charAt(<span class="hljs-number">0</span>) - <span class="hljs-string">&#x27;0&#x27;</span>;<br>        <span class="hljs-keyword">if</span> (temp&gt;=<span class="hljs-number">0</span> &amp;&amp; temp&lt;=<span class="hljs-number">9</span>)<br>            <span class="hljs-keyword">return</span> temp;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 首先找到第一个不为空格的元素，如果这个 char 不是-,+或数字，则返回 0，否则继续操作</span><br>    <span class="hljs-type">int</span> <span class="hljs-variable">pointer</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; <span class="hljs-comment">// 指向第一个非 whitespace 的数</span><br><br>    <span class="hljs-comment">// 首先找到第一个非 space 的元素</span><br>    <span class="hljs-keyword">while</span> (s.charAt(pointer) == <span class="hljs-string">&#x27; &#x27;</span>) &#123; <br>        pointer++;<br>        <span class="hljs-keyword">if</span> (pointer == s.length())<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; <span class="hljs-comment">// 全为空格</span><br>    &#125;<br>    <span class="hljs-type">char</span> <span class="hljs-variable">first</span> <span class="hljs-operator">=</span> s.charAt(pointer);<br><br>    <span class="hljs-comment">// 检查这第一个非 space 的元素是否是数字或+,-，如果不是则转换失败</span><br>    <span class="hljs-keyword">if</span> (!(Character.isDigit(first) || first == <span class="hljs-string">&#x27;-&#x27;</span> || first == <span class="hljs-string">&#x27;+&#x27;</span>))<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br><br>    <span class="hljs-comment">// 判断正负。如果有正负号，则应当将 pointer++，指向第一个数字</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">positive</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>; <span class="hljs-comment">// 判断正负</span><br>    <span class="hljs-keyword">if</span> (first == <span class="hljs-string">&#x27;-&#x27;</span>) &#123;<br>        positive = <span class="hljs-literal">false</span>;<br>        pointer++;<br>    &#125; <br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (first == <span class="hljs-string">&#x27;+&#x27;</span>)<br>        pointer++;<br><br>    <span class="hljs-keyword">if</span> (!Character.isDigit(s.charAt(pointer)))<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-comment">// 正负已经被 positive 确定，pointer 指向第一个数字（也或许不是数字）了，现在获取最后一个有效数字</span><br>    <span class="hljs-type">int</span> end;<br>    <span class="hljs-keyword">for</span> (end = pointer; end &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(end)); end++); <br>    <span class="hljs-comment">// 这时候 end 可能为数组长度 s.length()，或者是数字的最后一个元素的后一个元素</span><br>    end--; <span class="hljs-comment">//现在 end 是数字的最后一个元素了</span><br><br>    <span class="hljs-comment">// 已经知晓有效数字的开始位置 start，结束位置 end，正负 positive</span><br>    <span class="hljs-type">int</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> pointer; i &lt;= end; i++) &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">temp</span> <span class="hljs-operator">=</span> s.charAt(i) - <span class="hljs-string">&#x27;0&#x27;</span>;<br>        <span class="hljs-keyword">if</span> (!positive) temp = -temp;<br>        <span class="hljs-keyword">if</span> (res &gt; Integer.MAX_VALUE/<span class="hljs-number">10</span> || res == Integer.MAX_VALUE/<span class="hljs-number">10</span> &amp;&amp; temp &gt; <span class="hljs-number">7</span>) <br>            <span class="hljs-keyword">return</span> Integer.MAX_VALUE; <span class="hljs-comment">// 判断是否溢出。为什么是 temp &gt; 7？ 因为整型最大值的个位数是 7</span><br>        <span class="hljs-keyword">if</span> (res &lt; Integer.MIN_VALUE/<span class="hljs-number">10</span> || res == Integer.MIN_VALUE/<span class="hljs-number">10</span> &amp;&amp; temp &lt; -<span class="hljs-number">8</span>) <br>            <span class="hljs-keyword">return</span> Integer.MIN_VALUE;<br>        res = res * <span class="hljs-number">10</span> + temp;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>可以看到，这个实现是非常……臃肿的，代码并不好修改（也不好看），if 和 return 到处都是。虽然我 no bug AC 了，但是这绝对是机缘巧合。这样多分支的玩意出现 bug 轻而易举。</p>
+<p>于是去翻了下题解，卧槽？DFA？还有这种操作？原来这种流程复杂的玩意可以用自动机优雅地解决……我是没想到编译原理里的东西可以用到这里……这必须得学习一波了。</p>
+<h1 id="DFA-的实现"><a href="#DFA-的实现" class="headerlink" title="DFA 的实现"></a>DFA 的实现</h1><p>状态转移图如下，start 为初始，signed 为判断正负，in_number 则是正在处理有效数字，end 为转换失败或转换完成</p>
+<p><img src="/images/oss/20210822082214.PNG"></p>
+<p>然后贴上状态转移表。这个表描述任意条件下遇到各种字符的处理方法。比如在 start 条件下，遇到 number 则跳转到 in_number 下</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">‘ ‘</th>
+<th align="center">+&#x2F;-</th>
+<th align="center">number</th>
+<th align="center">other</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">start</td>
+<td align="center">start</td>
+<td align="center">signed</td>
+<td align="center">in_number</td>
+<td align="center">end</td>
+</tr>
+<tr>
+<td align="center">signed</td>
+<td align="center">end</td>
+<td align="center">end</td>
+<td align="center">in_number</td>
+<td align="center">end</td>
+</tr>
+<tr>
+<td align="center">in_number</td>
+<td align="center">end</td>
+<td align="center">end</td>
+<td align="center">in_number</td>
+<td align="center">end</td>
+</tr>
+<tr>
+<td align="center">end</td>
+<td align="center">end</td>
+<td align="center">end</td>
+<td align="center">end</td>
+<td align="center">end</td>
+</tr>
+</tbody></table>
+<p>总之先贴上题解的 python 代码——</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">INT_MAX = <span class="hljs-number">2</span> ** <span class="hljs-number">31</span> - <span class="hljs-number">1</span><br>INT_MIN = -<span class="hljs-number">2</span> ** <span class="hljs-number">31</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Automaton</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        self.state = <span class="hljs-string">&#x27;start&#x27;</span> // 代表当前状态<br>        self.sign = <span class="hljs-number">1</span> // 代表符号<br>        self.ans = <span class="hljs-number">0</span> // 代表结果<br>        self.table = &#123; // 状态转移表<br>            <span class="hljs-string">&#x27;start&#x27;</span>: [<span class="hljs-string">&#x27;start&#x27;</span>, <span class="hljs-string">&#x27;signed&#x27;</span>, <span class="hljs-string">&#x27;in_number&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>],<br>            <span class="hljs-string">&#x27;signed&#x27;</span>: [<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;in_number&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>],<br>            <span class="hljs-string">&#x27;in_number&#x27;</span>: [<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;in_number&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>],<br>            <span class="hljs-string">&#x27;end&#x27;</span>: [<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-string">&#x27;end&#x27;</span>],<br>        &#125;<br>        <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_col</span>(<span class="hljs-params">self, c</span>): // 根据字符来获取状态转移表的列<br>        <span class="hljs-keyword">if</span> c.isspace():<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>        <span class="hljs-keyword">if</span> c == <span class="hljs-string">&#x27;+&#x27;</span> <span class="hljs-keyword">or</span> c == <span class="hljs-string">&#x27;-&#x27;</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span><br>        <span class="hljs-keyword">if</span> c.isdigit():<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">2</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">3</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get</span>(<span class="hljs-params">self, c</span>): // 根据字符进行操作。注意，是先更改状态，再进行操作<br>        self.state = self.table[self.state][self.get_col(c)]<br>        <span class="hljs-keyword">if</span> self.state == <span class="hljs-string">&#x27;in_number&#x27;</span>:<br>            self.ans = self.ans * <span class="hljs-number">10</span> + <span class="hljs-built_in">int</span>(c)<br>            self.ans = <span class="hljs-built_in">min</span>(self.ans, INT_MAX) <span class="hljs-keyword">if</span> self.sign == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-built_in">min</span>(self.ans, -INT_MIN)<br>        <span class="hljs-keyword">elif</span> self.state == <span class="hljs-string">&#x27;signed&#x27;</span>:<br>            self.sign = <span class="hljs-number">1</span> <span class="hljs-keyword">if</span> c == <span class="hljs-string">&#x27;+&#x27;</span> <span class="hljs-keyword">else</span> -<span class="hljs-number">1</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">myAtoi</span>(<span class="hljs-params">self, <span class="hljs-built_in">str</span>: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">int</span>:<br>        automaton = Automaton()<br>        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>: // 遍历字符串<br>            automaton.get(c) <br>        <span class="hljs-keyword">return</span> automaton.sign * automaton.ans<br></code></pre></div></td></tr></table></figure>
+
+<p>下面默写一次 java 版本！</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Automation</span> &#123;<br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">State</span> &#123;<br>        START, SIGNED, IN_NUMBER, END<br>    &#125;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">sign</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    State state;<br>    HashMap&lt;State, State[]&gt; table;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Automation</span><span class="hljs-params">()</span> &#123;<br>        state = State.START;<br>        table = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;State, State[]&gt;();<br>        table.put(State.START, <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.START, State.SIGNED, State.IN_NUMBER, State.END &#125;);<br>        table.put(State.SIGNED, <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123;State.END, State.END, State.IN_NUMBER, State.END&#125;);<br>        table.put(State.IN_NUMBER, <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123;State.END, State.END, State.IN_NUMBER, State.END&#125;);<br>        table.put(State.END, <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.END, State.END, State.END, State.END &#125;);<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-title function_">get_col</span><span class="hljs-params">(<span class="hljs-type">char</span> c)</span> &#123;<br>        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">&#x27; &#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">&#x27;+&#x27;</span> || c == <span class="hljs-string">&#x27;-&#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">if</span> (Character.isDigit(c))<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">3</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">char</span> c)</span> &#123; <span class="hljs-comment">// 每一个状态进行什么处理在这里实现</span><br>        state = table.get(state)[get_col(c)]; <span class="hljs-comment">//state 转到下一个状态</span><br>        <span class="hljs-keyword">if</span> (state == State.SIGNED) <br>            sign = c==<span class="hljs-string">&#x27;+&#x27;</span>? <span class="hljs-number">1</span>: -<span class="hljs-number">1</span>; <span class="hljs-comment">//从+/-判断正负</span><br>        <span class="hljs-keyword">if</span> (state == State.IN_NUMBER) &#123;<br>            <span class="hljs-comment">//首先判断 ans*10 再加上这个数是否越界</span><br>            <span class="hljs-type">int</span> <span class="hljs-variable">temp</span> <span class="hljs-operator">=</span> (c - <span class="hljs-string">&#x27;0&#x27;</span>) * sign;<br>            <span class="hljs-keyword">if</span> (res &gt; Integer.MAX_VALUE/<span class="hljs-number">10</span> || res == Integer.MAX_VALUE/<span class="hljs-number">10</span> &amp;&amp; temp &gt; <span class="hljs-number">7</span>) &#123;<br>                res = Integer.MAX_VALUE;<br>                state = State.END; <span class="hljs-comment">// 越界了，强行将状态置为 END</span><br>                <span class="hljs-keyword">return</span>;<br>            &#125;<br>            <span class="hljs-keyword">if</span> (res &lt; Integer.MIN_VALUE/<span class="hljs-number">10</span> || res == Integer.MIN_VALUE/<span class="hljs-number">10</span> &amp;&amp; temp &lt; -<span class="hljs-number">8</span>) &#123;<br>                res =  Integer.MIN_VALUE;<br>                state = State.END;<br>                <span class="hljs-keyword">return</span>;<br>            &#125;<br>            res = res * <span class="hljs-number">10</span> + temp;<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">myAtoi</span><span class="hljs-params">(String s)</span> &#123;<br>        <span class="hljs-type">Automation</span> <span class="hljs-variable">automation</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Automation</span>();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c: s.toCharArray())<br>            automation.get(c);<br>        <span class="hljs-keyword">return</span> automation.res;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>总之学习了！</p>
+<h1 id="举一反三——isValidNumber"><a href="#举一反三——isValidNumber" class="headerlink" title="举一反三——isValidNumber"></a>举一反三——isValidNumber</h1><p>不实践，如何敢说自己掌握了？</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/valid-number/">这一题</a>，要求判断一个数字字符串是否为合法数字。合法字符串应当只包括如下内容（以及前置后置空格）——</p>
+<ul>
+<li>数字 0 到 9</li>
+<li>指数 e （科学计数法的那个玩意）</li>
+<li>正负号-&#x2F;+</li>
+<li>小数点。</li>
+</ul>
+<p>数字可以分为三个部分——数字，指数符号 e，指数，其中数字可以有正负和小数点，如-43.2。指数是可选的，但是如果有 e，则必须要有指数。其中指数必须为整数，可以有正负号，比如-43.2e-10…</p>
+<p>然而题目告诉我，像。1 这样的也合法，wtf？</p>
+<p>于是，容易画出状态转移图——</p>
+<p>不画了，有点麻烦（没有舒服的软件可用）……草稿纸上手画后直接写状态转移表（这个有问题）——</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">WHITESPACE</th>
+<th align="center">+&#x2F;-</th>
+<th align="center">number</th>
+<th align="center">.</th>
+<th align="center">e</th>
+<th align="center">other</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">START</td>
+<td align="center">START</td>
+<td align="center">SIGN</td>
+<td align="center">INTEGER</td>
+<td align="center">DECIMAL_POINT</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">SIGN</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">INTEGER</td>
+<td align="center">DECIMAL_POINT</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">INTEGER</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">INTEGER</td>
+<td align="center">DECIMAL_POINT</td>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">DECIMAL_POINT</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">DECIMAL</td>
+<td align="center">ERROR</td>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">DECIMAL</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">DECIMAL</td>
+<td align="center">ERROR</td>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+<td align="center">E_SIGN</td>
+<td align="center">E_NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">E_SIGN</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">E_NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">E_NUMBER</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">E_NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">END</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+</tbody></table>
+<p>这里需要注意的是，-.1e10 是合法的，-1.e10 是合法的，但是-.e10 是不合法的，1. 是合法的，.1 是合法的，但。是不合法的，因此显然需要保存是否已经检测到数字……</p>
+<p>不过可以定两个小数点的状态，让 start-&gt;dot-&gt;digit 和 start-&gt;digit-&gt;dot 两条路径不经过同一个 dot 状态，就如下面官方题解给出的状态转移表……这样也不需要做多余判定了。两个状态可以叫做 POINT_WITH_INT 和 POINT_WITHOUT_INT</p>
+<p>下面是实现——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Automation</span> &#123;<br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">State</span> &#123;<br>        START, SIGN, INTEGER, DECIMAL_POINT, DECIMAL, E, E_SIGN, E_NUMBER, END, ERROR<br>    &#125;<br><br>    <span class="hljs-type">boolean</span> flag;<br>    State state;<br>    HashMap&lt;State, State[]&gt; table;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Automation</span><span class="hljs-params">()</span> &#123;<br>        state = State.START;<br>        flag = <span class="hljs-literal">false</span>;<br>        table = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;State, State[]&gt;();<br>        table.put(State.START,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.START, State.SIGN, State.INTEGER, State.DECIMAL_POINT, State.ERROR, State.ERROR &#125;);<br>        table.put(State.SIGN,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.ERROR, State.ERROR, State.INTEGER, State.DECIMAL_POINT, State.ERROR, State.ERROR &#125;);<br>        table.put(State.INTEGER,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.END, State.ERROR, State.INTEGER, State.DECIMAL_POINT, State.E, State.ERROR &#125;);<br>        table.put(State.DECIMAL_POINT,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.END, State.ERROR, State.DECIMAL, State.ERROR, State.E, State.ERROR &#125;);<br>        table.put(State.DECIMAL,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.END, State.ERROR, State.DECIMAL, State.ERROR, State.E, State.ERROR &#125;);<br>        table.put(State.E,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.ERROR, State.E_SIGN, State.E_NUMBER, State.ERROR, State.ERROR, State.ERROR &#125;);<br>        table.put(State.E_SIGN,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.ERROR, State.ERROR, State.E_NUMBER, State.ERROR, State.ERROR, State.ERROR &#125;);<br>        table.put(State.E_NUMBER,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.END, State.ERROR, State.E_NUMBER, State.ERROR, State.ERROR, State.ERROR &#125;);<br>        table.put(State.END,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.END, State.ERROR, State.ERROR, State.ERROR, State.ERROR, State.ERROR &#125;);<br>        table.put(State.ERROR,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">State</span>[] &#123; State.ERROR, State.ERROR, State.ERROR, State.ERROR, State.ERROR, State.ERROR &#125;);<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-title function_">get_col</span><span class="hljs-params">(<span class="hljs-type">char</span> c)</span> &#123;<br>        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">&#x27; &#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">&#x27;+&#x27;</span> || c == <span class="hljs-string">&#x27;-&#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">if</span> (Character.isDigit(c))<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>;<br>        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">&#x27;.&#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">3</span>;<br>        <span class="hljs-keyword">if</span> (c == <span class="hljs-string">&#x27;e&#x27;</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">4</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">5</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">char</span> c)</span> &#123; <span class="hljs-comment">// 每一个状态进行什么处理在这里实现</span><br>        state = table.get(state)[get_col(c)]; <span class="hljs-comment">// 转到下一个状态</span><br>        <span class="hljs-comment">// ... 好像没有要做的处理的亚子</span><br>        <span class="hljs-keyword">if</span> (state == State.INTEGER || state == State.DECIMAL)<br>            flag = <span class="hljs-literal">true</span>; <span class="hljs-comment">// 考虑到有 1. .3 这样的数字是合法，而一个小数点是非法的……必须得暂存起来了</span><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isValid</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 需要考虑合法的终结状态有 DECIMAL_POINT，INTEGER,DECIMAL，E_NUMBER 和 END，其他状态结束都是非法的，然后要考虑以小数点结束时，是否已经有合法数字了</span><br>        <span class="hljs-keyword">return</span>  flag &amp;&amp; (<br>                state == State.INTEGER ||<br>                state == State.DECIMAL_POINT ||<br>                state == State.DECIMAL || <br>                state == State.E_NUMBER || <br>                state == State.END);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Solution</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isNumber</span><span class="hljs-params">(String s)</span> &#123;<br>        <span class="hljs-type">Automation</span> <span class="hljs-variable">automation</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Automation</span>();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">char</span> c : s.toCharArray())<br>            automation.get(c);<br>        <span class="hljs-keyword">return</span> automation.isValid();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后看题解，wtf？路漫漫其修远兮啊……</p>
+<p><img src="https://i.loli.net/2020/11/12/P279vhoX3OySaGn.png"></p>
+<p>舒服多了，也不需要一个额外的 bool 值来让代码变丑，最终也只需要判断最后是不是状态 3,5,6,8（8 由状态 3,5,6 跳转，负责判断有没有后置 0）……</p>
+<p>下面重写一次状态转移表，就不再实现了。</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">space</th>
+<th align="center">+&#x2F;-</th>
+<th align="center">number</th>
+<th align="center">.</th>
+<th align="center">e</th>
+<th align="center">other</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">START</td>
+<td align="center">START</td>
+<td align="center">SIGN</td>
+<td align="center">NUMBER</td>
+<td align="center">DOT_WITHOUT_INT</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">SIGN</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">NUMBER</td>
+<td align="center">DOT_WITHOUT_INT</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">NUMBER</td>
+<td align="center">END</td>
+<td align="center">END</td>
+<td align="center">NUMBER</td>
+<td align="center">DOT_WITH_INT</td>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">DOT_WITH_INT</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">DOT_WITHOUT_INT</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">E</td>
+<td align="center">ERROR</td>
+<td align="center">E_SIGN</td>
+<td align="center">E_NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">E_SIGN</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">E_NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">E_NUMBER</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">E_NUMBER</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">END</td>
+<td align="center">END</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+<tr>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+<td align="center">ERROR</td>
+</tr>
+</tbody></table>
+<p>NUMBER，DOT_WITHOUT_INT，E_NUMBER 和 END 是终结状态，如果最终自动机处于这几个状态，则识别成功。</p>
+<p><img src="https://i.loli.net/2020/11/12/T7AykRZrEXo632l.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%AE%97%E6%B3%95/">算法</a>
+                    
+                      <a class="hover-with-bg" href="/tags/NFA/">NFA</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/11-13%E6%A6%82%E8%A7%82java%E7%9A%84%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">概观 java 的面向对象</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/08-15%E4%B8%96%E7%95%8C%E8%AF%AD%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90.html">
+                        <span class="hidden-mobile">关于一些世界语的学习资源</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"
+    integrity="sha512-3RlxD1bW34eFKPwj9gUXEWtdSMC59QqIqHnD8O/NoTwSJhgxRizdcFVQhUMFyTp5RwLTDL0Lbcqtl8b7bFAzog=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+  <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+  <script>
+    // inspired by https://p5js.org/zh-Hans/examples/input-mouse-functions.html
+
+    
+    // “配置”
+    let N_X // 水平要画几等分线
+    let N_Y // 竖直要画几等分线
+    let HAVE_X_DIM // 是否有水平消失点
+    let HAVE_Y_DIM // 是否有竖直消失点
+    let DRAW_X_SPLIT // 是否画X轴上的等分线
+    let DRAW_Y_SPLIT // 是否画X轴上的等分线
+    let DISPLAY_DOUBLE // 展示倍增线段示例
+    // ===============业务==================
+
+    let draggablePoints; 
+
+    const DraggablePoint = (x, y, label) => {
+      const R = 15
+      let pos = [x, y]
+      let offset = [0, 0]
+      let locked = false
+      // 半径小于 RADIUS，认为mouseOver
+      const isMouseOver = () => {
+        const dx = mouseX - pos[0]
+        const dy = mouseY - pos[1]
+        return Math.sqrt(dx * dx + dy * dy) <= R
+      }
+      return {
+        getPos: () => {
+          return [...pos]
+        },
+        setPos: (x, y) => {
+          pos = [x, y]
+        },
+        draw: () => {
+          push()
+          if (isMouseOver()) {
+            stroke(255);
+            fill(244, 122, 158);
+            if (locked) {
+              fill(255, 255, 255);
+            }
+          } else {
+            stroke(156, 39, 176);
+            fill(244, 122, 158);
+          }
+          circle(pos[0], pos[1], R)
+          text(label, pos[0] + R, pos[1])
+          pop()
+        },
+        mousePressed: () => {
+          if (isMouseOver()) {
+            locked = true
+          } else {
+            locked = false
+          }
+          offset[0] = mouseX - pos[0]
+          offset[1] = mouseY - pos[1]
+        },
+        mouseDragged: () => {
+          if (locked) {
+            pos[0] = mouseX - offset[0]
+            pos[1] = mouseY - offset[1]
+          }
+        },
+        mouseReleased: () => {
+          locked = false;
+        }
+      }
+    }
+
+    function setup() {
+      createCanvas(720, 500);
+      background(200)
+      draggablePoints = {
+        X: DraggablePoint(600, 300, '右消失点'),
+        Y: DraggablePoint(200, 50, '上消失点'),
+        A: DraggablePoint(150, 180, 'A'),
+        C: DraggablePoint(400, 340, 'C'),
+        LOOMIS: DraggablePoint()
+      }
+      createP('水平等分线数量')
+      N_X = createSlider(2, 15, 3, 1)
+      createP('竖直等分线数量')
+      N_Y = createSlider(2, 15, 4, 1)
+      HAVE_X_DIM = createCheckbox('水平消失点', true)
+      HAVE_X_DIM.changed(() => {
+        if (HAVE_X_DIM.checked()) {
+          draggablePoints['X'] = DraggablePoint(600, 300, '右消失点')
+        } else {
+          draggablePoints['X'] = DraggablePoint(1000000, 50, '右消失点')
+        }
+      })
+      HAVE_Y_DIM = createCheckbox('竖直消失点', true)
+      HAVE_Y_DIM.changed(() => {
+        if (HAVE_Y_DIM.checked()) {
+          draggablePoints['Y'] = DraggablePoint(200, 50, '上消失点')
+        } else {
+          draggablePoints['Y'] = DraggablePoint(200, 1000000, '上消失点')
+        }
+      })
+      DRAW_X_SPLIT = createCheckbox('绘制水平方向的等分线', true)
+      DRAW_Y_SPLIT = createCheckbox('绘制竖直方向的等分线', true)
+      DISPLAY_DOUBLE = createCheckbox('展示倍增线段示例', false)
+      strokeWeight(2);
+    }
+
+    function draw() {
+      background(200)
+
+      const X = draggablePoints['X'].getPos()
+      const Y = draggablePoints['Y'].getPos()
+
+      const A = draggablePoints['A'].getPos()
+      const C = draggablePoints['C'].getPos()
+      const B = line_intersect(A, X, C, Y)
+      const D = line_intersect(A, Y, C, X)
+
+      if (DRAW_X_SPLIT.checked()) {
+        const bottomPoints = nSplitPoints(N_X.value(), D, C, X)
+        const topPoints = nSplitPoints(N_X.value(), B, A, X)
+        for (let i = 0; i < bottomPoints.length; i++) {
+          const bottomPoint = bottomPoints[i]
+          const topPoint = topPoints[i]
+          line(bottomPoint[0], bottomPoint[1], topPoint[0], topPoint[1])
+          if (N_X.value() <= 10) {
+            myPoint(bottomPoint[0], bottomPoint[1], `${i+1}/${N_X.value()}`)
+            myPoint(topPoint[0], topPoint[1], `${i+1}/${N_X.value()}`)
+          }
+        }
+      }
+      if (DRAW_Y_SPLIT.checked()) {
+        const leftPoints = nSplitPoints(N_Y.value(), D, A, Y)
+        const rightPoints = nSplitPoints(N_Y.value(), C, B, Y)
+        for (let i = 0; i < leftPoints.length; i++) {
+          const leftPoint = leftPoints[i]
+          const rightPoint = rightPoints[i]
+          line(leftPoint[0], leftPoint[1], rightPoint[0], rightPoint[1])
+          if (N_Y.value() <= 10) {
+            myPoint(leftPoint[0], leftPoint[1], `${i+1}/${N_Y.value()}`)
+            myPoint(rightPoint[0], rightPoint[1], `${i+1}/${N_Y.value()}`)
+          }
+        }
+      }
+
+      line(A[0], A[1], B[0], B[1])
+      line(A[0], A[1], D[0], D[1])
+      line(B[0], B[1], C[0], C[1])
+      line(D[0], D[1], C[0], C[1])
+      myPoint(B[0], B[1], 'B')
+      myPoint(D[0], D[1], 'D')
+
+      // 顺便画一下D，C的倍增线段
+      if (DISPLAY_DOUBLE.checked()) {
+        const dB = doublePoint(A, B, X)
+        const dC = doublePoint(D, C, X)
+        line(C[0], C[1], dC[0], dC[1])
+        line(dC[0], dC[1], dB[0], dB[1])
+        line(B[0], B[1], dB[0], dB[1])
+        myPoint(dB[0], dB[1], '倍增AB')
+        myPoint(dC[0], dC[1], '倍增CD')
+      }
+      Object.values(draggablePoints).forEach(point => point.draw())
+    }
+
+    function mousePressed() {
+      Object.values(draggablePoints).forEach(point => point.mousePressed())
+    }
+
+    function mouseDragged() {
+      Object.values(draggablePoints).forEach(point => point.mouseDragged())
+    }
+
+    function mouseReleased() {
+      Object.values(draggablePoints).forEach(point => point.mouseReleased())
+    }
+
+
+    // =====================工具函数，均纯=======================
+
+    function myPoint(x, y, label) {
+      circle(x, y, 10)
+      text(label, x + 10, y)
+    }
+    function distance(p1, p2) {
+      return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2))
+    }
+
+
+    // 找到指向消失点的直线P1P2的倍增线段
+    function doublePoint(p1, p2, dim) {
+      // 保证p1更远
+      if (distance(p1, dim) < distance(p2, dim)) [p2, p1] = [p1, p2]
+      // 将直线用起始点和方向向量来表示
+      const [x1, y1] = p1
+      const [x2, y2] = p2
+      if (x1 === x2 && y1 === y2) return []
+      const a = distance(p1, dim)
+      const l = distance(p2, dim)
+      const len = (2 * a * a - 2 * l * a) / (2 * a - l) 
+      const P12 = distance(p1, p2)
+      const ratio = len / P12
+      return [x1 + (x2 - x1) * ratio, y1 + (y2 - y1) * ratio]
+    }
+
+    // 找到指向消失点的直线P1P2中的n等分点
+    function nSplitPoints(n, p1, p2, dim) {
+      // 保证p1更远
+      if (distance(p1, dim) < distance(p2, dim)) [p2, p1] = [p1, p2]
+      // 将直线用起始点和方向向量来表示
+      const [x1, y1] = p1
+      const [x2, y2] = p2
+      if (x1 === x2 && y1 === y2) return []
+      const longToDim = distance(p1, dim)
+      const shortToDim = distance(p2, dim)
+      const lens = nSplit(n, longToDim, shortToDim)
+      const P12 = distance(p1, p2)
+      return lens.map(len => {
+        const ratio = len / P12
+        return [x1 + (x2 - x1) * ratio, y1 + (y2 - y1) * ratio]
+      })
+    }
+
+    function nSplit(n, longToDim, shortToDim) {
+      if (n <= 1 || longToDim <= 0 || shortToDim <= 0) return []
+      if (longToDim < shortToDim) [shortToDim, longToDim] = [longToDim, shortToDim]
+      const res = []
+      for (let a = 1; a <= n - 1; a++) {
+        const b = n - a
+        res.push(n * longToDim * shortToDim / (a * longToDim + b * shortToDim))
+      }
+      return res.map(toDim => longToDim - toDim)
+    }
+    
+    // 求两直线交点 
+    function line_intersect(p1, p2, p3, p4) {
+      const [x1, y1] = p1
+      const [x2, y2] = p2
+      const [x3, y3] = p3
+      const [x4, y4] = p4
+      var ua, ub, denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+      if (denom == 0) {
+        return null;
+      }
+      ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+      ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+      return [x1 + ua * (x2 - x1), y1 + ua * (y2 - y1)]
+    }
+
+  </script>
+</body>
+
+</html>

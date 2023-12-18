@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在兴趣上投入太多，最近发现当前的认识有些不足以应对工作，该接触点 Real World 了。为此，至少五六七月的目标集中在和工作密切相关的东西，如 kafka，redis，oracle，mybatis，对其进行系统学习，同时补全那些我没有意识到的地方，比如这里：日志系统及其最佳实践。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="log4j2 配置实践">
+<meta property="og:url" content="http://example.com/2022/06-01log4j2%E9%85%8D%E7%BD%AE%E5%AE%9E%E8%B7%B5.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="在兴趣上投入太多，最近发现当前的认识有些不足以应对工作，该接触点 Real World 了。为此，至少五六七月的目标集中在和工作密切相关的东西，如 kafka，redis，oracle，mybatis，对其进行系统学习，同时补全那些我没有意识到的地方，比如这里：日志系统及其最佳实践。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-01T06:47:08.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.299Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Real World">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>log4j2 配置实践 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="log4j2 配置实践">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-06-01 14:47" pubdate>
+        2022年6月1日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      15k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">log4j2 配置实践</h1>
+            
+            <div class="markdown-body">
+              <p>到目前为止，我是如何 debug 的呢？当然是在本地跑起来，一通操作，然后紧盯控制台，坐等要关注的信息出现，这很多时候足以应付需要。可是若是生产环境出现了 bug，让咱去修复呢？这就引入了一堆问题——该在哪里去找日志？该如何去迅速找到自己想要的日志？再上升到理论，在开发的时候如何在出现 bug 时能给出最清晰明了的日志以帮助定位问题？</p>
+<p>为此，必须去了解日志框架及其配置，以及最佳实践。现在使用的最为广泛的日志框架是 log4j2，其使用 slf4j 作为门面，因此对其进行学习。下面说的 log4j 指代 log4j2。</p>
+<hr>
+<p>log4j 作为一个日志框架，它和控制台输出相较有何区别？主要是<strong>它具有更高的自定义性和扩展性</strong>——它能控制日志的格式（除日志文本之外，还能带上时间，线程名，类名等，这通过用户给定的格式化字符串去配置），能控制日志的目的地，能控制日志输出级别…这些玩意都在一个配置文件中进行配置，因此修改不需要更改源代码。</p>
+<p>log4j 的官方文档处记录了一些关于 log4j 的 <a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/articles.html">文章</a>，官网中关于 log4j 的 <a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/manual/architecture.html">架构文档</a> 也是值得阅读的。</p>
+<p>log4j 有三个重要组件：Logger，Appender，Layout，其中 Logger 抽象特定日志级别的日志打印器，如 ERROR 级别，FATAL 级别，INFO 级别；Appender 抽象日志的目的地，如文件，控制台；Layout 抽象日志的格式，如格式化形式，HTML 形式。</p>
+<blockquote>
+<p>或许可以说，日志框架有三个要素：打印什么种类的日志？打印到哪里去？打印什么内容？</p>
+</blockquote>
+<h1 id="何谓日志级别"><a href="#何谓日志级别" class="headerlink" title="何谓日志级别"></a>何谓日志级别</h1><p>这里首先引入了一个新概念——什么是日志级别？显然，我们打的日志本身就是分场合的——展示特定信息的，追溯请求全流程的，仅用于 debug 的，打印错误的，将日志的“场合”抽象出来对规范的日志有利。</p>
+<p>但是，日志框架所抽象出来的并非是日志“种类”，而是日志<strong>级别</strong>，虽然不知道为何这样设计，但既然都这样实践这么多年了……</p>
+<p>log4j 有 8 个级别，按优先级降序排序：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs routeros">OFF &gt; FATAL &gt; <span class="hljs-built_in">ERROR</span> &gt; WARN &gt; <span class="hljs-built_in">INFO</span> &gt; <span class="hljs-built_in">DEBUG</span> &gt; TRACE &gt; ALL<br></code></pre></div></td></tr></table></figure>
+
+<ol>
+<li><code>OFF</code>：Nothing！</li>
+<li><code>FATAL</code>：指明足以终止程序运行的事件，比如连接数据库失败，必需的配置未找到</li>
+<li><code>ERROR</code>：指明错误，但应用可继续运行（用户的输入错误应当放到 WARN）</li>
+<li><code>WARN</code>：指明可能导致错误的事件，或有必要提醒的事件</li>
+<li><code>INFO</code>：程序运行描述信息，粒度较粗</li>
+<li><code>DEBUG</code>：细粒度的描述信息，主要用于帮助 debug</li>
+<li><code>TRACE</code>：程序运行轨迹，最细的粒度</li>
+<li><code>ALL</code>：Everything！</li>
+</ol>
+<blockquote>
+<p>FATAL 是“致命的”，在有些语言里也用 CRITICAL</p>
+</blockquote>
+<p>可以认为 OFF 和 ALL 是标识性的，没有日志处在 OFF 级别，ALL 级别代表所有日志（自定义的日志级别可能在 ALL 级别上才打印）。</p>
+<p><strong>当设置日志级别为特定的优先级的时候，只有大于等于该优先级的日志会被打印</strong>，比如，当我们设置优先级为 INFO 的时候，只有 FATAL，ERROR，WARN，INFO 的信息得到打印。</p>
+<h1 id="Learn-log4j2-xml-in-Y-Minutes"><a href="#Learn-log4j2-xml-in-Y-Minutes" class="headerlink" title="Learn log4j2.xml in Y Minutes"></a>Learn log4j2.xml in Y Minutes</h1><p>log4j 的配置是最重要的一部分（想必也不会有几个人去自定义 Appender 之类的，因此对其的使用，即配置是最重要的），至于具体使用，则留给 slf4j。这里我认为直接采取类似<code>Learn X in Y Minutes</code>的形式即可，描述直接结合配置，事半功倍鸭！</p>
+<blockquote>
+<p>考虑到当前对日志框架没必要深入（长期基本也没必要深入，毕竟是配置文件，试错成本低），因此只学习最基本的东西。</p>
+</blockquote>
+<p>官方的关于配置的文档见 <a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/manual/configuration.html">此</a>，未免讲的有点过于宽泛了吧？</p>
+<h2 id="log4j-的默认配置"><a href="#log4j-的默认配置" class="headerlink" title="log4j 的默认配置"></a>log4j 的默认配置</h2><p>下面展示的是 log4j 没有检查到任何配置时的默认配置，十分沉默，只有 FATAL 和 ERROR 的日志会被输出（到控制台）。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-comment">&lt;!-- status 是 log4j 自己的日志级别 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span> <span class="hljs-attr">status</span>=<span class="hljs-string">&quot;WARN&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- Appender 的 name 仅供引用 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;error&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这里定义了一个 Appender 和一个 Logger，Appender 代表日志的目的地，这里是控制台，其目标是标准输出流；Logger 代表日志打印者，这里的 Logger 是<strong>根日志打印器 Root</strong>，这代表所有日志如果没有被其它日志打印器“拦截”的话，就会来到根日志打印器。</p>
+<p>这里的 Appender 使用 PatternLayout（显然，Appender 要使用特定的 Layout，直接将其包含在自己的子标签中即可）。</p>
+<p>默认配置用一句话去概述，就是<strong>所有优先级大于等于 ERROR 的日志会送往标准输出流，其它的忽略</strong>，这显然仅供测试时 DEBUG 使用，无法适应生产环境。</p>
+<h2 id="打印日志到文件"><a href="#打印日志到文件" class="headerlink" title="打印日志到文件"></a>打印日志到文件</h2><p>要打印日志到文件，就得先添加作为文件的目的地，并在日志打印器中去引用它，代码类似下面。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span> <span class="hljs-attr">status</span>=<span class="hljs-string">&quot;WARN&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>logs/thelog.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- Appender 的 name 仅供引用 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;File&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;logFile&#125;&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span> /&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;File&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这样配置，所有大于等于 INFO，即 INFO，WARN，ERROR，FATAL 的日志会被同时输出到文件<code>logs/thelog.log</code>和控制台上。</p>
+<p>Properties 用于定义可重用的字符串常量。</p>
+<h2 id="分离不同级别的日志"><a href="#分离不同级别的日志" class="headerlink" title="分离不同级别的日志"></a>分离不同级别的日志</h2><p>先声明，想让某特定级别的日志输出到特定位置不一定不能实现，但是是没有实践意义的。</p>
+<p>考虑这样的需求，我们想把所有 INFO 以上的日志都打印到控制台，把所有 WARN 以上的日志都打印到特定文件以供查阅，这通过<strong>配置 AppenderRef 的级别</strong>去实现。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-comment">&lt;!-- status 是 log4j 自己的日志级别 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span> <span class="hljs-attr">status</span>=<span class="hljs-string">&quot;WARN&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>logs/warn.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- Appender 的 name 仅供引用 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;logFile&#125;&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span> /&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;WARN&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>注意：<strong>AppenderRef 的级别设置的比 Logger 的级别更低是无效的</strong>，比如 Logger 级别设置为 INFO，AppenderRef 的级别设置为 TRACE，则仍旧只有 INFO 及以上的日志会来到该 Appender。</p>
+<h2 id="分离框架和业务代码的日志"><a href="#分离框架和业务代码的日志" class="headerlink" title="分离框架和业务代码的日志"></a>分离框架和业务代码的日志</h2><p>再进一步，我们想要能够<strong>分离框架的日志和业务的日志</strong>，这样来更好地帮助 debug；同时，我们也想<strong>在某个地方能同时看到所有的日志</strong>。为此，需要定义额外的 logger 了，但代码仍旧是比较容易理解的。</p>
+<p>这里需要引入两个新概念：Logger 的 Name，以及 additivity，Logger 的 Name 一般情况下使用包名，这代表<strong>这个包下的类打的日志会来到这个 Logger</strong>；additivity 则表示这个 Logger 是否会<strong>在处理这个日志后把这个日志“冒泡”到父 Logger</strong>（是的，Logger 有继承性），默认为 true，即冒泡。</p>
+<blockquote>
+<p>Logger 的 Name 通常使用包名，这是由于我们在业务代码中 getLogger 时通常是通过全限定类名，如果随便写的话那肯定全跑 Root 上去了。</p>
+</blockquote>
+<p>从需求出发：我们要让框架的日志输出到<code>logs/framework.log</code>，业务的日志输出到<code>logs/bussiness.log</code>，<strong>控制台上只输出框架日志</strong>。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-comment">&lt;!-- status 是 log4j 自己的日志级别 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span> <span class="hljs-attr">status</span>=<span class="hljs-string">&quot;WARN&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logDir&quot;</span>&gt;</span>logs<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;frameworkLogFile&quot;</span>&gt;</span>$&#123;logDir&#125;/framework.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bussinessLogFile&quot;</span>&gt;</span>$&#123;logDir&#125;/bussiness.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- Appender 的 name 仅供引用 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;framework&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;frameworkLogFile&#125;&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;SPRING    %d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bussiness&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;bussinessLogFile&#125;&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;BUSSINESS %d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Logger</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;me.yuuki&quot;</span> <span class="hljs-attr">additivity</span>=<span class="hljs-string">&quot;false&quot;</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;WARN&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;bussiness&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Logger</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Logger</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;org.springframework&quot;</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;TRACE&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;framework&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Logger</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>上面的配置会达到下面的结果：</p>
+<ul>
+<li><code>me.yuuki</code>包下的 WARN 级别及以上的日志会去到<code>logs/bussiness.log</code></li>
+<li><code>org.springframework</code>包下的 TRACE 级别及以上的日志会去到<code>logs/framework.log</code>和控制台（注意，<strong>TRACE 及以上的日志都会去到控制台</strong>！这就是说 Root 的 level 设置被“覆盖”掉了）</li>
+<li>其它包下的 INFO 级别及以上的日志会去到控制台</li>
+</ul>
+<h2 id="关于-Logger-的继承性"><a href="#关于-Logger-的继承性" class="headerlink" title="关于 Logger 的继承性"></a>关于 Logger 的继承性</h2><p>Logger 使用 NAME 来表示继承性——不考虑相等的情况，如果 Logger A 的 NAME 是 Logger B 的 NAME 的前缀（其实还得带上一个<code>.</code>），则 B 是 A 的子类，比如，<code>me.yuuki.dao</code>是<code>me.yuuki</code>的子类，同时一切 Logger 都是 Root 的子类。</p>
+<p>从当前看来，继承性主要表现在三个地方：</p>
+<ol>
+<li>子类的日志能够冒泡到父类</li>
+<li>子类的日志级别会使用父类的级别如果没有配置</li>
+<li>子类的日志级别会覆盖父类的日志级别</li>
+</ol>
+<blockquote>
+<p>Root 的默认级别为 ERROR。</p>
+</blockquote>
+<p>比如上面的例子中，<code>me.yuuki</code>设置不冒泡，因此只自己处理了；<code>org.springframework</code>的日志级别是 TRACE，因此覆盖了 Root 的 INFO，因此打到<code>org.springframework</code>的日志打到 Root，即输出到控制台上的是 TRACE 级别。</p>
+<p>比如，下面的配置将<code>me.yuuki.dao</code>的日志输出到<code>logs/dao.log</code>，<code>me.yuuki.service</code>的日志输出到<code>logs/service.log</code>，<code>me.yuuki</code>（除<code>dao</code>）的日志输出到<code>logs/bussiness.log</code>，所有日志输出到控制台。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-comment">&lt;!-- status 是 log4j 自己的日志级别 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span> <span class="hljs-attr">status</span>=<span class="hljs-string">&quot;WARN&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logDir&quot;</span>&gt;</span>logs<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;daoLogFile&quot;</span>&gt;</span>$&#123;logDir&#125;/dao.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;serviceLogFile&quot;</span>&gt;</span>$&#123;logDir&#125;/service.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;BizLogFile&quot;</span>&gt;</span>$&#123;logDir&#125;/bussiness.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- Appender 的 name 仅供引用 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dao&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;daoLogFile&#125;&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;service&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;serviceLogFile&#125;&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;bussiness&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;BizLogFile&#125;&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Logger</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;me.yuuki.dao&quot;</span> <span class="hljs-attr">additivity</span>=<span class="hljs-string">&quot;false&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dao&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Logger</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Logger</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;me.yuuki.service&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;service&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Logger</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Logger</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;me.yuuki&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;bussiness&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Logger</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- 这个级别会影响上面的所有 Logger，因为它们没有配置 level --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;TRACE&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="在测试和生产环境使用不同配置"><a href="#在测试和生产环境使用不同配置" class="headerlink" title="在测试和生产环境使用不同配置"></a>在测试和生产环境使用不同配置</h2><p>如何<strong>在不改变配置文件的情况下</strong>让配置文件能直接在测试和生产环境中同时使用？显然我们需要一个类似 profile 之类的东西，而 log4j 确实提供了这种功能，负责该功能的实体称为 Arbiter，仲裁者。仲裁者的行为就像某些语言的 when 语句，或 mybatis 的 if 语句，但有一些更复杂的标签使其能实现 switch 的功能。</p>
+<p>下面就两种复杂程度不同的 Arbiter 配置进行描述，when 和 switch 这两个关键字描述它们的行为再适合不过。但 arbiter 能出现的地方远不止于此，容易找到更优雅的编写方案。</p>
+<h3 id="when"><a href="#when" class="headerlink" title="when"></a>when</h3><p>下面的代码使用了 SystemPropertyArbiter，它根据系统属性 env 的值进行裁决，在生产环境时将文件输出到<code>/tmp/prod.log</code>上，在开发环境时输出到<code>logs/dev.log</code>上。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- 这个参数需要用 -D 去给进去，很蛋疼 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">SystemPropertyArbiter</span> <span class="hljs-attr">propertyName</span>=<span class="hljs-string">&quot;env&quot;</span> <span class="hljs-attr">propertyValue</span>=<span class="hljs-string">&quot;dev&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>logs/dev.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">SystemPropertyArbiter</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">SystemPropertyArbiter</span> <span class="hljs-attr">propertyName</span>=<span class="hljs-string">&quot;env&quot;</span> <span class="hljs-attr">propertyValue</span>=<span class="hljs-string">&quot;prod&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>/tmp/prod.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">SystemPropertyArbiter</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>但是最常用的当然还是 Spring boot profile：</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">SpringProfile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dev | test&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>logs/dev.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">SpringProfile</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">SpringProfile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;prod&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>/tmp/prod.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">SpringProfile</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<h3 id="switch"><a href="#switch" class="headerlink" title="switch"></a>switch</h3><p>实现 switch 要使用 SELECT 标签，它的所有子标签都为 Arbiter，<strong>它会找到第一个为真的 Arbiter 并应用</strong>，log4j 提供了一个 DefaultArbiter，它始终为真。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">Properties</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Select</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">SystemPropertyArbiter</span> <span class="hljs-attr">propertyName</span>=<span class="hljs-string">&quot;env&quot;</span> <span class="hljs-attr">propertyValue</span>=<span class="hljs-string">&quot;dev&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>logs/dev.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">SystemPropertyArbiter</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">SystemPropertyArbiter</span> <span class="hljs-attr">propertyName</span>=<span class="hljs-string">&quot;env&quot;</span> <span class="hljs-attr">propertyValue</span>=<span class="hljs-string">&quot;prod&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>/tmp/prod.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">SystemPropertyArbiter</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">DefaultArbiter</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;logFile&quot;</span>&gt;</span>logs/others.log<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">DefaultArbiter</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Select</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Properties</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<h3 id="切割切割！"><a href="#切割切割！" class="headerlink" title="切割切割！"></a>切割切割！</h3><p>但何不做得更绝一些，完成一些彻底的切割？</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Configuration</span> <span class="hljs-attr">status</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Select</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">SystemPropertyArbiter</span> <span class="hljs-attr">propertyName</span>=<span class="hljs-string">&quot;env&quot;</span> <span class="hljs-attr">propertyValue</span>=<span class="hljs-string">&quot;dev&quot;</span>&gt;</span><br>            <span class="hljs-comment">&lt;!-- +++++++++++++++开发环境+++++++++++++++ --&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br><br>                <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;logs/dev.log&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br><br>            <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br><br>                <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span> /&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;file&quot;</span> /&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">SystemPropertyArbiter</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">SystemPropertyArbiter</span> <span class="hljs-attr">propertyName</span>=<span class="hljs-string">&quot;env&quot;</span> <span class="hljs-attr">propertyValue</span>=<span class="hljs-string">&quot;prod&quot;</span>&gt;</span><br>            <span class="hljs-comment">&lt;!-- +++++++++++++++生产环境+++++++++++++++ --&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br><br>                <span class="hljs-tag">&lt;<span class="hljs-name">File</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;logs/prod.log&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">File</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br><br>                <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span> /&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;file&quot;</span> /&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">SystemPropertyArbiter</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">DefaultArbiter</span>&gt;</span><br>            <span class="hljs-comment">&lt;!-- +++++++++++++++默认配置+++++++++++++++ --&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span> <span class="hljs-attr">pattern</span>=<span class="hljs-string">&quot;%d&#123;HH:mm:ss.SSS&#125; [%t] %-5level %logger&#123;36&#125; - %msg%n&quot;</span>/&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">Loggers</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">Root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">AppenderRef</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;Console&quot;</span> /&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">Root</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">Loggers</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">DefaultArbiter</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Select</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Configuration</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="关于-PatternLayout"><a href="#关于-PatternLayout" class="headerlink" title="关于 PatternLayout"></a>关于 PatternLayout</h2><p>PatternLayout 即格式化日志输出，使用一个模式字符串去作为格式，这应该是使用最广泛的 Layout，关于其使用的各种模式，直接翻 <a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout">文档</a> 吧，这里给一个例子。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- %date 表示日期，%thread 表示线程名，%-5level：级别从左显示 5 个字符宽度 %msg：日志消息，%n 是换行符 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">pattern</span>&gt;</span>%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [ %t ] [%c&#123;1.&#125;] - [ %p ]  %m%n<span class="hljs-tag">&lt;/<span class="hljs-name">pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">PatternLayout</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="关于-Appender"><a href="#关于-Appender" class="headerlink" title="关于 Appender"></a>关于 Appender</h2><p>关于 Appender 的文档见 <a target="_blank" rel="noopener" href="https://logging.apache.org/log4j/2.x/manual/appenders.html">此</a>，仍旧是给出示例。</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- Appender，追加器，表示日志的目的地 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Appenders</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 添加一个控制台追加器，目标是标准输出流  --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">Console</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Console&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;SYSTEM_OUT&quot;</span> <span class="hljs-attr">follow</span>=<span class="hljs-string">&quot;true&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">ThresholdFilter</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;info&quot;</span> <span class="hljs-attr">onMatch</span>=<span class="hljs-string">&quot;ACCEPT&quot;</span> <span class="hljs-attr">onMismatch</span>=<span class="hljs-string">&quot;DENY&quot;</span>/&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">pattern</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">PatternLayout</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">Console</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--添加一个文本追加器，文件位于根目录下，名为 server.log--&gt;</span><br>    <span class="hljs-comment">&lt;!-- &lt;RollingFile name=&quot;File&quot; fileName=&quot;$&#123;FILE_PATH&#125;/platform.log&quot; filePattern=&quot;$&#123;FILE_PATH&#125;/platform/$$&#123;date:yyyy-MM&#125;/%d&#123;yyyy-MM-dd&#125;-%i.log.gz&quot;&gt; --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">RollingFile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;File&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;FILE_PATH&#125;/platform.log&quot;</span> <span class="hljs-attr">filePattern</span>=<span class="hljs-string">&quot;$&#123;FILE_PATH&#125;/platform/$$&#123;date:yyyy-MM&#125;/%d&#123;yyyy-MM-dd&#125;-%i.log&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">pattern</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">PatternLayout</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Policies</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">SizeBasedTriggeringPolicy</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;50MB&quot;</span>/&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">TimeBasedTriggeringPolicy</span> <span class="hljs-attr">modulate</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">interval</span>=<span class="hljs-string">&quot;1&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Policies</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">DefaultRolloverStrategy</span> <span class="hljs-attr">max</span>=<span class="hljs-string">&quot;1000&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">RollingFile</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- commonFile 无特殊用途，仅做日志模版用 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">RollingFile</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;commonFile&quot;</span> <span class="hljs-attr">fileName</span>=<span class="hljs-string">&quot;$&#123;FILE_PATH&#125;/common.log&quot;</span> <span class="hljs-attr">filePattern</span>=<span class="hljs-string">&quot;$&#123;FILE_PATH&#125;/common/$$&#123;date:yyyy-MM&#125;/%d&#123;yyyy-MM-dd&#125;-%i.log.gz&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">PatternLayout</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">pattern</span>&gt;</span>$&#123;LOG_PATTERN&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">pattern</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">PatternLayout</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">Policies</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">SizeBasedTriggeringPolicy</span> <span class="hljs-attr">size</span>=<span class="hljs-string">&quot;50MB&quot;</span>/&gt;</span><br>            <span class="hljs-comment">&lt;!-- &lt;TimeBasedTriggeringPolicy modulate=&quot;true&quot; interval=&quot;1&quot; /&gt; --&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">Policies</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">DefaultRolloverStrategy</span> <span class="hljs-attr">max</span>=<span class="hljs-string">&quot;1000&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">RollingFile</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">Appenders</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Real-World/">Real World</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06-07%E5%85%B3%E4%BA%8E%E6%8E%A7%E5%88%B6%E5%99%A8%E5%A4%84%E7%90%86%E8%A1%A8%E5%8D%95%EF%BC%8C%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%9E%E4%BE%8B.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 Spring MVC 处理 form 和文件的实例</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05-04todo-txt%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B.html">
+                        <span class="hidden-mobile">todo.txt 简明教程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

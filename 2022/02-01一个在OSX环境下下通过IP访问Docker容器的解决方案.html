@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="不建议使用这种方式，它实现起来不算方便，且实现后还需要配置终端的代理设置，在这里推荐我写（抄）的项目，虽然需要在本机安装额外的依赖，但是配置完后就基本无感知了！  如果是 VSCode或 JetBrain 家的 IDE，也可以将项目部署到 container 内。           MacOS（以及 Windows）上的 Docker 由于实现方式的原因，在网络配置上有许多限制，最">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个在 OSX 环境下下通过 IP 访问 Docker 容器的解决方案">
+<meta property="og:url" content="http://example.com/2022/02-01%E4%B8%80%E4%B8%AA%E5%9C%A8OSX%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%B8%8B%E9%80%9A%E8%BF%87IP%E8%AE%BF%E9%97%AEDocker%E5%AE%B9%E5%99%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="不建议使用这种方式，它实现起来不算方便，且实现后还需要配置终端的代理设置，在这里推荐我写（抄）的项目，虽然需要在本机安装额外的依赖，但是配置完后就基本无感知了！  如果是 VSCode或 JetBrain 家的 IDE，也可以将项目部署到 container 内。           MacOS（以及 Windows）上的 Docker 由于实现方式的原因，在网络配置上有许多限制，最">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gh-card.dev/repos/V-YOP/docker-network.svg">
+<meta property="article:published_time" content="2022-02-01T15:03:03.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.292Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="环境搭建">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gh-card.dev/repos/V-YOP/docker-network.svg">
+  
+  
+  <title>一个在 OSX 环境下下通过 IP 访问 Docker 容器的解决方案 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="一个在 OSX 环境下下通过 IP 访问 Docker 容器的解决方案">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-01 23:03" pubdate>
+        2022年2月1日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.2k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">一个在 OSX 环境下下通过 IP 访问 Docker 容器的解决方案</h1>
+            
+            <div class="markdown-body">
+              
+    <div class="alertbox alertbox-exclamation">
+      <p>不建议使用这种方式，它实现起来不算方便，且实现后还需要配置终端的代理设置，在这里推荐我写（抄）的项目，虽然需要在本机安装额外的依赖，但是配置完后就基本无感知了！</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/V-YOP/docker-network"><img src="https://gh-card.dev/repos/V-YOP/docker-network.svg"></a></p>
+<p>如果是 VSCode<span class="heimu">或 JetBrain 家的 IDE</span>，也可以将项目部署到 container 内。</p>
+
+    </div>
+  
+
+<p>MacOS（以及 Windows）上的 Docker 由于<a target="_blank" rel="noopener" href="https://docs.docker.com/desktop/mac/networking/">实现方式的原因</a>，在网络配置上有许多限制，最麻烦的地方是无法通过容器的 IP 直接访问 IP，这在搭建分布式系统环境时会造成很多麻烦。我经过一些研究，发现可以使用 Docker 提供的（实验性的）<code>socksProxyPort</code>配置和系统的 proxy 配置来使对特定网段的请求路由到 container。</p>
+<span id="more"></span>
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>配置 Docker 的<code>socksProxyPort</code>后，对该端口的请求将会被路由到 Container 中，因此我们可以通过配置代理让对特定网段如<code>172.172.0.0/16</code>的请求代理到<code>127.0.0.1:socketProxyPort</code>，让 Docker 引擎帮我们路由到具体的容器中。</p>
+<p>这里的代理配置我们使用 Mac 的 PAC 配置进行实现，考虑到 Mac 暂时不支持从文件系统读取 PAC 文件，我们需要某种渠道将该文件托管到特定服务器中，这里使用 Mac 自带的 apache 的服务器（使用 nginx，nodejs 的 http-server 等也行）。</p>
+<h2 id="材料"><a href="#材料" class="headerlink" title="材料"></a>材料</h2><ul>
+<li>Docker 环境</li>
+<li>apache HttpServer（Mac 自带）</li>
+<li>爱</li>
+</ul>
+<h2 id="配置-Docker"><a href="#配置-Docker" class="headerlink" title="配置 Docker"></a>配置 Docker</h2><p>我们首先需要配置 Docker 中的<code>socksProxyPort</code>配置项，该配置文件位于<code>~/Library/Group\ Containers/group.com.docker/settings.json</code>，可通过搜索找到<code>socksProxyPort</code>项，其默认值为 0，修改其为想要使用的端口，这里使用<code>8888</code>。</p>
+<h2 id="编写-PAC-文件"><a href="#编写-PAC-文件" class="headerlink" title="编写 PAC 文件"></a>编写 PAC 文件</h2><p>然后我们编写一个 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file">PAC 文件</a> 来配置代理信息，PAC 文件使用 js 编写，下面的代码是一个可直接使用的例子，它假设要使用的 Docker 容器占据的网段为<code>172.172.0.0/16</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">FindProxyForURL</span>(<span class="hljs-params">url, host</span>) &#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isInNet</span>(host, <span class="hljs-string">&#x27;172.172.0.0&#x27;</span>, <span class="hljs-string">&#x27;255.255.0.0&#x27;</span>)) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;SOCKS5 127.0.0.1:8888&#x27;</span><br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;DIRECT&#x27;</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p><code>isInNet(host, &#39;172.172.0.0&#39;, &#39;255.255.0.0&#39;)</code>检查请求的地址是否满足<code>172.172.*.*</code>，如果满足（说明是对 Docker 容器的访问），则将其通过 SOCKS5 代理路由到<code>127.0.0.1:8888</code>，即 Docker 中配置的<code>socksProxyPort</code>端口。</p>
+<p>如果不满足，则将该请求直接“放行”。</p>
+<p>编写完成 PAC 文件后，将其保存在<code>/Library/WebServer/Documents</code>目录下，假设文件名称为<code>docker.pac</code>。</p>
+<h2 id="配置-HttpServer-的端口和-type"><a href="#配置-HttpServer-的端口和-type" class="headerlink" title="配置 HttpServer 的端口和 type"></a>配置 HttpServer 的端口和 type</h2><p>HttpServer 默认使用 80 端口，这对我们来说可能会造成一些麻烦，所以我们应修改该端口。</p>
+<p>只需编辑<code>/etc/apache2/httpd.conf</code>，搜索<code>Listen</code>，把那一堆奇怪的 XML 标签删掉，改成<code>Listen 你想用的端口</code>就行，这里使用<code>11451</code>（可惜只有 5 位！）。 </p>
+<p>这里同时还需为 pac 文件配置 type，如果没有该配置，该文件可能会不被识别，最终配置见下。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs nginx"><span class="hljs-comment"># ...</span><br><br><span class="hljs-attribute">Listen</span> <span class="hljs-number">11451</span><br><span class="hljs-comment"># PAC files e.g proxy.pac</span><br>AddType application/x-ns-proxy-autoconfig .pac<br><br><span class="hljs-comment"># ...</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="启动-HttpServer"><a href="#启动-HttpServer" class="headerlink" title="启动 HttpServer"></a>启动 HttpServer</h2><p>我们首先使用如下命令启动 HttpServer 服务——</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ sudo apachectl start<br></code></pre></div></td></tr></table></figure>
+
+<p>然后使用<code>curl</code>测试一下是否启动了，如果这个命令正确返回了我们编写的 pac 文件的信息就说明启动成功。</p>
+<blockquote>
+<p>如果没启动，请百度😂。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ curl localhost:11451/docker.pac<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="配置系统的-PAC-配置"><a href="#配置系统的-PAC-配置" class="headerlink" title="配置系统的 PAC 配置"></a>配置系统的 PAC 配置</h2><p>前往<code>System Preferences</code> -&gt; <code>Network</code> -&gt; <code>Advanced</code> -&gt; <code>Proxy</code>，勾选<code>Automatic Proxy Configuration</code>，在 URL 中填入地址<code>localhost:11451/docker.pac</code>。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>我们首先创建一个 Docker 的子网，再在该子网中创建一个 nginx 容器来检查能否通过 IP 进行访问。</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ docker network create --subnet 172.172.0.0/16 --gateway 172.172.0.1 my_network<br>$ docker run -d --network my_network --ip 172.172.0.101 nginx<br></code></pre></div></td></tr></table></figure>
+
+<p>在浏览器中访问<code>172.172.0.101</code>（或者使用终端），如果出现 nginx 界面则配置成功。</p>
+<p>https_proxy&#x3D;<a target="_blank" rel="noopener" href="http://127.0.0.1:7890/">http://127.0.0.1:7890</a><br>http_proxy&#x3D;<a target="_blank" rel="noopener" href="http://127.0.0.1:7890/">http://127.0.0.1:7890</a><br>all_proxy&#x3D;socks5:&#x2F;&#x2F;127.0.0.1:7890</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02-02%E5%9C%A8IDEA%E4%B8%AD%E5%B0%86%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0Docker%E4%B8%AD%E8%BF%90%E8%A1%8C.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">在 IDEA 中将项目部署到 Docker 中运行</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html">
+                        <span class="hidden-mobile">一种方便理解折叠（fold）操作的方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

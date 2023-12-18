@@ -1,0 +1,491 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在之前再次学习折叠操作的时候，我曾做了一些笔记，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner，可谓是“Java 特色 reduce 操作”（哈哈！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Java8 的 stream 中的 reduce 操作">
+<meta property="og:url" content="http://example.com/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="在之前再次学习折叠操作的时候，我曾做了一些笔记，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner，可谓是“Java 特色 reduce 操作”（哈哈！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-16T16:08:28.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.293Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 Java8 的 stream 中的 reduce 操作 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 Java8 的 stream 中的 reduce 操作">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-17 00:08" pubdate>
+        2022年2月17日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 Java8 的 stream 中的 reduce 操作</h1>
+            
+            <div class="markdown-body">
+              <p>在之前再次学习折叠操作的时候，我曾做了一些<a href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html" title="一种方便理解折叠（fold）操作的方法">笔记</a>，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——<strong>为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner</strong>，可谓是“Java 特色 reduce 操作”（哈哈！）。</p>
+<p>最近学习 Hadoop 的 MapReduce 的时候，它的 Combiner 让我又回想起 java8-reduce 中的 Combiner（虽然其行为完全不是一回事就是了，MapReduce 中的 Combiner 的目的是预先进行一次本地的聚集，减少网络传输成本；java8-reduce 的 Combiner 的目的是归并各部分 reduce 的结果，得到最终值），因此这里又回过头来学习一波。</p>
+<blockquote>
+<p>咳咳，学过 MR 的 Combiner 后回过头来一看，发现它的行为（至少是接口）确实和 java8-reduce 的非常像，它们都需要保证输入和输出的签名是相同的以进行反复的 Combine。</p>
+</blockquote>
+<blockquote>
+<p>咳咳，学到 Spark 又回过头来看，发现 RDD 的 Aggregate 和 java8-stream 的并发版的 reduce 的签名是一致的，令人感叹。</p>
+</blockquote>
+<blockquote>
+<p>咳咳，学习函数式编程时，编写一个二叉树的 fold 方法，能发现它也需要一个 combiner方法，将左右子树得到的结果进行拼接。combiner 这个角色显然使用的地方是更加普遍的，它绝非仅是某种 Java 特色的产物，而是函数式编程在工程实践中发现出的一种模式。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>如果要说 java8-reduce 的最明显的特点，我认为有两个——</p>
+<p>首先，它非常合适同 Java 的可变集合一起工作（collect 方法），这在其他语言里是见不到的，这样既符合 java 传统的编程模式，也能保证足够的性能，甚至在并发情况下也能够应付。</p>
+<p>然后，它<strong>允许并发的 reduce 操作</strong>；java8-reduce 能把集合切分成多个部分，对每个部分并行地执行 reduce 操作，并通过所谓的 combiner 函数两两组合，得到最终结果；但显然使用并行的 reduce 操作时必须符合特定约束，以保证其能正确执行，无关切分情况或处理器核心数量。</p>
+<p>挨个点名！</p>
+<h2 id="The-easiest-way"><a href="#The-easiest-way" class="headerlink" title="The easiest way"></a>The easiest way</h2><p>最简单的 reduce 操作就是结果值和集合内的值同类型的 reduce 了，比如对集合求积，求和，Java 中干这事一样简单——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 不给定初始值也可，此时返回类型会变成 Optional&lt;Integer&gt;，这点还挺酷的，很“纯”。</span><br><span class="hljs-type">int</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>).reduce(<span class="hljs-number">0</span>, (acc, x) -&gt; acc + x); <span class="hljs-comment">// or Integer::sum</span><br>System.out.println(sum);<br></code></pre></div></td></tr></table></figure>
+
+<p>但 Java 未提供 reduceRight 方法，想必是认为其应用范围不广，事实也确实如此。</p>
+<h2 id="Parallel-Where-thing-goes-wrong"><a href="#Parallel-Where-thing-goes-wrong" class="headerlink" title="Parallel: Where thing goes wrong"></a>Parallel: Where thing goes wrong</h2><p>上面是串行流，它的行为同其它语言一致，但若是并行流呢？试试下面的代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>).parallel().reduce(<span class="hljs-number">1</span>, Integer::sum);<br>System.out.println(sum);<br></code></pre></div></td></tr></table></figure>
+
+<p>结果是什么？如果是串行流的话，结果是肯定的——7，但这是并行流，我的电脑的结果是 9。也可以去尝试一下其它结果，最后会发现，只要 zero 参数（java 叫做 identity，这个名字兴许能给我们启发）不为 0，最后并行得到的结果和串行必然不一样。</p>
+<p>那么，并行流的 reduce 究竟是怎么跑的？</p>
+<p>我们知道，串行流的 reduce 可以描述成把集合中各元素通过一个二元操作符相连接，比如上面的求集合的和可以写成——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-number">0</span> &gt;=&gt; <span class="hljs-number">1</span> &gt;=&gt; <span class="hljs-number">2</span> &gt;=&gt; <span class="hljs-number">3</span><br></code></pre></div></td></tr></table></figure>
+
+<p>但是并行流显然不是这样干的，总的来说，并行流的 reduce 操作，会先把流切分成多个部分（具体切分数目由处理器核心数量决定），然后对每个部分各自并行执行 reduce 操作，然后<strong>再两两进行 Combine 操作</strong>，得到最终结果，这里的每个切分的部分，可以把它称作<code>ReduceTask</code>，比如对<code>[1,2,3,4,5].reduceParr(1, plus)</code>，它的计算过程可能是这样的——</p>
+<ol>
+<li>将<code>[1, 2, 3, 4, 5]</code>切分成四段，<code>[1]</code>，<code>[2]</code>，<code>[3]</code>，<code>[4, 5]</code></li>
+<li>对每一段，并行调用 reduce 方法，即<code>[1].reduce(1, plus)</code>，<code>[2].reduce(1, plus)</code>……得到<code>2</code>，<code>3</code>，<code>4</code>，<code>10</code>。</li>
+<li>对结果两两执行 combine 操作，<strong>这里的 combine 操作即 acc 操作</strong>，即 plus，<code>combine(combine(2, 3), combine(4, 10))</code></li>
+<li>得到结果——19。（实践好像是分了 5 段，因此结果是 20）</li>
+</ol>
+<p>具体流程是我们不应该关心的，我们只需要知道，<strong>各个部分会分别 reduce，然后会两两 combine，最终得到最终结果</strong>。这里的“两两 combine”不是说从左往右依次 combine（这不就又是一个串行的 reduce 嘛），想象一下归并排序的迭代版，它自底向上，每次 combine 的都是更“大”的值。</p>
+<p><strong>对于同类型的 reduce 操作，combine 函数同 acc 函数相同</strong>，所以<code>[1,2,3].reduce(0, Integer::sum)</code>也可以描述成<code>[1,2,3].reduce(0, Integer::sum, Integer::sum)</code>，表示它的合并和积累函数都是 sum。</p>
+<h2 id="非同类型的-reduce"><a href="#非同类型的-reduce" class="headerlink" title="非同类型的 reduce"></a>非同类型的 reduce</h2><p>只有在非同类型的 reduce 操作中，combine 才会明确显示出来——它需要用户主动去定义，但我们先来看看 Java 特色的 reduce 操作。</p>
+<p>非同类型的 reduce 操作有两个方法可用——</p>
+<ul>
+<li><p><code>reduce(identity : U, acc : (U, T) =&gt; U, combiner : (U, U) =&gt; U)</code></p>
+</li>
+<li><p><code>collect(supplier : () =&gt; U, acc : (U, T) =&gt; (), combiner : (U, U) =&gt; ())</code></p>
+</li>
+</ul>
+<p>前者（reduce）用于累积的类型是不可变值的情况；后者（collect）用于累积的类型是可变值的情况。</p>
+<h3 id="reduce-方法"><a href="#reduce-方法" class="headerlink" title="reduce 方法"></a>reduce 方法</h3><p>我们先来看看 reduce，下面的操作将集合反转——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">List&lt;Integer&gt; res = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>).boxed()<br>    .reduce(<span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedList</span>&lt;&gt;(), (acc, x) -&gt; &#123;<br>        acc.addFirst(x);<br>        <span class="hljs-keyword">return</span> acc;<br>    &#125;, (a, b) -&gt; &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;);<br></code></pre></div></td></tr></table></figure>
+
+<p>在这里，第三个参数就是所谓的 combiner，这里因为是串行流，所以 combiner 不会被调用，可以直接返回 null。但 combiner 本身不能为 null，否则会抛空指针异常。</p>
+<p>但若是并行流呢？我们凭第一印象，大概会这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">List&lt;Integer&gt; res = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>).boxed().parallel()<br>    .reduce(<span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedList</span>&lt;&gt;(), (acc, x) -&gt; &#123;<br>        acc.addFirst(x);<br>        <span class="hljs-keyword">return</span> acc;<br>    &#125;, (a, b) -&gt; &#123;<br>        a.addAll(b);<br>        <span class="hljs-keyword">return</span> a;<br>    &#125;);<br></code></pre></div></td></tr></table></figure>
+
+<p>但是这样是无法生效的，如果试图对该集合进行输出，它在输出时会抛出空指针异常！这说明它的结构被破坏了，我们遇到了线程安全问题！</p>
+<p>但为什么会这样呢？原来，<strong>reduce 方法中所使用的 identity，会被每一个 ReduceTask 都共用</strong>！并且我们在 acc 函数中原样返回了累积值，因此它会被持续使用下去，如果在 combiner 中试图判断<code>a == b</code>，它也将是 true，因为 a 和 b 是同一个对象！</p>
+<p>因此，reduce 方法只适合不可变对象，或者我们可以每次返回值都不改变原值，而是返回一个新的值，新的引用，但这对性能是极大的损耗，只有 string 这样的不可变类在 reduce 方法上才能得到运用。</p>
+<h3 id="collect-方法"><a href="#collect-方法" class="headerlink" title="collect 方法"></a>collect 方法</h3><p>这时，使用<code>collect</code>方法就是一个更好的选择，我们再看一看 collect 的签名——</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-type">U</span> collect(supplier : () =&gt; <span class="hljs-type">U</span>, acc : (<span class="hljs-type">U</span>, <span class="hljs-type">T</span>) =&gt; (), combiner : (<span class="hljs-type">U</span>, <span class="hljs-type">U</span>) =&gt; ())<br></code></pre></div></td></tr></table></figure>
+
+<p>这签名实际上把所有细节都描述出来了——<strong>我们通过一个 supplier，来让每一个 ReduceTask 都能拿到不一样的引用，从而避免共享数据问题；acc 和 combiner 都是没有返回值的，因此显然我们需要通过修改累积值来完成积累和合并操作</strong>。下面使用 collect 来进行一个 count 操作——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">Map&lt;String, Integer&gt; count = Stream.of(<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;world&quot;</span>, <span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;me&quot;</span>, <span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;yukina&quot;</span>, <span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-string">&quot;happy&quot;</span>, <span class="hljs-string">&quot;world&quot;</span>)<br>    .parallel().collect(() -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;(),<br>        (acc, x) -&gt; &#123;<br>            <span class="hljs-keyword">if</span> (!acc.containsKey(x))<br>                acc.put(x, <span class="hljs-number">0</span>);<br>            acc.compute(x, (k, v) -&gt; v + <span class="hljs-number">1</span>);<br>        &#125;, (a, b) -&gt; &#123;<br>            <span class="hljs-comment">// combine 时必须把第二个值合并到第一个值</span><br>            b.forEach((kb, vb) -&gt; &#123;<br>                <span class="hljs-keyword">if</span> (!a.containsKey(kb))<br>                    a.put(kb, <span class="hljs-number">0</span>);<br>                a.compute(kb, (ka, va) -&gt; va + vb);<br>            &#125;);<br>        &#125;);<br></code></pre></div></td></tr></table></figure>
+
+<p>That’s it！了解这么多就足够了。<strong>使用原则是，当使用值类型，或不可变类型，如 String，Scala，Kotlin 的不可变集合，基本类型等的时候，使用 reduce 方法；使用引用类型，可变类型的时候，使用 collect 方法</strong>。虽然 combiner，acc，初始值的设置要遵循的一定的规律，但给出统一和容易理解的表述并不容易，具体问题具体分析吧。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02-19MapReduce%E7%9A%84hello-world.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hello, MapReduce——Word Count</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02-10%E9%85%8D%E7%BD%AEdocker%E9%9B%86%E7%BE%A4%E4%BA%92%E7%9B%B8%E4%B9%8B%E9%97%B4%E7%9A%84ssh.html">
+                        <span class="hidden-mobile">配置 docker 集群互相之间的 ssh</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Excel 的导入导出在工程中也是一个比较重要的部分（不如说上传下载文件，除了图片就是 Excel 了），必须对其进行了解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Excel 的导入导出">
+<meta property="og:url" content="http://example.com/2022/06-08%E5%85%B3%E4%BA%8EExcel%E7%9A%84%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="Excel 的导入导出在工程中也是一个比较重要的部分（不如说上传下载文件，除了图片就是 Excel 了），必须对其进行了解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/0e6a07bad86e6c5d5c7ec370baa1f576.jpg">
+<meta property="og:image" content="http://example.com/images/oss/QQ20220606-0.png">
+<meta property="article:published_time" content="2022-06-08T04:23:32.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.299Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Real World">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/0e6a07bad86e6c5d5c7ec370baa1f576.jpg">
+  
+  
+  <title>关于 Excel 的导入导出 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 Excel 的导入导出">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-06-08 12:23" pubdate>
+        2022年6月8日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 Excel 的导入导出</h1>
+            
+            <div class="markdown-body">
+              <p>在上一家公司里，我根据需求使用 FastExcel 去抽象出了一个 excel 导出工具类，但在其中并没有去深入了解 Excel 的操作，而现在时机已到。</p>
+<p>Java 处理 Excel 时，仍旧是使用最传统的 POI 较多（不是舰 C 的 <a target="_blank" rel="noopener" href="https://zh.moegirl.org.cn/%E8%88%B0%E9%98%9FCollection:%E5%A4%95%E7%AB%8B">那只</a>），POI 的 <a target="_blank" rel="noopener" href="https://poi.apache.org/index.html">官网</a> 见此，<strong>似乎没有成体系的文档</strong>，只有一些用例，但感觉这或许已经足够。</p>
+<p>POI 是一个用于处理 word，excel，ppt 等 office 文件格式的巨型的工具库，但下面所说的 POI 指的都是其中操作 Excel 的部分——HSSF（对应 xls）和 XSSF（对应 xlsx），引入 poi 只需要引入 poi-ooxml 依赖（它包括 poi）：</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.poi<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>poi-ooxml<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.2.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>下面尝试去专注这样几个场景：</p>
+<ol>
+<li>数据集的导入：即前端上传一个规范的 Excel 文件，其<strong>包含表头，每一行为一个实体</strong>，行数不定，需获取整个实体集合</li>
+<li>数据集的导出：返回给前端一个规范的 Excel 文件，其包含表头，每一行为一个实体，行数不定</li>
+<li>单个数据的导入：前端上传一个<strong>格式固定</strong>的 Excel 文件，<strong>整个 Excel 作为一个实体</strong></li>
+<li>单个数据的导出（或者按照模板导出）：返回给前端一个格式固定的 Excel 文件，使用单个实体填充其中特定格</li>
+</ol>
+<h1 id="POI-的组成"><a href="#POI-的组成" class="headerlink" title="POI 的组成"></a>POI 的组成</h1><p>POI 对 Excel 的抽象有四个关键的类：Workbook，Sheet，Row 和 Cell，其中，Wookbook 代表整个 Excel 文件，Sheet 代表 Excel 中的一个表格（每一个 Excel 文件都包含多个表格，其通过左下角的选项卡进行切换），Row 代表一个表格中的一行，Cell 代表一个单元格。</p>
+<p><img src="/images/oss/0e6a07bad86e6c5d5c7ec370baa1f576.jpg"></p>
+<p>应当避免使用具体的 HSSF 和 XSSF 类以使代码更抽象，且同时适配 xls 和 xlsx 文件。</p>
+<p>下面的实例主要来自官方文档的 quick-guide，见文章末尾链接。</p>
+<h1 id="数据集的导入"><a href="#数据集的导入" class="headerlink" title="数据集的导入"></a>数据集的导入</h1><p>数据集导入场景要求读取现存的 Excel 文件并识别相关的 Bean，一般思路是：</p>
+<ol>
+<li>通过 Excel 文件&#x2F;流创建 Workbook</li>
+<li>获取表头，知晓每一列对应的字段（当然，也可以用列数来直接区分）</li>
+<li>获取剩余每一行并对其进行处理</li>
+</ol>
+<p>Workbook 能通过 File，InputStream 去构造，比如下面的代码从用户上传的文件中拿到流，并构造 Workbook 和 Sheet（假设是第一个 Sheet）。</p>
+<p>下面通过一个轮子来描述数据集的导入，其将一个 Excel 转换成<code>List&lt;Map&lt;String, Object&gt;&gt;</code>，其中每一个 Map 为一个实体，key 为表头（因此该方法操作的 Excel 必须要有表头，且表头长度必须为 1，这是最简单的情况了）。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">List&lt;Map&lt;String, Object&gt;&gt; <span class="hljs-title function_">excelToCollection</span><span class="hljs-params">(InputStream in, <span class="hljs-type">int</span> sheetIndex)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// UserGuide 中也推荐使用 WorkbookFactory.create(in)</span><br>    <span class="hljs-type">Workbook</span> <span class="hljs-variable">wb</span> <span class="hljs-operator">=</span> WorkbookFactory.create(in);<br>    <span class="hljs-comment">// 获取指定 sheet</span><br>    <span class="hljs-type">Sheet</span> <span class="hljs-variable">sheet</span> <span class="hljs-operator">=</span> wb.getSheetAt(sheetIndex);<br>    <span class="hljs-comment">// 获取第一列和最后一列的 rownum</span><br>    <span class="hljs-type">int</span> <span class="hljs-variable">firstRowNum</span> <span class="hljs-operator">=</span> sheet.getFirstRowNum();<br>    <span class="hljs-type">int</span> <span class="hljs-variable">lastRowNum</span> <span class="hljs-operator">=</span> sheet.getLastRowNum();<br><br>    <span class="hljs-comment">// 获取表头</span><br>    <span class="hljs-type">Row</span> <span class="hljs-variable">head</span> <span class="hljs-operator">=</span> sheet.getRow(firstRowNum);<br>    List&lt;String&gt; headers = StreamSupport.stream(head.spliterator(), <span class="hljs-literal">false</span>)<br>            .map(Cell::getStringCellValue)<br>            .collect(Collectors.toList());<br><br>    <span class="hljs-keyword">return</span> IntStream.rangeClosed(firstRowNum + <span class="hljs-number">1</span>, lastRowNum)<br>            .mapToObj(sheet::getRow).map(row -&gt; &#123;<br>                Map&lt;String, Object&gt; obj = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>                StreamSupport.stream(row.spliterator(), <span class="hljs-literal">false</span>).forEach(cell -&gt; &#123;<br>                            obj.put(headers.get(cell.getColumnIndex()), getCellValue(cell));<br>                &#125;);<br>                <span class="hljs-keyword">return</span> obj;<br>            &#125;).collect(Collectors.toList());<br>&#125;<br><br>Object <span class="hljs-title function_">getCellValue</span><span class="hljs-params">(Cell cell)</span> &#123;<br>    <span class="hljs-keyword">switch</span> (cell.getCellType()) &#123;<br>        <span class="hljs-keyword">case</span> _NONE: <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">case</span> BLANK: <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;<br>        <span class="hljs-keyword">case</span> ERROR: <span class="hljs-keyword">return</span> cell.getErrorCellValue();<br>        <span class="hljs-keyword">case</span> STRING: <span class="hljs-keyword">return</span> cell.getStringCellValue();<br>        <span class="hljs-keyword">case</span> BOOLEAN: <span class="hljs-keyword">return</span> cell.getBooleanCellValue();<br>        <span class="hljs-keyword">case</span> NUMERIC:<br>        <span class="hljs-keyword">case</span> FORMULA: <span class="hljs-keyword">return</span> cell.getNumericCellValue();<br>        <span class="hljs-keyword">default</span>:<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;无法识别&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>对下面这个 Excel：</p>
+<p><img src="/images/oss/QQ20220606-0.png"></p>
+<p>其将得到这样的结果：</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;名称&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;天海春香&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ID&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.0</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;事务所&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">765.0</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;年龄&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">17.0</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;名称&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;如月千早&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ID&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2.0</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;事务所&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">765.0</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;年龄&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">17.0</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;名称&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;星井美希&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;ID&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">3.0</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;事务所&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">765.0</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;年龄&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">16.0</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>容易发现，对于这样的简单 Excel，可以要求使用者去直接给出一个<code>(Row, Headers) -&gt; T</code>，从而来方便生成<code>List&lt;T&gt;</code>。</p>
+<h1 id="数据集的导出"><a href="#数据集的导出" class="headerlink" title="数据集的导出"></a>数据集的导出</h1><p>导出数据集就更加容易一些——生成表头，然后后续迭代数据集，一个元素一列即可（最麻烦的地方在于处理导出的类型，这里一股脑用字符串），下面的代码直接将一个元素的列表转为 Workbook，然后再另行导出。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">Workbook <span class="hljs-title function_">createByCollection</span><span class="hljs-params">(Collection&lt;?&gt; elems)</span> <span class="hljs-keyword">throws</span> IllegalAccessException, IOException &#123;<br>    List&lt;?&gt; lst = elems.stream()<br>            .filter(Objects::nonNull).collect(Collectors.toList());<br>    <span class="hljs-keyword">if</span> (lst.isEmpty()) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;?&quot;</span>);<br>    &#125;<br><br>    Field[] fields = lst.get(<span class="hljs-number">0</span>).getClass().getDeclaredFields();<br>    <span class="hljs-keyword">for</span> (Field field : fields) &#123;<br>        field.setAccessible(<span class="hljs-literal">true</span>);<br>    &#125;<br><br>    <span class="hljs-type">Workbook</span> <span class="hljs-variable">workbook</span> <span class="hljs-operator">=</span> WorkbookFactory.create(<span class="hljs-literal">true</span>);<br>    <span class="hljs-type">Sheet</span> <span class="hljs-variable">sheet</span> <span class="hljs-operator">=</span> workbook.createSheet();<br>    <span class="hljs-type">Row</span> <span class="hljs-variable">head</span> <span class="hljs-operator">=</span> sheet.createRow(<span class="hljs-number">0</span>);<br>    <br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; fields.length; i++) &#123;<br>        head.createCell(i);<br>        head.getCell(i).setCellValue(fields[i].getName());<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; lst.size(); i++) &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">rowNum</span> <span class="hljs-operator">=</span> i + <span class="hljs-number">1</span>;<br>        <span class="hljs-type">Row</span> <span class="hljs-variable">row</span> <span class="hljs-operator">=</span> sheet.createRow(rowNum);<br>        <span class="hljs-type">Object</span> <span class="hljs-variable">elem</span> <span class="hljs-operator">=</span> lst.get(i);<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; j &lt; fields.length; j++) &#123;<br>            row.createCell(j);<br>            row.getCell(j).setCellValue(fields[j].get(elem).toString());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> workbook;<br><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>导出时使用 Workbook 的 write 方法，该方法接受一个输出流，下面的代码可以将 Workbook 转换成 Resource，从而方便在 Spring MVC 的情境中使用（效率存疑）。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">ByteArrayOutputStream</span> <span class="hljs-variable">arrayOutputStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayOutputStream</span>();<br><span class="hljs-type">OutputStream</span> <span class="hljs-variable">output</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedOutputStream</span>(arrayOutputStream);<br>workbook.write(output);<br>output.flush();<br><span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayResource</span>(arrayOutputStream.toByteArray());<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="单个数据的导入导出"><a href="#单个数据的导入导出" class="headerlink" title="单个数据的导入导出"></a>单个数据的导入导出</h1><p>单个数据的导入导出相较于数据集的导入导出，差别是它的格式一般是固定的，这就是说<strong>数据的特定字段一般来说会对应 Excel 的特定位置</strong>，这说明两件事：</p>
+<ol>
+<li>我们需要“随机访问” Excel 的任意行列</li>
+<li>Excel 中一定有东西是不变的，也就是说在构造 Excel 时，可以为这些不变的地方创建一个模板</li>
+</ol>
+<p>因此，归结出来，单个数据的导入导出情景详细描述如下，两者非常相像：</p>
+<ol>
+<li>导入：接受一个固定格式的 Excel，获取其中特定位置的值并构造一个实体</li>
+<li>导出：以一个现有的 Excel 作为模板，使用一个实体去填充其中特定位置的值</li>
+</ol>
+<p>下面的代码实现了一个写入特定位置的方法，用户调用时指定位置到操作的映射。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">void</span> <span class="hljs-title function_">setExcelValue</span><span class="hljs-params">(Sheet sheet, Map&lt;String, Consumer&lt;Cell&gt;&gt; cells)</span> &#123;<br>    cells.forEach((cellAddressStr, fn) -&gt; &#123;<br>        <span class="hljs-type">CellAddress</span> <span class="hljs-variable">cellAddress</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CellAddress</span>(cellAddressStr);<br><br>        <span class="hljs-type">Row</span> <span class="hljs-variable">row</span> <span class="hljs-operator">=</span> sheet.getRow(cellAddress.getRow());<br>        <span class="hljs-keyword">if</span> (row == <span class="hljs-literal">null</span>) row = sheet.createRow(cellAddress.getRow());<br>        <br>        <span class="hljs-type">Cell</span> <span class="hljs-variable">cell</span> <span class="hljs-operator">=</span> row.getCell(cellAddress.getColumn());<br>        <span class="hljs-keyword">if</span> (cell == <span class="hljs-literal">null</span>) cell = row.createCell(cellAddress.getColumn());<br>        <br>        fn.accept(cell);<br>    &#125;);<br>&#125;<br><br><span class="hljs-comment">// 一个调用的实例</span><br>setExcelValue(sheet, <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;String, Consumer&lt;Cell&gt;&gt;()&#123;&#123;<br>    put(<span class="hljs-string">&quot;B1&quot;</span>, cell -&gt; cell.setCellValue(<span class="hljs-string">&quot;天海春香&quot;</span>));<br>    put(<span class="hljs-string">&quot;D1&quot;</span>, cell -&gt; cell.setCellValue(<span class="hljs-number">765</span>));<br>    put(<span class="hljs-string">&quot;B4&quot;</span>, cell -&gt; cell.setCellValue(<span class="hljs-number">17</span>));<br>&#125;&#125;);<br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<p>这里涉及到的内容是比较少的，对于更加复杂的表格形式，以及样式等都没有顾及到，在性能上也需要进一步研究，等真正遇到时再说吧。</p>
+<h1 id="参考阅读"><a href="#参考阅读" class="headerlink" title="参考阅读"></a>参考阅读</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://poi.apache.org/components/spreadsheet/quick-guide.html">给大忙人看的 HSSF 和 XSSF 指南</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Real-World/">Real World</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06-10%E5%AF%B9Spring%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%9A%84%E7%B4%A2%E5%BC%95.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">对 Spring 一些工具类的索引</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06-07%E5%85%B3%E4%BA%8E%E6%8E%A7%E5%88%B6%E5%99%A8%E5%A4%84%E7%90%86%E8%A1%A8%E5%8D%95%EF%BC%8C%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%9E%E4%BE%8B.html">
+                        <span class="hidden-mobile">关于 Spring MVC 处理 form 和文件的实例</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

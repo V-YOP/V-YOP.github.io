@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本猜想这里也应该能够应用一些 FP，看来实践推翻了这一点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式笔记——命令模式，状态模式，访问者模式">
+<meta property="og:url" content="http://example.com/2022/01-16%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F%EF%BC%8C%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%EF%BC%8C%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="本猜想这里也应该能够应用一些 FP，看来实践推翻了这一点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210822231117.png">
+<meta property="article:published_time" content="2022-01-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.292Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210822231117.png">
+  
+  
+  <title>设计模式笔记——命令模式，状态模式，访问者模式 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="设计模式笔记——命令模式，状态模式，访问者模式">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-16 00:00" pubdate>
+        2022年1月16日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      17k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">设计模式笔记——命令模式，状态模式，访问者模式</h1>
+            
+            <div class="markdown-body">
+              <h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p>一个类依赖其它的类进行某种操作时，一般是直接调用其的接口的特定方法。该类称为请求的发送者，依赖的类称为请求的接受者。命令模式在请求发送者和请求接受者之间增加一层抽象层，使请求的接受者能够对请求的发送者不可见，降低耦合性。借由策略模式，我们能够忽略请求接受者的具体的实现类，只关心相应接口；借由命令模式，我们能够忽略请求接受者的接口，只关心具体的命令或命令的接口。如此，请求发送者和请求接受者就完全解耦了。命令模式将请求本身封装成对象（数据 &lt;-&gt; 过程），从而使能够将请求当作对象来处理，完成回滚，日志，排队，异步化，可重做等操作。命令模式也称作事务模式，这是说可以将一系列请求作为一个命令传递，很有趣。</p>
+<blockquote>
+<p>将一个请求封装为一个对象，从而使你可用不同的请求对客户进行参数化，对请求排队或记录请求日志，以及支持可撤销的操作。</p>
+</blockquote>
+<p>我能够想到两个实例——线程池和 js 的事件，它们都不关心请求的接受者究竟姓甚名谁。对前者，命令是<code>Ruunable</code>，<code>Callable</code>，对后者，命令是回调函数，对 ui 进行操作时不是直接将该操作传递给什么玩意（这是用户决定的），而是触发一个事件，通过事件监听器间接进行一定的行为。</p>
+<h3 id="角色"><a href="#角色" class="headerlink" title="角色"></a>角色</h3><p>命令模式包含四个角色——</p>
+<ul>
+<li><strong>请求发送者</strong>——即客户端。</li>
+<li><strong>命令</strong>——客户端发送的请求，为客户端所依赖。命令分为抽象命令和具体命令。</li>
+<li><strong>命令执行者（Invoker）</strong>，执行命令的对象。命令执行者只负责处理命令，对具体的请求接受者不关心。命令执行者也可以负责记录命令的历史，重做，回滚，<del>发现请求接受者</del>等功能。</li>
+<li><strong>请求接受者</strong>——在命令中被依赖的对象。</li>
+</ul>
+<p>比如，对一个使用了线程池的客户端，客户端本身为请求发送者，命令为客户端提供给命令执行者的 Runnable 或 Callable，命令执行者为线程池，请求接受者为 Task 依赖的对象，如果没有依赖的对象则没有请求接受者。这样，命令本身就将执行请求发送者所需的所有业务逻辑。</p>
+<p>对浏览器上的 js，请求发送者为用户的操作，命令为回调函数，命令执行者为 js 的事件驱动机制，请求接受者为回调函数捕获的对象，以及用户操作的 ui。</p>
+<p>在 IoC 容器中，借助 DI，客户端即业务代码中只需要关心命令和命令处理者，不需也不应该关心请求接受者究竟是什么东西，而只有命令知晓请求接受者姓甚名谁（不太确定，感觉命令处理者知晓请求接受者在某些时候也是需要的）。</p>
+<p>需注意的是，命令模式强调将命令交由命令执行者这样一个特定的地方执行，从而使能够对命令进行统一的操作，如 try-catch，日志，重做等。</p>
+<h3 id="栗子"><a href="#栗子" class="headerlink" title="栗子"></a>栗子</h3><p>命令模式（的变种）的应用感觉到处都是，实在是找不出一个贴近实际同时又具有典型性的范例，干脆直接放弃思考，在书上（《Scala 和 Clojure 函数式编程模式》）的范例基础上改进一下下。考虑一个收银机，对其的操作包括增加现金，减少现金，显示现金，以及特定命令的集合（时髦的话说，事务），并且在命令发生错误的时候<strong>提供回滚操作</strong>。</p>
+<p>我们首先定义 Command 接口——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Command</span> &#123;<br><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 若 execute 过程中抛出异常，执行该方法。不考虑该方法抛出异常的情况</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>我们的请求接受者，即收银机的定义如下，这里为方便，提供简单的复制和回滚操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CashRegister</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">cash</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addCash</span><span class="hljs-params">(<span class="hljs-type">int</span> amount)</span> &#123; <span class="hljs-built_in">this</span>.cash += amount; &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">takeCash</span><span class="hljs-params">(<span class="hljs-type">int</span> amount)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">if</span> (amount &gt; cash)<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(String.format(<span class="hljs-string">&quot;请求取出金额 %d 大于当前金额 %d&quot;</span>, amount, cash));<br>        <span class="hljs-built_in">this</span>.cash -= amount;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getCash</span><span class="hljs-params">()</span> &#123; <span class="hljs-keyword">return</span> cash; &#125;<br><br>    <span class="hljs-comment">// 方便进行回滚</span><br>    <span class="hljs-keyword">public</span> CashRegister <span class="hljs-title function_">copy</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">CashRegister</span> <span class="hljs-variable">copy</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CashRegister</span>();<br>        copy.cash = <span class="hljs-built_in">this</span>.cash;<br>        <span class="hljs-keyword">return</span> copy;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">(CashRegister copy)</span> &#123;<br>        <span class="hljs-built_in">this</span>.cash = copy.cash;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后，我们着手实现四种具体 Command，需要记住——Command 有能力独自执行，这是说它自己就持有自己的所有依赖。</p>
+<p>首先是添加现金的命令。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AddCashCommand</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Command</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CashRegister cashRegister;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> amount;<br><br>    <span class="hljs-comment">// 依赖注入</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">AddCashCommand</span><span class="hljs-params">(CashRegister cashRegister, <span class="hljs-type">int</span> amount)</span> &#123;<br>        <span class="hljs-built_in">this</span>.cashRegister = cashRegister;<br>        <span class="hljs-built_in">this</span>.amount = amount;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> CashRegister copy;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        copy = cashRegister.copy();<br>        cashRegister.addCash(amount);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">()</span> &#123;<br>        cashRegister.restore(copy);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后是取走现金的命令，这里实际上已经能看出某种模式了—— <strong>使用抽象类或者闭包来引用 cashRegister 和 amount</strong> 可以减少这里的重复代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TakeCashCommand</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Command</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CashRegister cashRegister;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> amount;<br><br>    <span class="hljs-comment">// 依赖注入</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">TakeCashCommand</span><span class="hljs-params">(CashRegister cashRegister, <span class="hljs-type">int</span> amount)</span> &#123;<br>        <span class="hljs-built_in">this</span>.cashRegister = cashRegister;<br>        <span class="hljs-built_in">this</span>.amount = amount;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> CashRegister copy;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        copy = cashRegister.copy();<br>        cashRegister.takeCash(amount);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">()</span> &#123;<br>        cashRegister.restore(copy);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>显示现金的命令非常容易。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DisplayCashCommand</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Command</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CashRegister cashRegister;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">DisplayCashCommand</span><span class="hljs-params">(CashRegister cashRegister)</span> &#123;<br>        <span class="hljs-built_in">this</span>.cashRegister = cashRegister;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;当前现金：&quot;</span> + cashRegister.getCash());<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">()</span> &#123;&#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>最麻烦的是命令集（我们称它为事务），回滚操作需要被小心处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">CashTransactionCommand</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Command</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> List&lt;Command&gt; cashCommands;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">CashTransactionCommand</span><span class="hljs-params">(List&lt;Command&gt; cashCommands)</span> &#123;<br>        <span class="hljs-built_in">this</span>.cashCommands = cashCommands;<br>    &#125;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 该字段用于标识最后执行的 command 的 index，如果抛出异常，则需要从后往前依次执行该 command 之前的回滚</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">lastIndex</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">for</span> (Command command : cashCommands) &#123;<br>            command.execute();<br>            lastIndex++;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> lastIndex; i &gt;= <span class="hljs-number">0</span>; i--) &#123;<br>            cashCommands.get(i).restore();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后是命令执行者，它的代码比较简单——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 任务执行者可以有更加丰富的操作，看业务吧</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CommandInvoker</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">(Command command)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            command.execute();<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>            command.restore();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>完成了！我们整个 demo 试试，这里为了简单没有使用依赖注入。工程实践时肯定不是这样的。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CashClient</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">// 客户端不应该直接看到 CashRegister，这里为了方便直接 new 了</span><br>        <span class="hljs-type">CashRegister</span> <span class="hljs-variable">cashRegister</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CashRegister</span>();<br>        <span class="hljs-type">CommandInvoker</span> <span class="hljs-variable">invoker</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CommandInvoker</span>();<br><br>        <span class="hljs-comment">// 命令不应该直接通过 new 创建，而应当通过建造者/高阶函数的方式，从而使能够无视 cashRegister 依赖</span><br>        invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">AddCashCommand</span>(cashRegister, <span class="hljs-number">100</span>));<br>        invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">DisplayCashCommand</span>(cashRegister));<br><br>        invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TakeCashCommand</span>(cashRegister, <span class="hljs-number">200</span>));<br>        invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">DisplayCashCommand</span>(cashRegister));<br><br>        invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">CashTransactionCommand</span>(Arrays.asList(<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">AddCashCommand</span>(cashRegister, <span class="hljs-number">200</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">TakeCashCommand</span>(cashRegister, <span class="hljs-number">300</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">DisplayCashCommand</span>(cashRegister)<br>        )));<br>        invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">DisplayCashCommand</span>(cashRegister));<br>        <br>        <span class="hljs-comment">// 假设 CashRegister 是单例的，理想的调用形式应该类似——</span><br>        <span class="hljs-type">CashCommandBuilder</span> <span class="hljs-variable">cashCommandBuilder</span> <span class="hljs-operator">=</span> ContextUtil.getBean(CashCommandBuilder.class);<br>        invoker.execute(cashCommandBuilder.add(<span class="hljs-number">200</span>).take(<span class="hljs-number">300</span>).display().build());<br><br>        <span class="hljs-comment">// 或者——</span><br>        <span class="hljs-type">CashCommandFactory</span> <span class="hljs-variable">cashCommandFactory</span> <span class="hljs-operator">=</span> ContextUtil.getBean(CashCommandFactory.class);<br>        invoker.execute(cashCommandFactory.addCommand(<span class="hljs-number">100</span>));<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>当然，我们也可以让命令调用者来“发现”请求的接收者，在执行命令时对命令注入其依赖，为此我们需要修改命令的接口——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 需修改接口，在参数中注入依赖</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Command</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">execute</span><span class="hljs-params">(CashRegister cashRegister)</span> <span class="hljs-keyword">throws</span> Exception;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">restore</span><span class="hljs-params">(CashRegister cashRegister)</span>;<br>&#125;<br><br><span class="hljs-type">CommandInvoker</span> <span class="hljs-variable">invoker</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CommandInvoker</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">CashRegister</span>());<br>invoker.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">AddCashCommand</span>(<span class="hljs-number">300</span>));<br><span class="hljs-comment">// ...</span><br></code></pre></div></td></tr></table></figure>
+<p>这样就能够离开 DI 框架也能使用了。</p>
+<h3 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h3><p>关于命令模式，我们只需要关心它的核心思想——<strong>将请求当作对象来操作</strong>，这完全是在说一等函数！我们可以用<code>Unit -&gt; Unit</code>或<code>Unit -&gt; a</code>（需要命令有返回值的情况，Invoker 可以进行进一步的操作，如将其转为异步）之类的来充当 Command 接口。结合柯里化函数，建造者模式等来构造 Command 我认为这对实践是会有帮助的。至于回滚之类的操作…那可太复杂了，“想想数据库的事务日志吧！”</p>
+<h2 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h2><blockquote>
+<p>不换思想就换人。</p>
+</blockquote>
+<p>状态模式也是个很简单的模式。通常，我们通过更改对象的状态（配置）来变更它的行为，比如对一个密码加密工具（假设它有状态），我们可能会通过字符串或枚举来标识其使用的加密算法，比如 <code>&quot;md5&quot;</code>，<code>EncryptType.SHA256</code> 等。可以想像，在加密的业务逻辑中，它肯定使用条件语句来选择具体使用的算法，比如可能是这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">String <span class="hljs-title function_">encrypt</span><span class="hljs-params">(String str)</span> &#123;<br>    <span class="hljs-keyword">switch</span> (encryptType) &#123;<br>    <span class="hljs-keyword">case</span> MD5:<br>        <span class="hljs-keyword">return</span> <span class="hljs-comment">/*...*/</span>;<br>    <span class="hljs-keyword">case</span> SHA256:<br>        <span class="hljs-keyword">return</span> <span class="hljs-comment">/*...*/</span>;<br>    <span class="hljs-keyword">case</span> <span class="hljs-comment">/*..*/</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-comment">/*...*/</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这个违反了开闭原则——增加新的算法就需要修改源码了。一个可能的解决方案是使用策略模式和工厂方法模式（或简单工厂模式）来解决这一问题——建立枚举到策略类的映射，通过工厂进行这个映射。</p>
+<p>再考虑另一个问题——编写一个电梯的逻辑，现在假设电梯有四个操作——开门，关门，上行，下行，有四个状态——开门，停止，上行，下行。每个操作在每个状态下都会有不同的行为，同时有可能改变自己的状态。</p>
+<p>比如，对上行操作，我们可能会这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Lift</span> &#123;<br>    <span class="hljs-keyword">private</span> LiftState state;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">switch</span> (state) &#123;<br>        <span class="hljs-keyword">case</span> OPEN:<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>        <span class="hljs-keyword">case</span> UP:<br>            <span class="hljs-keyword">return</span>;<br>        <span class="hljs-keyword">case</span> DOWN:<br>            hrow <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;上行状态不能下行！&quot;</span>);<br>        <span class="hljs-keyword">case</span> STOP:<br>            System.out.println(<span class="hljs-string">&quot;停止上行&quot;</span>);<br>            state = LiftState.STOP;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">switch</span> (state) &#123;<br>        <span class="hljs-keyword">case</span> OPEN:<br>            <span class="hljs-keyword">return</span>;<br>        <span class="hljs-keyword">case</span> UP:<br>        <span class="hljs-keyword">case</span> DOWN:<br>            hrow <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;移动状态不能开门！&quot;</span>);<br>        <span class="hljs-keyword">case</span> STOP:<br>            System.out.println(<span class="hljs-string">&quot;关门&quot;</span>);<br>            state = LiftState.STOP;<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+
+<p>可以注意到，每个操作的形式都符合一种“模式”——整个方法体里只有一个 switch，对每个状态都有特定操作。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>这种情况该如何进行抽象？状态模式给予了我们答案——将状态内化到类（的逻辑）本身，通过切换类的实现来修改行为。这是说，我们可以为每一个特定的状态都定义一个类，来表达这个状态的情况下类应该有的行为，比如我们对开门状态下的实现可能会有这样的逻辑——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">stop</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">OpenState</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LiftState</span> <span class="hljs-variable">INSTANCE</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenState</span>();<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">stop</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;关门&quot;</span>);<br>        <span class="hljs-comment">// 无法编译！</span><br>        setThis(StopState.INSTANCE);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123; &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StopState</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LiftState</span> <span class="hljs-variable">INSTANCE</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StopState</span>();<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;上行&quot;</span>);<br>        setThis(GoUpState.INSTANCE);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;下行&quot;</span>);<br>        setThis(GoDownState.INSTANCE);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">stop</span><span class="hljs-params">()</span> &#123; &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;开门&quot;</span>);<br>        setThis(OpenState.INSTANCE);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>我们找到解决方法（的一部分）了！<strong>只需要对每个状态都定义在这个状态下的各种操作以及状态变化，我们就能够将原本的 switch 逻辑切分到一个个状态类中了</strong>。</p>
+<p>可是该代码无法编译——这又不是 C++，类是无法改变自己的引用的，因此<code>setThis(xxx)</code>是实现不了的！</p>
+<p>解决方案是使用一个环境（Context，标准翻译是上下文）来包裹状态，在状态中委托上下文来修改状态。用户则仅使用该上下文。上下文可以和状态具有一样的接口，也可以不一样。</p>
+<p>为了让状态中能够使用上下文，我们可以选择将上下文作为函数参数传入，或者作为状态所持有的字段，在构造时传入，我们选择前者，为此需要重写 LiftState 接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Java"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Context</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">setState</span><span class="hljs-params">(LiftState liftState)</span>;<br>&#125;<br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">(Context context)</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">goDown</span><span class="hljs-params">(Context context)</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">stop</span><span class="hljs-params">(Context context)</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">(Context context)</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LiftContext</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Context</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">LiftState</span> <span class="hljs-variable">state</span> <span class="hljs-operator">=</span> StopState.INSTANCE;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setState</span><span class="hljs-params">(LiftState liftState)</span> &#123;<br>        <span class="hljs-built_in">this</span>.state = liftState;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span> &#123;<br>        state.goUp(<span class="hljs-built_in">this</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span> &#123;<br>        state.goDown(<span class="hljs-built_in">this</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">stop</span><span class="hljs-params">()</span> &#123;<br>        state.stop(<span class="hljs-built_in">this</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        state.open(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">OpenState</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LiftState</span> <span class="hljs-variable">INSTANCE</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenState</span>();<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goUp</span><span class="hljs-params">(Context context)</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">goDown</span><span class="hljs-params">(Context context)</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">stop</span><span class="hljs-params">(Context context)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;关门&quot;</span>);<br>        context.setState(StopState.INSTANCE);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">(Context context)</span> &#123; &#125;<br>&#125;<br><span class="hljs-comment">// 各种具体的 State...</span><br></code></pre></div></td></tr></table></figure>
+
+<p>各个状态和状态之间的转换关系也可以使用一张二维表来进行表示，最典型的例子莫过于有限状态机了。</p>
+<p>状态模式亦可用于需要改变引用的情况，比如需要实现<code>CopyOnWrite</code>的集合的时候。但这是否属于状态模式？我认为是。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">CopyOnWriteMap</span>&lt;K, V&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Map</span>&lt;K, V&gt; &#123;<br>    <span class="hljs-keyword">private</span> Map&lt;K, V&gt; realMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(K key, V value)</span> &#123;<br>        Map&lt;K, V&gt; copiedMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;(realMap);<br>        copiedMap.put(key, value);<br><br>        realMap = copiedMap;<br>    &#125;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h3 id="FP-的观点"><a href="#FP-的观点" class="headerlink" title="FP 的观点"></a>FP 的观点</h3><p>无论是把上下文当作函数参数传入，还是通过构造函数传入上下文，对状态本身来说实际上增加了额外的复杂度——它需要知晓上下文的存在。我们可以接纳函数式编程中不可变的思想，返回新的状态来替代原本修改上下文中的状态，这样可以消灭 Context 接口，并且让上下文使用和状态一样的接口。</p>
+<p>有趣的是，这样的状态模式其形式非常类似装饰器模式和代理模式（甚至可能只能从语义上来区分，在代码层面上无法区分），只不过其侧重点不一样罢了。或许这几种模式都是对于委托（delegate）模式的应用吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 如果有某种返回值，也可以通过返回元组的形式来实现，如 Pair&lt;T, LiftState&gt;</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    LiftState <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span>;<br>    LiftState <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span>;<br>    LiftState <span class="hljs-title function_">stop</span><span class="hljs-params">()</span>;<br>    LiftState <span class="hljs-title function_">open</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">LiftContext</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">private</span> LiftState state;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span> &#123;<br>        state = state.goUp();<br><br>        <span class="hljs-comment">// 是该返回 this 还是返回 state？</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span> &#123;<br>        state = state.goDown();<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">stop</span><span class="hljs-params">()</span> &#123;<br>        state = state.stop();<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123;<br>        state = state.open();<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">OpenState</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">LiftState</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LiftState</span> <span class="hljs-variable">INSTANCE</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OpenState</span>();<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">goUp</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">goDown</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(<span class="hljs-string">&quot;开门状态不能移动！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">stop</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;关门&quot;</span>);<br>        <span class="hljs-keyword">return</span> StopState.INSTANCE;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> LiftState <span class="hljs-title function_">open</span><span class="hljs-params">()</span> &#123; <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>; &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>状态模式的内涵似乎不止这些，之后还需要继续研究。</p>
+<h2 id="访问者模式"><a href="#访问者模式" class="headerlink" title="访问者模式"></a>访问者模式</h2><p><strong>对数据类型的扩展有两个维度——在已有的数据类型的实现上添加新的方法；给已有的数据类型添加新的实现</strong>。在 OOP 语言中，实现后者轻而易举，而前者则需要使用静态工具类，而在静态工具类不满足需求的情况下（需要对特定实现添加特定方法，而非对接口添加方法），访问者模式则要走上舞台。</p>
+<h3 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h3><p>考虑一个场景——我们试图在 Java 的 List 上加入一些新的操作，同时希望该操作对不同的 List 实现（ArrayList，LinkedList 等）有不同的效果，我们马上会想到的一定是创建一个静态工具类并提供相关操作——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ListOps</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">ListOps</span><span class="hljs-params">()</span> &#123; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;you bad bad&quot;</span>); &#125;<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">op</span><span class="hljs-params">(ArrayList&lt;?&gt; lst)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;对 ArrayList 进行操作&quot;</span>);<br>        <span class="hljs-comment">// ...</span><br>    &#125;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">op</span><span class="hljs-params">(LinkedList&lt;?&gt; lst)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;对 ArrayList 进行操作&quot;</span>);<br>        <span class="hljs-comment">// ...</span><br>    &#125;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">op</span><span class="hljs-params">(List&lt;?&gt; lst)</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;只提供对 ArrayList 和 LinkedList 的操作！&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// Client</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        List&lt;Object&gt; lst = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedList</span>&lt;&gt;();<br>        ListOps.op(lst);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>感觉这样就 OK 啦？IDEA 用它的高亮告诉我们，最后被执行的 op 方法是<code>void op(List&lt;?&gt;)</code>而非我们想要的<code>void op(LinkedList&lt;?&gt;)</code>！这种情况是我们（我？）对 Java 的重载&#x2F;多态机制了解不够导致的，这个情况下 Java 选择调用的方法是<strong>依据对象的声明类型而非引用类型（静态分派）</strong>。</p>
+<p>最简单的方案是仅创建<code>void op(List&lt;?&gt;)</code>方法，通过 instanceof 和 if-else 来“分发”方法调用——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">op</span><span class="hljs-params">(List&lt;?&gt; lst)</span> &#123;<br>    <span class="hljs-keyword">if</span> (lst <span class="hljs-keyword">instanceof</span> ArrayList) &#123;<br>        System.out.println(<span class="hljs-string">&quot;对 ArrayList 进行操作&quot;</span>);<br>        <span class="hljs-comment">// ...</span><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (lst <span class="hljs-keyword">instanceof</span> LinkedList) &#123;<br>        System.out.println(<span class="hljs-string">&quot;对 ArrayList 进行操作&quot;</span>);<br>        <span class="hljs-comment">// ...</span><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;只提供对 ArrayList 和 LinkedList 的操作！&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这既不优雅也不符合开闭原则。我们必须找到方法，让 Java 能够<strong>通过引用类型</strong>来调用我们的函数（动态分派），而这时候访问者模式就派上用场了。</p>
+<h3 id="介绍-amp-amp-栗子"><a href="#介绍-amp-amp-栗子" class="headerlink" title="介绍 &amp;&amp; 栗子"></a>介绍 &amp;&amp; 栗子</h3><p>访问者模式简而言之，就是<strong>在对象上开一个洞，在洞里把自己暴露给一个称为访问者的对象</strong>，比如这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 接口</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">SomeInterface</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 洞</span><br>    &lt;T&gt; T <span class="hljs-title function_">visit</span><span class="hljs-params">(Visitor&lt;T&gt; visitor)</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcreteClass1</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">SomeInterface</span> &#123;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> &lt;T&gt; T <span class="hljs-title function_">visit</span><span class="hljs-params">(Visitor&lt;T&gt; visitor)</span> &#123;<br>        <span class="hljs-keyword">return</span> visitor.visit(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcreteClass2</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">SomeInterface</span> &#123;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> &lt;T&gt; T <span class="hljs-title function_">visit</span><span class="hljs-params">(Visitor&lt;T&gt; visitor)</span> &#123;<br>        <span class="hljs-keyword">return</span> visitor.visit(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>两个具体类的实现看上去是一样的，能不能把 visit 方法定为 default 的？不行，因为<strong>在每个成员的 visit 方法体中，this 的类型都是已知的，仍旧走的静态分派</strong>，因此倘若定义在接口中，则必定走的是下面 Visitor 的 default 的 visit 方法。只有用户从外部调用SomeInterface的visit方法的时候才是动态分派，即找到特定的具体类。</p>
+</blockquote>
+<p>而<strong>访问者则需要知晓所有具体类</strong>——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Visitor</span>&lt;T&gt; &#123;<br>    T <span class="hljs-title function_">visit</span><span class="hljs-params">(ConcreteClass1 concreteClass1)</span>;<br>    T <span class="hljs-title function_">visit</span><span class="hljs-params">(ConcreteClass2 concreteClass2)</span>;<br><br>    <span class="hljs-comment">// 倘若再添加一个 ConcreteClass3，被执行的 visit 就将是这个了，这倒符合上面的预期</span><br>    <span class="hljs-keyword">default</span> T <span class="hljs-title function_">visit</span><span class="hljs-params">(SomeInterface someInterface)</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;需添加访问者接口&quot;</span>+Visitor.class.getName()+<span class="hljs-string">&quot;对类&quot;</span> + someInterface.getClass().getName() + <span class="hljs-string">&quot;的 visit 方法&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcreteVisitor1</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Visitor</span>&lt;Void&gt; &#123;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> Void <span class="hljs-title function_">visit</span><span class="hljs-params">(ConcreteClass1 concreteClass1)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;Hello, Concrete Class 1&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> Void <span class="hljs-title function_">visit</span><span class="hljs-params">(ConcreteClass2 concreteClass2)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;Hello, Concrete Class 2&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>客户端代码则是这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Hello</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        Visitor&lt;Void&gt; visitor = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcreteVisitor1</span>();<br>        <span class="hljs-type">SomeInterface</span> <span class="hljs-variable">obj1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcreteClass1</span>();<br>        <span class="hljs-type">SomeInterface</span> <span class="hljs-variable">obj2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcreteClass2</span>();<br>        <span class="hljs-type">SomeInterface</span> <span class="hljs-variable">obj3</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcreteClass3</span>();<br><br>        obj1.visit(visitor); <span class="hljs-comment">// Hello, Concrete Class 1</span><br>        obj2.visit(visitor); <span class="hljs-comment">// Hello, Concrete Class 2</span><br>        obj3.visit(visitor); <span class="hljs-comment">// RuntimeException : 需添加访问者接口 me.ykn.hello.Visitor 对类 me.ykn.hello.ConcreteClass3 的 visit 方法</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>实践证明这个方法可行。为什么呢？可以发现，在进行<code>obj1.visit(visitor)</code>这样一个方法调用时，Java 通过引用类型来找到<code>obj1</code>的实际类型——即<code>ConcreteClass1</code>——中的方法<code>visit</code>并执行<code>visitor.visit(this)</code>代码，而这里的<code>this</code>的类型是可知的，因此调用的<code>visitor</code>的<code>visit</code>方法也是可知的，BINGO！</p>
+<p><strong>每一个访问者，实际上都是在不改变原有代码的基础上给已有的数据类型添加一个新的方法</strong>。可惜，在 Java 中我们大概只能找到这种方法了。</p>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h3><p>访问者模式的适用范围并不广（我认为一般来说静态工具类已经足以满足要求），在大多数时候我们都可以不去使用它，而且当我们试图访问的类的源代码并不能被我们修改时，应用访问者模式甚至是不可能的（或许通过适配器模式可以做到）。且访问者模式的使用有一个重要的条件——被访问者的类继承结构应当稳定，即用户很少增加被访问的类型的实现。倘若增加了，则所有的 Visitor 都需要新增对应该实现的访问方法，这是访问者对所有实现类都必须知晓的必然结果。</p>
+<p>在 Java 中，访问者模式应用在了 Stream 的 collect 方法上，该方法允许用户使用各种方式去折叠流，其甚至模拟了一些类型类才有的操作，比如仅对<code>Stream&lt;String&gt;</code>才可用的<code>Collector.joining</code>。</p>
+<p>另外，Scala，Kotlin 在对类的方法进行扩展上都有自己的一套方法论，其都不需要修改源代码，对它们的了解是必须的。</p>
+<h3 id="来自未来的吐槽"><a href="#来自未来的吐槽" class="headerlink" title="来自未来的吐槽"></a>来自未来的吐槽</h3><p>访问者模式中的 Visitor，如果在将其传递给对象时使用匿名实现类的方式，然后使用 lambda 去构造这个匿名实现类，会得到怎样的效果？</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.function.Function;<br><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">MaybeVisitor</span>&lt;T, A&gt; &#123;<br>    <span class="hljs-keyword">default</span> T <span class="hljs-title function_">visit</span><span class="hljs-params">(Maybe&lt;A&gt; maybe)</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalStateException</span>(<span class="hljs-string">&quot;Impossible&quot;</span>);<br>    &#125;<br>    T <span class="hljs-title function_">visit</span><span class="hljs-params">(Just&lt;A&gt; just)</span>;<br>    T <span class="hljs-title function_">visit</span><span class="hljs-params">(Nothing&lt;A&gt; nothing)</span>;<br><br>    <span class="hljs-keyword">static</span> &lt;T, A&gt; MaybeVisitor&lt;T, A&gt; <span class="hljs-title function_">match</span><span class="hljs-params">(</span><br><span class="hljs-params">            Function&lt;Just&lt;A&gt;, T&gt; onJust,</span><br><span class="hljs-params">            Function&lt;Nothing&lt;A&gt;, T&gt; onNothing</span><br><span class="hljs-params">    )</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MaybeVisitor</span>&lt;T, A&gt;() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> T <span class="hljs-title function_">visit</span><span class="hljs-params">(Just&lt;A&gt; just)</span> &#123;<br>                <span class="hljs-keyword">return</span> onJust.apply(just);<br>            &#125;<br><br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> T <span class="hljs-title function_">visit</span><span class="hljs-params">(Nothing&lt;A&gt; nothing)</span> &#123;<br>                <span class="hljs-keyword">return</span> onNothing.apply(nothing);<br>            &#125;<br>        &#125;;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Maybe</span>&lt;A&gt; &#123;<br>    &lt;T&gt; T <span class="hljs-title function_">visit</span><span class="hljs-params">(MaybeVisitor&lt;T, A&gt; visitor)</span>;<br>    <span class="hljs-keyword">static</span> &lt;B&gt; Maybe&lt;B&gt; <span class="hljs-title function_">ofNullable</span><span class="hljs-params">(B a)</span> &#123;<br>        <span class="hljs-keyword">if</span> (a != <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Just</span>&lt;&gt;(a);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Nothing</span>&lt;&gt;();<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Just</span>&lt;A&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Maybe</span>&lt;A&gt; &#123;<br>    <span class="hljs-keyword">public</span> A value;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Just</span><span class="hljs-params">(A value)</span> &#123;<br>        <span class="hljs-built_in">this</span>.value = value;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> &lt;T&gt; T <span class="hljs-title function_">visit</span><span class="hljs-params">(MaybeVisitor&lt;T, A&gt; visitor)</span> &#123;<br>        <span class="hljs-keyword">return</span> visitor.visit(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Nothing</span>&lt;A&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Maybe</span>&lt;A&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> &lt;T&gt; T <span class="hljs-title function_">visit</span><span class="hljs-params">(MaybeVisitor&lt;T, A&gt; visitor)</span> &#123;<br>        <span class="hljs-keyword">return</span> visitor.visit(<span class="hljs-built_in">this</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Integer</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> Maybe.&lt;Integer&gt;ofNullable(<span class="hljs-literal">null</span>).visit(MaybeVisitor.match(<br>                just -&gt; &#123;<br>                    System.out.println(<span class="hljs-string">&quot;not null!&quot;</span>);<br>                    <span class="hljs-keyword">return</span> just.value;<br>                &#125;,<br>                nothing -&gt; <span class="hljs-number">1000000</span><br>        ));<br><br>        <span class="hljs-comment">// 这居然能过编译？？？</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> Maybe.ofNullable(<span class="hljs-number">1</span>).visit(MaybeVisitor.match(<br>                just -&gt; &#123;<br>                    System.out.println(<span class="hljs-string">&quot;value: &quot;</span> + just.value.floatValue());<br>                    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>                &#125;,<br>                nothing -&gt; <span class="hljs-literal">null</span><br>        ));<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>模式匹配：天呐，这根本就是我！但这也启发了在 OOP 语言中去抽象模式匹配的方式（但我直接定义一个接受两个函数的方法，在Just和Nothing中调用特定一个不就好了吗（全恼）？</p>
+<hr>
+<p>了解的越多，越觉得给这些模式下确切的定义是没有必要，和模式创建出来的原意反而背道而驰的了，毕竟其在使用中总是要经过一些修改，抽象和确切的定义就显得多余和无意义了，反而不如直接甩出一堆例子和解决方案，用大家都能听懂的话来描述。从实践出发才是真正的硬道理，而模式的作用反而更多的是提供一些名词来方便描述代码的组织。</p>
+<p><img src="/images/oss/20210822231117.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一种方便理解折叠（fold）操作的方法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01-08%E5%85%B3%E4%BA%8ETypeReference.html">
+                        <span class="hidden-mobile">关于 TypeReference</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

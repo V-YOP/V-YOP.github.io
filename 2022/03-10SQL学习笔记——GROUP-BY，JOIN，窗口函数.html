@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="上次去认真学习 SQL 还是 20 年的 12 月，时间才过去 15 个月，但我却觉得恍若隔世。 最近看书《深入理解 Hadoop》，它对 MapReduce 使用 SQL 语言进行描述，在学习过程中我发现我对之前还不了解的 GROUP BY，聚集函数等概念有了一些更深刻的理解，正巧 Hive，Spark SQL 等都需要一定的 SQL 技术，趁此机会进行进一步的学习，把 GROUP BY，JOI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL 学习笔记——GROUP BY，JOIN，窗口函数">
+<meta property="og:url" content="http://example.com/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="上次去认真学习 SQL 还是 20 年的 12 月，时间才过去 15 个月，但我却觉得恍若隔世。 最近看书《深入理解 Hadoop》，它对 MapReduce 使用 SQL 语言进行描述，在学习过程中我发现我对之前还不了解的 GROUP BY，聚集函数等概念有了一些更深刻的理解，正巧 Hive，Spark SQL 等都需要一定的 SQL 技术，趁此机会进行进一步的学习，把 GROUP BY，JOI">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20220308201345.png">
+<meta property="article:published_time" content="2022-03-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.294Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20220308201345.png">
+  
+  
+  <title>SQL 学习笔记——GROUP BY，JOIN，窗口函数 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SQL 学习笔记——GROUP BY，JOIN，窗口函数">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-10 00:00" pubdate>
+        2022年3月10日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      13k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQL 学习笔记——GROUP BY，JOIN，窗口函数</h1>
+            
+            <div class="markdown-body">
+              <p>上次去认真学习 SQL 还是 20 年的 12 月，时间才过去 15 个月，但我却觉得恍若隔世。</p>
+<p>最近看书《深入理解 Hadoop》，它对 MapReduce 使用 SQL 语言进行描述，在学习过程中我发现我对之前还不了解的 GROUP BY，聚集函数等概念有了一些更深刻的理解，正巧 Hive，Spark SQL 等都需要一定的 SQL 技术，趁此机会进行进一步的学习，把 GROUP BY，JOIN 等子句好好拿下来。</p>
+<p>为了符合将来工作的需求，使用 Hive 进行描述（但好像其实没有涉及到 Hive 独有的操作）。</p>
+<span id="more"></span>
+
+<hr>
+<blockquote>
+<p>着实想不到，MapReduce，函数式编程，SQL，感觉三者之间联系颇多。</p>
+</blockquote>
+<h1 id="SQL-各子句执行顺序"><a href="#SQL-各子句执行顺序" class="headerlink" title="SQL 各子句执行顺序"></a>SQL 各子句执行顺序</h1><p>在开始学习之前，先 peek 一下 SQL 的各种子句的执行顺序——</p>
+<ol>
+<li>FROM</li>
+<li>WHERE</li>
+<li>GROUP BY</li>
+<li>HAVING</li>
+<li>SELECT</li>
+<li>WINDOW</li>
+<li>ORDER BY</li>
+</ol>
+<p>FROM 子句首先执行，它可能是一个表，视图，或其它的 SELECT 语句，它会根据结果创建一个临时的虚拟表；然后是 WHERE 子句，<strong>对虚拟表中每一行进行筛选操作</strong>，获得一个筛选后的新的虚拟表；然后是 GROUP BY，按照特定字段&#x2F;列簇进行分组；然后是 HAVING 子句，<strong>对各个分组进行筛选操作</strong>，得到筛选后的分组表；SELECT 子句，包含映射和聚集操作，根据查询的列表提取和构造指定列；然后是 SELECT 中的窗口 WINDOW 函数，对 SELECT 的结果进行 OLAP 操作，并将结果作为新的列添加到原 SELECT 结果中；最后是 ORDER BY，对 SELECT 的结果进行排序。</p>
+<p>有两个有趣的地方——WHERE 在 SELECT 之前执行，因此无法利用到 SELECT 中的别名；WHERE 在分组之前执行，用于筛选原表中的数据，而 HAVING 在分组之后执行，用于筛选分组后（但未聚集，这时候的每一条记录，或每一个分组形如<code>(KEY, [COL1, COL2, ...])</code>）的数据，因此 WHERE 中无法使用聚集函数。</p>
+<p>但其实更有趣的是，这顺序和 MapReduce 的顺序非常类似，Hive 的编写者是否也是因为注意到这一点才创造了 Hive？</p>
+<h1 id="GROUP-BY"><a href="#GROUP-BY" class="headerlink" title="GROUP BY"></a>GROUP BY</h1><p>GROUP BY 子句执行分组操作——将记录映射成标识符（通常是特定字段），然后将标识符相同的记录划分为一组，最终得到一个<code>[KEY, Collection[Entity]</code>的集合。</p>
+<p>比如，这里有一个 Student 表，它的数据为——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> student_t<br>(<br>    id        <span class="hljs-type">INT</span>,<br>    class_id  <span class="hljs-type">INT</span>,<br>    stud_name STRING,<br>    age       <span class="hljs-type">INT</span>,<br>    <span class="hljs-type">character</span> STRING<br>);<br><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> student_t<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-number">0</span>, <span class="hljs-number">101</span>, &quot;kikuchi makoto&quot;, <span class="hljs-number">15</span>, &quot;IDOL&quot;),<br>       (<span class="hljs-number">1</span>, <span class="hljs-number">101</span>, &quot;haru urara&quot;, <span class="hljs-number">14</span>, &quot;UMA_MUSUME&quot;),<br>       (<span class="hljs-number">2</span>, <span class="hljs-number">101</span>, &quot;seiun sky&quot;, <span class="hljs-number">16</span>, &quot;UMA_MUSUME&quot;),<br>       (<span class="hljs-number">3</span>, <span class="hljs-number">102</span>, &quot;tokai teio&quot;, <span class="hljs-number">15</span>, &quot;UMA_MUSUME&quot;),<br>       (<span class="hljs-number">4</span>, <span class="hljs-number">102</span>, &quot;takatsuki yayoi&quot;, <span class="hljs-number">16</span>, &quot;IDOL&quot;),<br>       (<span class="hljs-number">5</span>, <span class="hljs-number">103</span>, &quot;silence suzuka&quot;, <span class="hljs-number">16</span>, &quot;UMA_MUSUME&quot;),<br>       (<span class="hljs-number">6</span>, <span class="hljs-number">104</span>, &quot;amami haruka&quot;, <span class="hljs-number">17</span>,&quot;IDOL&quot;),<br>       (<span class="hljs-number">7</span>, <span class="hljs-number">104</span>, &quot;kisaragi chihaya&quot;, <span class="hljs-number">16</span>,&quot;IDOL&quot;);<br><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student_t;<br>id class_id   name                age <span class="hljs-type">character</span><br><span class="hljs-comment">--------------------------------------------------</span><br><span class="hljs-number">0</span>  <span class="hljs-number">101</span>       &quot;kikuchi makoto&quot;     <span class="hljs-number">16</span>  &quot;IDOL&quot;<br><span class="hljs-number">1</span>  <span class="hljs-number">101</span>       &quot;haru urara&quot;         <span class="hljs-number">14</span>  &quot;UMA_MUSUME&quot;<br><span class="hljs-number">2</span>  <span class="hljs-number">101</span>       &quot;seiun sky&quot;          <span class="hljs-number">16</span>  &quot;UMA_MUSUME&quot;<br><span class="hljs-number">3</span>  <span class="hljs-number">102</span>       &quot;tokai teio&quot;         <span class="hljs-number">15</span>  &quot;UMA_MUSUME&quot;<br><span class="hljs-number">4</span>  <span class="hljs-number">102</span>       &quot;takatsuki yayoi&quot;    <span class="hljs-number">16</span>  &quot;IDOL&quot;<br><span class="hljs-number">5</span>  <span class="hljs-number">103</span>       &quot;silence suzuka&quot;     <span class="hljs-number">16</span>  &quot;UMA_MUSUME&quot;<br><span class="hljs-number">6</span>  <span class="hljs-number">104</span>       &quot;amami haruka&quot;       <span class="hljs-number">17</span>  &quot;IDOL&quot;<br><span class="hljs-number">7</span>  <span class="hljs-number">104</span>       &quot;kisaragi chihaya&quot;   <span class="hljs-number">16</span>  &quot;IDOL&quot;<br></code></pre></div></td></tr></table></figure>
+
+<p>按班级 ID 分组后，相当于是得到了一个这样的临时表，由于 SQL 的列必须是原子的，因此这个表是虚拟的——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id; <span class="hljs-comment">-- 无法编译！</span><br><br>key(class_id) <span class="hljs-keyword">value</span>(id class_id)  name                age <span class="hljs-type">character</span><br><span class="hljs-comment">----------------------------------------------------------------------</span><br><span class="hljs-number">101</span>                 <span class="hljs-number">0</span>  <span class="hljs-number">101</span>       &quot;kikuchi makoto&quot;     <span class="hljs-number">15</span>  &quot;IDOL&quot;<br>                    <span class="hljs-number">1</span>  <span class="hljs-number">101</span>       &quot;haru urara&quot;         <span class="hljs-number">14</span>  &quot;UMA_MUSUME&quot;<br>                    <span class="hljs-number">2</span>  <span class="hljs-number">101</span>       &quot;seiun sky&quot;          <span class="hljs-number">16</span>  &quot;UMA_MUSUME&quot;<br><span class="hljs-comment">----------------------------------------------------------------------</span><br><span class="hljs-number">102</span>                 <span class="hljs-number">3</span>  <span class="hljs-number">102</span>       &quot;tokai teio&quot;         <span class="hljs-number">15</span>  &quot;UMA_MUSUME&quot;<br>                    <span class="hljs-number">4</span>  <span class="hljs-number">102</span>       &quot;takatsuki yayoi&quot;    <span class="hljs-number">16</span>  &quot;IDOL&quot;<br><span class="hljs-comment">----------------------------------------------------------------------</span><br><span class="hljs-number">103</span>                 <span class="hljs-number">5</span>  <span class="hljs-number">103</span>       &quot;silence suzuka&quot;     <span class="hljs-number">16</span>  &quot;UMA_MUSUME&quot;<br><span class="hljs-comment">----------------------------------------------------------------------</span><br><span class="hljs-number">104</span>                 <span class="hljs-number">6</span>  <span class="hljs-number">104</span>       &quot;amami haruka&quot;       <span class="hljs-number">17</span>  &quot;IDOL&quot;<br>                    <span class="hljs-number">7</span>  <span class="hljs-number">104</span>       &quot;kisaragi chihaya&quot;   <span class="hljs-number">16</span>  &quot;IDOL&quot;<br></code></pre></div></td></tr></table></figure>
+
+<p>这样的临时表是不合法的，我们必须要通过某种方式将 value 从集合变成原子的值，这种方式就是<strong>聚集函数</strong>（Aggregation Function），<strong>聚集函数将分组中的某一列作为参数，并得到一个原子的值</strong>。常见的聚集函数有 COUNT，AVG，MIN，MAX 等。</p>
+<blockquote>
+<p>COUNT 是个特例——它可以选择接受整个分组而非某一列作为参数，语法为 <code>COUNT(*)</code>或<code>COUNT（任意非 NULL 常值）</code>，这样定义的原因是 COUNT 按特定列统计时会忽略 NULL，这在需要统计所有行数时行为不符合需要。</p>
+</blockquote>
+<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><p>比如，当我们试图获取每个班级的平均年龄的时候，会使用 AVG 聚集函数，使用 age 列作为参数，它会将每个分组的 age 列变成一行并作为参数（列转行？），并得到其平均值，比如对班级 101，会得到<code>AVG(15,14,16)</code>，结果为——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> class_id, <span class="hljs-built_in">AVG</span>(age) <span class="hljs-keyword">AS</span> average_age <span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id;<br>class_id    average_age<br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">101</span>         <span class="hljs-built_in">AVG</span>(<br>              <span class="hljs-number">15</span>,<br>              <span class="hljs-number">14</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">15</span><br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">102</span>         <span class="hljs-built_in">AVG</span>(<br>              <span class="hljs-number">15</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">15.5</span><br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">103</span>         <span class="hljs-built_in">AVG</span>(<span class="hljs-number">16</span>) <span class="hljs-operator">=</span> <span class="hljs-number">16</span><br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">104</span>         <span class="hljs-built_in">AVG</span>(<br>              <span class="hljs-number">17</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">16.5</span><br></code></pre></div></td></tr></table></figure>
+
+<p>也<strong>可以在多个列上进行聚集操作</strong>，比如这里获取了每个班级的最大年龄，最小年龄，每个列会分别进行聚集。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <br>  class_id, <br>  <span class="hljs-built_in">MAX</span>(age) <span class="hljs-keyword">AS</span> maximum_age,<br>  <span class="hljs-built_in">MIN</span>(age) <span class="hljs-keyword">AS</span> minimum_age<br><span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id;<br><br>class_id    maximum_age      minimum_age<br><span class="hljs-comment">-----------------------------------------</span><br><span class="hljs-number">101</span>         <span class="hljs-built_in">MAX</span>(             <span class="hljs-built_in">MIN</span>(<br>              <span class="hljs-number">15</span>,              <span class="hljs-number">15</span>,<br>              <span class="hljs-number">14</span>,              <span class="hljs-number">14</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">16</span>       <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">14</span><br><span class="hljs-comment">-----------------------------------------</span><br><span class="hljs-number">102</span>         <span class="hljs-built_in">MAX</span>(             <span class="hljs-built_in">MIN</span>(<br>              <span class="hljs-number">15</span>,              <span class="hljs-number">15</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">16</span>       <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">15</span><br><span class="hljs-comment">-----------------------------------------</span><br><span class="hljs-number">103</span>         <span class="hljs-built_in">MAX</span>(<span class="hljs-number">16</span>) <span class="hljs-operator">=</span> <span class="hljs-number">16</span>     <span class="hljs-built_in">MIN</span>(<span class="hljs-number">16</span>) <span class="hljs-operator">=</span> <span class="hljs-number">16</span><br><span class="hljs-comment">-----------------------------------------</span><br><span class="hljs-number">104</span>         <span class="hljs-built_in">MAX</span>(             <span class="hljs-built_in">MIN</span>(<br>              <span class="hljs-number">17</span>,              <span class="hljs-number">17</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">17</span>       <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">16</span><br></code></pre></div></td></tr></table></figure>
+
+<p><strong>聚集函数中也可以使用表达式</strong>，比如我们想要统计每个班级中 IDOL 的数量，筛选 IDOL 的操作既可以使用 WHERE 进行，也可以在聚集函数中进行——我们可以使用<code>count(if(character = &quot;IDOL&quot;, 1, NULL))</code>，这借用了 count 函数如果接受到 NULL 则跳过这一特性——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> class_id, <span class="hljs-built_in">COUNT</span>(IF(<span class="hljs-type">character</span> <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>)) <span class="hljs-keyword">as</span> idol_num<br><span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id;<br><br>class_id     idol_num<br><span class="hljs-comment">------------------------------------------------------</span><br><span class="hljs-number">101</span>          <span class="hljs-built_in">COUNT</span>(<br>               if(&quot;IDOL&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>),<br>               if(&quot;UMA_MUSUME&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>),<br>               if(&quot;UMA_MUSUME&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>)) <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br><span class="hljs-comment">------------------------------------------------------</span><br><span class="hljs-number">102</span>          <span class="hljs-built_in">COUNT</span>(<br>               if(&quot;UMA_MUSUME&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>),<br>               if(&quot;IDOL&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>))       <span class="hljs-operator">=</span> <span class="hljs-number">1</span><br><span class="hljs-comment">------------------------------------------------------</span><br><span class="hljs-number">103</span>          <span class="hljs-built_in">COUNT</span>(<br>               if(&quot;UMA_MUSUME&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>)) <span class="hljs-operator">=</span> <span class="hljs-number">0</span><br><span class="hljs-comment">------------------------------------------------------</span><br><span class="hljs-number">104</span>          <span class="hljs-built_in">COUNT</span>(<br>               if(&quot;IDOL&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>),<br>               if(&quot;IDOL&quot; <span class="hljs-operator">=</span> &quot;IDOL&quot;, <span class="hljs-number">1</span>, <span class="hljs-keyword">NULL</span>))       <span class="hljs-operator">=</span> <span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+
+<p><strong>将聚集函数看作对一整个列进行的操作，我认为是一个很合适的理解的方法</strong>。同时，从函数式编程的角度，可以把聚集函数内的表达式当作一个<strong>函数字面量</strong>（它是 lazy 的），使用 Scala 来表述的话，就类似<code>count(if (_.character == &quot;IDOL&quot;) 1 else null)</code>，其中<code>_</code>为每一行的记录。</p>
+<blockquote>
+<p>需注意，SELECT 选择的值必须是原子的，因此能选择的字段只能为<strong>分组的 key</strong>，<strong>聚集函数操作后的列</strong>；以及常数；后面提到的 HAVING 子句也有同样的限制。</p>
+</blockquote>
+<p>顺便，没有 GROUP BY 的时候，也可以执行聚集函数，此时整个表会被当成一个分组对待，没有 KEY。</p>
+<p>GROUP BY 在某些时候行为同 SELECT DISTINCT 一致，性能似乎也不相伯仲（Hive 是这样吗？我不确定），因此究竟使用何种方法还是看语义，使用 GROUP BY 来做去重，语义是不太明显的。</p>
+<p>另外，某些看上去非常简单的操作可能是一条 SELECT 语句无法完成的，比如获取年龄最小的 IDOL 的记录，需要一个嵌套的 SELECT 操作，其中内层使用 GROUP BY，获取最小的 IDOL 的年龄的值，外层使用相等比较符来找到年龄同该最小年龄相等的记录——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student_t<br><span class="hljs-keyword">WHERE</span> <span class="hljs-type">character</span> <span class="hljs-operator">=</span> &quot;IDOL&quot; <span class="hljs-keyword">AND</span> <br>age <span class="hljs-operator">=</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(age) <span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">WHERE</span> <span class="hljs-type">character</span> <span class="hljs-operator">=</span> &quot;IDOL&quot;);<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="WHERE-和-HAVING"><a href="#WHERE-和-HAVING" class="headerlink" title="WHERE 和 HAVING"></a>WHERE 和 HAVING</h2><p>在使用 GROUP BY 的语句中，WHERE 和 HAVING 可以提供筛选操作，其中 <strong>WHERE 在分组前进行筛选，HAVING 在分组后进行筛选</strong>。或者说，<strong>WHERE 指定行的条件，HAVING 指定组的条件</strong>。</p>
+<h3 id="GROUP-BY-中的-WHERE"><a href="#GROUP-BY-中的-WHERE" class="headerlink" title="GROUP BY 中的 WHERE"></a>GROUP BY 中的 WHERE</h3><p>考虑我们想筛选每个 class 中所有 IDOL 的平均年龄，我们就需要首先通过 WHERE 子句筛选出所有 IDOL，再进行分组——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> class_id, <span class="hljs-built_in">AVG</span>(age) <span class="hljs-keyword">as</span> average_age <span class="hljs-keyword">FROM</span> student_t<br><span class="hljs-keyword">WHERE</span> <span class="hljs-type">character</span> <span class="hljs-operator">=</span> &quot;IDOL&quot;<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id;<br><br>class_id    average_age<br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">101</span>         <span class="hljs-built_in">AVG</span>(<span class="hljs-number">15</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">15</span><br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">102</span>         <span class="hljs-built_in">AVG</span>(<span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">16</span><br><span class="hljs-comment">--------------------------</span><br><span class="hljs-number">104</span>         <span class="hljs-built_in">AVG</span>(<br>              <span class="hljs-number">17</span>,<br>              <span class="hljs-number">16</span>)   <span class="hljs-operator">=</span> <span class="hljs-number">16.5</span><br></code></pre></div></td></tr></table></figure>
+
+<h3 id="HAVING"><a href="#HAVING" class="headerlink" title="HAVING"></a>HAVING</h3><p>HAGVING 子句用在对分组后对数据进行筛选中，比如对上面的例子，我们进一步想要获取平均年龄大于 15 的班级，这时候就需要使用 HAVING 子句——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> class_id, <span class="hljs-built_in">AVG</span>(age) <span class="hljs-keyword">as</span> average_age <span class="hljs-keyword">FROM</span> student_t<br><span class="hljs-keyword">WHERE</span> <span class="hljs-type">character</span> <span class="hljs-operator">=</span> &quot;IDOL&quot;<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id<br><span class="hljs-keyword">HAVING</span> <span class="hljs-built_in">AVG</span>(age) <span class="hljs-operator">&gt;</span> <span class="hljs-number">15</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">16</span> <span class="hljs-keyword">in</span> age;<br><span class="hljs-operator">+</span><span class="hljs-comment">--------+-----------+</span><br><span class="hljs-operator">|</span>class_id<span class="hljs-operator">|</span>average_age<span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------+-----------+</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span>     <span class="hljs-operator">|</span><span class="hljs-number">16</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">104</span>     <span class="hljs-operator">|</span><span class="hljs-number">17</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------+-----------+</span><br><span class="hljs-comment">-- 懒得画表了，直接出结果</span><br></code></pre></div></td></tr></table></figure>
+
+<p>由于 HAVING 在 GROUP BY 后执行，它可以执行聚集函数。</p>
+<h3 id="DISTINCT"><a href="#DISTINCT" class="headerlink" title="DISTINCT"></a>DISTINCT</h3><p>在使用聚集函数时，能通过 DISTINCT 关键字能筛选出列的重复的字段，比如<code>COUNT(DISTINCT age)</code>，能统计出不同年龄的数量，如<code>15,15,17,16,17</code>，筛去重复值后得到<code>15,17,16</code>，结果为 3。</p>
+<h2 id="关联子查询——引用外部查询的变量"><a href="#关联子查询——引用外部查询的变量" class="headerlink" title="关联子查询——引用外部查询的变量"></a>关联子查询——引用外部查询的变量</h2><p>上面展示了获取<strong>所有班级中</strong>年龄最小的学生的 SQL 代码——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student_t<br><span class="hljs-keyword">WHERE</span> age <span class="hljs-operator">=</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(age) <span class="hljs-keyword">FROM</span> student_t);<br><span class="hljs-operator">+</span><span class="hljs-comment">--+--------+----------+---+----------+</span><br><span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>class_id<span class="hljs-operator">|</span>stud_name <span class="hljs-operator">|</span>age<span class="hljs-operator">|</span><span class="hljs-type">character</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--+--------+----------+---+----------+</span><br><span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-number">101</span>     <span class="hljs-operator">|</span>haru urara<span class="hljs-operator">|</span><span class="hljs-number">14</span> <span class="hljs-operator">|</span>UMA_MUSUME<span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--+--------+----------+---+----------+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这里使用了所谓<strong>子查询</strong>的模式——<code>(SELECT MIN(age) FROM student_t)</code>是一个嵌套的 SELECT 语句，它用于获得最小的年龄数；同时，由于不使用聚集函数时，整个表会被当成一个分组对待，所以这个 SELECT 的输出是一行一列的，一行一列的表可以当作标量看待，因此可以和 age 做比较。</p>
+<p>那么如果我们想要获取<strong>每一个班级</strong>中年龄最小的学生呢？可以意识到，<strong>对每一个学生，她都需要与当前班级的最小年龄做比较</strong>，因此，在子查询中，<strong>需要利用到当前（的 WHERE 子句）所处理的行的班级信息</strong>，代码如下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">AS</span> s1<br><span class="hljs-keyword">WHERE</span> age <span class="hljs-operator">=</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">MIN</span>(age) <span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">AS</span> s2 <span class="hljs-keyword">WHERE</span> s1.class_id <span class="hljs-operator">=</span> s2.class_id);<br><span class="hljs-operator">+</span><span class="hljs-comment">--+--------+----------------+---+----------+</span><br><span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>class_id<span class="hljs-operator">|</span>stud_name       <span class="hljs-operator">|</span>age<span class="hljs-operator">|</span><span class="hljs-type">character</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--+--------+----------------+---+----------+</span><br><span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-number">101</span>     <span class="hljs-operator">|</span>haru urara      <span class="hljs-operator">|</span><span class="hljs-number">14</span> <span class="hljs-operator">|</span>UMA_MUSUME<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span><span class="hljs-number">102</span>     <span class="hljs-operator">|</span>tokai teio      <span class="hljs-operator">|</span><span class="hljs-number">15</span> <span class="hljs-operator">|</span>UMA_MUSUME<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">5</span> <span class="hljs-operator">|</span><span class="hljs-number">103</span>     <span class="hljs-operator">|</span>silence suzuka  <span class="hljs-operator">|</span><span class="hljs-number">16</span> <span class="hljs-operator">|</span>UMA_MUSUME<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">6</span> <span class="hljs-operator">|</span><span class="hljs-number">104</span>     <span class="hljs-operator">|</span>amami haruka    <span class="hljs-operator">|</span><span class="hljs-number">17</span> <span class="hljs-operator">|</span>IDOL      <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">7</span> <span class="hljs-operator">|</span><span class="hljs-number">104</span>     <span class="hljs-operator">|</span>kisaragi chihaya<span class="hljs-operator">|</span><span class="hljs-number">17</span> <span class="hljs-operator">|</span>IDOL      <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--+--------+----------------+---+----------+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这里由于两个 SELECT 查询都为同一个表，因此需要给定不同别名以进行区分。可以发现，内部的子查询引用了外部的行的一个字段，进行了这种引用的查询称作<strong>关联子查询</strong>，它的行为非常类似<strong>闭包</strong>。</p>
+<p>需要注意的是，普通的子查询是一次执行即可的，而对于关联子查询，<strong>如果它引用的外界的变量发生改变，它就必须需要重新计算</strong>（因为它已经不够“纯”了），因此可能性能会较差一些。</p>
+<blockquote>
+<p>之前看日本人的《SQL 基础教程》，介绍到关联子查询时说，利用被划分的组进行比较的子查询就是关联子查询，这种说法有些狭隘，没有覆盖到所有情况。但此书确实值得一看。</p>
+</blockquote>
+<h1 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h1><p>主要参考 <a target="_blank" rel="noopener" href="https://blog.jooq.org/say-no-to-venn-diagrams-when-explaining-joins">这篇文章</a>。这里为了一致性，只使用<code>tb1 [LEFT|RIGHT] JOIN tb2 ON expr</code>的语法。</p>
+<p>JOIN 操作即将两张或更多张表进行连接，从而构造一个新的表的操作。<strong>JOIN 操作的本质就是将两张表做笛卡尔积，并进行一定的筛选操作</strong>。</p>
+<p>最基础的 JOIN 操作为<code>CROSS JOIN</code>，即单纯将两张表做笛卡尔积操作，得到新的表。</p>
+<p>比如，考虑下面两张表，它们的 id 字段是同义的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> tb1(data STRING, id <span class="hljs-type">INT</span>);<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> tb2(id <span class="hljs-type">INT</span>, data STRING);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> tb1 <span class="hljs-keyword">VALUES</span><br>(&quot;amami&quot;, <span class="hljs-number">0</span>),<br>(&quot;kisaragi&quot;, <span class="hljs-number">1</span>),<br>(&quot;tokai&quot;, <span class="hljs-number">2</span>),<br>(&quot;haru&quot;, <span class="hljs-number">3</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> tb2 <span class="hljs-keyword">VALUES</span><br>(<span class="hljs-number">2</span>, &quot;teio&quot;),<br>(<span class="hljs-number">3</span>, &quot;urara&quot;),<br>(<span class="hljs-number">4</span>, &quot;sky&quot;); <span class="hljs-comment">-- 我 INSERT 类型写错了它怎么不报错啊……太宽松了吧</span><br></code></pre></div></td></tr></table></figure>
+
+<p>两表字段的对应关系可以这样表示——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql">data         id   data<br><span class="hljs-comment">-------------------------</span><br>   &quot;amami&quot;   <span class="hljs-number">0</span><br>&quot;kisaragi&quot;   <span class="hljs-number">1</span><br>   &quot;tokai&quot;   <span class="hljs-number">2</span>    &quot;teio&quot;<br>    &quot;haru&quot;   <span class="hljs-number">3</span>    &quot;urara&quot;<br>             <span class="hljs-number">4</span>    &quot;sky&quot;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>需注意的是，这种对应关系可能不是唯一的，表 A 的某条记录，它可能可以和表 B 的多条记录对应，Vise Versa。</p>
+</blockquote>
+<h2 id="CROSS-JOIN"><a href="#CROSS-JOIN" class="headerlink" title="CROSS JOIN"></a>CROSS JOIN</h2><p><code>CROSS JOIN</code>的语法非常简单，直接在 FROM 中的表名位置协商<code>tb1 JOIN tb2</code>即可——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> tb1 <span class="hljs-keyword">JOIN</span> tb2;<br><span class="hljs-operator">+</span><span class="hljs-comment">--------+--+--+-----+</span><br><span class="hljs-operator">|</span>data    <span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>data <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------+--+--+-----+</span><br><span class="hljs-operator">|</span>amami   <span class="hljs-operator">|</span><span class="hljs-number">0</span> <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>amami   <span class="hljs-operator">|</span><span class="hljs-number">0</span> <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span>urara<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>amami   <span class="hljs-operator">|</span><span class="hljs-number">0</span> <span class="hljs-operator">|</span><span class="hljs-number">4</span> <span class="hljs-operator">|</span>sky  <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>kisaragi<span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>kisaragi<span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span>urara<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>kisaragi<span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-number">4</span> <span class="hljs-operator">|</span>sky  <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>tokai   <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>tokai   <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span>urara<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>tokai   <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span><span class="hljs-number">4</span> <span class="hljs-operator">|</span>sky  <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>haru    <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------+--+--+-----+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>可以看到结果符合预期，为 tb1 和 tb2 的笛卡尔积，长度为 4x3&#x3D;12。</p>
+<p>但是，笛卡尔积通常是没有实践意义的，通常找不到直接使用笛卡尔积的场景，但笛卡尔积是其它连接操作的基础，都是在笛卡尔积上进行一定的筛选的结果。</p>
+<h2 id="INNER-JOIN（内连接）"><a href="#INNER-JOIN（内连接）" class="headerlink" title="INNER JOIN（内连接）"></a>INNER JOIN（内连接）</h2><p>内连接或许是最符合直觉的连接操作了，它在笛卡尔积的基础上使用一个表达式进行筛选，最常用的表达式是让两张表中相同字段判等，比如在这里，就是<code>tb1.id = tb2.id</code>，SQL 语句见下——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> tb1.data, tb1.id, tb2.data <span class="hljs-keyword">FROM</span> <br>tb1 <span class="hljs-keyword">JOIN</span> tb2 <span class="hljs-keyword">ON</span> tb1.id <span class="hljs-operator">=</span> tb2.id;<br><span class="hljs-operator">+</span><span class="hljs-comment">-----+--+-----+</span><br><span class="hljs-operator">|</span>data <span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>data <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-----+--+-----+</span><br><span class="hljs-operator">|</span>tokai<span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>haru <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span>urara<span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-----+--+-----+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>可以看到，结果中只有匹配该条件的记录。</p>
+<p>内连接得到的结果表的记录数量小于表一和表二。</p>
+<h2 id="OUTER-JOIN（外连接）"><a href="#OUTER-JOIN（外连接）" class="headerlink" title="OUTER JOIN（外连接）"></a>OUTER JOIN（外连接）</h2><p>然后是外连接，外连接分为左外连接（LEFT [OUTER] JOIN）和右外连接（RIGHT [OUTER] JOIN），其中左外连接在内连接的基础上，对左边的表（称为主表），如果其某条记录在右边的表中没有匹配的，则仍旧将该记录作为结果，其中对应右表的字段设定为 NULL；右外连接则是以右边的表作为主表进行上面的操作。</p>
+<p>下面展示了左外连接和右外连接的结果。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> tb1.data, tb1.id, tb2.data <span class="hljs-keyword">FROM</span><br>tb1 <span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> tb2 <span class="hljs-keyword">ON</span> tb1.id <span class="hljs-operator">=</span> tb2.id;<br><span class="hljs-operator">+</span><span class="hljs-comment">--------+--+-----+</span><br><span class="hljs-operator">|</span>data    <span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>data <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------+--+-----+</span><br><span class="hljs-operator">|</span>amami   <span class="hljs-operator">|</span><span class="hljs-number">0</span> <span class="hljs-operator">|</span><span class="hljs-keyword">NULL</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>kisaragi<span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-keyword">NULL</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>tokai   <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>haru    <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span>urara<span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------+--+-----+</span><br><br><span class="hljs-keyword">SELECT</span> tb1.data, tb1.id, tb2.data <span class="hljs-keyword">FROM</span><br>tb1 <span class="hljs-keyword">RIGHT</span> <span class="hljs-keyword">JOIN</span> tb2 <span class="hljs-keyword">ON</span> tb1.id <span class="hljs-operator">=</span> tb2.id;<br><span class="hljs-operator">+</span><span class="hljs-comment">-----+----+-----+</span><br><span class="hljs-operator">|</span>data <span class="hljs-operator">|</span>id  <span class="hljs-operator">|</span>data <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-----+----+-----+</span><br><span class="hljs-operator">|</span>tokai<span class="hljs-operator">|</span><span class="hljs-number">2</span>   <span class="hljs-operator">|</span>teio <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span>haru <span class="hljs-operator">|</span><span class="hljs-number">3</span>   <span class="hljs-operator">|</span>urara<span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-keyword">NULL</span> <span class="hljs-operator">|</span><span class="hljs-keyword">NULL</span><span class="hljs-operator">|</span>sky  <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-----+----+-----+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>外连接通常在我们需要<strong>保留主表的信息</strong>的时候，比如对于一个作者表和一个书籍表，我们想表达每个作者编写的数据，这时候如果某个作者没有书籍，我们如果使用内连接的话就会把他漏掉了。</p>
+<p>外连接时，如果用于进行连接的字段是唯一的，则结果表的大小等于主表的大小。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>用一张图展示内连接，左外连接和右外连接所执行的操作，可用于形象理解。</p>
+<p><img src="/images/oss/20220308201345.png"></p>
+<blockquote>
+<p>这里总共有3个部分，考虑使用其中1个，2个，3个，则总共能得到 C3,1 + C3,2 + C3,3，总共七种连接方式。</p>
+</blockquote>
+<p><strong>JOIN 操作在 FROM 子句执行时执行，因此它是最先执行的，之后的 WHERE，GROUP BY 等操作全都是在 JOIN 后的临时表中执行的</strong>。</p>
+<p>还有一些更复杂的连接操作（一切不使用&#x3D;进行连接的操作都挺复杂的），现在先不研究。</p>
+<h1 id="WINDOW（窗口）函数"><a href="#WINDOW（窗口）函数" class="headerlink" title="WINDOW（窗口）函数"></a>WINDOW（窗口）函数</h1><p>WINDOW 函数是近十年才加入 SQL 的，OLAP 方向的事物，它的名字中的 WINDOW，指的是“滑动窗口”那种窗口，即<strong>范围</strong>，窗口函数就其行为来说，可以认为是<strong>按特定顺序对特定范围的记录进行迭代，且每次迭代都会产生一个值并插入到查询结果中的函数</strong>，它的行为类似** Python 或 js 中的 yield**，维护有自己的状态，或者说函数式编程中的 scan 函数。</p>
+<p>下面的代码使用了 ROW_NUMBER 窗口函数，该函数就像一个计数器，迭代每一行都+1。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-comment">-- 不添加主键实在不是一个好主意，主键应当是每一个表都有的，不然不符合2NF了</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> tb(data <span class="hljs-type">INT</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> tb <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">100</span>),(<span class="hljs-number">101</span>),(<span class="hljs-number">101</span>),(<span class="hljs-number">102</span>),(<span class="hljs-number">102</span>),(<span class="hljs-number">102</span>),(<span class="hljs-number">103</span>);<br><br><span class="hljs-keyword">SELECT</span> data, <span class="hljs-built_in">ROW_NUMBER</span>() <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> data) <span class="hljs-keyword">FROM</span> tb;<br><span class="hljs-operator">+</span><span class="hljs-comment">----+------+</span><br><span class="hljs-operator">|</span>data<span class="hljs-operator">|</span>number<span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">----+------+</span><br><span class="hljs-operator">|</span><span class="hljs-number">100</span> <span class="hljs-operator">|</span><span class="hljs-number">1</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">101</span> <span class="hljs-operator">|</span><span class="hljs-number">2</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">101</span> <span class="hljs-operator">|</span><span class="hljs-number">3</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span> <span class="hljs-operator">|</span><span class="hljs-number">4</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span> <span class="hljs-operator">|</span><span class="hljs-number">5</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span> <span class="hljs-operator">|</span><span class="hljs-number">6</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">103</span> <span class="hljs-operator">|</span><span class="hljs-number">7</span>     <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">----+------+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>相似用途的窗口函数还有 RANK 和 DENSE_RANK，它们的语义一看结果便知。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gherkin">SELECT data,<br>       RANK() OVER (ORDER BY data) AS ranking,<br>       DENSE_RANK() OVER (ORDER BY data) AS dense_ranking,<br>       ROW_NUMBER() OVER (ORDER BY data) AS row_num<br>FROM tb;<br>+----+-------+-------------+-------+<br>|<span class="hljs-string">data</span>|<span class="hljs-string">ranking</span>|<span class="hljs-string">dense_ranking</span>|<span class="hljs-string">row_num</span>|<br>+----+-------+-------------+-------+<br>|<span class="hljs-string">100 </span>|<span class="hljs-string">1      </span>|<span class="hljs-string">1            </span>|<span class="hljs-string">1      </span>|<br>|<span class="hljs-string">101 </span>|<span class="hljs-string">2      </span>|<span class="hljs-string">2            </span>|<span class="hljs-string">2      </span>|<br>|<span class="hljs-string">101 </span>|<span class="hljs-string">2      </span>|<span class="hljs-string">2            </span>|<span class="hljs-string">3      </span>|<br>|<span class="hljs-string">102 </span>|<span class="hljs-string">4      </span>|<span class="hljs-string">3            </span>|<span class="hljs-string">4      </span>|<br>|<span class="hljs-string">102 </span>|<span class="hljs-string">4      </span>|<span class="hljs-string">3            </span>|<span class="hljs-string">5      </span>|<br>|<span class="hljs-string">102 </span>|<span class="hljs-string">4      </span>|<span class="hljs-string">3            </span>|<span class="hljs-string">6      </span>|<br>|<span class="hljs-string">103 </span>|<span class="hljs-string">7      </span>|<span class="hljs-string">4            </span>|<span class="hljs-string">7      </span>|<br>+----+-------+-------------+-------+<br><br></code></pre></div></td></tr></table></figure>
+
+<p>窗口函数的语法形如<code>fn() OVER ([PARTITION BY field] ORDER BY field)</code>，其中 PARTITON BY 子句用于给定分组（即确定记录的范围，它会对每一个组都分别执行该窗口函数；如果不给定范围，则默认整个表作为范围）；ORDER BY 子句用于给定调用顺序，顺序是必须给定的，这是容易理解的——对于这种有状态的函数，如果调用顺序不确定，则结果也不确定了。</p>
+<p>窗口函数有两个重要特性——</p>
+<ol>
+<li>窗口函数对<strong>记录的集合</strong>起作用，这是说它对<strong>整个表</strong>或者<strong>每个分组</strong>进行操作；这一点很类似聚集函数，但<strong>聚集函数处理完一整个集合生成的是一个值，而窗口函数生成一列值</strong>。</li>
+<li>窗口函数在 SELECT 后执行，因此它只能对 SELECT 的结果进行操作。</li>
+</ol>
+<p>聚集函数也可以用作窗口函数，此时它的行为类似函数式编程中的 scan 函数——在 reduce 时保留之前的结果，比如下面使用了 SUM 作为窗口函数；<strong>使用聚集函数作为窗口函数时，需要将要聚集的字段置于函数的括号中</strong>——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <br>  data, <br>  <span class="hljs-built_in">ROW_NUMBER</span>() <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> DATA) <span class="hljs-keyword">AS</span> id, <br>  <span class="hljs-built_in">SUM</span>(data) <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> id) <br><span class="hljs-keyword">FROM</span> tb;<br><span class="hljs-operator">+</span><span class="hljs-comment">----+--+------------+</span><br><span class="hljs-operator">|</span>data<span class="hljs-operator">|</span>id<span class="hljs-operator">|</span>sum_window_1<span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">----+--+------------+</span><br><span class="hljs-operator">|</span><span class="hljs-number">100</span> <span class="hljs-operator">|</span><span class="hljs-number">1</span> <span class="hljs-operator">|</span><span class="hljs-number">100</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">101</span> <span class="hljs-operator">|</span><span class="hljs-number">3</span> <span class="hljs-operator">|</span><span class="hljs-number">201</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">101</span> <span class="hljs-operator">|</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span><span class="hljs-number">302</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span> <span class="hljs-operator">|</span><span class="hljs-number">6</span> <span class="hljs-operator">|</span><span class="hljs-number">404</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span> <span class="hljs-operator">|</span><span class="hljs-number">5</span> <span class="hljs-operator">|</span><span class="hljs-number">506</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">102</span> <span class="hljs-operator">|</span><span class="hljs-number">4</span> <span class="hljs-operator">|</span><span class="hljs-number">608</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span><span class="hljs-number">103</span> <span class="hljs-operator">|</span><span class="hljs-number">7</span> <span class="hljs-operator">|</span><span class="hljs-number">711</span>         <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">----+--+------------+</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这里特意创建了一列 ID 让 SUM 用以排序，这是因为 SUM 对单行数据的结果非常奇怪，怀疑这是某种优化机制导致的。</p>
+<blockquote>
+<p>学到后面的 ROW 的语法后，感觉这里的抽象不太合适。</p>
+</blockquote>
+<p>下面使用 Scala 中的 scan 函数实现 ROW_NUMBER，DENSE_RANK，RANK 函数，尽量按照函数式编程的风格。如果并非产生该列，而是产生原纪录连带该列时，我觉得使用 reduce 更为适合（想想当时是如何使用 reduce 实现 map 的），但这时候的代码恐怕会太过晦涩。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">row_number</span></span>[<span class="hljs-type">A</span>] (entities : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>] =<br>  entities.scanLeft(<span class="hljs-number">0</span>)&#123;(acc, _) =&gt; acc + <span class="hljs-number">1</span>&#125;.tail<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dense_rank</span></span>[<span class="hljs-type">A</span>] (entities : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>] = &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Vars</span>(<span class="hljs-params">last : <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = <span class="hljs-type">None</span>, rank : <span class="hljs-type">Int</span> = 0</span>)</span><br>  entities.scanLeft(<span class="hljs-type">Vars</span>())&#123; (acc, entity) =&gt;<br>    <span class="hljs-keyword">val</span> <span class="hljs-type">Vars</span>(last, rank) = acc<br>    last <span class="hljs-keyword">match</span> &#123;<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">None</span> =&gt; <span class="hljs-type">Vars</span>(<span class="hljs-type">Some</span>(entity), rank + <span class="hljs-number">1</span>)<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">Some</span>(lastEntity) <span class="hljs-keyword">if</span> (lastEntity == entity) =&gt; <span class="hljs-type">Vars</span>(<span class="hljs-type">Some</span>(entity), rank)<br>      <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">Vars</span>(<span class="hljs-type">Some</span>(entity), rank + <span class="hljs-number">1</span>)<br>    &#125;<br>  &#125;.map(_.rank).tail<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rank</span></span>[<span class="hljs-type">A</span>] (entities : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>] = &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Vars</span>(<span class="hljs-params">last : <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = <span class="hljs-type">None</span>, counter : <span class="hljs-type">Int</span> = 0, rank : <span class="hljs-type">Int</span> = 0</span>)</span><br>  entities.scanLeft(<span class="hljs-type">Vars</span>())&#123;(acc, entity) =&gt;<br>    <span class="hljs-keyword">val</span> <span class="hljs-type">Vars</span>(last, counter, rank) = acc<br>    last <span class="hljs-keyword">match</span> &#123;<br>      <span class="hljs-comment">// 对第一个元素</span><br>      <span class="hljs-keyword">case</span> <span class="hljs-type">None</span> =&gt; <span class="hljs-type">Vars</span>(<span class="hljs-type">Some</span>(entity), counter + <span class="hljs-number">1</span>, rank + <span class="hljs-number">1</span>)<br>      <span class="hljs-comment">// 如果当前元素和上一个元素相等</span><br>      <span class="hljs-keyword">case</span> <span class="hljs-type">Some</span>(lastEntity) <span class="hljs-keyword">if</span> (lastEntity == entity) =&gt;<br>        <span class="hljs-type">Vars</span>(<span class="hljs-type">Some</span>(entity), counter + <span class="hljs-number">1</span>, rank)<br>      <span class="hljs-keyword">case</span> _ =&gt;<br>        <span class="hljs-type">Vars</span>(<span class="hljs-type">Some</span>(entity), <span class="hljs-number">1</span>, rank + counter)<br>    &#125;<br>  &#125;.map(_.rank).tail<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>窗口函数（或许限于聚集函数的窗口函数）的行为其实就是，<strong>对每一组的每一行数据，将窗口的开始（默认为该组的开始）到窗口的结束（默认为该行）的记录作为参数传递给窗口函数并获得当前值</strong>。这里使用了“窗口的开始”，“窗口的结束”来描述，是因为窗口的范围是可以让用户通过 ROWS 子句自己指定的，比如一个比较常见的需求是所谓的“移动平均”——对每条记录，它及其周围记录的平均值。</p>
+<hr>
+<p>下一步是继续去学习 Hive，同时期待学习更多 SQL 编写的模式，从而使能够去编写和阅读复杂的查询操作。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/SQL/">SQL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 MR 为何需要排序，以及一个分布式排序的示例</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-06MapReduce%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F1%E2%80%94%E2%80%94Mapper%EF%BC%8CReducer%EF%BC%8CCombiner.html">
+                        <span class="hidden-mobile">MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

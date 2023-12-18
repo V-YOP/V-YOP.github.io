@@ -1,0 +1,529 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="初步了解 JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Java 运行时的内存区域">
+<meta property="og:url" content="http://example.com/2020/12-08%E5%85%B3%E4%BA%8EJava%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="初步了解 JVM">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/08/eMzuqLdg4sJCWQS.png">
+<meta property="og:image" content="https://i.loli.net/2020/12/09/j7AZXEqspLxhr2S.png">
+<meta property="og:image" content="https://i.loli.net/2020/12/09/C62kwnioRW5uFaO.png">
+<meta property="og:image" content="https://i.loli.net/2020/12/09/5Ngx1dvKGaIpZ3V.png">
+<meta property="og:image" content="https://i.loli.net/2020/12/10/TZJIqwKVWfnA7pY.png">
+<meta property="article:published_time" content="2020-12-08T08:17:33.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.279Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/08/eMzuqLdg4sJCWQS.png">
+  
+  
+  <title>关于 Java 运行时的内存区域 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 Java 运行时的内存区域">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-08 16:17" pubdate>
+        2020年12月8日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.2k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 Java 运行时的内存区域</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>每运行一个 Java 程序，它就要启动一个 Java 虚拟机的实例，所以说，Java 虚拟机的生命周期是和进程相同的（或许这里顺序该交换一下），一个 Java 虚拟机维护一个进程。</p>
+<p>Java 虚拟机会将其管理的内存划分为若干不同的数据区域——</p>
+<p><img src="https://i.loli.net/2020/12/08/eMzuqLdg4sJCWQS.png"></p>
+<p>可以看到，Java 运行时管理的内存区域包括程序计数器（PC），虚拟机栈（VM Stack），本地方法栈（Native Method Stack），堆（Heap），方法区和直接内存。</p>
+<p>其中，每个线程都拥有（且<strong>私有</strong>）——</p>
+<ul>
+<li>程序计数器</li>
+<li>虚拟机栈</li>
+<li>本地方法栈</li>
+</ul>
+<p>以下区域被所有线程共享——</p>
+<ul>
+<li>堆</li>
+<li>方法区（可以认为方法区是虚拟机的一种规范，对于 HotSpot 虚拟机，元空间（JDK1.8 以后）是它的实现。所以可以说元空间就是方法区）</li>
+<li>直接内存（不是运行时数据区的一部分）</li>
+</ul>
+<h1 id="运行时各数据区域"><a href="#运行时各数据区域" class="headerlink" title="运行时各数据区域"></a>运行时各数据区域</h1><p>简述下各区域及其作用。</p>
+<h2 id="Java-虚拟机栈（VM-Stack）"><a href="#Java-虚拟机栈（VM-Stack）" class="headerlink" title="Java 虚拟机栈（VM Stack）"></a>Java 虚拟机栈（VM Stack）</h2><p>Java 内存可以粗糙地区分为<strong>堆内存</strong>（heap）和<strong>栈内存</strong>（stack）。其中，<strong>每一个线程的虚拟机栈就是这里的栈，或者说是这里的栈中局部变量表部分</strong>（局部变量表存储当前函数的局部变量，包括编译期可知的 8 个基本数据类型和对象引用）。其作用就如 C 语言中的函数调用栈。其存储一个个<strong>栈帧</strong>（Stack frame）。栈帧会在 return 语句或抛出异常后弹出。</p>
+<blockquote>
+<p>栈中只存储对象的引用，对象的实例一般来说存放在堆中。但是，如果某方法中使用的对象没有被返回，没有被外界调用，该对象是可以分配在栈上的。这种机制称为<strong>逃逸分析</strong>。</p>
+</blockquote>
+<blockquote>
+<p>每一个栈帧都拥有：局部变量表，操作数栈，动态链接，方法出口信息。（这啥啊……）</p>
+</blockquote>
+<p>Java 虚拟机栈会出现两种错误——<code>StackOverFlowError</code>和<code>OutOfMemoryError</code>。</p>
+<p><code>stackOverFlowError</code>：若栈的深度超过 Java 虚拟机的最大深度，此时若不允许动态扩展栈的内存大小，则抛出该错误。（或许 99%的<code>stackOverFlowError</code>错误都是因为递归忘记写出口了吧：）</p>
+<p><code>OutOfMemoryError</code>：Java 虚拟机中无空闲内存，且垃圾回收器无法提供更多内存时，该错误会被抛出。</p>
+<p>每个线程都有自己的虚拟机栈，因为它们都要进行函数调用，在线程切换后，要能够恢复此时的上下文。基于相同的理由，<strong>每个对象也都私有自己的 PC</strong>。</p>
+<h2 id="程序计数器（PC）"><a href="#程序计数器（PC）" class="headerlink" title="程序计数器（PC）"></a>程序计数器（PC）</h2><p>程序计数器（Program Counter Register）可以认为是一个线程所执行的字节码的行号指示器。<strong>字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令</strong>。分支，循环，跳转，异常处理等功能都需要 PC 来完成。在多线程切换时，每个线程都需要记录当前线程执行的位置，从而在获得运行权限的时候能够从切换前的位置继续执行（<strong>线程恢复</strong>），这也是 PC 的工作。</p>
+<p>程序计数器是唯一不会出现<code>OutOfMemoryError</code>的内存区域。</p>
+<blockquote>
+<p>PC 在执行 native 方法的时候，其值为 undefined（？），即不起作用。</p>
+</blockquote>
+<h2 id="本地方法栈（Native-Method-Stack"><a href="#本地方法栈（Native-Method-Stack" class="headerlink" title="本地方法栈（Native Method Stack)"></a>本地方法栈（Native Method Stack)</h2><p>本地方法栈同虚拟机栈功能相似，唯一的区别在于虚拟机栈用来执行 Java 方法，本地方法栈则用来执行 Native 方法。</p>
+<h2 id="堆（Heap）——存放对象实例"><a href="#堆（Heap）——存放对象实例" class="headerlink" title="堆（Heap）——存放对象实例"></a>堆（Heap）——存放对象实例</h2><blockquote>
+<p>这里的堆指的并非数据结构中的堆。其用的是 heap 的英文释义——<strong>（凌乱的）一堆；许多；大量</strong>。</p>
+</blockquote>
+<p>堆是 JVM 管理的最大的一块内存区域。其唯一的目的在于存放对象的实例。<strong>几乎所有</strong>的对象实例（和数组）都分配在堆中（一些技术，如 JIT，逃逸分析的成熟会导致一些微妙的变化——一些对象不分配在堆中而是栈中）。堆是垃圾收集器管理的主要区域，因此也被称作** GC 堆（Garbage Collected Heap）**。</p>
+<p>堆分为三部分——新生代（Young Generation），老年代（Old Generation）和永久代（Permanent Generation），JDK1.8 后，永久代被移除，取而代之的是元空间（MetaSpace）。或者说，方法区的实现由永久代改为了元空间。</p>
+<p>堆是各线程共享的。因而是线程不安全的。</p>
+<p><img src="https://i.loli.net/2020/12/09/j7AZXEqspLxhr2S.png"></p>
+<p>新生代包括 Eden（亚当，意义不言而喻）区和两个 Survivor 区（称为 s0，s1，或 from，to 区）。对象一般首先在 Eden 区分配，在经过一次<strong>新生代垃圾回收</strong>后，如果对象还存活，则进入 s0，s1，年龄加 1（或初始年龄设为 1），年龄增长到一定程度则晋升到老年代。</p>
+<p>堆中容易出现<code>OutOfMemoryError</code>错误。其主要有几种情况——</p>
+<ul>
+<li><code>OutOfMemoryError: GC Overhead Limit Exceeded</code>：JVM 花太多时间进行垃圾回收，并且只能回收很少的堆空间。</li>
+<li><code>OutOfMemoryError: Java heap space</code>：创建新对象时堆空间用尽。（堆空间与设定有关，与计算机内存无关）</li>
+</ul>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>方法区与堆一样，也是各个线程共享的。它用于存储已被虚拟机加载的<strong>类信息</strong>（即反射所使用的信息。这些信息是用来描述类的，因此也叫类的元数据）、<strong>常量</strong>、<strong>静态变量</strong>、<strong>即时编译器编译后的代码</strong>等数据。</p>
+<p><strong>在规范中，方法区逻辑上属于堆。但方法区又有一个别名非堆（Non-Heap），与堆区别开来</strong>。</p>
+<p>在 Java 8 之后，方法区的实现改为元空间，它使用直接内存。最大元空间大小默认为 unlimited，因此，元空间溢出的可能性更小。如果溢出，说明计算机的物理内存被用尽。</p>
+<blockquote>
+<p>元空间会抛出<code>OutOfMemoryError: MetaSpace</code>错误。</p>
+</blockquote>
+<h3 id="方法区与永久代的关系"><a href="#方法区与永久代的关系" class="headerlink" title="方法区与永久代的关系"></a>方法区与永久代的关系</h3><blockquote>
+<p>《Java 虚拟机规范》只是规定了有方法区这么个概念和它的作用，并没有规定如何去实现它。那么，在不同的 JVM 上方法区的实现肯定是不同的了。 <strong>方法区和永久代的关系很像 Java 中接口和类的关系，类实现了接口，而永久代就是 HotSpot 虚拟机对虚拟机规范中方法区的一种实现方式。</strong> 也就是说，永久代是 HotSpot 的概念，方法区是 Java 虚拟机规范中的定义，是一种规范，而永久代是一种实现，一个是标准一个是实现，其他的虚拟机实现并没有永久代这一说法。</p>
+<p>——引用自 <a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/docs/java/jvm/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F?id=_251-%e6%96%b9%e6%b3%95%e5%8c%ba%e5%92%8c%e6%b0%b8%e4%b9%85%e4%bb%a3%e7%9a%84%e5%85%b3%e7%b3%bb">JavaGuide</a></p>
+</blockquote>
+<h3 id="运行时常量池（Runtime-constant-pool）"><a href="#运行时常量池（Runtime-constant-pool）" class="headerlink" title="运行时常量池（Runtime constant pool）"></a>运行时常量池（Runtime constant pool）</h3><p>运行时常量池是方法区的一部分，其用于存放编译期生成的各种<strong>字面量</strong>和<strong>符号引用</strong>。<strong>字符串常量池在堆中，运行时常量池在方法区中</strong>（元空间中）。</p>
+<blockquote>
+<p><del>字面量指代码文件中直接给定的量，如”hello”, 3, 233l 等。</del></p>
+<p>符号引用简单来说就是包含一定信息的符号，经过几层解析后，其最终指向一个具有类型和层次的字符串。见 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/30300585/answer/51335493">JVM 里的符号引用如何存储？</a></p>
+</blockquote>
+<p>常量池中存储对象的引用，实际对象仍旧存储在堆中。</p>
+<h2 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h2><p>直接内存不是虚拟机运行时数据区的一部分，但是其会经常被频繁使用。其也会抛出<code>OutOfMemoryError</code>错误。</p>
+<blockquote>
+<p>JDK1.4 中新加入的 <strong>NIO(New Input&#x2F;Output) 类</strong>，引入了一种基于<strong>通道（Channel）</strong> 与<strong>缓存区（Buffer）</strong> 的 I&#x2F;O 方式，它可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样就能在一些场景中显著提高性能，因为<strong>避免了在 Java 堆和 Native 堆之间来回复制数据</strong>。</p>
+<p>——同上</p>
+</blockquote>
+<h1 id="关于常量池"><a href="#关于常量池" class="headerlink" title="关于常量池"></a>关于常量池</h1><p><strong>只要使用 new 方法，便需要创建新的对象。</strong></p>
+<h2 id="String-类的常量池"><a href="#String-类的常量池" class="headerlink" title="String 类的常量池"></a>String 类的常量池</h2><h3 id="String-对象的两种创建方式"><a href="#String-对象的两种创建方式" class="headerlink" title="String 对象的两种创建方式"></a>String 对象的两种创建方式</h3><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">s1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abcd&quot;</span>; <span class="hljs-comment">// 先检查常量池中有无&quot;abcd&quot;，若无则在常量池中创建对象，然后再让 s1 指向该对象，否则直接指向</span><br><span class="hljs-type">String</span> <span class="hljs-variable">s2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&quot;abcd&quot;</span>); <span class="hljs-comment">// 在堆中创建</span><br><span class="hljs-type">String</span> <span class="hljs-variable">s3</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&quot;abcd&quot;</span>); <span class="hljs-comment">// 在堆中创建</span><br><span class="hljs-type">String</span> <span class="hljs-variable">s4</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;abcd&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">s5</span> <span class="hljs-operator">=</span> s3.intern(); <span class="hljs-comment">// 检查常量池</span><br>System.out.println(s1==s2); <span class="hljs-comment">//false</span><br>System.out.println(s2==s3); <span class="hljs-comment">//false</span><br>System.out.println(s1==s4); <span class="hljs-comment">//true，它们指向同一个常量池中的对象</span><br></code></pre></div></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/12/09/C62kwnioRW5uFaO.png"></p>
+<p>如图。当使用 new 创建的时候，则创建在堆中，通过字面量创建则创建在（或者指向）常量池中。当然，字符串常量池也在堆中。</p>
+<p>也可以使用 intern 方法，这是一个 Native 方法，它检查常量池，如果包含，则直接返回常量池中该字符串的引用，如果不包含，<strong>则在常量池中记录对该字符串的引用（此处存疑），并返回该引用</strong>。</p>
+<p>这里好像有问题，见如下代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">s1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&quot;hello&quot;</span>);<br><span class="hljs-type">String</span> <span class="hljs-variable">s2</span> <span class="hljs-operator">=</span> s1.intern();<br>System.out.println(s1 == s2); <span class="hljs-comment">// false</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这里，如果 intern 的行为是在常量池中记录对该字符串的引用并返回的话，s2 理应和 s1 指向同一个对象，但是结果确是 false……怪东西。</p>
+<h3 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h3><p>字符串拼接会重新创建对象，所以应当尽量避免多个字符串的拼接，如果需要拼接，应当使用 StringBuilder（线程不安全）和 StringBuffer（线程安全，但性能较差）类。</p>
+<p>两个常量池中的对象拼接，其结果在常量池中，堆上创建的对象（与堆上的对象或常量池中对象）拼接则创建在堆中。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">s1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;str&quot;</span>;<br><span class="hljs-type">String</span> <span class="hljs-variable">s2</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;ing&quot;</span>;<br><br><span class="hljs-type">String</span> <span class="hljs-variable">s3</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;str&quot;</span> + <span class="hljs-string">&quot;ing&quot;</span>;<span class="hljs-comment">//常量池中的对象</span><br><span class="hljs-type">String</span> <span class="hljs-variable">s4</span> <span class="hljs-operator">=</span> s1 + s2; <span class="hljs-comment">//在堆上创建的新的对象      </span><br><span class="hljs-type">String</span> <span class="hljs-variable">s5</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;string&quot;</span>;<span class="hljs-comment">//常量池中的对象</span><br><span class="hljs-type">String</span> <span class="hljs-variable">s6</span> <span class="hljs-operator">=</span> s1 + <span class="hljs-string">&quot;ing&quot;</span>; <span class="hljs-comment">// 堆中对象和常量池中对象拼接，仍然在堆中创建</span><br>System.out.println(s3 == s4);<span class="hljs-comment">//false</span><br>System.out.println(s3 == s5);<span class="hljs-comment">//true</span><br>System.out.println(s4 == s5);<span class="hljs-comment">//false</span><br>System.out.println(s3 == s6);<span class="hljs-comment">//false</span><br></code></pre></div></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/12/09/5Ngx1dvKGaIpZ3V.png"></p>
+<h3 id="new-String-“hello”-创建几个字符串对象？"><a href="#new-String-“hello”-创建几个字符串对象？" class="headerlink" title="new String(“hello”) 创建几个字符串对象？"></a>new String(“hello”) 创建几个字符串对象？</h3><p>答案是一个或两个。JVM 首先检查常量池中是否存在字符串常量”hello”。如果存在，则只在堆中创建一个字符串常量”hello”，如果不存在，则先在池中创建，再在堆中创建。因此是一个或两个。</p>
+<h2 id="包装类型的常量池"><a href="#包装类型的常量池" class="headerlink" title="包装类型的常量池"></a>包装类型的常量池</h2><p><strong>字符串常量池存在于堆中</strong>，<strong>而运行时常量池存在于方法区中</strong>。</p>
+<p>八种包装类型中，六种包装类型都实现了常量池技术。它们是四种整型 Byte，Short，Integer 和 Long，Boolean 和 Character，两种浮点数 Float 和 Double 没有实现。</p>
+<p>四种整型包装类创建了 [-128,127] 范围类的相应类型的缓存数据，Character 实现了数据在 [0, 127](从<code>\u0000</code>到<code>\u007f</code>）范围的缓存数据，Boolean 直接返回 True 和 False（也就是说，所有 Boolean 的变量，其值为 true 的都&#x3D;&#x3D;常量池中的 TRUE，其值为 false 的都&#x3D;&#x3D;常量池中的 FALSE)。</p>
+<p>在自动装箱（如通过字面量初始化）时，Java 在编译时会自动封装代码，从而使用常量池中的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">Integer</span> <span class="hljs-variable">i1</span> <span class="hljs-operator">=</span> <span class="hljs-number">40</span>; <span class="hljs-comment">// 其将被编译成 Integer i1 = Integer.valueOf(40);</span><br><span class="hljs-type">Integer</span> <span class="hljs-variable">i2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(<span class="hljs-number">40</span>); <span class="hljs-comment">// 不利用缓存，直接在堆中创建新对象</span><br>System.out.println(i1==i2);<span class="hljs-comment">//false</span><br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Integer <span class="hljs-title function_">valueOf</span><span class="hljs-params">(<span class="hljs-type">int</span> i)</span> &#123;<br>    <span class="hljs-keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high) <br>        <span class="hljs-keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)]; <span class="hljs-comment">// 直接利用方法区中的缓存</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(i);<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>同时，需要明确，<strong>运算符和&#x3D;&#x3D;操作符不适用于包装类</strong>，因而其会被拆箱后进行运算。但是实际工作中，不应当依赖这种自动装箱机制，对于包装类，应当使用 equals 方法进行比较。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">Integer</span> <span class="hljs-variable">i1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(<span class="hljs-number">40</span>);<br><span class="hljs-type">Integer</span> <span class="hljs-variable">i2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Integer</span>(<span class="hljs-number">2</span>);<br><span class="hljs-type">Integer</span> <span class="hljs-variable">i3</span> <span class="hljs-operator">=</span> <span class="hljs-number">42</span>;<br>System.out.println(i3 == i1 + i2); <span class="hljs-comment">// true, 其会被自动拆箱为 i3.intValue() == i1.intValue() + i2.intValue();</span><br></code></pre></div></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/12/10/TZJIqwKVWfnA7pY.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                      <a class="hover-with-bg" href="/tags/JVM/">JVM</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12-10%E5%85%B3%E4%BA%8E%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于类的加载</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12-07%E4%B8%80%E4%BA%9B%E7%BB%8F%E5%85%B8%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6Java%E5%AE%9E%E7%8E%B0.html">
+                        <span class="hidden-mobile">一些经典排序算法及其 Java 实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

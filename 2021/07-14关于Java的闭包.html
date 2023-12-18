@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="之前对 java 的闭包理解不深刻，现在进行一个学。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 Java 的闭包">
+<meta property="og:url" content="http://example.com/2021/07-14%E5%85%B3%E4%BA%8EJava%E7%9A%84%E9%97%AD%E5%8C%85.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="之前对 java 的闭包理解不深刻，现在进行一个学。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-14T07:28:55.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.285Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 Java 的闭包 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 Java 的闭包">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-07-14 15:28" pubdate>
+        2021年7月14日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 Java 的闭包</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>之前未能理解 Java 对闭包的说明中“effective final”的意思，现在对其进行了一番针对性学习。</p>
+<p>这个词（实际上的 final）应当这样理解——在闭包中不能改变外界变量的“值”，这个“值”对基本类型来说是值，对引用类型来说是引用。这个问题的影响其实并不大——如果需要对变量的值进行改变，将其传入一个数组即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">Supplier&lt;Integer&gt; <span class="hljs-title function_">Counter</span><span class="hljs-params">()</span> &#123; <span class="hljs-comment">// 也可使用 IntSupplier</span><br>  <span class="hljs-type">int</span>[] count = &#123;<span class="hljs-number">0</span>&#125;;<br>  <span class="hljs-keyword">return</span> () -&gt; &#123;<br>    count[<span class="hljs-number">0</span>]++; <span class="hljs-comment">// 捕获</span><br>    <span class="hljs-keyword">return</span> count[<span class="hljs-number">0</span>];<br>  &#125;;<br>&#125;<br><span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>  Supplier&lt;Integer&gt; counter = Counter();<br>  System.out.println(counter.getAsInt());<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>为什么不能改变外界变量的值？这里可以这样解释（事实上也大概就是如此）——Java 的闭包并非真正捕获外界变量（这种捕获是捕获了 C++风格的真正的<strong>引用</strong>，js，scheme 等语言的闭包都是如此，对这些语言来说，它们所定义的函数看待上层作用域中的变量，就像 if，for 块看待外层块作用域的时候一样），而是把对象的值<strong>复制</strong>（对基本类型是值，对对象来说是指针）并保存为自身的一个属性，所以如果原值改变，捕获值和原值就不同了，这就和闭包性质所要求的不一致了（这时候的性质类似函数调用，作为函数参数传入），因此禁止了被捕获对象的重新赋值。</p>
+<blockquote>
+<p>Java 中的 lambda 表达式是残废的——要使用它必须先定义相应函数式接口，而不能像 kotlin，ts 等语言有所谓函数类型，可以直接应用，且对其的应用（apply）必须要通过其方法，这是比较麻烦的。</p>
+<p>但是这些限制实际上影响不大——需要自定义接口的情况是较少的，Java 本身提供了比较丰富的接口定义可以直接使用，但是代价是增加理解成本；客户代码一般不会预先定义相关类型的变量并自己使用，而是直接通过 lambda 表达式构造相应实例并直接传递给相关方法中，将其的调用交由相关方法进行实现。</p>
+<p>而 Java 的 lambda 的最大缺陷在于——其只能抛出在签名中指明能够抛出的异常！也就是说，如果用户自定义的 lambda 表达式可能出现异常，他必须进行 try-catch！这是极为不便的，目前的解决方案唯有定义自己的函数式接口用于抛出异常！这可不是我们想要的答案——对集合类型的 map-filter-reduce 操作中如果有异常，就必须要 try-catch，无法改变！这是无法理喻的，特别是当我们在 Spring 环境下工作，依赖全局异常处理来进行异常的时候，或者说将异常当作一种别样的控制流来处理的时候。</p>
+</blockquote>
+<p>Java8 提供的<code>java.util.function</code>包包含了许多可以直接应用的函数式接口，可以应付绝大部分简单业务情况——（下表引用于网络）</p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th><strong>BiConsumer&lt;T,U&gt;</strong> 代表了一个接受两个输入参数的操作，并且不返回任何结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td><strong>BiFunction&lt;T,U,R&gt;</strong> 代表了一个接受两个输入参数的方法，并且返回一个结果</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>BinaryOperator<T></strong> 代表了一个作用于于两个同类型操作符的操作，并且返回了操作符同类型的结果</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>BiPredicate&lt;T,U&gt;</strong> 代表了一个两个参数的 boolean 值方法</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>BooleanSupplier</strong> 代表了 boolean 值结果的提供方</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Consumer<T></strong> 代表了接受一个输入参数并且无返回的操作</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>DoubleBinaryOperator</strong> 代表了作用于两个 double 值操作符的操作，并且返回了一个 double 值的结果。</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>DoubleConsumer</strong> 代表一个接受 double 值参数的操作，并且不返回结果。</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>DoubleFunction<R></strong> 代表接受一个 double 值参数的方法，并且返回结果</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>DoublePredicate</strong> 代表一个拥有 double 值参数的 boolean 值方法</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>DoubleSupplier</strong> 代表一个 double 值结构的提供方</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>DoubleToIntFunction</strong> 接受一个 double 类型输入，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>DoubleToLongFunction</strong> 接受一个 double 类型输入，返回一个 long 类型结果</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>DoubleUnaryOperator</strong> 接受一个参数同为类型 double, 返回值类型也为 double 。</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>Function&lt;T,R&gt;</strong> 接受一个输入参数，返回一个结果。</td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>IntBinaryOperator</strong> 接受两个参数同为类型 int, 返回值类型也为 int 。</td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>IntConsumer</strong> 接受一个 int 类型的输入参数，无返回值 。</td>
+</tr>
+<tr>
+<td>18</td>
+<td><strong>IntFunction<R></strong> 接受一个 int 类型输入参数，返回一个结果 。</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>IntPredicate</strong> ：接受一个 int 输入参数，返回一个布尔值的结果。</td>
+</tr>
+<tr>
+<td>20</td>
+<td><strong>IntSupplier</strong> 无参数，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>21</td>
+<td><strong>IntToDoubleFunction</strong> 接受一个 int 类型输入，返回一个 double 类型结果 。</td>
+</tr>
+<tr>
+<td>22</td>
+<td><strong>IntToLongFunction</strong> 接受一个 int 类型输入，返回一个 long 类型结果。</td>
+</tr>
+<tr>
+<td>23</td>
+<td><strong>IntUnaryOperator</strong> 接受一个参数同为类型 int, 返回值类型也为 int 。</td>
+</tr>
+<tr>
+<td>24</td>
+<td><strong>LongBinaryOperator</strong> 接受两个参数同为类型 long, 返回值类型也为 long。</td>
+</tr>
+<tr>
+<td>25</td>
+<td><strong>LongConsumer</strong> 接受一个 long 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>26</td>
+<td><strong>LongFunction<R></strong> 接受一个 long 类型输入参数，返回一个结果。</td>
+</tr>
+<tr>
+<td>27</td>
+<td><strong>LongPredicate</strong> R 接受一个 long 输入参数，返回一个布尔值类型结果。</td>
+</tr>
+<tr>
+<td>28</td>
+<td><strong>LongSupplier</strong> 无参数，返回一个结果 long 类型的值。</td>
+</tr>
+<tr>
+<td>29</td>
+<td><strong>LongToDoubleFunction</strong> 接受一个 long 类型输入，返回一个 double 类型结果。</td>
+</tr>
+<tr>
+<td>30</td>
+<td><strong>LongToIntFunction</strong> 接受一个 long 类型输入，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>31</td>
+<td><strong>LongUnaryOperator</strong> 接受一个参数同为类型 long, 返回值类型也为 long。</td>
+</tr>
+<tr>
+<td>32</td>
+<td><strong>ObjDoubleConsumer<T></strong> 接受一个 object 类型和一个 double 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>33</td>
+<td><strong>ObjIntConsumer<T></strong> 接受一个 object 类型和一个 int 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>34</td>
+<td><strong>ObjLongConsumer<T></strong> 接受一个 object 类型和一个 long 类型的输入参数，无返回值。</td>
+</tr>
+<tr>
+<td>35</td>
+<td><strong>Predicate<T></strong> 接受一个输入参数，返回一个布尔值结果。</td>
+</tr>
+<tr>
+<td>36</td>
+<td><strong>Supplier<T></strong> 无参数，返回一个结果。</td>
+</tr>
+<tr>
+<td>37</td>
+<td><strong>ToDoubleBiFunction&lt;T,U&gt;</strong> 接受两个输入参数，返回一个 double 类型结果</td>
+</tr>
+<tr>
+<td>38</td>
+<td><strong>ToDoubleFunction<T></strong> 接受一个输入参数，返回一个 double 类型结果</td>
+</tr>
+<tr>
+<td>39</td>
+<td><strong>ToIntBiFunction&lt;T,U&gt;</strong> 接受两个输入参数，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>40</td>
+<td><strong>ToIntFunction<T></strong> 接受一个输入参数，返回一个 int 类型结果。</td>
+</tr>
+<tr>
+<td>41</td>
+<td><strong>ToLongBiFunction&lt;T,U&gt;</strong> 接受两个输入参数，返回一个 long 类型结果。</td>
+</tr>
+<tr>
+<td>42</td>
+<td><strong>ToLongFunction<T></strong> 接受一个输入参数，返回一个 long 类型结果。</td>
+</tr>
+<tr>
+<td>43</td>
+<td><strong>UnaryOperator<T></strong> 接受一个参数为类型 T, 返回值类型也为 T。</td>
+</tr>
+</tbody></table>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/07-15%E5%86%8D%E7%9C%8B%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E5%92%8C%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">再看简单工厂和工厂方法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/07-07%E5%85%B3%E4%BA%8Ejs%E7%9A%84promise.html">
+                        <span class="hidden-mobile">关于 js 的 promise</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

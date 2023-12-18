@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="特殊-&gt;一般-&gt;特殊，这是认识的一般规律（这话好像说过一遍了）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对创建型模式的总结">
+<meta property="og:url" content="http://example.com/2021/02-20%E5%AF%B9%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%80%BB%E7%BB%93.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="特殊-&gt;一般-&gt;特殊，这是认识的一般规律（这话好像说过一遍了）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/08/zBmUGiTKaI3gJ2O.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/11/icOJlbfS5TkphdG.png">
+<meta property="article:published_time" content="2021-02-20T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.284Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/08/zBmUGiTKaI3gJ2O.png">
+  
+  
+  <title>对创建型模式的总结 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="对创建型模式的总结">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-20 08:00" pubdate>
+        2021年2月20日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">对创建型模式的总结</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>创建型模式关注类的创建过程。它专注分离对象的创建和使用（非常粗略地来说，就是不使用 new 来创建对象 w），在使用对象时无需在乎其创建过程，创建对象时无需在乎其使用，从而降低系统耦合性，使其更容易扩展。创建型模式中有如下模式——单例模式，2（+1）个工厂模式，原型模式，建造者模式，现在挨个过堂。</p>
+<h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><p>单例模式是名副其实的——确保类只能生成单个实例。它的适用范围也是和其性质直接对应的——只需要一个实例的场合。单例模式有三种实现——饿汉式（EagleSingleton）：类加载时即生成所需单例，请求时直接返回该单例；懒汉式（LazySingleton）：每次请求时都检查是否已经初始化，从而在第一次请求的时候进行创建，之后则直接返回；IoDH：利用 Java 的类加载机制，用一个静态内部类（称为持有类）持有所需对象，使其在第一次请求时加载该持有类。</p>
+<p>三种实现各有优劣——饿汉式可能造成资源的浪费，因为其可能在未被使用时就初始化了；懒汉式是线程不安全的，需要所谓的“双重检查锁定”来保证线程安全，使代码比较复杂，性能也会有损失；IoDH 让 JVM 来保证线程安全性（这一点是很好的，额外的细节什么的，交给编程语言去处理便好，程序员应该专注更加抽象，更加偏向业务的层面），但是它是局限于编程语言的。</p>
+<h1 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h1><p>简单工厂模式的实质是使用一个所谓的<strong>工厂类</strong>来接管一类对象的创建。其一般形式是——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-comment">// 注意，Product 是一个抽象基类或接口</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Product <span class="hljs-title function_">getProduct</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-type">Product</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;ProductA&quot;</span>)) &#123;<br>            res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProductA</span>();<br>            <span class="hljs-comment">// 各种其他处理……</span><br>            <span class="hljs-keyword">return</span> res;<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;ProductB&quot;</span>)) &#123;<br>            res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProductB</span>();<br>            <span class="hljs-comment">// 各种其他处理……</span><br>            <span class="hljs-keyword">return</span> res;<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;ProductC&quot;</span>)) &#123;<br>            res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProductC</span>();<br>            <span class="hljs-comment">// 各种其他处理……</span><br>            <span class="hljs-keyword">return</span> res;<br>        &#125;<br>        <span class="hljs-comment">// ...</span><br>        <span class="hljs-keyword">return</span> res; <span class="hljs-comment">// 或者抛个异常之类的</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>它的目的是将创建所需对象（也就是产品）的职责从客户端转交给工厂类，从而将类的创建和使用的职责相分离。客户端将不再自己手动 new 产品，而是使用<code>Product product = Factory.getProduct(&quot;ProductA&quot;);</code>这样的形式。参数字符串还可写入配置文件中，从而使其更加灵活，更改产品也不需要重新编译。</p>
+<p>简单工厂模式的缺点在于，其中有大量 if-else 逻辑，导致可能的性能问题；且<strong>增加，修改和删除产品都需要修改工厂类</strong>，违反开闭原则。</p>
+<h1 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h1><p>工厂方法模式为简单工厂模式增加了一个抽象层并解决了简单工厂模式的问题。对于工厂方法模式，每一个工厂都为一个所谓的抽象工厂的子类（或实现，取决于这个抽象工厂是抽象类还是接口），这个抽象工厂中将定义生成抽象产品的方法的接口。每一个具体工厂只负责生产一种具体产品。</p>
+<p><img src="https://i.loli.net/2021/02/08/zBmUGiTKaI3gJ2O.png"></p>
+<p>其一般形式如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 抽象层</span><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Product <span class="hljs-title function_">getProduct</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Factory <span class="hljs-title function_">getFactory</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-comment">// 通过反射等手段获取一个具体工厂</span><br>    &#125; <br>&#125; <br><span class="hljs-comment">// 一个具体工厂</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcreteFactory1</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">public</span> Product <span class="hljs-title function_">getProduct</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Product</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Product1</span>();<br>        <span class="hljs-comment">// . . .</span><br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br>&#125;<br><span class="hljs-comment">// . . .</span><br><span class="hljs-comment">// 客户端</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">// いつもどおり，这里获取具体工厂的参数也是能够写在配置文件里的</span><br>        <span class="hljs-comment">// 其实也可以直接在抽象工厂中定义一个取得具体产品的 static 方法以隐藏具体工厂，降低系统的复杂性</span><br>        <span class="hljs-type">Product</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> Factory.getFactory(<span class="hljs-string">&quot;Product1&quot;</span>).getProduct(); <br>        <span class="hljs-comment">// . . .</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>为什么简单工厂模式里不使用反射生成产品，而工厂方法模式里使用反射生成具体工厂？因为具体工厂的初始化过程是极易抽象出来的——new 就完事了（或者使用单例模式之类的？），而具体产品的初始化并不能这么简单地抽象。</p>
+</blockquote>
+<blockquote>
+<p>一个有趣的事实是，在简单工厂模式中，参数用于生成特定产品；在工厂方法模式和抽象工厂模式中，参数用于生成特定的工厂。</p>
+</blockquote>
+<p>工厂方法模式相较于简单工厂模式的优点在于，它去掉了繁复的 if-else 循环，每个具体产品的初始化过程交由各个具体工厂来执行，保证了单一职责原则；添加新的具体产品的时候，只需要添加成对工厂及其产品即可，不需要修改源代码，保证了开闭原则。缺点是类的数量会成对增加，且使用了反射等技术，使系统复杂性更高，更难以理解。</p>
+<h1 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h1><p>抽象工厂模式相较于工厂方法模式的区别在于，工厂方法模式中的一系列工厂负责一个<strong>产品等级结构</strong>（也就是一个继承结构，如按钮，白色按钮，蓝色按钮等这样的一个继承体系）的生产，而抽象工厂模式负责一个<strong>产品族</strong>的生产。也可以说，<strong>在工厂方法模式中，一个具体工厂对应一个具体产品；在抽象工厂模式中，一个具体工厂对应一族产品</strong>。所谓产品族，就是一系列本质不同但具有相近性质，且应当一起生产的产品，比如 win 系统的各种 UI 组件，Android 系统中各种 UI 组件，就各是一个产品族。</p>
+<p><img src="https://i.loli.net/2021/02/11/icOJlbfS5TkphdG.png"></p>
+<p>其一般形式是——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-comment">// 当然，这里的 ProductABC 全是抽象的</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ProductA <span class="hljs-title function_">getProductA</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ProductB <span class="hljs-title function_">getProductB</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ProductC <span class="hljs-title function_">getProductC</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Factory <span class="hljs-title function_">getFactory</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-comment">// 通过反射等手段获取一个具体工厂</span><br>    &#125; <br>&#125;<br><span class="hljs-comment">// 一个具体工厂</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcreteFactory1</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Factory</span> &#123;<br>    <span class="hljs-keyword">public</span> ProductA <span class="hljs-title function_">getProductA</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">ProductA</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcreteProductA1</span>(); <br>        <span class="hljs-comment">// . . .</span><br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br>    <span class="hljs-comment">// . . .</span><br>&#125;<br><span class="hljs-comment">// 客户端</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">// 同上，也可以使用配置文件</span><br>        <span class="hljs-type">ProductA</span> <span class="hljs-variable">productA</span> <span class="hljs-operator">=</span> Factory.getFactory(<span class="hljs-string">&quot;Product1&quot;</span>).getProductA(); <br>        <span class="hljs-type">ProductB</span> <span class="hljs-variable">productB</span> <span class="hljs-operator">=</span> Factory.getFactory(<span class="hljs-string">&quot;Product1&quot;</span>).getProductB(); <br>        <span class="hljs-comment">// . . .</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>当用户需求一族产品时，使用抽象工厂方法模式是比较适合的，比如一个游戏的各个不同平台上的 UI。这时候如果使用工厂方法模式会导致类的数量很多，且需要配置好每个工厂的生产，配置文件也会变得复杂且容易出错。需要增加新的产品族（比如这游戏又移植到新的平台上去了）时，需要添加许多具体工厂和产品，比较麻烦。</p>
+<p>抽象工厂方法的问题在于，当需要在产品族中增加新的产品时，需要大刀阔斧地改抽象工厂类和所有具体工厂类的源代码，而增加新的产品族则是保持开闭原则的，这里就提到了“<strong>开闭原则的倾斜性</strong>”。且一个工厂要负责许多不同产品的构建，虽然这些构建分散到不同方法中，但归根结底还是比较麻烦，职责过重的。</p>
+<h1 id="单例模式-1"><a href="#单例模式-1" class="headerlink" title="单例模式"></a>单例模式</h1><p>单例模式没啥好说的……我觉得我现在的认识或许也不太充分。</p>
+<h1 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h1><p>建造者模式就是一步一步构建复杂对象的一种设计模式。其要点在于将复杂对象切分成一个个部分（比如游戏的捏人系统之类的），逐个击破。同时使用诸如钩子函数等手段更精确地控制对象的构建。</p>
+<blockquote>
+<p>也没啥好说的……没看到它的特别之处（悲</p>
+</blockquote>
+<p>无论如何，创建型模式已经告一段落，等将来实践或复习的时候再来讨教吧。现在开始下一部分：结构型模式——它关注将现有的类或对象<strong>组织在一起</strong>以形成更加……符合要求的结构。也就是关注类之间的<strong>组合</strong>。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03-25%E4%BB%8D%E6%97%A7%E6%98%AF%E5%85%B3%E4%BA%8E%E6%AF%95%E8%AE%BE.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">仍旧是关于毕设</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02-19%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%8C%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F.html">
+                        <span class="hidden-mobile">原型模式和建造者模式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

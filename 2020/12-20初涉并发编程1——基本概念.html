@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="感觉到的东西，我们不能立即去理解它，只有理解了的东西，我们才能更深刻地去感受它。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初涉并发编程 1——基本概念">
+<meta property="og:url" content="http://example.com/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="感觉到的东西，我们不能立即去理解它，只有理解了的东西，我们才能更深刻地去感受它。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/19/DxmSh9zpiRyNXju.png">
+<meta property="article:published_time" content="2020-12-18T11:50:36.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.280Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="并发">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/19/DxmSh9zpiRyNXju.png">
+  
+  
+  <title>初涉并发编程 1——基本概念 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="初涉并发编程 1——基本概念">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-18 19:50" pubdate>
+        2020年12月18日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">初涉并发编程 1——基本概念</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>从这篇文章起，都是在 openSUSE 环境下，使用 vscode 编写的了～</p>
+<p>主要是按照《Java 并发编程实战（Java concurrency in practice）》来学习的，或许也会参考其他书籍。我目前仅有对多线程编程的一点非常粗糙的理解，需要大量的实践和理论学习来补足。</p>
+<p>一个必须要明确的问题是，看这本书，并非是要学习 java 中的并发编程，而是通过 Java 来学习并发编程的思想。在这里，思想才是真正的<strong>内容</strong>，语言只不过是这思想的表现<strong>形式</strong>而已。将来去学设计模式，也应该坚持这一点。</p>
+<h1 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h1><h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><p>简单来说，<strong>进程</strong>就是一个程序（存放在硬盘里的，静态的代码&#x2F;机器码）的一次执行，或者说是一个程序的<strong>生命周期</strong>。而线程，则是进程所创建的“<strong>轻量级进程</strong>”。对于 Java 程序来说，JVM 就是 Java 程序的进程，它维护数个线程，如执行 main 方法的主线程，GC 线程等。</p>
+<p>就如之前所学习到的，各个进程之间一般上来说是相互隔离的，它们只能通过操作系统提供的一些方法来相互通信，如信号量，socket，共享内存，管道等。而进程下的各线程可以<strong>共享</strong>线程的资源。对于 Java 程序来说，各个线程都共享进程的方法区和堆，各个线程都私有栈和 PC。</p>
+<p><strong>线程是 CPU 调度的最小单位</strong>。进程间的上下文切换消耗很大，而线程间的切换则消耗相对较小（这里减少的消耗似乎主要来源于线程间共享的资源，即堆的资源，因为是共享的，所以内存缺页的情况会较少，更容易命中……之类的），所以线程也叫轻量级进程。</p>
+<h2 id="串行和并行"><a href="#串行和并行" class="headerlink" title="串行和并行"></a>串行和并行</h2><p>所谓串行，就是指一连串的操作依次进行，它们是有严格的顺序关系的，没有两个操作是同时进行的。</p>
+<p>而并行，则是说其中有部分（或全部）操作是（严格上来说）同时执行的。并行只有在多核 CPU 的计算机中才能进行。</p>
+<h2 id="同步和异步"><a href="#同步和异步" class="headerlink" title="同步和异步"></a>同步和异步</h2><p>TODO: 摸了</p>
+<h2 id="什么是并发"><a href="#什么是并发" class="headerlink" title="什么是并发"></a>什么是并发</h2><p>并发是指在<strong>宏观</strong>上来说，两个（或多个）操作是同时执行的。这时，计算机底层可能是串行的（所有操作可以都在一个所谓的主事件循环里进行，就如以前的 GUI 程序），也可能是并行的，可能是单线程的，也可能是多线程的。所以并发并不等于并行。</p>
+<h1 id="为什么要多线程？"><a href="#为什么要多线程？" class="headerlink" title="为什么要多线程？"></a>为什么要多线程？</h1><p>首先一个原因是，多线程让程序<strong>更容易维护</strong>（把原本互相并行的操作，分割成一个个串行的操作），<strong>降低开发的成本</strong>（好家伙，有什么比这一条更重要？）。同时，多线程也能够<strong>增加资源利用率</strong>，在进行某些需要等待的操作时（比如等待外界的输入输出），能够空出手来干其他事（即使对单核处理器也如此）；对于现代的多用户系统，多线程能够保证用户和程序的<strong>公平性</strong>。</p>
+<p>还有硬件上的原因。随着摩尔定律的失效，CPU 的频率遇到瓶颈，那些硬件厂商迫不得已，只能往 CPU 里塞更多的核心，为了利用好这些核心，多线程是必要的。比如说，单线程的程序跑在双核的计算机上，只能利用 50%性能，在 128 核的计算机上则只能利用不到 1%的性能。</p>
+<p>不过无论如何，多线程最香的一点在于它让建模简单了，<strong>它将复杂，异步的工作流分解为一组简单，同步的工作流</strong>——每个工作流在一个单独的线程中执行，并在特定的同步位置进行交互。它能够简化异步事件，让每一个组件都像是一个单线程程序。学习多线程，实际上就是学习如何让各线程间保持同步。</p>
+<blockquote>
+<p>这可能会让你以为，在单核处理器的情况下，编写并发代码是没有意义的。然而，有些情况下，并发模型会产生更简单的代码，光是为了这个目的就值得舍弃一些性能。——《On Java 8》</p>
+</blockquote>
+<h1 id="多线程带来的问题"><a href="#多线程带来的问题" class="headerlink" title="多线程带来的问题"></a>多线程带来的问题</h1><p>多线程要求开发者考虑三个问题——安全性，活跃性，以及性能问题。</p>
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>如果线程间没有采取适当的同步措施，多个线程之间<strong>不可预测的执行顺序</strong>可能会让程序出现错误。并且这种错误是难以发现的，间歇性出现的。</p>
+<h3 id="竞态条件（Race-Condition）"><a href="#竞态条件（Race-Condition）" class="headerlink" title="竞态条件（Race Condition）"></a>竞态条件（Race Condition）</h3><p>考虑这样的代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Counter</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">Counter</span><span class="hljs-params">()</span> &#123;&#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">count</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> count++;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(()-&gt;&#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">1000</span>; i++)<br>                Counter.count();<br>        &#125;);<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(()-&gt;&#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">1000</span>; i++)<br>                Counter.count();<br>        &#125;);<br>        a.start();<br>        b.start();<br>        a.join();<br>        b.join();<br>        System.out.println(Counter.count()); <span class="hljs-comment">// 结果是不可预测的，可能是 1000 到 2000 的任何值</span><br>        System.exit(<span class="hljs-number">0</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>问题发生在 count 方法里，count++并非是原子操作，查看 count 的字节码，可以看到，其字节码有 6 步，这里简化它有三步——get 值（到栈顶），计算，put 值。它是<strong>读取——修改——写入</strong>操作。</p>
+<blockquote>
+<p><del>原子操作指不可被打断的操作，也就是说，当一个线程在执行原子操作的时候，该操作（块）保证不会被其他线程执行，即使该线程被切换出去。通过一定的加锁机制能够给与一串操作以原子性</del>（不知道如何正确定义原子性…这里被删掉的定义的外延似乎不能包括那种真正不可再分的原子操作，比如下面所示的字节码的单行，因为这样的操作在多处理器环境下完全可以是并行的，而锁将不允许并行。或许是我脑子里没货导致的……但是这里其实并不需要纠结，在实践中是能够分辨出来的）</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-string">public</span> <span class="hljs-string">static</span> <span class="hljs-string">int</span> <span class="hljs-string">count();</span><br><span class="hljs-attr">Code:</span><br>    <span class="hljs-attr">0:</span> <span class="hljs-string">getstatic</span>   <span class="hljs-comment">#2  // Field count:I</span><br>    <span class="hljs-attr">3:</span> <span class="hljs-string">dup</span><br>    <span class="hljs-attr">4:</span> <span class="hljs-string">iconst_1</span><br>    <span class="hljs-attr">5:</span> <span class="hljs-string">iadd</span><br>    <span class="hljs-attr">6:</span> <span class="hljs-string">putstatic</span>   <span class="hljs-comment">#2  // Field count:I</span><br>    <span class="hljs-attr">9:</span> <span class="hljs-string">ireturn</span><br></code></pre></div></td></tr></table></figure>
+
+<p>要知道，线程可以在进行到任意一行时进行线程调度。考虑下面的情况——</p>
+<p><img src="https://i.loli.net/2020/12/19/DxmSh9zpiRyNXju.png"></p>
+<p>经历了两次 count 操作，它们正常的情况应该是分别返回 9，10，而这里全部都返回了 9。count 在两次递增后值应当为 11, 但结果却为 10。可以说，有一次递增操作<strong>丢失</strong>了。这里显然，<strong>不恰当的运行时线程交替执行的顺序导致了错误的结果</strong>。这是没有充分同步造成的。</p>
+<p>上面描述的是一种常见的并发安全问题——<strong>竞态条件（Race Condition）</strong>中的“<strong>先检查后执行（Check-Then-Act）</strong>”。它是指<strong>结果的正确性取决于多个线程的交替执行时序</strong>这样的情况。或者说，结果的正确性取决于运气。（老实说，我觉得 condition 或许翻译成“情况”更好）</p>
+<p>大多数竞态条件的本质是“<strong>观察结果的失效</strong>”。<del>比如这里的 count 方法，当一个线程获取了 count 的值后，它实际上已经无法再知道它所持有的 count 的值是否还是原来的 count 的值，而它却要拿这种不确定的结果来进行运算。如果该结果自始至终都是未改变的，则不会出现问题。但若是有改变，这里就失效了。</del>（该方法属于读取——修改——写入操作，有一定的共通性，但也有其个性）。</p>
+<p>（单例模式的？）延迟初始化也是先检查后执行的一个常见例子。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">if</span> (ins == <span class="hljs-literal">null</span>) <br>    <span class="hljs-type">return</span> <span class="hljs-variable">ins</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">instance</span>(); <br><span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> ins;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里由于不一致的调用顺序，可能会导致多个线程执行该方法后返回不一样的实例。</p>
+<h2 id="活跃性"><a href="#活跃性" class="headerlink" title="活跃性"></a>活跃性</h2><p>安全性是指，“<strong>永远不发生糟糕的事情</strong>”，而活跃性则是指，“<strong>正确的事情终究会发生</strong>”。在这里，死锁，饥饿，活锁等会导致活跃性问题。（或许死锁和饥饿的区别在于，死锁和活锁时所有线程都无法执行，饥饿时只有一部分线程无法执行……但无论如何，这都是我们不想看到的）</p>
+<h2 id="性能问题"><a href="#性能问题" class="headerlink" title="性能问题"></a>性能问题</h2><p>我们不仅要求正确的事情终究要发生，也要求正确的事情尽快发生。多线程程序相较于单线程程序，引入了多余的运行时开销——<strong>线程间的上下文切换和对临界区操作时同步机制带来的开销</strong>。前者如处理不当，会导致 CPU 时间主要用于线程调度而非运行，后者往往会抑制编译器的性能优化，使内存缓冲区中数据无效。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12-21SQL%E5%BF%AB%E9%80%9F%E5%A4%8D%E4%B9%A0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SQL 语句快速复习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12-12%E5%85%B3%E4%BA%8EJava%E7%9A%84%E6%B3%9B%E5%9E%8B.html">
+                        <span class="hidden-mobile">关于 Java 的泛型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

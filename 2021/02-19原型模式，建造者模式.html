@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="頑張ります">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原型模式和建造者模式">
+<meta property="og:url" content="http://example.com/2021/02-19%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%8C%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="頑張ります">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/19/LPcNWHBatRJUjOo.png">
+<meta property="article:published_time" content="2021-02-19T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.283Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/19/LPcNWHBatRJUjOo.png">
+  
+  
+  <title>原型模式和建造者模式 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="原型模式和建造者模式">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-19 08:00" pubdate>
+        2021年2月19日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      8.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">原型模式和建造者模式</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<h1 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h1><p>原型模式就是<strong>从一个原型克隆出多个一模一样的对象</strong>的模式。原型模式对于这样的情形适用——需要一个和已有的对象大体相同的对象，但无法接受从零开始创建该对象。举例来说，当编写 PPT 时，当上一页和当前页面元素基本一致的时候，就将上一页复制，进行一些编辑即可，从而免去再次的排版等工序。</p>
+<p>原型模式的角色有抽象原型，具体原型和客户端。其中抽象原型类是一个提供 clone 方法的接口（Java 本身有一个这样作用的接口 Cloneable，但它仅仅起标记作用）。具体原型类是实现了该接口的类。客户端使用时调用原型类的 clone 方法。</p>
+<p>对于 Java，clone 方法的实现，应当通过构造函数定义一个 Object 对象（在这里，Object 负责抽象原型类的角色，它就是 Prototype），其值为 super.clone()，并设定其各个域成员与被克隆的对象一致（需注意浅拷贝和深拷贝，深拷贝可以简单使用序列化接口来实现），最后强制类型转换并返回该对象。其代码形式如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 这个类应当实现 Cloneable 接口</span><br><span class="hljs-keyword">public</span> Prototype <span class="hljs-title function_">clone</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>    <span class="hljs-keyword">try</span> &#123;<br>        obj = <span class="hljs-built_in">super</span>.clone(); <span class="hljs-comment">// Object 所定义的方法，其是 native 的。</span><br>        <span class="hljs-comment">// 设定各种属性与该对象一致</span><br>        <span class="hljs-comment">// . . .</span><br>        <span class="hljs-keyword">return</span> (Prototype) obj;<br>    &#125;<br>    <span class="hljs-keyword">catch</span> (CloneNotSupportedException e) &#123;<br>        e.printStackTrace();<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>还可使用所谓的原型管理器——其实质是一个、&lt;String, Prototype&gt;的 HashMap，其通过单例模式创建，维护着所需的原型对象，并应客户端的要求返回特定的对象。</p>
+<p>原型模式的优点在于能够节约初始化的成本（特别是需要调用硬盘甚至网络资源的时候），简化复杂实例的创建，且其扩展性高，可以针对抽象原型类进行编程，而<strong>具体原型类编写在配置文件中</strong>，增加，减少具体原型类都不需要修改源代码（甚至修改也可能可以不需要，不过可能会造成配置文件繁琐？）。</p>
+<p>缺点在于深拷贝时代码可能比较复杂，且克隆方法必须位于类的内部，修改时需要修改源代码，违反开闭原则。</p>
+<p>Spring 的 IoC 容器对 Bean 的创建可以选择使用单例模式或原型模式。</p>
+<h1 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h1><p>建造者模式就像游戏中的捏人系统，人的外观分为几个特定的部分，如发型，脸型，五官，躯干……一次捏人的完成，是对各个部分都进行“建造”，最后将其组合出结果（当然，这里没有组合，或许也可以联想飞船的各模块的建造……就像 Space Engineer 里那样的？）。</p>
+<p>建造者模式的实质就是将<strong>复杂对象</strong>（具有多个实例域的对象）的构建和对象的表示（其属性）相分离，建造者<strong>将对象所属的类中各个共通的部分抽象成一个个模块</strong>，按模块地进行建设（比如划分为登陆模块，控制模块，推进模块，战斗模块……），最后将各个模块进行组合，得出最终的舰船。而非是直接上手创建这样一个复杂的对象——抽象啊抽象！这就和用汇编写 http 服务器一样离谱。</p>
+<p>建造者模式有如下角色：<strong>抽象建造者</strong>——提供各部分的构造方法的接口，以及返回最终对象的方法的接口。这里的抽象建造者可以是抽象类（它可以维护一个最终产品并直接实现返回最终对象的方法），也可以是接口；<strong>产品</strong>——建造的对象；<strong>建造者</strong>——对抽象建造者的实现；<strong>导演</strong>——指挥建造者进行建造并返回结果（也就是调用建造者提供的方法返回最终对象）（这个导演倒是可以直接设定成抽象建造者的一个方法…这便使用了类似模板方法的一种设计…这样简化了系统的结构，但可能会让抽象建造者类职责过重）；<strong>客户端</strong>——与导演交互，获取最终对象。</p>
+<p>类图如下——</p>
+<p><img src="https://i.loli.net/2021/02/19/LPcNWHBatRJUjOo.png"></p>
+<p>然后是各个角色的一般形式——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 复杂对象</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Product</span> &#123;<br>    <span class="hljs-keyword">private</span> dataA partA;<br>    <span class="hljs-keyword">private</span> dataB partB;<br>    <span class="hljs-keyword">private</span> dataC partC;<br>    <span class="hljs-comment">// 和其 getter 和 setter</span><br>&#125;<br><br><span class="hljs-comment">// 抽象建造者类</span><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Builder</span> &#123;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">Product</span> <span class="hljs-variable">product</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Product</span>();<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPartA</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPartB</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPartC</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> Product <span class="hljs-title function_">getResult</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> product;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 导演类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Director</span> &#123; <span class="hljs-comment">// 导演类大可直接作为 Builder 类的一个方法</span><br>    <span class="hljs-keyword">private</span> Builder builder;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Director</span><span class="hljs-params">(Builder builder)</span> &#123;<br>        <span class="hljs-built_in">this</span>.builder = builder;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Product <span class="hljs-title function_">construct</span><span class="hljs-params">()</span> &#123;<br>        builder.buildPartA();<br>        builder.buildPartB();<br>        builder.buildPartC();<br>        <span class="hljs-keyword">return</span> builder.getResult();<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 具体建造者</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcreteBuilder</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Builder</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPartA</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// blablabla</span><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPartB</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// blablabla</span><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPartC</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// blablabla</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>客户端形式如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Builder</span> <span class="hljs-variable">builder</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcreteBuilder</span>(); <span class="hljs-comment">// 显然，这里的 new 可以使用工厂模式干掉以（无论是简单工厂还是工厂方法模式）</span><br>        <span class="hljs-type">Director</span> <span class="hljs-variable">director</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Director</span>(builder);<br>        <span class="hljs-type">Product</span> <span class="hljs-variable">product</span> <span class="hljs-operator">=</span> director.construct();<br>        <span class="hljs-comment">// ... 如此复杂，果然 construct 方法应该直接放到建造者类中，</span><br>        <span class="hljs-comment">//无论是抽象建造者类中还是具体建造者类中（取决于有无必要对 construct 方法进行重载）</span><br>        <span class="hljs-comment">//然后使用工厂方法进行进一步抽象，让其能够这样调用——</span><br>        <span class="hljs-comment">// Product product = BuilderFactory.createBuilder(&quot;angel&quot;).construct(); // 这里的 createBuilder 方法既可以返回具体建造者，也可以返回一个导演类……</span><br>        <span class="hljs-comment">// . . .</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>可见还是简化后的形式更加舒服。</p>
+<p>关于建造过程，其实能够给其添加更多程序结构来更加精细地控制建造过程。比如添加所谓的钩子方法（Hook Method），它控制是否需要调用某个 buildPartX() 方法。</p>
+<p>钩子方法的形式是置于抽象建造者类中的一个返回布尔值的方法，来决定某个部分的是否构建。比如对于一个建造船舰的抽象建造者类 ShipBuilder，给定一个名为 isArmed 的方法，对于运输船，它不需要火力模块，因此对于这个方法它就返回 false。导演类就可以这样 construct——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Product <span class="hljs-title function_">construct</span><span class="hljs-params">()</span> &#123;<br>    shipBuilder.buildPowerModule(); <span class="hljs-comment">// 无论什么船，都需要能源，对吧？</span><br>    <span class="hljs-keyword">if</span> (shipBuilder.isArmed())<br>        shipBuilder.buildFireModule();<br>    <span class="hljs-comment">// . . .</span><br>    <span class="hljs-keyword">return</span> builder.getResult();<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>一个练习——某视频播放软件有多种界面显示模式——标准模式，精简模式，编辑模式等等。不同界面显示模式中组成元素有差异。其中，各界面现实如下元素——</p>
+<ul>
+<li>标准模式：播放窗口，控制条，显示菜单，播放列表</li>
+<li>编辑模式：播放窗口，控制条，显示菜单，编辑栏</li>
+<li>精简模式：播放窗口，控制条</li>
+</ul>
+<p>可以使用一些钩子函数对窗口的构建进行精细控制。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> *  - 完整模式：播放窗口，控制条，显示菜单，播放列表</span><br><span class="hljs-comment">    - 编辑模式：播放窗口，控制条，显示菜单，编辑条</span><br><span class="hljs-comment">    - 精简模式：播放窗口，控制条</span><br><span class="hljs-comment"> */</span><br><br><span class="hljs-comment">// 产品，这里为简洁需要。.</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Window</span> &#123;<br>    <span class="hljs-comment">// . . .</span><br>&#125;<br><span class="hljs-comment">// 抽象建造类，导演类包含在其中</span><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UIBuilder</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">Window</span> <span class="hljs-variable">window</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Window</span>();<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayWindow</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildCtrlBar</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildDisplayMenu</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayList</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildEditBar</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needPlayList</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needEditBar</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> Window <span class="hljs-title function_">createWindow</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> window;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Window <span class="hljs-title function_">construct</span><span class="hljs-params">(UIBuilder builder)</span> &#123;<br>        builder.buildPlayWindow();<br>        builder.buildCtrlBar();<br>        <span class="hljs-keyword">if</span> (builder.needDisplayMenu())<br>            builder.buildDisplayMenu();<br>        <span class="hljs-keyword">if</span> (builder.needPlayList())<br>            builder.buildPlayList();<br>        <span class="hljs-keyword">if</span> (builder.needEditBar())<br>            builder.buildEditBar();<br>        <span class="hljs-keyword">return</span> builder.createWindow();<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 三个具体建造类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StandardWindowBuilder</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">UIBuilder</span> &#123;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayWindow</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;标准模式：播放窗口&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildCtrlBar</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;标准模式：控制条&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;标准模式：显示菜单&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayList</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;标准模式：播放列表&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildEditBar</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;不应该被执行&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needEditBar</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needPlayList</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">EditWindowBuilder</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">UIBuilder</span> &#123;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayWindow</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;编辑模式：播放窗口&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildCtrlBar</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;编辑模式：控制条&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;编辑模式：显示菜单&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayList</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;不应该被执行&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildEditBar</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;编辑模式：编辑条&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needEditBar</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needPlayList</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">MinusWindowBuilder</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">UIBuilder</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayWindow</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;精简模式：播放窗口&quot;</span>);<br><br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildCtrlBar</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;精简模式：控制条&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;不应该被执行&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildPlayList</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;不应该被执行&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">buildEditBar</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;不应该被执行&quot;</span>);<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needDisplayMenu</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needEditBar</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">needPlayList</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 客户端</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">// 可以使用反射或者工厂模式干掉这个 new</span><br>        <span class="hljs-type">Window</span> <span class="hljs-variable">window</span> <span class="hljs-operator">=</span> UIBuilder.construct(<span class="hljs-keyword">new</span> <span class="hljs-title class_">EditWindowBuilder</span>());<br>        <span class="hljs-comment">// . . .</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>天啊……这代码长的离谱。</p>
+<p>建造者模式的优点在于，客户端不需要知道产品内部的细节（这同工厂模式是一样的），产品本身同产品的构建分离（客户端不需要自己 new 和其他初始化操作）；每一个具体建造者是相对独立的，系统扩展方便，符合开闭原则；产品的创建过程能够分散在不同的方法中，从而更加清晰，易维护。</p>
+<p>缺点在于，其只能创建有较多共同点的产品（如人的外观，船舰等），如果差异性很大（比如人类和外星人的船舰，人和动物），很多部分都不相同（从而不能抽象出一般的创建过程），就无法使用建造者模式。</p>
+<h2 id="另一种实现"><a href="#另一种实现" class="headerlink" title="另一种实现"></a>另一种实现</h2><p>下面在公众号上看到的对建造者模式的另一种实现。客户端使用<code>new Ship.Builder(&quot;powerModule&quot;).setFireModule(&quot;fireModule&quot;).setTransportModule(&quot;transportModule&quot;).build();</code>这样的形式进行调用。这也可以通过另一个类（那么其实它才是真正的“建造者”）来实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Ship</span> &#123; <br>    <span class="hljs-comment">// 当然，这些模块不可能是字符串…火力模块也不可能单独来一个</span><br>    <span class="hljs-keyword">private</span> String powerModule;<br>    <span class="hljs-keyword">private</span> String fireModule;<br>    <span class="hljs-keyword">private</span> String transportModule; <br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">Ship</span><span class="hljs-params">(Builder builder)</span> &#123; <span class="hljs-comment">// 包访问限定</span><br>        <span class="hljs-built_in">this</span>.powerModule = builder.powerModule;<br>        <span class="hljs-built_in">this</span>.fireModule = builder.fireModule;<br>        <span class="hljs-built_in">this</span>.transportModule = builder.transportModule;<br>    &#125;  <br>    <br>    <span class="hljs-comment">// 这个建造者大可以放到外面</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Builder</span> &#123;<br>        <span class="hljs-comment">// 每一个属性都要定义一个相同的……老实说有点蛋疼</span><br>        <span class="hljs-keyword">private</span> String powerModule;<br>        <span class="hljs-keyword">private</span> String fireModule;<br>        <span class="hljs-keyword">private</span> String transportModule; <br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">Builder</span><span class="hljs-params">(String powerModule)</span> &#123;<br>            <span class="hljs-built_in">this</span>.powerModule = powerModule;<br>        &#125;<br>        <span class="hljs-keyword">public</span> Builder <span class="hljs-title function_">setFireModule</span><span class="hljs-params">(String fireModule)</span> &#123;<br>            <span class="hljs-built_in">this</span>.fireModule = fireModule;<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>        &#125;<br>        <span class="hljs-keyword">public</span> Builder <span class="hljs-title function_">setTransportModule</span><span class="hljs-params">(String transportModule)</span> &#123;<br>            <span class="hljs-built_in">this</span>.transportModule = transportModule;<br>            <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>        &#125;<br>        <span class="hljs-keyword">public</span> Ship <span class="hljs-title function_">build</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Ship</span>(<span class="hljs-built_in">this</span>);<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">// 众所周知，客户端不应该自己 new 东西～</span><br>        <span class="hljs-type">Ship</span> <span class="hljs-variable">ship</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Ship</span>.Builder(<span class="hljs-string">&quot;powerModule&quot;</span>)<br>                            .setFireModule(<span class="hljs-string">&quot;fireModule&quot;</span>)<br>                            .setTransportModule(<span class="hljs-string">&quot;transportModule&quot;</span>)<br>                            .build();<br>        <span class="hljs-comment">// . . .</span><br>    &#125;<br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02-20%E5%AF%B9%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%80%BB%E7%BB%93.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">对创建型模式的总结</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02-16%E6%97%A5%E8%AF%AD%E4%B8%AD%E6%95%B0%E8%AF%8D%E5%92%8C%E9%87%8F%E8%AF%8D%E7%9A%84%E8%AF%BB%E6%B3%95.html">
+                        <span class="hidden-mobile">日语中数词和量词的读法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

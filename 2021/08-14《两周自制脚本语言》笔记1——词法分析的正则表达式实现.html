@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="这书，香！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《两周自制脚本语言》笔记 1——基于正则表达式的词法分析">
+<meta property="og:url" content="http://example.com/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="这书，香！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210814203349.jpg">
+<meta property="og:image" content="http://example.com/images/oss/20210814000737.png">
+<meta property="og:image" content="http://example.com/images/oss/20210814203324.jpg">
+<meta property="article:published_time" content="2021-08-14T12:34:36.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.286Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="编译原理">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210814203349.jpg">
+  
+  
+  <title>《两周自制脚本语言》笔记 1——基于正则表达式的词法分析 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《两周自制脚本语言》笔记 1——基于正则表达式的词法分析">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-14 20:34" pubdate>
+        2021年8月14日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《两周自制脚本语言》笔记 1——基于正则表达式的词法分析</h1>
+            
+            <div class="markdown-body">
+              <p><img src="/images/oss/20210814203349.jpg"></p>
+<!--Hello, Happy World-->
+
+<p>该书的目标是<strong>使用 Java 语言</strong>实现一门简单的脚本语言——更具体的来说，是实现一个简单的<strong>脚本语言</strong>的<strong>语言处理器</strong>，其主体是一个解释器（就像 python），但内部通过编译器提高性能。</p>
+<p>该语言处理器的<strong>大体</strong>流程和编译原理课上的所学大同小异——先将源代码通过<strong>词法分析</strong>转换成 <strong>Token</strong> 序列，再将 Token 通过<strong>语法分析</strong>生成<strong>抽象语法树（AST）</strong>，再通过编译器或解释器对语法树进行编译或执行。</p>
+<blockquote>
+<p>AST 是什么？联想 Lisp 罢！</p>
+</blockquote>
+<p><img src="/images/oss/20210814000737.png"></p>
+<p>该书将此语言命名为 Stone——Perl 是珍珠（大概），Ruby 是红宝石，而它则只是一颗小石子。</p>
+<blockquote>
+<p>  等什么时候我真的去写一门喜欢的语言，就自己给它取名吧。</p>
+</blockquote>
+<h1 id="Stone-的基本语法"><a href="#Stone-的基本语法" class="headerlink" title="Stone 的基本语法"></a>Stone 的基本语法</h1><p>Stone 仍旧是 C 系语言，它在某些地方和 python 相近，某些地方又同传统的语言相近——</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">// 注释使用//，传统！<br>even = 0 // 变量定义，类似 python，单行语句不需加分号，不需要定义变量类型<br>odd = 0<br>i = 1<br>while i &lt; 10 &#123; // if 和 while 的条件不需要括号，类似 python<br>	if i % 2 == 0 &#123;<br>		even = even + i // 偶数<br>	&#125; else &#123;<br>		odd = odd + i<br>	&#125;<br>  i = i + 1<br>&#125;<br>even + odd // 不需要 return，最后表达式为返回值<br><br>&#123; x = 1; y = 2 &#125; // 分号是语句间的分隔符，这种形式是合法的<br>// 没有多行注释<br></code></pre></div></td></tr></table></figure>
+
+<p>语句的换行如果要能够允许各种情况，会导致实现的复杂化，因此对换行情况做尽量多限制——左花括号必须不换行，else 必须和右花括号在同一行。</p>
+<blockquote>
+<p>如果强制要求除代码块以外，语句必须以分号结束，实现会变得容易，但是这并不现代。</p>
+</blockquote>
+<p>Stone 语言要求 if 和 while 的语句体必须使用花括号包括——这导致 else if 是不合法的！可以模仿 python，使用类似 elif 的关键字来实现 else if。</p>
+<blockquote>
+<p>如果之后有条件，我想为其提供一些我喜欢的特性，比如一切皆表达式，尾 lambda……</p>
+</blockquote>
+<h1 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h1><h2 id="Token"><a href="#Token" class="headerlink" title="Token"></a>Token</h2><p>词法分析是语言处理器的第一个组成部分，其负责将源代码（也就是保存在文本文件里的，符合特定规范的一长串字符串）进行切割，划分为多个子字符串，生成相应** Token**。</p>
+<p>比如<code>if i == &quot;me&quot; &#123;</code>这样一行代码，其将会被拆分成<code>&quot;if&quot; &quot;i&quot; &quot;==&quot; &quot;&quot;me&quot;&quot; &quot;&#123;&quot;</code>，<strong>空白和注释都会被去除</strong>。</p>
+<p>Token 当然不能是简单的 String 对象，其要保存更多信息，包括但不限于 Token 的值，<strong>类型</strong>，行号等。每个 Token 类型都需要被小心定义，规定怎样的字符串才能合法构成特定类型 Token。</p>
+<p>Stone 语言定义 Token 有三种类型——标识符（Identifier），数字（Number），字符串（String）。</p>
+<p>标识符代表变量名，函数名，类名等，运算符以及各种括号，标点符号也属于标识符。数字和字符串都通过字面量进行表示。考虑到 Stone 对换行是比较敏感的，换行符也为标识符。</p>
+<blockquote>
+<p>似乎有时候（或者是一般来说？）保留字（关键字）和标点符号会被归为另一种类型的 Token。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">num = 0<br>hello = &quot;world&quot;<br>while 1 &#123;<br>	num = num + 100<br>&#125;<br><br>// num, =, hello, while, &#123;, +, &#125;为标识符<br>// 0, 1, 100 为数字字面量，其代表数字 0, 1, 100（当然，也可以用 two、one、three，0x01、0x02、0x03，ひとつ、ふたつ、みっつ等字面量来定义 1，2，3 等数字！）<br>// &quot;world&quot;为字符串字面量，其表示字符串值 Java（同理，也可以使用其它符号如单引号来标记字符串）<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="Token-的定义"><a href="#Token-的定义" class="headerlink" title="Token 的定义"></a>Token 的定义</h2><p>下面给 Token 一个总的定义——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Token</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Token</span> <span class="hljs-variable">EOF</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Token</span>(-<span class="hljs-number">1</span>)&#123;&#125;; <span class="hljs-comment">// 文件结尾</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">EOL</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;\\n&quot;</span>; <span class="hljs-comment">// 行结尾</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> lineNumber;<br>  <br>  	<span class="hljs-comment">// 使用 protected 保证不会被外界直接实例化，同时子类又可以重写</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-title function_">Token</span><span class="hljs-params">(<span class="hljs-type">int</span> lineNumber)</span> &#123; <br>        <span class="hljs-built_in">this</span>.lineNumber = lineNumber;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getLineNumber</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> lineNumber;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isIdentifier</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isNumber</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getNumber</span><span class="hljs-params">()</span> &#123; <span class="hljs-comment">// 为数字时能够获取到其代表的数值</span><br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StoneException</span>(<span class="hljs-string">&quot;not number token&quot;</span>); <span class="hljs-comment">// 为自己实现的一个 Exception</span><br>    &#125;<br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getText</span><span class="hljs-params">()</span> &#123; <span class="hljs-comment">// 为字符串或标识符时，通过该方法能够取到其文本</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>关于 Token 的定义（即规定各个类型 Token 的合法值），使用 java 的正则表达式的库并遵循其定义方式——</p>
+<p>首先是最简单的数字的字面量——<code>[0-9]+</code>（没错，这里没有小数！负数则通过负号运算符进行定义……大概吧）。</p>
+<p>然后是关于标识符的定义，首先是关于保留字，变量，函数，类的命名，其必须使用大写或小写字母，下划线开头，只能出现数字和字母，下划线——<code>[A-Z_a-z][A-Z_a-z0-9]*</code>。</p>
+<p>然后则是各种标点符号，其包括&#x3D;&#x3D;，&lt;&#x3D;，&gt;&#x3D;，&amp;&amp;，||等双字节的符号，也包括更多单字节符号，其为<code>==|&lt;=|&gt;=|&amp;&amp;|\|\||\p&#123;Punct&#125;</code>，这里的<code>\p&#123;Punct&#125;</code>表示与任意符号字符匹配。因此关于标识符的总的正则表达式为<code>[A-Z_a-z][A-Z_a-z0-9]*|==|&lt;=|&gt;=|&amp;&amp;|\|\||\p&#123;Punct&#125;</code>。</p>
+<p>然后是字符串字面量的定义，其为<code>&quot;(\\&quot;|\\\\|\\n|[^&quot;\n])*&quot;</code>，这代表字符串中的值能包括、&quot;，\\，\n（作为字面量写出来的，两个字符的、n，而非真正的换行符），以及除”，换行符以外其他字符（”和换行符会打断字符串。书中居然没有匹配换行符，为什么？）。</p>
+<p>Java 需要对”和、进行转义，最终编写在 Java 文件里的正则表达式如下。需要记住的是，<strong>下面的字符串最后应当得到的目标字符串是上面的正则</strong>，因此这其中有<code>字面量 Java 字符串-&gt;实际正则表达式字符串</code>这一层转换——比如正则表达式要匹配<code>\n</code>这个回车符，对应 Java 代码就要<code>\\n</code>，其将成为原生字符串<code>\n</code>并作为 regex。但若是要匹配<code>\n</code>这个长度为二的字符串，相应的原生字符串是<code>\\n</code>，为此，相应的 Java 字符串应当转义两个反斜杠，最终得到<code>\\\\n</code>这样的结果。</p>
+<p>如果 Java 提供了 raw 字符串的功能，编写这个将漂亮很多。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">pattern</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;\&quot;(\\\\\&quot;|\\\\\\\\|\\\\\n|[^\&quot;\n])*\&quot;&quot;</span>; <span class="hljs-comment">// mdzz</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="词法分析器的设计和实现"><a href="#词法分析器的设计和实现" class="headerlink" title="词法分析器的设计和实现"></a>词法分析器的设计和实现</h2><p>Java 语言能够使用一个正则表达式获取特定字符串中所有匹配字符串，因此这里使用正则表达式来获取 Token，具体来说，可以通过如下正则表达式来对 Token 进行获取——</p>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode">\s*<span class="hljs-comment">((//.*)</span>|<span class="hljs-comment">(pat1)</span>|<span class="hljs-comment">(pat2)</span>|<span class="hljs-comment">(pat3)</span>)?<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>这里的 pat3 的括号加或不加都可，只不过标识符所匹配的括号不一样罢了。</p>
+</blockquote>
+<p>其中，pat1-3 为匹配整型字面量，字符串字面量，标识符的正则表达式。&#x2F;&#x2F;. *用于匹配注释，\s *用于匹配 0 个及以上的空字符，? 代表即使没有任何内容也能够匹配。正则表达式匹配成功时，能通过代码对每个括号所匹配的内容进行获取，这样从四个括号的匹配值是否是 null 就能看出，能获得到被匹配的 Token 的类型。</p>
+<p>词法分析器的工作是简单的——逐行读取源代码，对每行源代码，从开头起检查内容是否匹配，并在检查完成后获取所有匹配的字符串。</p>
+<p>在获取时，使用的正则表达式如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">STRING_PATTERN</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;\&quot;((\\\\\&quot;|\\\\\\\\|\\\\\n|[^\&quot;\\n])*)\&quot;&quot;</span>; <span class="hljs-comment">// 这里又加了一层括号，使能够直接获取字符串双引号包围的值</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">NUMBER_PATTERN</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;[0-9]+&quot;</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">IDENTIFIER_PATTERN</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;[A-Z_a-z][A-Z_a-z0-9]*|==|&lt;=|&gt;=|&amp;&amp;|\\|\\||\\p&#123;Punct&#125;&quot;</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Pattern</span> <span class="hljs-variable">FULL_PATTERN</span><br>  <span class="hljs-operator">=</span> Pattern.compile(String.format(<span class="hljs-string">&quot;\\s*((//.*)|(%s)|(%s)|(%s))?&quot;</span>, NUMBER_PATTERN, STRING_PATTERN, IDENTIFIER_PATTERN));<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">matcher.group(0) 无意义</span><br><span class="hljs-comment">group(1) 若为 null 说明字符串为空</span><br><span class="hljs-comment">group(2) 为注释</span><br><span class="hljs-comment">group(3) 为数字字面量之字符串表述</span><br><span class="hljs-comment">group(4) 为字符串</span><br><span class="hljs-comment">group(5) 为字符串字面量之实际值，但需要将所有应当转义字符进行转义，比如用户如果在字符串中包括、n，其是以、，n 两个字符保存在文本中的，读取到内存中也是两个字符&#x27;\\&#x27;和&#x27;n&#x27;，需要将其转换成换行符</span><br><span class="hljs-comment">group(6) 无意义</span><br><span class="hljs-comment">group(7) 为标识符</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">像 123abc 这样的是不会出现错误的，它会拆成数字字面量 123 和标识符 abc，这河里吗？还是说这种错误必然会在语法分析阶段被发现？感觉如果要在词法分析阶段解决这个问题，需要增加更多逻辑……得不偿失。</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>根据正则表达式，能够容易写出相应的代码，下面的是获取单行的 Token 的代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 对一行字符串进行词法分析</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> lineNumber 字符串所处行数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> str 待分析字符串</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Token 序列</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Token&gt; <span class="hljs-title function_">analyzeLine</span><span class="hljs-params">(<span class="hljs-type">int</span> lineNumber, String str)</span> &#123;<br>  List&lt;Token&gt; res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>  <span class="hljs-type">Matcher</span> <span class="hljs-variable">matcher</span> <span class="hljs-operator">=</span> FULL_PATTERN.matcher(str);<br>  <span class="hljs-keyword">while</span>(matcher.find()) &#123;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">1</span>) == <span class="hljs-literal">null</span>) <span class="hljs-keyword">break</span>;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">3</span>) != <span class="hljs-literal">null</span>) &#123;<br>      res.add(TokenFactory.of(lineNumber, TokenType.NUMBER, matcher.group(<span class="hljs-number">3</span>)));<br>    &#125;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">5</span>) != <span class="hljs-literal">null</span>) &#123;<br>      <span class="hljs-comment">// TODO 需要转义</span><br>      res.add(TokenFactory.of(lineNumber, TokenType.STRING ,matcher.group(<span class="hljs-number">5</span>)));<br>    &#125;<br>    <span class="hljs-keyword">if</span> (matcher.group(<span class="hljs-number">7</span>) != <span class="hljs-literal">null</span>) &#123;<br>      res.add(TokenFactory.of(lineNumber, TokenType.IDENTIFIER, matcher.group(<span class="hljs-number">7</span>)));<br>    &#125;<br>  &#125;<br>  res.add(TokenFactory.EOL(lineNumber));<br>  <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> str 待分析字符串数组，将根据下标确定行数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> Token 序列</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Token&gt; <span class="hljs-title function_">analyze</span><span class="hljs-params">(String[] str)</span> &#123;<br>  <span class="hljs-type">int</span>[] count = &#123;<span class="hljs-number">1</span>&#125;;<br>  <span class="hljs-keyword">return</span> Arrays.stream(str)<br>    .map(line -&gt; analyzeLine(count[<span class="hljs-number">0</span>]++, line)) <span class="hljs-comment">// 在 map 中使用会改变的参数非常不好，但这里写起来简单</span><br>    .flatMap(List::stream)<br>    .collect(Collectors.toList());<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p><img src="/images/oss/20210814203324.jpg"></p>
+<p>正则表达式用来进行词法分析感觉还是有些不太舒服的，好在实践中已经开发了许多现成的词法分析器可以直接使用，该书似乎之后还会通过有限状态自动机来进行词法分析…再议吧！下一步是学习和编写语法分析器。</p>
+<blockquote>
+<p>  感觉其实可以把 NumToken 和 StringToken 统一起来，变成 LiteralToken</p>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08-17%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8CBNF.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 2——语法分析和 BNF</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-02%E5%85%B3%E4%BA%8Egit%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8.html">
+                        <span class="hidden-mobile">对 git 的一些使用的笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

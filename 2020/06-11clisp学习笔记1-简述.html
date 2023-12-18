@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="现在看来，学习 Lisp 更多是为了学习而非工程实践，因此当时我实在不应该选择 Common Lisp，它工程味道太浓了。将来再要去接触 Lisp，首选 Racket，而若是为了工程实践，则 Clojure。 ——2022.01.02">
+<meta property="og:type" content="article">
+<meta property="og:title" content="clisp 学习笔记 1-简述">
+<meta property="og:url" content="http://example.com/2020/06-11clisp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01-%E7%AE%80%E8%BF%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="现在看来，学习 Lisp 更多是为了学习而非工程实践，因此当时我实在不应该选择 Common Lisp，它工程味道太浓了。将来再要去接触 Lisp，首选 Racket，而若是为了工程实践，则 Clojure。 ——2022.01.02">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.276Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Lisp">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>clisp 学习笔记 1-简述 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="clisp 学习笔记 1-简述">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-11 00:00" pubdate>
+        2020年6月11日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      8.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">clisp 学习笔记 1-简述</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>现在看来，学习 Lisp 更多是为了学习而非工程实践，因此当时我实在不应该选择 Common Lisp，它工程味道太浓了。将来再要去接触 Lisp，首选 Racket，而若是为了工程实践，则 Clojure。</p>
+<p>——2022.01.02</p>
+</blockquote>
+<span id="more"></span>
+
+<p><del>…… 我决定去学 Haskell 了，再见，Racket！</del></p>
+<p><del>…… 我决定去学 Racket 了，再见，Clojure！</del></p>
+<p><del>…… 我决定去学 Clojure 了，再见，common lisp！</del></p>
+<p><del>你好，common lisp，我又决定先来找你玩了！</del></p>
+<p>我又决定去学 Haskell 和 Clojure 了，再见，common Lisp！</p>
+<blockquote>
+<p>哈哈哈哈哈哈哈</p>
+</blockquote>
+<h1 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h1><p>Q：为什么学 lisp？<br>A：它酷！</p>
+<p>Q：酷有个屁用？<br>A：****！</p>
+<p>Q：根据哪里学的？<br>A：<a target="_blank" rel="noopener" href="https://acl.readthedocs.io/en/latest/zhCN/">ANSI Common Lisp</a></p>
+<h1 id="lisp-语言的形式"><a href="#lisp-语言的形式" class="headerlink" title="lisp 语言的形式"></a>lisp 语言的形式</h1><figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;hello!world!&quot;</span>) <span class="hljs-comment">; 我是注释</span><br></code></pre></div></td></tr></table></figure>
+
+<p>lisp 语言<strong>只有一种形式</strong>（数据和代码都采用这种格式）（不算注释的话）——上述的前序表达式。</p>
+<p>lisp 语言<strong>必须使用括号包裹</strong>。否则在某些时候无法判断表达式什么时候结束，比如——</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>)<br>(<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span>)<br>(<span class="hljs-name">/</span> (<span class="hljs-name">-</span> <span class="hljs-number">7</span> <span class="hljs-number">1</span>) (<span class="hljs-name">-</span> <span class="hljs-number">6</span> <span class="hljs-number">4</span>))<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="求值"><a href="#求值" class="headerlink" title="求值"></a>求值</h1><p>lisp 是这样求值的——  </p>
+<ol>
+<li>首先从左至右对<strong>实参</strong>求值。</li>
+<li>实参的值传入以操作符命名的<strong>函数</strong>。</li>
+</ol>
+<p>在这个例子中——</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>lisp 对 2 求值，结果为 2，对 3 求值，结果为 3，对 4 求值，结果为 4，对 5 求值，结果为 5，然后将这些值传给+函数，返回 14。</p>
+<h1 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h1><h2 id="符号-symbol-和列表-lists"><a href="#符号-symbol-和列表-lists" class="headerlink" title="符号 symbol 和列表 lists"></a>符号 symbol 和列表 lists</h2><p>符号是单词（words），其不能（无法？）对自身求值，应当使用’引用。</p>
+<p>由括号包裹的零个或多个元素称为<strong>列表</strong>。列表应该使用’来引用，因为其结构和函数调用的结构相同，lisp 会认为这是函数调用。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; &#x27;Hello!world123 <span class="hljs-comment">;symbol</span><br>HELLO!WORLD123<br><br>&gt; &#x27;(the list (a b c) has <span class="hljs-number">3</span> elements) <span class="hljs-comment">;list</span><br>(<span class="hljs-name">THE</span> LIST (<span class="hljs-name">A</span> B C) HAS <span class="hljs-number">3</span> ELEMENTS)<br></code></pre></div></td></tr></table></figure>
+
+<p>quote 函数（它不遵守 CLisp 既定的求职规则），它和引用起相同作用。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; &#x27;(+ <span class="hljs-number">3</span> <span class="hljs-number">2</span>)<br>(<span class="hljs-name">+</span> <span class="hljs-number">3</span> <span class="hljs-number">2</span>)<br><br>&gt; (<span class="hljs-name">quote</span> (+ <span class="hljs-number">3</span> <span class="hljs-number">2</span>))<br>(<span class="hljs-name">+</span> <span class="hljs-number">3</span> <span class="hljs-number">2</span>)<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="列表表示-lisp-程序"><a href="#列表表示-lisp-程序" class="headerlink" title="列表表示 lisp 程序"></a>列表表示 lisp 程序</h2><p><strong>lisp 的程序是用列表来表示的，这是 lisp 最卓越的特性</strong>。lisp 的代码如果被引用，就对自身求值，如果没有，则被视为代码，按照求值规则求值后返回值。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">list</span> &#x27;(+ <span class="hljs-number">2</span> <span class="hljs-number">1</span>) (<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">1</span>))<br>((<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">1</span>) <span class="hljs-number">3</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>因此，lisp 代码是容易写出 lisp 代码的。并且 lisp 程序员应经常地使用此特性来解决问题，“让 lisp 适应问题，而非让问题适应 lisp”。</p>
+<h2 id="NIL"><a href="#NIL" class="headerlink" title="NIL"></a>NIL</h2><p>lisp 有两种方式表示空列表。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; ()<br>NIL<br>&gt; <span class="hljs-literal">nil</span> <span class="hljs-comment">;nil 显然是一个求值为 NIL 的 symbol</span><br>NIL<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="列表操作"><a href="#列表操作" class="headerlink" title="列表操作"></a>列表操作</h1><h2 id="cons"><a href="#cons" class="headerlink" title="cons"></a>cons</h2><p>cons 的第二个实参是列表（记住，列表是要引用的，否则它会被当成函数调用），它将第一个实参加入到第二个实参这个列表<strong>前</strong>，得到一个新列表。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">cons</span> &#x27;a &#x27;(b c d))<br>(<span class="hljs-name">A</span> B C D)<br><br>&gt; (<span class="hljs-name">cons</span> &#x27;a NIL)<br>(<span class="hljs-name">A</span>)<br><br>&gt; (<span class="hljs-name">cons</span> &#x27;(a b c) &#x27;(b))<br>((<span class="hljs-name">A</span> B C) B)<br><br>&gt; (<span class="hljs-name">cons</span> &#x27;(a b) &#x27;c) <span class="hljs-comment">; 瞎搞呢？看上去它是对 c 这个符号进行了一些处理……</span><br>((<span class="hljs-name">A</span> B) . C) <span class="hljs-comment">; 啥原因？</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><p>list 将所有实参加入到一个列表中。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">list</span> &#x27;a &#x27;b &#x27;c)<br>(<span class="hljs-name">A</span> B C)<br><br>&gt; (<span class="hljs-name">list</span> &#x27;(a b) &#x27;(c (d e)))<br>((<span class="hljs-name">A</span> B) (<span class="hljs-name">C</span> (<span class="hljs-name">D</span> E)))<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="car-amp-cdr"><a href="#car-amp-cdr" class="headerlink" title="car &amp; cdr"></a>car &amp; cdr</h2><p>car 返回<strong>第一个</strong>元素，cdr 返回第一个元素后的所有元素（以列表的形式）。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">car</span> &#x27;(a b c))<br>A<br>&gt; (<span class="hljs-name">cdr</span> &#x27;(a b c))<br>(<span class="hljs-name">B</span> C)<br></code></pre></div></td></tr></table></figure>
+
+<p>混合使用 car 和 cdr 可以取到列表中的任何元素。</p>
+<h1 id="真假"><a href="#真假" class="headerlink" title="真假"></a>真假</h1><h2 id="谓词（predicate）"><a href="#谓词（predicate）" class="headerlink" title="谓词（predicate）"></a>谓词（predicate）</h2><p>谓词是 lisp 中返回真假的函数，就像其他语言的返回布尔值的函数。一般而言，其结尾是 p。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">listp</span> &#x27;(a b c))<br>T<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="not-amp-null"><a href="#not-amp-null" class="headerlink" title="not &amp; null"></a>not &amp; null</h2><p>t 表示逻辑真，t 也是对自身求值的，与 nil 相同。</p>
+<p>逻辑假用 nil 表示。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">listp</span> <span class="hljs-number">26</span>)<br>NIL<br></code></pre></div></td></tr></table></figure>
+
+<p>not 和 null 在逻辑上是不同的，前者判断是否是逻辑假，后者判断是否是空表，可是实际上其结果是相同的。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">null</span> <span class="hljs-literal">nil</span>) <span class="hljs-comment">; 空表</span><br>T<br><br>&gt; (<span class="hljs-name">not</span> <span class="hljs-literal">nil</span>) <span class="hljs-comment">; 逻辑假</span><br>T<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="条件表达式-if"><a href="#条件表达式-if" class="headerlink" title="条件表达式 if"></a>条件表达式 if</h2><p>if 接受三个实参，一个 test 表达式，一个 then 表达式，一个 else 表达式。if 会<strong>先</strong>对 test 表达式求值，如果为真，则求 then，否则求 else。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">if</span> (<span class="hljs-name">listp</span> &#x27;(a b c))<br>      (<span class="hljs-name">+</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>)<br>      (<span class="hljs-name">+</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span>))<br><span class="hljs-number">3</span><br></code></pre></div></td></tr></table></figure>
+
+<p>if 也是特殊的操作符，如同 quote。if 不遵守求值规则之处在于，它对最后两个实参，只会求其中一个的值。因此，if 是<strong>不能用函数来实现</strong>的。</p>
+<p>要注意的是，非 nil 的，都是 t</p>
+<h2 id="and-amp-or"><a href="#and-amp-or" class="headerlink" title="and &amp; or"></a>and &amp; or</h2><p>and 和 or 都从左往右<strong>求值</strong>。但是，and 在遇到 NIL 时停止求值，返回 NIL 或最后一个参数的值，如果其他参数全为真</p>
+<p>or 在遇到参数为逻辑真时停止求值，返回这个值</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">and</span> (<span class="hljs-name">+</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>) (<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>))<br><span class="hljs-number">5</span><br>&gt; (<span class="hljs-name">and</span> (<span class="hljs-name">+</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>) <span class="hljs-literal">nil</span>)<br><span class="hljs-literal">nil</span><br>&gt; (<span class="hljs-name">and</span> <span class="hljs-literal">nil</span> (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;rua&quot;</span>)) <span class="hljs-comment">; 遇到 nil 就停止求值了</span><br><span class="hljs-literal">nil</span><br><br>&gt; (<span class="hljs-name">or</span> (<span class="hljs-name">+</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>) <span class="hljs-literal">nil</span>)<br><span class="hljs-number">3</span><br>&gt; (<span class="hljs-name">or</span> <span class="hljs-literal">nil</span> (<span class="hljs-name">+</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>))<br><span class="hljs-number">3</span><br>&gt;(<span class="hljs-name">or</span> (<span class="hljs-name">+</span> <span class="hljs-number">3</span> <span class="hljs-number">1</span>) (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;hello&quot;</span>)) <span class="hljs-comment">; 遇到 T 就停止求值</span><br><span class="hljs-number">4</span><br></code></pre></div></td></tr></table></figure>
+
+<p>and 和 or 这两个操作符称为<strong>宏</strong>，它们和特殊的操作符一样，可以绕过一般的求值规则。</p>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>定义新函数的函数叫 defun（它显然也是不遵守求值规则的），它接受三个以上的实参——一个名字，一组用列表表示的实参（而这个实参中的内容将被作为函数的形参），以及一个或多个组成<strong>函数体</strong>的表达式。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">defun</span> say (<span class="hljs-name">obj</span>) (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> obj)) <span class="hljs-comment">;obj 是形参</span><br>SAY<br><br>&gt; (<span class="hljs-name">say</span> <span class="hljs-string">&quot;hello&quot;</span>)<br>hello<br>NIL<br><br>&gt; (<span class="hljs-name">SaY</span> <span class="hljs-string">&quot;hello&quot;</span>)<br>hello<br>NIL<br></code></pre></div></td></tr></table></figure>
+
+<p>可见，在进行函数调用时，它会把函数名进行求值，转换成全大写的 symbol。</p>
+<p>符号（symbol）就是变量（和函数）的名字，符号本身以对象存在。因此，符号和列表必须要以引用形式来使用，否则列表会被当成函数，符号会被当成变量。</p>
+<h1 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h1><p>没啥可说的。</p>
+<p>判断一个 tar 是否在一个列表中，如果是，返回这个 tar 及以后的子列表，否则返回 NIL。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> our-member (<span class="hljs-name">tar</span> lst)<br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst)<br>        <span class="hljs-literal">nil</span><br>    (<span class="hljs-name">if</span> (<span class="hljs-name">eql</span> (<span class="hljs-name">car</span> lst) tar)<br>        lst<br>        (<span class="hljs-name">our-member</span> tar (<span class="hljs-name">cdr</span> lst))))) <span class="hljs-comment">; 别看了，我们 lisp 就是这样的。</span><br><br>(<span class="hljs-name">defun</span> fib (<span class="hljs-name">n</span>)<br>    (<span class="hljs-name">if</span> (<span class="hljs-name">or</span> (<span class="hljs-name">=</span> n <span class="hljs-number">1</span>) (<span class="hljs-name">=</span> n <span class="hljs-number">2</span>))<br>        <span class="hljs-number">1</span><br>        (<span class="hljs-name">+</span> (<span class="hljs-name">fib</span> (<span class="hljs-name">-</span> n <span class="hljs-number">1</span>)) (<span class="hljs-name">fib</span> (<span class="hljs-name">-</span> n <span class="hljs-number">2</span>))))) <span class="hljs-comment">; 最睿智的 fib 解决法</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h1><h2 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h2><p>最普遍的 clisp 输出函数时 format，接受两个两个及以上的实参，第一个实参决定要打印到的位置，第二个实参是字符串模板，剩余的实参通常是要插入到字符串模板。</p>
+<p>t 表示输出送到缺省的地方（通常是顶层，或者是控制台？），<del>A 表示被填入的位置，</del>%表示换行符。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;~A plus ~A equals ~A. ~%&quot;</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> (<span class="hljs-name">+</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>))<br><span class="hljs-number">2</span> plus <span class="hljs-number">3</span> equals <span class="hljs-number">5</span>. <span class="hljs-comment">;format 的输出</span><br>NIL <span class="hljs-comment">;format 的返回值</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h2><p>clisp 的标准的输入函数是 read，当没有实参时，会读取缺省的位置，通常是顶层。它会返回输入的东西被处理后的结果。</p>
+<p>read 非常强大，虽然还不知道到底如何强大 w</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">defun</span> askem (<span class="hljs-name">string</span>)<br>    (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;~A&quot;</span> string)<br>    (<span class="hljs-name">read</span>))<br><br>&gt; (<span class="hljs-name">askem</span> <span class="hljs-string">&quot;How old are you?&quot;</span>)<br>How old are you?<span class="hljs-number">29</span><br><span class="hljs-number">29</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="变量和赋值"><a href="#变量和赋值" class="headerlink" title="变量和赋值"></a>变量和赋值</h1><h2 id="let"><a href="#let" class="headerlink" title="let"></a>let</h2><p>let 引入局部变量，它只在 let 的括号内有效。<br>let 表达式有两个部分，第一个部分是创建新变量，其格式为 (variable expression)。每一格变量会被赋予相对应表达式的值。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">&gt; (<span class="hljs-name">let</span> ((<span class="hljs-name">x</span> <span class="hljs-number">123</span>) (<span class="hljs-name">y</span> <span class="hljs-number">456</span>)) <span class="hljs-comment">; 每一个变量定义都是一个列表</span><br>    (<span class="hljs-name">+</span> x y)))<br><span class="hljs-number">579</span><br></code></pre></div></td></tr></table></figure>
+
+<p>写一个要求用户输入数字的函数，如果输入的是数字，则返回它，否则返回该函数。</p>
+<p><strong>之后，用&gt;标识返回值。</strong></p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> ask-number ()<br>    (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;enter a number:&quot;</span>)<br>    (<span class="hljs-name">let</span> ((<span class="hljs-name">val</span> (<span class="hljs-name">read</span>))) <span class="hljs-comment">; 创建变量</span><br>        (<span class="hljs-name">if</span> (<span class="hljs-name">numberp</span> val) <span class="hljs-comment">; 数字谓词</span><br>            val<br>            (<span class="hljs-name">ask-number</span>))))<br><br>(<span class="hljs-name">ask-number</span>)<br>&gt; enter a number:oh<br>&gt; enter a number:(<span class="hljs-name">aha</span>)<br>&gt; enter a number:<span class="hljs-number">23</span><br>&gt; <span class="hljs-number">23</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="defparameter-amp-defconstant"><a href="#defparameter-amp-defconstant" class="headerlink" title="defparameter &amp; defconstant"></a>defparameter &amp; defconstant</h2><figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defparameter</span> *glob* <span class="hljs-number">99</span>) <span class="hljs-comment">; 全局变量通过 defparameter 声明，通常使用星号包围以避免与局部变量混淆</span><br>&gt; *GLOB*<br><br>(<span class="hljs-name">defconstant</span> limit (<span class="hljs-name">+</span> *glob* <span class="hljs-number">1</span>)) <span class="hljs-comment">; 全局常量不需要用星号包围，因为如果有相同名字就会产生错误</span><br>&gt; <span class="hljs-number">100</span><br><br>&gt; (<span class="hljs-name">boundp</span> &#x27;*glob*) <span class="hljs-comment">; 全局量谓词，检测是否是全局变量或全局常量</span><br>T<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="setf"><a href="#setf" class="headerlink" title="setf"></a>setf</h2><p>setf 是最普遍的赋值操作符。setf 的第一个实参可以为全局或局部变量，可以为符号，可以为表达式。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">setf</span> *glob* <span class="hljs-number">98</span>) <span class="hljs-comment">; 给全局变量* glob *赋值 98</span><br>&gt; <span class="hljs-number">98</span><br><br>(<span class="hljs-name">let</span> ((<span class="hljs-name">n</span> <span class="hljs-number">10</span>))<br>   (<span class="hljs-name">setf</span> n <span class="hljs-number">2</span>) <span class="hljs-comment">; 给局部变量 n 赋值 2</span><br>   n)<br>&gt; <span class="hljs-number">2</span><br><br>(<span class="hljs-name">setf</span> x &#x27;(a b c)) <span class="hljs-comment">; 隐式创建全局变量 x，这是不推荐使用的</span><br>&gt; (<span class="hljs-name">A</span> B C)<br><br>(<span class="hljs-name">setf</span> (<span class="hljs-name">car</span> x) &#x27;n) <span class="hljs-comment">; 表达式也可以做第一个实参，此时更改这个实参引用的位置。</span><br>&gt; N<br><br>x<br>&gt; (<span class="hljs-name">N</span> B C)<br><br>(<span class="hljs-name">setf</span><br>    a &#x27;b<br>    c &#x27;d<br>    e &#x27;f) <span class="hljs-comment">; 偶数个实参，可以定义多个变量。返回最后一个符号</span><br></code></pre></div></td></tr></table></figure>
+
+<p><strong>任何引用到特定位置的表达式都可以做 setf 的第一个实参</strong>。</p>
+<h1 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h1><p>函数式编程意味着<strong>只利用返回值，不造成副作用</strong>，函数式编程是 lisp 的主流范式，<strong>大部分 lisp 的内置函数都是函数式的</strong>。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">set</span> lst &#x27;(c a r a t))<br>&gt; (<span class="hljs-name">C</span> A R A T)<br><br>(<span class="hljs-name">remove</span> &#x27;a lst)<br>&gt; (<span class="hljs-name">C</span> R T) <span class="hljs-comment">; 这是一个新列表</span><br></code></pre></div></td></tr></table></figure>
+
+<p>副作用越少，技术越高 w，这意味着尽量少用 setf 这类的函数。</p>
+<h1 id="迭代"><a href="#迭代" class="headerlink" title="迭代"></a>迭代</h1><p>迭代总是比递归自然的……</p>
+<h2 id="do"><a href="#do" class="headerlink" title="do"></a>do</h2><p>do 宏是 clisp 的最基本的迭代操作符，和 let 类似，do 也可以创建局部变量。</p>
+<p>第一个实参是一组变量的规格说明列表，每个元素是这样的形式 (varible initial update)。<br>第二个实参包含一个或多个表达式，第一个表达式测试迭代是否结束，最后一个表达式是 do 的返回值。<br>其余实参是 do 循环的函数体。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> show-squares (<span class="hljs-name">start</span> end)<br>    (<span class="hljs-name">do</span> ((<span class="hljs-name">i</span> start (<span class="hljs-name">+</span> i <span class="hljs-number">1</span>))) ((<span class="hljs-name">not</span> (<span class="hljs-name">&lt;</span> i end)) &#x27;done) <span class="hljs-comment">; 每次循环都测试条件，如果失败，则继续循环，直到成功，结束循环……如果能和 for 统一一下就好了……但是加上一个 not 就行……结束循环返回 done</span><br>        (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;~A ~A~%&quot;</span> i (<span class="hljs-name">*</span> i i))))<br><br>(<span class="hljs-name">show-squares</span> <span class="hljs-number">2</span> <span class="hljs-number">5</span>)<br>&gt; <span class="hljs-number">2</span> <span class="hljs-number">4</span><br>&gt; <span class="hljs-number">3</span> <span class="hljs-number">9</span><br>&gt; <span class="hljs-number">4</span> <span class="hljs-number">16</span><br>&gt; <span class="hljs-number">5</span> <span class="hljs-number">25</span><br>&gt; DONE<br><br>(<span class="hljs-name">defun</span> show-squares (<span class="hljs-name">i</span> end) <span class="hljs-comment">; 递归版</span><br>    (<span class="hljs-name">if</span> (<span class="hljs-name">&gt;</span> i end)<br>        &#x27;done<br>        (<span class="hljs-name">progn</span> <span class="hljs-comment">; 相当于是创建了一个函数体，依次执行每一个表达式，返回最后一个的值</span><br>            (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;~A ~A~%&quot;</span> i (<span class="hljs-name">*</span> i i))<br>            (<span class="hljs-name">show-squares</span> (<span class="hljs-name">+</span> i <span class="hljs-number">1</span>) end))))<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="dolist"><a href="#dolist" class="headerlink" title="dolist"></a>dolist</h2><p>dolist 更为简单，它遍历一个列表。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> my-length (<span class="hljs-name">lst</span>)<span class="hljs-comment">; 获取列表长度</span><br>    (<span class="hljs-name">let</span> ((<span class="hljs-name">len</span> <span class="hljs-number">0</span>))<br>        (<span class="hljs-name">dolist</span> (<span class="hljs-name">obj</span> lst)　<span class="hljs-comment">; 对 lst 的每一个 obj，让 len+1</span><br>            (<span class="hljs-name">setf</span> len (<span class="hljs-name">+</span> len <span class="hljs-number">1</span>)))<br>        len)) <span class="hljs-comment">; 别忘记返回值啊傻子</span><br><br>(<span class="hljs-name">defun</span> my-length (<span class="hljs-name">lst</span>)<span class="hljs-comment">; 递归版……这个彩虹括号似乎并没有什么用……</span><br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst)<br>        <span class="hljs-number">0</span><br>        (<span class="hljs-name">+</span> (<span class="hljs-name">my-length</span> (<span class="hljs-name">cdr</span> lst)) <span class="hljs-number">1</span>))) <span class="hljs-comment">; 但是这个递归不是尾递归，效率不够高</span><br><br>(<span class="hljs-name">defun</span> my-length (<span class="hljs-name">lst</span> len) <span class="hljs-comment">; 尾递归版本，舒服！从 0 开始调用</span><br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst)<br>        len<br>        (<span class="hljs-name">my-length</span> (<span class="hljs-name">cdr</span> lst) (<span class="hljs-name">+</span> len <span class="hljs-number">1</span>))))<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="函数作为对象"><a href="#函数作为对象" class="headerlink" title="函数作为对象"></a>函数作为对象</h1><p>把函数当成变量一样的对象看待，是稀松平常的，js 喜欢这个。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">function</span> +)<br>&gt; #&lt;SYSTEM-FUNCTION +&gt;<br><br>#&#x27;+<br>&gt; #&lt;SYSTEM-FUNCTION +&gt;<br></code></pre></div></td></tr></table></figure>
+
+<p>#’是 function 的缩写，就如同’是 quote 的缩写一样，</p>
+<h2 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h2><p>函数可以作为实参传入。如 apply 函数。它接受任意数量的实参，但是要求<strong>第一个实参是函数，最后一个实参是列表</strong>。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">apply</span> #&#x27;+ &#x27;(<span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>))<br>&gt; <span class="hljs-number">16</span><br><br>(<span class="hljs-name">+</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>)<br>&gt; <span class="hljs-number">16</span><br><br>(<span class="hljs-name">apply</span> #&#x27;+ <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> &#x27;(<span class="hljs-number">4</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>))<br>&gt; <span class="hljs-number">16</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="funcall"><a href="#funcall" class="headerlink" title="funcall"></a>funcall</h2><p>funcall 进行一样的工作，但是不需要把实参包装成列表。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">funcall</span> #&#x27;+ <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>)<br>&gt; <span class="hljs-number">6</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="lambda"><a href="#lambda" class="headerlink" title="lambda"></a>lambda</h2><p>lambda，匿名函数一样的东西。它似乎不能赋值给变量</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">((<span class="hljs-name">x</span>) (<span class="hljs-name">+</span> x <span class="hljs-number">100</span>)) <span class="hljs-comment">; 这玩意运行不过去啊……</span><br><br>(<span class="hljs-name">lambda</span> (<span class="hljs-name">x</span> y)<br>    (<span class="hljs-name">+</span> x y))<br>&gt; #&lt;FUNCTION :LAMBDA (<span class="hljs-name">X</span> Y) (<span class="hljs-name">+</span> X Y)&gt;<br><br>((<span class="hljs-name">lambda</span> (<span class="hljs-name">x</span> y)(<span class="hljs-name">+</span> x y)) <span class="hljs-number">1</span> <span class="hljs-number">2</span>)<br>&gt; <span class="hljs-number">3</span><br><br>(<span class="hljs-name">funcall</span> #&#x27;(lambda (x) (+ x <span class="hljs-number">5</span>)) <span class="hljs-number">10</span>) <span class="hljs-comment">; 或者这样用</span><br>&gt; <span class="hljs-number">15</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h1><p>lisp 的变量默认没有类型（当然，值有类型）。</p>
+<p>lisp 的内置类型组成了一个<strong>类的层级</strong>，任何对象总是不止属于一个类型。<br>比如，数字 27，按普遍性递增排序，其类型依次是 fixnum 、 integer 、 rational 、 real 、 number 、 atom 、t。</p>
+<p>t 是所有类型的基类，每个对象都属于 t。</p>
+<p>谓词 typep 接受一个对象和一个类型，判定对象是否为该类型，如果是，返回真。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">typep</span> <span class="hljs-number">27</span> &#x27;integer)<br>&gt; T<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h1><p>lisp 是适合写 lisp 的语言，写代码的时候，不只是在语言中编程，也是在让语言适合程序。</p>
+<p>lisp 的语法单一，一切都基于列表。<strong>lisp 本身就是 lisp 程序</strong>。</p>
+<p>这一切是 lisp 最最典型，最最优雅的特性。</p>
+<p>每一个 lisp 程序员都应当善用 lisp 的这些特性，在适应 lisp 的同时，也让 lisp 适应自己……</p>
+<p>花里胡哨的！</p>
+<h1 id="习题"><a href="#习题" class="headerlink" title="习题"></a>习题</h1><ol>
+<li>描述下列表达式求值之后的结果：</li>
+</ol>
+<p>(a) (+ (- 5 1) (+ 3 7))</p>
+<p>(b) (list 1 (+ 2 3))</p>
+<p>(c) (if (listp 1) (+ 1 2) (+ 3 4))</p>
+<p>(d) (list (and (listp 3) t) (+ 1 2))</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">a</span>) <span class="hljs-number">14</span><br>(<span class="hljs-name">b</span>) (<span class="hljs-number">1</span> <span class="hljs-number">5</span>)<br>(<span class="hljs-name">c</span>) <span class="hljs-number">7</span><br>(<span class="hljs-name">d</span>) (<span class="hljs-name">NIL</span> <span class="hljs-number">3</span>)<br></code></pre></div></td></tr></table></figure>
+
+<ol start="2">
+<li>给出 3 种不同表示 (a b c) 的 cons 表达式。</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">cons</span> &#x27;a &#x27;(b c))<br>(<span class="hljs-name">cons</span> &#x27;a (<span class="hljs-name">cons</span> &#x27;b &#x27;(c)))<br>(<span class="hljs-name">cons</span> &#x27;a (<span class="hljs-name">cons</span> &#x27;b (<span class="hljs-name">cons</span> &#x27;c ())))<br></code></pre></div></td></tr></table></figure>
+
+<ol start="3">
+<li>使用 car 与 cdr 来定义一个函数，返回一个列表的第四个元素。</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> my-fourth (<span class="hljs-name">lst</span>) <br>    (<span class="hljs-name">car</span> (<span class="hljs-name">cdr</span> (<span class="hljs-name">cdr</span> (<span class="hljs-name">cdr</span> lst)))))<br></code></pre></div></td></tr></table></figure>
+
+<ol start="4">
+<li>定义一个函数，接受两个实参，返回两者当中较大的那个。</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> my-max (<span class="hljs-name">a</span> b)<br>  (<span class="hljs-name">if</span> (<span class="hljs-name">&gt;</span> a b)<br>      a<br>      b))<br></code></pre></div></td></tr></table></figure>
+
+<ol start="5">
+<li>这些函数做了什么？</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">a</span>) (<span class="hljs-name">defun</span> enigma (<span class="hljs-name">x</span>) <span class="hljs-comment">; 显然，x 是列表</span><br>      (<span class="hljs-name">and</span> (<span class="hljs-name">not</span> (<span class="hljs-name">null</span> x)) <span class="hljs-comment">; 如果列表为非空，才继续执行</span><br>           (<span class="hljs-name">or</span> (<span class="hljs-name">null</span> (<span class="hljs-name">car</span> x)) <span class="hljs-comment">; 如果第一个元素是 null，则停止执行，否则继续执行</span><br>               (<span class="hljs-name">enigma</span> (<span class="hljs-name">cdr</span> x)))))<br><br>(<span class="hljs-name">b</span>) (<span class="hljs-name">defun</span> mystery (<span class="hljs-name">x</span> y)<br>      (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> y)<br>          <span class="hljs-literal">nil</span> <span class="hljs-comment">; 如果 y 为空列表，返回 nil</span><br>          (<span class="hljs-name">if</span> (<span class="hljs-name">eql</span> (<span class="hljs-name">car</span> y) x) <span class="hljs-comment">; 显然，x 是一个值，y 是列表</span><br>              <span class="hljs-number">0</span> <span class="hljs-comment">; 如果有相等，返回 0</span><br>              (<span class="hljs-name">let</span> ((<span class="hljs-name">z</span> (<span class="hljs-name">mystery</span> x (<span class="hljs-name">cdr</span> y))))<br>                (<span class="hljs-name">and</span> z (<span class="hljs-name">+</span> z <span class="hljs-number">1</span>)))))) <span class="hljs-comment">; 如果 z 为 nil，没得算了。返回 nil，如果非，则返回 nil+1</span><br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">a</span>) 故意折腾人呢？<br>显然，是判断一个列表里是否有 NIL 或 ()，如果有，则返回 T，否则返回 NIL<br>(<span class="hljs-name">b</span>) 返回 y 列表中第一个 x 的 index……这个真的难以判断<br></code></pre></div></td></tr></table></figure>
+
+<ol start="6">
+<li>下列表达式， x 该是什么，才会得到相同的结果？</li>
+</ol>
+<p>(a) &gt; (car (x (cdr ‘(a (b c) d))))<br>    B</p>
+<p>(b) &gt; (x 13 (&#x2F; 1 0))<br>    13</p>
+<p>(c) &gt; (x #’list 1 nil)<br>    (1)</p>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">a</span>) car<br><br>(<span class="hljs-name">b</span>) ???<br><br>(<span class="hljs-name">c</span>) apply<br></code></pre></div></td></tr></table></figure>
+
+<ol start="7">
+<li>只使用本章所介绍的操作符，定义一个函数，它接受一个列表作为实参，如果有一个元素是列表时，就返回真，</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">defun</span> my-algo (<span class="hljs-name">lst</span>)<br>    (<span class="hljs-name">and</span> (<span class="hljs-name">null</span> lst) (<span class="hljs-name">or</span> (<span class="hljs-name">listp</span> (<span class="hljs-name">car</span> lst)) (<span class="hljs-name">my-listp</span> (<span class="hljs-name">cdr</span> lst)))))<br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst)<br>        <span class="hljs-literal">nil</span> <span class="hljs-comment">; 不能手贱写大写的 NIL……草</span><br>        (<span class="hljs-name">or</span> (<span class="hljs-name">listp</span> (<span class="hljs-name">car</span> lst)) (<span class="hljs-name">my-listp</span> (<span class="hljs-name">cdr</span> lst)))))<br></code></pre></div></td></tr></table></figure>
+
+<ol start="8">
+<li>给出函数的迭代与递归版本。<br>a. 接受一个正整数，并打印出数字数量的点。<br>b. 接受一个列表，并返回 a 在列表里所出现的次数。</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">a.<br>迭代：<br>(<span class="hljs-name">defun</span> print-point (<span class="hljs-name">n</span>)<br>    (<span class="hljs-name">do</span> ((<span class="hljs-name">i</span> <span class="hljs-number">0</span> (<span class="hljs-name">+</span> i <span class="hljs-number">1</span>))) ((<span class="hljs-name">&gt;=</span> i n) &#x27;done)<br>            (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;.&quot;</span>)))<br><br>递归：<br>(<span class="hljs-name">defun</span> print-point (<span class="hljs-name">n</span>)<br>    (<span class="hljs-name">and</span> (<span class="hljs-name">not</span> (<span class="hljs-name">zerop</span> n))<br>        (<span class="hljs-name">progn</span> (<span class="hljs-name">format</span> <span class="hljs-literal">t</span> <span class="hljs-string">&quot;.&quot;</span>) (<span class="hljs-name">print-point</span> (<span class="hljs-name">-</span> n <span class="hljs-number">1</span>)))))<br><br>b.<br>迭代：<br>(<span class="hljs-name">defun</span> my-count (<span class="hljs-name">lst</span>)<br>    (<span class="hljs-name">let</span> ((<span class="hljs-name">len</span> <span class="hljs-number">0</span>))<br>        (<span class="hljs-name">dolist</span> (<span class="hljs-name">obj</span> lst)<br>            (<span class="hljs-name">if</span> (<span class="hljs-name">equal</span> obj &#x27;a)<br>                (<span class="hljs-name">setf</span> len (<span class="hljs-name">+</span> len <span class="hljs-number">1</span>))<br>                <span class="hljs-literal">nil</span>))<br>        len))<br><br>递归：<br>(<span class="hljs-name">defun</span> my-count (<span class="hljs-name">lst</span>)<br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst)<br>        <span class="hljs-number">0</span><br>        (<span class="hljs-name">if</span> (<span class="hljs-name">equal</span> (<span class="hljs-name">car</span> lst) &#x27;a)<br>            (<span class="hljs-name">+</span> (<span class="hljs-name">my-count</span> (<span class="hljs-name">cdr</span> lst)) <span class="hljs-number">1</span>)<br>            (<span class="hljs-name">my-count</span> (<span class="hljs-name">cdr</span> lst)))))<br><br>尾递归：<br>(<span class="hljs-name">defun</span> my-count (<span class="hljs-name">count</span> lst)<br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst)<br>        count<br>        (<span class="hljs-name">if</span> (<span class="hljs-name">equal</span> (<span class="hljs-name">car</span> lst) &#x27;a)<br>            (<span class="hljs-name">my-count</span> (<span class="hljs-name">+</span> <span class="hljs-number">1</span> count) (<span class="hljs-name">cdr</span> lst))<br>            (<span class="hljs-name">my-count</span> count (<span class="hljs-name">cdr</span> lst)))))<br></code></pre></div></td></tr></table></figure>
+
+<ol start="9">
+<li>一位朋友想写一个函数，返回列表里所有非 nil 元素的和。他写了此函数的两个版本，但两个都不能工作。请解释每一个的错误在哪里，并给出正确的版本。</li>
+</ol>
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">a</span>) (<span class="hljs-name">defun</span> summit (<span class="hljs-name">lst</span>)<br>      (<span class="hljs-name">remove</span> <span class="hljs-literal">nil</span> lst)<br>      (<span class="hljs-name">apply</span> #&#x27;+ lst))<br><br>(<span class="hljs-name">b</span>) (<span class="hljs-name">defun</span> summit (<span class="hljs-name">lst</span>)<br>      (<span class="hljs-name">let</span> ((<span class="hljs-name">x</span> (<span class="hljs-name">car</span> lst)))<br>        (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> x)<br>            (<span class="hljs-name">summit</span> (<span class="hljs-name">cdr</span> lst))<br>            (<span class="hljs-name">+</span> x (<span class="hljs-name">summit</span> (<span class="hljs-name">cdr</span> lst))))))<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight lisp"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs lisp">(<span class="hljs-name">a</span>) <br>(<span class="hljs-name">defun</span> summit (<span class="hljs-name">lst</span>)<br>      (<span class="hljs-name">setf</span> lst (<span class="hljs-name">remove</span> <span class="hljs-literal">nil</span> lst)) <span class="hljs-comment">;remove 是无副作用的，要赋值才行</span><br>      (<span class="hljs-name">apply</span> #&#x27;+ lst))<br><br>(<span class="hljs-name">b</span>)<br>(<span class="hljs-name">defun</span> summit (<span class="hljs-name">lst</span>)<br>    (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> lst) <br>      <span class="hljs-number">0</span> <span class="hljs-comment">; 递归的出口</span><br>      (<span class="hljs-name">let</span> ((<span class="hljs-name">x</span> (<span class="hljs-name">car</span> lst))) <br>        (<span class="hljs-name">if</span> (<span class="hljs-name">null</span> x)<br>            (<span class="hljs-name">summit</span> (<span class="hljs-name">cdr</span> lst))<br>            (<span class="hljs-name">+</span> x (<span class="hljs-name">summit</span> (<span class="hljs-name">cdr</span> lst)))))))<br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Lisp/">Lisp</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06-20clisp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02-%E5%88%97%E8%A1%A8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">clisp 学习笔记 2-列表</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/01-01%E4%B8%96%E7%95%8C%E8%AF%AD%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90.html">
+                        <span class="hidden-mobile">世界语学习资源</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

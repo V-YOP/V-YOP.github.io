@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本是想跟着尚医通这个项目来做个完整的项目，结果视频的结构把我整麻了。进行一个跑路。但拜其所赐，对 MP 进行了一些学习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MybatisPlus 的一些基本使用">
+<meta property="og:url" content="http://example.com/2021/08-01MyBatisPlus%E7%9A%84%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="本是想跟着尚医通这个项目来做个完整的项目，结果视频的结构把我整麻了。进行一个跑路。但拜其所赐，对 MP 进行了一些学习。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210717235544.png">
+<meta property="article:published_time" content="2021-08-01T08:10:50.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.286Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210717235544.png">
+  
+  
+  <title>MybatisPlus 的一些基本使用 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="MybatisPlus 的一些基本使用">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-01 16:10" pubdate>
+        2021年8月1日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MybatisPlus 的一些基本使用</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<blockquote>
+<p>本是想跟着尚医通这个项目来做个完整的项目，结果视频的结构把我整麻了。进行一个跑路。但拜其所赐，对 MP 进行了一些学习。</p>
+</blockquote>
+<p>MyBatis-Plus（下面简称 MP）是对 MyBatis 的增强和扩展，它<strong>不改变 MyBatis 的 API</strong>，但是提供了更多强大的功能以帮助编码。</p>
+<p>对 MP 最基础的使用非常简单——让 Mapper 接口继承一个所谓的<code>BaseMapper</code>接口即可，这个<code>BaseMapper</code>是泛型接口，其类型为操作的实体（当然，对应数据库的一张表）。</p>
+<blockquote>
+<p>在官方示例中，使用<code>MapperScan</code>注解对 Mapper 进行扫描和注入，但我认为使用<code>Mapper</code>注解语义上更为清晰，且 IDE 支持友好（我这 IDEA 不能识别 MapperScan 所导入的 Bean，不知道为何）。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// entity/User.java</span><br><span class="hljs-meta">@Data</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>  	<span class="hljs-meta">@TableId</span> <span class="hljs-keyword">private</span> Long id;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> Integer age;<br>    <span class="hljs-keyword">private</span> String email;<br>&#125;<br><br><span class="hljs-comment">// mapper/UserMapper.java</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">UserMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;User&gt; &#123;&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="简单-CRUD"><a href="#简单-CRUD" class="headerlink" title="简单 CRUD"></a>简单 CRUD</h2><p><code>BaseMapper</code>中定义了许多 CRUD 方法，能够满足大多数业务需求。许多方法可以通过传入所谓的<code>Wrapper</code>对象给定查询&#x2F;更改条件。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">userMapper.selectById(<span class="hljs-number">2</span>); <span class="hljs-comment">// 根据主键进行查询</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">结果：</span><br><span class="hljs-comment">User(id=2, name=Jack, age=20, email=test2@baomidou.com)</span><br><span class="hljs-comment">*/</span><br>userMapper.selectList(<span class="hljs-literal">null</span>); <span class="hljs-comment">// 整表查询</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">结果：</span><br><span class="hljs-comment">User(id=1, name=Jone, age=18, email=test1@baomidou.com)</span><br><span class="hljs-comment">User(id=2, name=Jack, age=20, email=test2@baomidou.com)</span><br><span class="hljs-comment">...</span><br><span class="hljs-comment">*/</span><br>userMapper.selectOne(<span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;User&gt;().eq(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Tom&quot;</span>)); <span class="hljs-comment">// 带条件的查询</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">结果：</span><br><span class="hljs-comment">User(id=3, name=Tom, age=28, email=test3@baomidou.com)</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p><code>selectBatchIds</code>方法接受一个主键 Id 列表并返回结果集合，但或许查询多条记录时最实用的方法是<code>selectByMap</code>，其接受一个<code>Map</code>，k 为字段名，v 为值，返回 List，这种形式和 where 后接一连串相等运算符的形式基本等效，更复杂的查询得去使用<code>QueryWrapper</code>了。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">userMapper.selectBatchIds(Arrays.asList(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>,));<br><span class="hljs-comment">// [User(id=1, name=Jone, age=18, email=test1@baomidou.com, createTime=null, updateTime=null), User(id=2, name=Jack, age=20, email=test2@baomidou.com, createTime=null, updateTime=null), User(id=3, name=Tom, age=28, email=test3@baomidou.com, createTime=null, updateTime=null)]</span><br><br>Map&lt;String, Object&gt; selecter = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>selecter.put(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">28</span>);<br>userMapper.selectByMap(selecter);<br><span class="hljs-comment">// [User(id=3, name=Tom, age=28, email=test3@baomidou.com, createTime=null, updateTime=null)]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>关于添加操作，MP 提供了方法，使能够通过实体的实例进行添加。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">User</span> <span class="hljs-variable">newUser</span> <span class="hljs-operator">=</span> User.builder()<br>                .id(<span class="hljs-number">10L</span>)<br>                .age(<span class="hljs-number">20</span>)<br>                .email(<span class="hljs-string">&quot;abcd@163.com&quot;</span>)<br>                .name(<span class="hljs-string">&quot;Ri&quot;</span>)<br>                .build();<br>userMapper.insert(newUser); <span class="hljs-comment">// insert 方法直接接受一个实体（在这里是 User）的实例</span><br></code></pre></div></td></tr></table></figure>
+
+<p>可以配置如下项让 MP 输出日志到标准输出流——</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">mybatis-plus:</span><br>  <span class="hljs-attr">configuration:</span><br>    <span class="hljs-attr">log-impl:</span> <span class="hljs-string">org.apache.ibatis.logging.stdout.StdOutImpl</span><br><span class="hljs-comment"># 相关输出如下：</span><br><span class="hljs-comment"># ==&gt;  Preparing: SELECT id,name,age,email FROM user WHERE id=?</span><br><span class="hljs-comment"># ==&gt; Parameters: 2(Integer)</span><br><span class="hljs-comment"># &lt;==    Columns: id, name, age, email</span><br><span class="hljs-comment"># &lt;==        Row: 2, Jack, 20, test2@baomidou.com</span><br><span class="hljs-comment"># &lt;==      Total: 1</span><br></code></pre></div></td></tr></table></figure>
+
+<p>关于 MP 提供的<code>UpdateById</code>方法，该方法接受一个实体——其应当设定 Id 以及将要修改的域（其它的设为空），这个方法将会根据该实体的 ID 和非 null 的属性自动生成对应 SQL 语句，这种方法非常方便，特别是结合建造者模式！比如下面的实例——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> User.builder()<br>                .id(<span class="hljs-number">1L</span>)<br>                .name(<span class="hljs-string">&quot;omgwtf&quot;</span>)<br>                .age(<span class="hljs-number">1020</span>)<br>                .build(); <span class="hljs-comment">// 这里 email 为 null，没有设定</span><br>userMapper.updateById(user);<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">相关日志：</span><br><span class="hljs-comment">==&gt; Preparing: UPDATE user SET name=?, age=? WHERE id=?</span><br><span class="hljs-comment">==&gt; Parameters: omgwtf(String), 1020(Integer), 1(Long)</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>关于删除操作，MP 提供了<code>delete</code>，<code>deleteById</code>，<code>deleteBatchIds</code>，<code>deleteByMap</code>方法，其分别接受 Wrapper，主键 Id，Id 集合，哈希表，满足了大多数操作需要。</p>
+<h2 id="Wrapper"><a href="#Wrapper" class="headerlink" title="Wrapper"></a>Wrapper</h2><p>Wrapper 是 MP 提供的用以生成相应 SQL 语句的对象，其对 SQL 的大部分（所有？）运算符进行了抽象和方法化，从而能够让用户能够不写一行 SQL 代码而对数据库进行操作。</p>
+<p>就操作对象来说，Wrapper 分为 QueryWrapper 和 UpdateWrapper，顾名思义，其分别负责查询和更新&#x2F;删除。</p>
+<p>就操作形式来说，Wrapper 分为普通 Wrapper 和 LambdaWrapper，普通 Wrapper 在操作中一般接受 Map，LambdaWrapper 一般接受 Lambda 表达式——这显然是更加方便易读的。</p>
+<p>Wrapper 通过链式调用进行使用。各个表达式默认通过 and 进行连接。但也可以显式指定为 or。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;User&gt;()<br>  .eq(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jone&quot;</span>)<br>  .eq(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">18</span>); <span class="hljs-comment">// 可以使用 allEq</span><br><span class="hljs-comment">// 使用 selectList 方法，生成 SQL 形如 SELECT ... FROM user WHERE (name = ? AND age = ?)</span><br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;User&gt;()<br>  .eq(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jone&quot;</span>)<br>  .eq(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">18</span>)<br>  .or()<br>  .eq(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jack&quot;</span>)<br>  .eq(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">200</span>);<br><span class="hljs-comment">// SELECT ... FROM user WHERE (name = ? AND age = ? OR name = ? AND age = ?)</span><br><br><span class="hljs-comment">// 嵌套子句。这里的 or 和 and 方法的作用形式就像中缀运算符</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;User&gt;()<br>  .or(i-&gt;&#123; <br>    i.eq(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jone&quot;</span>);<br>    i.eq(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">18</span>);<br>  &#125;)<br>  .or(i-&gt;&#123;<br>    i.eq(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;Jack&quot;</span>);<br>    i.eq(<span class="hljs-string">&quot;age&quot;</span>, <span class="hljs-number">200</span>);<br>  &#125;);<br><span class="hljs-comment">// SELECT ... FROM user WHERE ((name = ? AND age = ?) OR (name = ? AND age = ?))</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="自动填充"><a href="#自动填充" class="headerlink" title="自动填充"></a>自动填充</h2><p>MP 还提供了自动填充的功能——在进行插入的时候，能自定义某些字段的填充。这种填充我在毕设项目时也进行过使用，当时是通过触发器进行实现的。</p>
+<p>自动填充分为<strong>添加时设置值</strong>以及<strong>修改时设置值</strong>，其通过<code>INSERT</code>，<code>DEFAULT</code>（默认不处理），<code>INSERT_UPDATE</code>，<code>UPDATE</code>这四个枚举指定。要使用自动填充需要进行两个操作——在字段上添加相关注解；定义自动填充处理器。下面展示了其定义和应用。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 实体类</span><br><span class="hljs-meta">@Data</span><br><span class="hljs-meta">@Builder</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>  	<span class="hljs-comment">// TableField 注解默认会把实体类的小驼峰命名法转换成下划线命名法并作为数据库表中相应字段，但是也可以直接显式指定相应的表字段名。</span><br>    <span class="hljs-meta">@TableField(value = &quot;create_time&quot;, fill = FieldFill.INSERT)</span><br>    <span class="hljs-keyword">private</span> Date createTime; <span class="hljs-comment">// 创建时间，在插入时进行赋值</span><br>    <span class="hljs-meta">@TableField(fill = FieldFill.INSERT_UPDATE)</span><br>    <span class="hljs-keyword">private</span> Date updateTime; <span class="hljs-comment">// 更新时间，在更新时进行赋值</span><br>&#125;<br><br><span class="hljs-comment">// 处理器，处理器置于 handler 包下而非 config 包下，因为其并非负责配置，而是负责业务</span><br><span class="hljs-comment">// 为什么处理器不需要与实体类绑定？</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserMapperHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">MetaObjectHandler</span> &#123;<br>    <span class="hljs-comment">// 插入操作时执行</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">insertFill</span><span class="hljs-params">(MetaObject metaObject)</span> &#123;<br>        <span class="hljs-comment">// 设置实体类实例的 createTime 字段为当前时间</span><br>        <span class="hljs-built_in">this</span>.setFieldValByName(<span class="hljs-string">&quot;createTime&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(), metaObject);<br>        <span class="hljs-built_in">this</span>.setFieldValByName(<span class="hljs-string">&quot;updateTime&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(), metaObject);<br>    &#125;<br>    <span class="hljs-comment">// 修改操作时执行</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateFill</span><span class="hljs-params">(MetaObject metaObject)</span> &#123;<br>        <span class="hljs-built_in">this</span>.setFieldValByName(<span class="hljs-string">&quot;updateTime&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(), metaObject);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">插入时的日志，可以看到插入时 createTime 字段和 updateTime 字段都生成在 SQL 中</span><br><span class="hljs-comment">==&gt;  Preparing: INSERT INTO user ( id, name, age, email, create_time, update_time ) VALUES ( ?, ?, ?, ?, ?, ? )</span><br><span class="hljs-comment">==&gt; Parameters: 11(Long), Rim(String), 20(Integer), abcdefg@163.com(String), 2021-07-28 18:21:42.919(Timestamp), 2021-07-28 18:21:42.919(Timestamp)</span><br><span class="hljs-comment">&lt;==    Updates: 1</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">更新时的日志，可以看到插入时 updateTime 字段生成在 SQL 中</span><br><span class="hljs-comment">==&gt;  Preparing: UPDATE user SET name=?, age=?, update_time=? WHERE id=?</span><br><span class="hljs-comment">==&gt; Parameters: omgwtf(String), 1020(Integer), 2021-07-28 18:29:01.452(Timestamp), 1(Long)</span><br><span class="hljs-comment">&lt;==    Updates: 1</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>可以认为自动填充做了这样的工作——进行操作时，检查所有字段，查找所有带 TableField 注解且定义了 fill 属性的字段，并将符合条件的字段<strong>也</strong>插入到 SQL 中（就像非 null 的字段），因此这些字段应当（不是必须）在处理器中进行赋值。</p>
+<blockquote>
+<p>一个有趣的地方是，如果定义了多个处理器，Spring Boot 会提示注入失败——有多个可选 Bean，看来应当在配置文件中进行相关定义，而不是直接给处理器进行 Component 注解。</p>
+</blockquote>
+<h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><p>分页在实践中可能是一个比较重要的话题，虽然我从来没写过，都是一口气全部拿到的 w。</p>
+<p>MP 提供了分页查询的功能，其是以<strong>插件</strong>的形式实现的，具体来说是自定义相应的 bean。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 用的还是上面的 MyBatisPlusConfig</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@MapperScan(&quot;me.ykn.mapper&quot;)</span> <span class="hljs-comment">// 还是使用 Mapper 注解语义更加清晰一些</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyBatisPlusConfig</span> &#123;<br>  	<span class="hljs-comment">// 自动分页插件</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> PaginationInnerInterceptor <span class="hljs-title function_">paginationInnerInterceptor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PaginationInnerInterceptor</span>(DbType.MYSQL);<br>    &#125;<br>    <span class="hljs-comment">// 插件主体</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MybatisPlusInterceptor <span class="hljs-title function_">mybatisPlusInterceptor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">MybatisPlusInterceptor</span> <span class="hljs-variable">interceptor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MybatisPlusInterceptor</span>();<br>        interceptor.addInnerInterceptor(paginationInnerInterceptor()); <span class="hljs-comment">// 添加分页插件，其它插件也通过这种形式进行添加</span><br>        <span class="hljs-keyword">return</span> interceptor;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>分页查询的应用是简单的，许多方法提供了对应返回 Page 的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">Page&lt;User&gt; page = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Page</span>&lt;&gt;(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>); <span class="hljs-comment">// 页数，条数，页数从 1 开始（！）</span><br>Page&lt;User&gt; res = userMapper.selectPage(page, <span class="hljs-literal">null</span>); <span class="hljs-comment">// 第二个参数是 Wrapper</span><br>System.out.println(res.getRecords()); <span class="hljs-comment">// getRecords 方法返回相应 List</span><br><span class="hljs-comment">// Page 类还提供了更多方便的方法，足以支撑日常使用</span><br></code></pre></div></td></tr></table></figure>
+
+<p>就这些吧。</p>
+<p><img src="/images/oss/20210717235544.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08-02%E5%85%B3%E4%BA%8Egit%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">对 git 的一些使用的笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/07-30%E5%85%B3%E4%BA%8EJava%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB.html">
+                        <span class="hidden-mobile">关于 Java 的内部类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

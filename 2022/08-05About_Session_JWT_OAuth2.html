@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="考虑到在云函数上部署项目的特殊性，研究一个 Session 之外的用户认证方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="About Session, JWT and OAuth2">
+<meta property="og:url" content="http://example.com/2022/08-05About_Session_JWT_OAuth2.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="考虑到在云函数上部署项目的特殊性，研究一个 Session 之外的用户认证方案">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://assets.digitalocean.com/articles/oauth/abstract_flow.png">
+<meta property="article:published_time" content="2022-08-05T07:48:26.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.301Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Real World">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://assets.digitalocean.com/articles/oauth/abstract_flow.png">
+  
+  
+  <title>About Session, JWT and OAuth2 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="About Session, JWT and OAuth2">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-08-05 15:48" pubdate>
+        2022年8月5日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">About Session, JWT and OAuth2</h1>
+            
+            <div class="markdown-body">
+              <p>最近把项目部署到云函数上时，一直出现跨域问题——登陆能登上，能拿到和设置 cookie，请求的时候也能带上 cookie，可服务端就是拿不到 Cookie（已经使用了 SpringSessionJdbc 以在不同云函数实例下共享 Session）；研究发现这似乎是 Cookie 的 SameSite 属性导致的…气急败坏之下，考虑使用无状态，不依赖 Cookie 的 JWT 来进行权限认证以避免这种劳什子问题。</p>
+<p>于是这里对 JWT 进行一些学习，以及使用其进行 web 应用权限认证的最佳实践。<del>之后将放弃 Shiro（Shiro 似乎只支持 Cookie 的方式），使用 Spring Security 来实现权限认证。</del>这里也顺便学习一下 OAuth2——OAuth2 通常会使用 JWT 或类似的技术去进行校验，之后项目也可以考虑去接入 Github 或其它 OAuth2 授权服务，方便用户登陆。</p>
+<blockquote>
+<p>Shiro 对 JWT 支持不好，Spring Security 过于复杂（且这种复杂度是过度的…实现最简单的满足业务需要的认证功能都需要编写一堆代码，接触一堆概念，这我还不如自己造轮子！），最终我还是选择一个国产的框架 <a target="_blank" rel="noopener" href="https://sa-token.dev33.cn/">Sa-Token</a> 来实现权限功能……</p>
+<p>其实使用这个框架的话应当能配置 Cookie，但该框架未提供和 session-jdbc 的集成，因此不考虑 Cookie 方案。</p>
+</blockquote>
+<hr>
+<h1 id="Session-vs-JWT"><a href="#Session-vs-JWT" class="headerlink" title="Session vs JWT"></a>Session vs JWT</h1><p>JWT，即 JSON Web Tokens，本质上仍是一种 Token，因此先研究 Token 是必要的，而 Token 很适合同 Session 进行对比。</p>
+<p>Session 是比较熟悉的，用户登陆时，服务端会保存用户的 Session 信息<strong>到内存</strong>中，并在 Cookie 中置一个 sessionId 作为用户的 Session 信息的 <strong>key</strong>；用户请求时，服务端再检查 sessionId，找到用户的权限信息。</p>
+<p>Session 会有导致诸多问题：</p>
+<ol>
+<li>跨域问题，这不必多说，解决方案是对 Cookie 进行配置，设置 CORS 等。</li>
+<li>分布式下 Session 共享问题，假设服务端是分布式的，则 Session 信息可能仅保存在某个服务器中，而打到其它服务器上的请求就拿不到 Session 信息了。解决方案是<strong>将 Session 集中保存在某台服务器或数据库或 redis</strong>，但<strong>这仍旧会影响服务的横向扩展</strong>。</li>
+<li>单点登陆问题，这和第 2 点问题应当比较类似，解决方案也类似，但缺点仍类似。</li>
+</ol>
+<p>Session 的问题归根结底就是因为，<strong>Session 是有状态的，服务端需要维护 Session 信息</strong>。</p>
+<blockquote>
+<p>似乎也有客户端的 session 方案，就是让客户端持有服务端校验所需的信息，这样服务端就不需要维护 Session 状态了，只需要每次校验时比对数据库即可……但这和 token 其实很类似了。</p>
+</blockquote>
+<p>而 Token，<strong>Token 的服务端来说是无状态的</strong>，<strong>用户的权限信息直接保存在客户端上</strong>，且服务端能在本地（不访问数据库）对用户的权限信息进行校验。容易发现，Token 天生就是分布式的。</p>
+<p>JWT 就是一种 Token。使用 JWT 时，在用户登陆时，用户向<strong>认证服务器</strong>发送账号密码信息后能拿到 Token，其中包括权限信息以及这些信息<strong>使用认证服务器的私钥</strong>进行的签名；用户向服务端发送请求时，服务端<strong>使用公钥</strong>解密签名并对权限信息进行验证。</p>
+<p>Token 有诸多好处：</p>
+<ol>
+<li>对数据库无压力，服务端进行权限信息的认证，获取用户权限时不需要访问数据库，在本地即可完成，且由于权限信息带上了签名，也能防止伪造权限。</li>
+<li>认证和校验分离，认证服务器可以独立出来甚至让相应服务商负责，服务端只需拿到公钥即可，且由于该公钥只用于验签，被恶意者拿到公钥也不会有任何影响。</li>
+<li>分布式友好，每台持有公钥的服务器都能独立进行权限校验，不需要依赖第三方服务，因此横向扩展没有任何影响。</li>
+<li>跨平台，不是所有平台都能使用 Cookie，而使用 Token 则简单许多</li>
+<li>无痛实现单点登录</li>
+</ol>
+<p>同样的，Token 也会有一些缺点：</p>
+<ol>
+<li>无法直接实现登出功能，因为权限信息在客户端而非服务端，但是有一些解决方案。</li>
+<li>JWT 的 Token 的信息是可以直接读出来的，无法（也不应该）存储敏感数据</li>
+<li>权限更新会有延迟——需在旧的 token 过期时才能使用新的权限</li>
+</ol>
+<p>这些问题都需要相应的解决方式。</p>
+<h1 id="OAuth2"><a href="#OAuth2" class="headerlink" title="OAuth2"></a>OAuth2</h1><p>一言以蔽之，OAuth2 是一种授权协议&#x2F;框架，它允许网页或应用代表用户去访问保存在其它应用上的资源。</p>
+<p>OAuth2 中有 4 个角色，其中的 Resource，资源可以认为指用户信息：</p>
+<ul>
+<li>Resource Owner，资源持有者，可以认为是<strong>用户</strong>本身——用户是资源的拥有者；用户授权应用去访问他们的账户。</li>
+<li>Client，很让人混淆，但这里指的是要访问用户信息的<strong>应用</strong>，应用需要在用户的授权下才能去访问用户信息，这个授权会被（资源服务器的？）API 所校验</li>
+<li>Resource Server，资源服务器，持有资源即用户信息的服务器</li>
+<li>Authorization Server，授权服务器，验证用户身份并向应用返回令牌，<strong>应用使用此令牌访问 Resource Server</strong>。</li>
+</ul>
+<p>从应用开发者的视角来看，很多时候一个服务同时担任资源服务器和授权服务器的角色，这时候称其为 Service（服务），或 API 角色。但也不排除 Client 和 Service 为同一个角色的情况。</p>
+<p><img src="https://assets.digitalocean.com/articles/oauth/abstract_flow.png"></p>
+<p>上图比较清晰地说明了 OAuth2 验证流程：</p>
+<ol>
+<li><strong>应用向用户去请求访问服务资源的权限</strong>（比如跳转到 github OAuth2 请求登陆的界面，要求用户输 github 账号密码，确认授权啥的？）</li>
+<li>若用户授权，则应用能拿到一个授权（authorization grant）</li>
+<li>则应用使用这个授权<strong>和应用自己的鉴权信息</strong>向授权服务器请求，拿到令牌</li>
+<li>若授权和应用的鉴权信息均合法，则应用拿到令牌，授权完成</li>
+<li>应用带上令牌作为鉴权信息向资源服务器发送请求</li>
+<li>若令牌合法，则资源服务器向应用返回资源</li>
+</ol>
+<p>authorization grant 的类型不同会决定具体的流程。</p>
+<p>比如我想让我的应用能够用 Github 账号去登陆，此时 Resource Owner 是使用 Github 账号登陆我的应用的用户，Client 是我的应用，Resource Server 和 Authorization Server 是 Github 暴露出来的 API。用户授权后，我从 Github 拿到用户的相关信息如用户名，邮箱等，并操作自己的数据库，完成注册，登陆等操作。</p>
+<p>这里只提大体的框架，深入学习待应用的时候再说。</p>
+<hr>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://jwt.io/introduction">Introduction to JSON Web Tokens</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.loginradius.com/blog/engineering/guest-post/jwt-vs-sessions/">How to Authenticate Users: JWT vs. Session</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/307424363">JWT 万字详解，一文足矣！</a></li>
+<li><a target="_blank" rel="noopener" href="https://auth0.com/intro-to-iam/what-is-oauth-2/">What is OAuth 2.0?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2">An Introduction to OAuth 2</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Real-World/">Real World</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/08-11Learn_React_Hooks.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">学习 React Hooks</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07-23Study_CSS%E2%80%94%E2%80%94size-display-and-position.html">
+                        <span class="hidden-mobile">Study CSS——size, display & position</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

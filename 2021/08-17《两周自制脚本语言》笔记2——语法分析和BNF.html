@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="关于 BNF，以及 Stone 的语法设计。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《两周自制脚本语言》笔记 2——语法分析和 BNF">
+<meta property="og:url" content="http://example.com/2021/08-17%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8CBNF.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="关于 BNF，以及 Stone 的语法设计。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210815202957.png">
+<meta property="og:image" content="http://example.com/images/oss/20210815232910.png">
+<meta property="og:image" content="http://example.com/images/oss/20210815235613.png">
+<meta property="og:image" content="http://example.com/images/oss/2021/07/142021-07-14.gif">
+<meta property="article:published_time" content="2021-08-16T14:47:12.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.287Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="编译原理">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210815202957.png">
+  
+  
+  <title>《两周自制脚本语言》笔记 2——语法分析和 BNF - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《两周自制脚本语言》笔记 2——语法分析和 BNF">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-16 22:47" pubdate>
+        2021年8月16日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《两周自制脚本语言》笔记 2——语法分析和 BNF</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>程序被分割为 Token 后，下一步是根据 Token 序列构造抽象语法树（AST 或 ASTree，Abstract Syntax Tree），这一步称为<strong>语法分析</strong>。语法分析的任务是<strong>分析 Token 间关系</strong>，比如判断 Token 所属表达式和语句，处理标识符的配对等，同时会检查程序是否存在语法错误。</p>
+<h1 id="语法，BNF"><a href="#语法，BNF" class="headerlink" title="语法，BNF"></a>语法，BNF</h1><p>抽象语法树的结构如何，已经无需再提。任何节点都是操作符，任何叶子都是值。</p>
+<p>比如<code>(13 + x) * 2)</code>，能得到<code>(* (+ 13 x) 2)</code>这样一个树，其图形化表述如下。可以看到，一切根结点都是操作符&#x2F;函数之类，一切叶节点都是值（也可以是函数）。</p>
+<p><img src="/images/oss/20210815202957.png"></p>
+<p>语言处理器（即将源代码转换为可执行程序的程序）为了构造抽象语法树，需要按照特定规则将 Token 序列读入，这种规则就是程序设计语言的<strong>语法</strong>（syntax）。</p>
+<p>语法通过** BNF<strong>（Backus-Naur Form，巴科斯范式）进行表述。其将规定</strong> Token 的组合规则<strong>。比如，双目运算符要由表达式，操作符，表达式组成。比如 while 要由 while 关键字，表达式，语句块组成。</strong>BNF 与上下文无关文法等价**。</p>
+<p>下面代码展示了一个提供四则运算，整型字面量以及括号的语法的 BNF，其使用了 BNF 的扩展版本 EBNF——</p>
+<figure class="highlight dts"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dts"><span class="hljs-symbol">factor:</span>		NUMBER | <span class="hljs-string">&quot;(&quot;</span> expression <span class="hljs-string">&quot;)&quot;</span><br><span class="hljs-symbol">term:</span>		<span class="hljs-title class_">factor</span> <span class="hljs-punctuation">&#123;</span> (<span class="hljs-string">&quot;*&quot;</span> | <span class="hljs-string">&quot;/&quot;</span>) factor <span class="hljs-punctuation">&#125;</span><br><span class="hljs-symbol">expression:</span>	<span class="hljs-title class_">term</span> <span class="hljs-punctuation">&#123;</span> (<span class="hljs-string">&quot;+&quot;</span> | <span class="hljs-string">&quot;-&quot;</span>) term <span class="hljs-punctuation">&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>BNF 中，冒号左侧称为<strong>元变量</strong>或<strong>非终结符</strong>，右侧为一个用于匹配的模式，其通过<strong>元符号</strong>，<strong>终结符</strong>以及<strong>非终结符</strong>进行表示。左侧内容和右侧等价，即左侧的非终结符转化成右边的模式。终结符代表预先定义的 Token，比如上面的”(“，”)”，NUMBER，“+”。上面的|，()，{}等都是元符号，其<strong>具有特定语义</strong>，能够对模式进行丰富的表达，就像正则表达式中的。*?+|之类。下面给出各元符号的语义——</p>
+<table>
+<thead>
+<tr>
+<th>元符号</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>{ pat }</td>
+<td>模式 pat 出现 0 次或更多次</td>
+</tr>
+<tr>
+<td>[ pat ]</td>
+<td>模式 pat 出现 0 次或 1 次</td>
+</tr>
+<tr>
+<td>pat1 | pat 2</td>
+<td>匹配 pat1 或 pat2。｜的优先级是最低的——即其最后执行，就像一道厚障壁 w</td>
+</tr>
+<tr>
+<td>( … )</td>
+<td>将括号中内容识别为一个模式</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>  最初的 BNF 似乎无法使用{}的样子，因此只能使用|和 () 来进行递归定义，比如 expression 可以表述成为——</p>
+<p>  <del><code>expression: term | term (&quot;+&quot; | &quot;-&quot;) expression</code></del>（应有误，这种 BNF 对 LL(1) 是完成不了的）</p>
+</blockquote>
+<p>比如，有一个表达式——</p>
+<figure class="highlight basic"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs basic"><span class="hljs-symbol">13 </span>+ <span class="hljs-number">4</span> * <span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+
+<p>词法分析后得到这样的 Token 序列（当然，这里的”+”和”*”都是标识符）。</p>
+<figure class="highlight arcade"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs arcade"><span class="hljs-built_in">NUMBER</span> <span class="hljs-string">&quot;+&quot;</span> <span class="hljs-built_in">NUMBER</span> <span class="hljs-string">&quot;*&quot;</span> <span class="hljs-built_in">NUMBER</span><br></code></pre></div></td></tr></table></figure>
+
+<p>下面给出其匹配流程——</p>
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel">// 就像编译原理课上写的那样……但是实际的匹配过程肯定不是这样，这里只是举例子罢了<br>NUMBER <span class="hljs-string">&quot;+&quot;</span> NUMBER <span class="hljs-string">&quot;*&quot;</span> NUMBER<br>=&gt; factor <span class="hljs-string">&quot;+&quot;</span> factor <span class="hljs-string">&quot;*&quot;</span> factor		// <span class="hljs-string">&quot;*&quot;</span>旁边的两个 factor 先化简——<span class="hljs-string">&quot;+&quot;</span>化简的话最后得不到正确结果<br>=&gt; factor <span class="hljs-string">&quot;+&quot;</span> term<br>=&gt; term <span class="hljs-string">&quot;+&quot;</span> term<br>=&gt; expression	// correct!<br>// 试图先从<span class="hljs-string">&quot;+&quot;</span>化简<br>NUMBER <span class="hljs-string">&quot;+&quot;</span> NUMBER <span class="hljs-string">&quot;*&quot;</span> NUMBER<br>=&gt; factor <span class="hljs-string">&quot;+&quot;</span> factor <span class="hljs-string">&quot;*&quot;</span> factor	// <span class="hljs-string">&quot;*&quot;</span>旁边的两个 factor 先化简——<span class="hljs-string">&quot;+&quot;</span>化简的话最后得不到正确结果<br>=&gt; term <span class="hljs-string">&quot;+&quot;</span> term <span class="hljs-string">&quot;*&quot;</span> factor<br>=&gt; expression <span class="hljs-string">&quot;*&quot;</span> factor 	// 这里之后无法再化简了……似乎，除非能让 expression <span class="hljs-symbol">:</span> <span class="hljs-string">&quot;(&quot;</span> expression <span class="hljs-string">&quot;)&quot;</span>？不确定<br></code></pre></div></td></tr></table></figure>
+
+<p><img src="/images/oss/20210815232910.png"></p>
+<blockquote>
+<p>  书中将 factor 称为因子，term 称为项，expression 称为表达式。可以注意到，这里已经体现出四则运算的优先级了。但是也可以通过其他方式对优先级进行处理。</p>
+</blockquote>
+<p>于是，可以根据这样的语法分析的结果构造抽象语法树——</p>
+<p><img src="/images/oss/20210815235613.png"></p>
+<p>就记录到这里。下一步是学习一下<strong>语法分析的各种算法，以及一个 LL(1) 语法分析器的手动编写</strong>。</p>
+<p><img src="/images/oss/2021/07/142021-07-14.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08-19%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B03%E2%80%94%E2%80%94LL(1)%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97%E8%AF%AD%E8%A8%80%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 3——LL(1) 语法分析及一个四则运算语言的实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html">
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 1——基于正则表达式的词法分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

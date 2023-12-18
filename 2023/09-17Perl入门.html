@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="看看能不能替代 nodejs 成为我的主力脚本语言">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Perl 入门">
+<meta property="og:url" content="http://example.com/2023/09-17Perl%E5%85%A5%E9%97%A8.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="看看能不能替代 nodejs 成为我的主力脚本语言">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-16T17:49:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.549Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Perl">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Perl 入门 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Perl 入门">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-09-17 01:49" pubdate>
+        2023年9月17日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      14k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Perl 入门</h1>
+            
+            <div class="markdown-body">
+              <p>出差两周，无心画画，编码环境又恶劣，恰逢一些需要进行文本处理的需求（csv-&gt;sql），用 java 处理起来痛苦至极（早该把 node 环境装上的），幻想能否有更好的工具来做文本处理。某日看到一篇 <a target="_blank" rel="noopener" href="https://blog.csdn.net/ringliwei/article/details/80448997">文章</a>，声称两个半小时学会 perl，猛然意识到 git for windows 自带 perl，遂起了一些念头。回家又问 GPT，发现 Perl 对函数式编程有部分支持，语法简洁，系统调用方便，因此开始幻想着能否熟练 perl，将其当作主力的脚本语言。</p>
+<p>其实在上一家公司里，编码环境恶劣的情况下也尝试学习过 perl，但当时应该是能力问题且没找到正确的资料，始终没能理解印记（<code>$@%</code>）的使用，遂放弃，这次跟随这篇文章把这个坎越过去了（心智模型是，根据印记后的东西的类型决定用何种印记，比如我们知道数组，哈希均是只能存储标量的，因此从其中取出的东西必然是标量，因此访问数组和访问哈希时，均使用<code>$</code>作为印记，但该心智模型对函数的返回值，对<code>&amp;</code>印记似乎行不通），这里记录一下学习过程中敲的代码。</p>
+<p>正则表达式，模块&#x2F;包，OOP 还没有开始学习，后两者没啥必要，前者之后专门了解。</p>
+<h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><figure class="highlight perl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs perl"><span class="hljs-keyword">use</span> strict;<br><span class="hljs-keyword">use</span> warnings;<br><span class="hljs-keyword">use</span> <span class="hljs-number">5.010</span>; <span class="hljs-comment"># 指定最低兼容版本，目的是为了开启 say 函数</span><br><span class="hljs-comment"># print 不会在末尾添加换行符，使用 say 保证好看</span><br><br><span class="hljs-comment"># 函数调用不需要括号，不一定需要</span><br><span class="hljs-comment"># 行末分号必须！</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;Hello&#x27;</span>; <br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;World&#x27;</span>;<br><br><span class="hljs-comment"># 三种类型：标量，数组，哈希，相应变量相关的符号分别是 $，@，%</span><br><br><span class="hljs-comment"># 标量，包含：undef（即 null），数值（即 number），字符串，变量引用（指针）</span><br><span class="hljs-keyword">my</span> $undef = <span class="hljs-keyword">undef</span>;<br><span class="hljs-keyword">my</span> $someScalar = <span class="hljs-string">&#x27;hello&#x27;</span>;<br><span class="hljs-keyword">my</span> $someNumber = <span class="hljs-number">12.3</span> + <span class="hljs-number">12.4</span>;<br><span class="hljs-keyword">say</span> $someNumber;<br><br><span class="hljs-comment"># . 连接字符串</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;Hello, &#x27;</span> . <span class="hljs-string">&#x27;World!&#x27;</span>;<br><br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;双引号字符串允许插值，就像 shell：$someScalar&quot;</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;同时，只有在双引号下形如、n 的转义符才会作用&#x27;</span>;<br><br><span class="hljs-comment"># &quot;bool&quot; 类型，undef，0，&#x27;&#x27;，&quot;0&quot; 为 false，其它为 true</span><br><span class="hljs-comment"># 一般来说，true===1，false===&quot;&quot;</span><br><span class="hljs-keyword">if</span> (<span class="hljs-keyword">undef</span>) &#123;<br>    <span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;undef is true!&#x27;</span>;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;undef is false!&#x27;</span>;<br>&#125;<br><br><span class="hljs-comment"># 很难判断 0 和 &#x27;0&#x27; 的区别，但它们确实是不同的，去 json 序列化一下就知道了</span><br><br><span class="hljs-keyword">my</span> $str1 = <span class="hljs-string">&#x27;4A&#x27;</span>;<br><span class="hljs-keyword">my</span> $str2 = <span class="hljs-string">&#x27;4B&#x27;</span>;<br><br><span class="hljs-comment"># 为什么很难？看看这个：</span><br><span class="hljs-keyword">say</span> ($str1 + $str2), <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-comment"># 8</span><br><br><span class="hljs-comment"># 数字和字符串使用不同的两套运算符——</span><br><span class="hljs-comment"># 数字  ： &lt; &gt; &lt;= &gt;= == != &lt;=&gt; + *</span><br><span class="hljs-comment"># 字符串： lt gt le ge eq ne cmp . x</span><br><span class="hljs-comment"># &lt;=&gt;返回-1，0，1；字符串的 x 需要一个操作符为数字</span><br><br><span class="hljs-keyword">say</span> (<span class="hljs-string">&#x27;hello&#x27;</span> <span class="hljs-keyword">x</span> <span class="hljs-string">&#x27;10&#x27;</span>), <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-comment"># 或者 10 也行，hellohellohello..</span><br><br><span class="hljs-comment"># Array，使用@，() 来声明</span><br><span class="hljs-keyword">my</span> @array = (<br>    <span class="hljs-string">&#x27;Hello&#x27;</span>,<br>    <span class="hljs-string">&#x27;World&#x27;</span>,<br>    <span class="hljs-string">&#x27;Me&#x27;</span>, <span class="hljs-comment"># 末尾可以有，好文明</span><br>);<br><br><span class="hljs-comment"># !!! 使用$来存取 array 中的值，因为取到的是标量</span><br><span class="hljs-keyword">say</span> $array[<span class="hljs-number">1</span>]; <span class="hljs-comment"># World</span><br><span class="hljs-keyword">say</span> $array[-<span class="hljs-number">2</span>]; <span class="hljs-comment"># World</span><br><span class="hljs-keyword">say</span> $array[-<span class="hljs-number">4</span>]; <span class="hljs-comment"># &quot;&quot;，返回警告</span><br><br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;数组长度：&quot;</span>. <span class="hljs-keyword">scalar</span> @array;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;数组最后下标：&quot;</span>. $#array;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;数组内容：@array&quot;</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;\$和、@如果出现在双引号字符串中需要转义&quot;</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;$$$@@@&#x27;</span>;<br><span class="hljs-comment"># 数组“解构”</span><br><span class="hljs-keyword">my</span> ($a, $b) = @array;<br><span class="hljs-keyword">say</span> $a, $b; <span class="hljs-comment"># HelloWorld</span><br><br><span class="hljs-comment"># hash，使用%符号</span><br><span class="hljs-comment"># 注意，$@%变量处在不同的命名空间下，因此可以重名</span><br><span class="hljs-keyword">my</span> %idol = (<br>    <span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;haruka&#x27;</span>,<br>    <span class="hljs-string">age =&gt;</span> <span class="hljs-number">16</span>, <br>    <span class="hljs-string">3 =&gt;</span> <span class="hljs-number">4</span>,<br>);<br><span class="hljs-comment"># =&gt;和，完全等价，决定是 Array 还是 Hash 的看是@还是%</span><br><span class="hljs-keyword">my</span> @ohMeOneArray = (<br>    <span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;11&#x27;</span>,<br>    <span class="hljs-string">age =&gt;</span> <br>);<br><span class="hljs-comment"># 好吧，其实不一样，“key”可以不加引号</span><br><span class="hljs-comment"># 取字段要使用&#123;&#125;，前面仍然是$，因为结果是标量</span><br><span class="hljs-comment"># 为什么 Array 和 Hash 要使用不同的操作符来取元素？因为它们能重名，可以有歧义……wqnmd</span><br><span class="hljs-keyword">say</span> $idol&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;; <span class="hljs-comment"># haruka</span><br><br><span class="hljs-comment"># 能同时取多个项，显然这时候的结果是数组，因此是@</span><br><span class="hljs-keyword">say</span> @idol&#123;<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>&#125;; <span class="hljs-comment"># haruka16</span><br><br><span class="hljs-comment"># 哈希&quot;解构&quot;</span><br><span class="hljs-keyword">my</span> ($name, $age) = @idol&#123;<span class="hljs-string">&#x27;name&#x27;</span>, <span class="hljs-string">&#x27;age&#x27;</span>&#125;;<br><span class="hljs-keyword">say</span> $name, $age; <span class="hljs-comment"># haruka16</span><br><br><span class="hljs-comment"># Array 和 Hash 可以互转，只要 Array 元素数量是偶数就行</span><br><span class="hljs-comment"># 但是键值对的位置可能改变，因为 Hash 不是顺序存储的</span><br><span class="hljs-keyword">my</span> @idol = %idol;<br><br><span class="hljs-comment"># 上面，Array 和 Hash 的初始化语法中，=右边的形式是完全一样的</span><br><span class="hljs-comment"># 这样的字面量称为列表 list</span><br><span class="hljs-comment"># !!! 因为它们形式完全一样，所以列表不能嵌套，因为 perl 无法知晓嵌套的列表的类型</span><br><span class="hljs-comment"># !!! perl 会直接放弃治疗，把这玩意扁平化再处理</span><br><span class="hljs-keyword">my</span> @array = (<br>    <span class="hljs-string">&#x27;hello&#x27;</span>,<br>    <span class="hljs-string">&#x27;world&#x27;</span>,<br>    (<br>        <span class="hljs-string">&#x27;earth&#x27;</span>,<br>        <span class="hljs-string">&#x27;is&#x27;</span>,<br>        (<span class="hljs-string">&#x27;flat!&#x27;</span>)<br>    )<br>);<br><span class="hljs-keyword">say</span> @array; <span class="hljs-comment"># helloworldearthisflat!</span><br><span class="hljs-keyword">my</span> %whatTheFuck = (<br>    <span class="hljs-string">&#x27;hello&#x27;</span>,<br>    <span class="hljs-string">&#x27;world&#x27;</span>,<br>    (<br>        <span class="hljs-string">&#x27;earth&#x27;</span>,<br>        <span class="hljs-string">&#x27;is&#x27;</span>,<br>        (<span class="hljs-string">&#x27;flat!&#x27;</span>)<br>    )<br>);<br><span class="hljs-keyword">say</span> %whatTheFuck; <span class="hljs-comment"># 警告 Odd number of elements in hash，打印：earth is flat!  hello world</span><br><br><span class="hljs-comment"># 但这个行为让连接 Array 和合并 Hash 变得简单：</span><br><span class="hljs-keyword">my</span> @arrayA = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br><span class="hljs-keyword">my</span> @arrayB = (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, @arrayA, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);<br><span class="hljs-keyword">say</span> @arrayB; <span class="hljs-comment"># 00123234</span><br><br><span class="hljs-keyword">my</span> %hashA = (<span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;haruka&#x27;</span>, <span class="hljs-string">age =&gt;</span> <span class="hljs-number">16</span>);<br><span class="hljs-keyword">my</span> %hashB = (%hashA, <span class="hljs-string">class =&gt;</span> <span class="hljs-number">765</span>);<br><span class="hljs-keyword">say</span> %hashB; <span class="hljs-comment"># name haruka age 16 class 765</span><br><br><span class="hljs-comment"># !!! perl 代码对上下文敏感——表达式要么在 scalar 上下文中求值，要么在列表上下文求值，取决于此处期待产生一个 scalar 还是列表</span><br><br><span class="hljs-comment"># 首先，scalar 和 array，hash 初始化时，分别为 scalar 上下文和列表上下文</span><br><span class="hljs-comment"># 这意味着……</span><br><span class="hljs-keyword">my</span> @array = <span class="hljs-string">&#x27;hello&#x27;</span>; <span class="hljs-comment"># 等价于 my @array = (&#x27;hello&#x27;);，虽然&#x27;hello&#x27;是 scalar，但是因为上下文，是作为列表被看待的</span><br><span class="hljs-keyword">my</span> $scalar = (<span class="hljs-string">&#x27;hello&#x27;</span>, <span class="hljs-string">&#x27;world&#x27;</span>); <span class="hljs-comment"># 等价于 my #scalar = &#x27;world&#x27;;</span><br><span class="hljs-keyword">say</span> $scalar; <span class="hljs-comment"># world</span><br><span class="hljs-keyword">my</span> $scalar = @array; <span class="hljs-comment"># 等价于 my $scalar = scalar @array;，即返回 array 的长度</span><br><span class="hljs-keyword">say</span> $scalar; <span class="hljs-comment"># 1</span><br><span class="hljs-comment"># 如何理解这个不是返回最后一个元素？因为这是 Array 在 scalar 上下文中求值，而不是 list 在 scalar 上下文中求值</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> @array; <span class="hljs-comment"># 1</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> (<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;2&#x27;</span>); <span class="hljs-comment"># 1</span><br><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> %hashB; <span class="hljs-comment"># 3，hash 在 scalar 上下文中求值也是大小</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;%hashB \n&quot;</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;say 函数&#x27;</span>, <span class="hljs-string">&#x27;本身在 list 上下文中求值&#x27;</span>, <span class="hljs-string">&#x27;它接受任意个参数&#x27;</span>;<br><br><span class="hljs-comment"># 列表只能包含标量，到了引用出场的时候了</span><br><span class="hljs-keyword">my</span> @outer = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br><span class="hljs-keyword">my</span> @inner = (<span class="hljs-number">100</span>, <span class="hljs-number">200</span>);<br><span class="hljs-comment"># 如何让 outer 的头部存储 inner 呢？</span><br>$outer[<span class="hljs-number">0</span>] = @inner; <span class="hljs-comment"># 这样？</span><br><span class="hljs-keyword">say</span> @outer; <span class="hljs-comment"># 223，因为@inner 在标量上下文中求值得到 2</span><br><span class="hljs-comment"># 使用反斜杠创建引用</span><br><span class="hljs-keyword">my</span> $someValue = <span class="hljs-string">&#x27;hello&#x27;</span>;<br><span class="hljs-keyword">my</span> $someValueRef = \$someValue; <span class="hljs-comment"># 这 tmd 是指针啊草</span><br><span class="hljs-keyword">say</span> $someValueRef; <span class="hljs-comment"># SCALAR(0x7fa5a9073d40)</span><br>$&#123;$someValueRef&#125; = <span class="hljs-string">&#x27;world&#x27;</span>; <span class="hljs-comment"># 解引用，等价于 $$someValueRef = &#x27;world&#x27;;</span><br><span class="hljs-keyword">say</span> $someValue;<br><br><span class="hljs-comment"># array 和 hash 的引用可以使用-&gt;运算符来取元素</span><br><span class="hljs-keyword">my</span> @color = (<span class="hljs-string">&#x27;red&#x27;</span>, <span class="hljs-string">&#x27;blue&#x27;</span>, <span class="hljs-string">&#x27;green&#x27;</span>);<br><span class="hljs-keyword">my</span> $colorRef = \@color;<br><span class="hljs-comment"># 三者等价</span><br><span class="hljs-keyword">say</span> $color[<span class="hljs-number">0</span>];<br><span class="hljs-keyword">say</span> $&#123;$colorRef&#125;[<span class="hljs-number">0</span>];<br><span class="hljs-keyword">say</span> $colorRef-&gt;[<span class="hljs-number">0</span>];<br><br><span class="hljs-keyword">my</span> %idol = ( <span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;haruka&#x27;</span>, <span class="hljs-string">age =&gt;</span> <span class="hljs-number">16</span>,  <span class="hljs-string">3 =&gt;</span> <span class="hljs-number">4</span>, );<br><span class="hljs-keyword">my</span> $idolRef = \%idol;<br><span class="hljs-comment"># 三者等价</span><br><span class="hljs-keyword">say</span> $idol&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;;<br><span class="hljs-keyword">say</span> $&#123;$idolRef&#125;&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;; <span class="hljs-comment"># 可以理解为 $$idolRef = @idol，左结合 lol</span><br><span class="hljs-keyword">say</span> $idolRef-&gt;&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;;<br><br><span class="hljs-comment"># []，&#123;&#125; 生成匿名 array 和 hash，它们以引用的形式返回，因此是标量</span><br><span class="hljs-keyword">my</span> $office = &#123;<br>    <span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;765&#x27;</span>,<br>    <span class="hljs-string">description =&gt;</span> <span class="hljs-string">&#x27;...&#x27;</span>,<br>    <span class="hljs-string">idols =&gt;</span> [<br>        &#123;<span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;haruka&#x27;</span>, <span class="hljs-string">age =&gt;</span> <span class="hljs-number">16</span>&#125;,<br>        &#123;<span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;chihaya&#x27;</span>, <span class="hljs-string">age =&gt;</span> <span class="hljs-number">16</span>&#125;,<br>        &#123;<span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;miki&#x27;</span>, <span class="hljs-string">age =&gt;</span> <span class="hljs-number">14</span>&#125;,<br>    ],<br>&#125;;<br><span class="hljs-keyword">say</span> $office-&gt;&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;; <span class="hljs-comment"># 765</span><br><span class="hljs-comment"># 如何获取 haruka 的 age 呢？</span><br><span class="hljs-comment"># 首先要获取 idols 数组引用，即</span><br><span class="hljs-keyword">my</span> $idolsRef = $office-&gt;&#123;<span class="hljs-string">&#x27;idols&#x27;</span>&#125;; <span class="hljs-comment"># ARRAY(0x7fb094829ed0)</span><br><span class="hljs-comment"># 然后，获取第一项元素的引用</span><br><span class="hljs-keyword">my</span> $harukaRef = $idolsRef-&gt;[<span class="hljs-number">0</span>];<br><span class="hljs-keyword">say</span> $harukaRef; <span class="hljs-comment"># HASH(0x7f7ac18d7430)</span><br><span class="hljs-comment"># 然后，获取 age</span><br><span class="hljs-keyword">say</span> $harukaRef-&gt;&#123;<span class="hljs-string">&#x27;age&#x27;</span>&#125;; <span class="hljs-comment"># 16</span><br><span class="hljs-comment"># 还好，能够链式调用</span><br><span class="hljs-keyword">say</span> $office-&gt;&#123;<span class="hljs-string">&#x27;idols&#x27;</span>&#125;-&gt;[<span class="hljs-number">0</span>]-&gt;&#123;<span class="hljs-string">&#x27;age&#x27;</span>&#125;; <br><span class="hljs-comment"># perl 很贴心，允许连续的调用时省略后面的-&gt;</span><br><span class="hljs-keyword">say</span> $office-&gt;&#123;<span class="hljs-string">&#x27;idols&#x27;</span>&#125;[<span class="hljs-number">1</span>]&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;; <span class="hljs-comment"># chihaya</span><br><span class="hljs-keyword">my</span> %office = (<br>    <span class="hljs-string">idols =&gt;</span> [<br>        &#123;<span class="hljs-string">name =&gt;</span> <span class="hljs-string">&#x27;hibiki&#x27;</span>&#125;<br>    ]<br>);<br><span class="hljs-comment"># 更贴心的是，如果最外层是 Hash，第一个-&gt;也可以省略，这下原汁原味了</span><br><span class="hljs-comment"># 显然，这就是定义复杂数据类型的最佳实践，没有之一，最外层使用列表，里层使用匿名 array 和匿名 hash</span><br><span class="hljs-keyword">say</span> $office&#123;<span class="hljs-string">&#x27;idols&#x27;</span>&#125;[<span class="hljs-number">0</span>]&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;; <span class="hljs-comment"># hibiki</span><br><span class="hljs-keyword">say</span> $office&#123;<span class="hljs-string">&#x27;idols&#x27;</span>&#125;-&gt;[<span class="hljs-number">0</span>]-&gt;&#123;<span class="hljs-string">&#x27;name&#x27;</span>&#125;; <span class="hljs-comment"># hibiki</span><br><span class="hljs-comment"># 理解这个语法的心智模型可以是，首先处理$office&#123;&#x27;idols&#x27;&#125; 得到 Array 引用，然后 perl 在后面每个间隔处添加一个-&gt;</span><br><br><span class="hljs-comment"># !!! 如何整蛊——这个 array 只有一个元素，即这个匿名 array 的引用</span><br><span class="hljs-keyword">my</span> @itsMyFaultNow = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>];<br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> @itsMyFaultNow; <span class="hljs-comment"># 1</span><br><span class="hljs-keyword">say</span> @&#123;$itsMyFaultNow[<span class="hljs-number">0</span>]&#125;; <span class="hljs-comment"># 12345</span><br><br><span class="hljs-comment"># 类似 $&#123;$SOME_REF&#125;，@&#123;$SOME_REF&#125;，可以认为是解引用$SOME_REF 为 scalar，array...</span><br><br><span class="hljs-comment"># 这语言指定有点大病</span><br><span class="hljs-keyword">my</span> $magic = \\\\\\<span class="hljs-number">1</span>;<br><span class="hljs-keyword">say</span> $$$$$$$magic; <span class="hljs-comment"># 1</span><br><br><span class="hljs-comment"># 所以，嵌套数组是——</span><br><span class="hljs-keyword">my</span> @matrix = ([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], [<span class="hljs-number">3</span>, <span class="hljs-number">4</span>]);<br><span class="hljs-keyword">say</span> $matrix[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>]; <span class="hljs-comment"># 2</span><br><span class="hljs-keyword">say</span> @&#123;$matrix[<span class="hljs-number">0</span>]&#125;; <span class="hljs-comment"># 12</span><br><span class="hljs-comment"># 记住，最左边，最外面的$@%符号，始终指示着返回值的类型</span><br><br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;\n&quot;</span>.<span class="hljs-string">&#x27;分隔符=================================&#x27;</span>;<br><br><span class="hljs-comment"># 变量终于结束了……开始控制结构</span><br><br><span class="hljs-comment"># if，elsif，else，典型的，注意拼写</span><br><span class="hljs-comment"># !!! if 语句在 scalar 上下文中求值，这符合逻辑</span><br><span class="hljs-keyword">my</span> $cash = <span class="hljs-number">30</span>;<br><span class="hljs-comment"># 括号必须……</span><br><span class="hljs-keyword">if</span> ($cash &lt; <span class="hljs-number">10</span>) &#123;<br>    <span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;you pool&#x27;</span> <span class="hljs-comment"># 注意最后一个语句可以不用加分号</span><br>&#125; <span class="hljs-keyword">elsif</span> ($cash &gt;= <span class="hljs-number">10</span> &amp;&amp; $cash &lt; <span class="hljs-number">20</span>) &#123;<br>    <span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;just soso&#x27;</span><br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;worth a headshot&#x27;</span><br>&#125;<br><span class="hljs-comment"># 注意 || 和 &amp;&amp;，行为同 js</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;&#x27;</span> || <span class="hljs-number">1</span>; <span class="hljs-comment"># 1</span><br><span class="hljs-keyword">say</span> <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-number">1</span>; <span class="hljs-comment"># 0</span><br><br><span class="hljs-keyword">my</span> $tempo = <span class="hljs-number">120</span>;<br><span class="hljs-comment"># 类似 ruby 的语法</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;It\&#x27;s too slow!&#x27;</span> <span class="hljs-keyword">if</span> $tempo &lt;= <span class="hljs-number">222</span>; <span class="hljs-comment"># It&#x27;s to slow!</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;It\&#x27;s too slow!&#x27;</span> <span class="hljs-keyword">unless</span> $tempo &gt; <span class="hljs-number">222</span>;<br><br><span class="hljs-comment"># 有 c 风格的三目，但我不给例子</span><br><br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;\n&quot;</span>.<span class="hljs-string">&#x27;分隔符=================================&#x27;</span>;<br><br><span class="hljs-comment"># 循环</span><br><br><span class="hljs-comment"># 最基本的 while, until, for</span><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>);<br><span class="hljs-keyword">my</span> $i = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">while</span> ($i &lt; <span class="hljs-keyword">scalar</span> @arr) &#123;<br>    <span class="hljs-keyword">say</span> $arr[$i++];<br>&#125;<br><span class="hljs-keyword">my</span> $i = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">until</span> ($i &gt;= <span class="hljs-keyword">scalar</span> @arr) &#123;<br>    <span class="hljs-keyword">say</span> $arr[$i++];<br>&#125;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;\n&quot;</span>;<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">my</span> $i = <span class="hljs-number">0</span>; $i &lt; <span class="hljs-keyword">scalar</span> @arr; $i++) &#123;<br>    <span class="hljs-keyword">say</span> $i . <span class="hljs-string">&#x27;:&#x27;</span> . $arr[$i] . <span class="hljs-string">&quot;\n&quot;</span>;<br>&#125;<br><span class="hljs-comment"># 这里就离开了$i 的作用域了</span><br><br><span class="hljs-comment"># 但是若没有必要，谁愿意写这种 for 呢？</span><br><span class="hljs-comment"># 迭代器语法 foreach（和 for 可以互相替换，用可读性高的）</span><br><span class="hljs-comment"># 想象 python 的 for i in arr</span><br><span class="hljs-keyword">foreach</span> <span class="hljs-keyword">my</span> $v (@arr) &#123;<br>    <span class="hljs-keyword">say</span> $v;<br>&#125;<br><br><span class="hljs-comment"># range 操作符。.，返回一个匿名的整型列表，前闭后闭</span><br><span class="hljs-keyword">my</span> @range = (<span class="hljs-number">1</span> .. <span class="hljs-number">10</span>);<br><span class="hljs-keyword">say</span> @range; <span class="hljs-comment"># 1234512345678910</span><br><br><span class="hljs-comment"># 从 0 到最后一个下标</span><br><span class="hljs-keyword">foreach</span> <span class="hljs-keyword">my</span> $i (<span class="hljs-number">0</span> .. $#arr) &#123;<br>    <span class="hljs-keyword">say</span> $i . <span class="hljs-string">&#x27;:&#x27;</span> . $arr[$i] . <span class="hljs-string">&quot;\n&quot;</span>;<br>&#125;<br><br><span class="hljs-comment"># keys 函数返回 Hash 的所有 key，用来迭代 hash</span><br><span class="hljs-keyword">foreach</span> <span class="hljs-keyword">my</span> $key (<span class="hljs-keyword">keys</span> %idol) &#123;<br>    <span class="hljs-keyword">say</span> $key . <span class="hljs-string">&#x27;:&#x27;</span> . $idol&#123;$key&#125; . <span class="hljs-string">&quot;\n&quot;</span>; <span class="hljs-comment"># name:haruka...</span><br>&#125;<br><br><span class="hljs-comment"># 开始魔法/约定——如果不给定迭代的变量（这玩意似乎叫迭代器），使用$_作为迭代变量：</span><br><span class="hljs-keyword">foreach</span> (@arr) &#123;<br>    <span class="hljs-keyword">say</span> $_;<br>&#125; <span class="hljs-comment"># 12345</span><br><span class="hljs-comment"># 如果循环里只有一条语句……可以使用下面的语法……omg</span><br><span class="hljs-keyword">say</span> $_ <span class="hljs-keyword">foreach</span> @arr;<br><br><span class="hljs-comment"># next 和 last，相当于 continue 和 break</span><br><br><span class="hljs-comment"># 比如，找到数组中特定的数，并执行操作</span><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>);<br><span class="hljs-keyword">my</span> $toFind = <span class="hljs-number">4</span>;<br><span class="hljs-keyword">foreach</span> (<span class="hljs-number">0</span> .. $#arr) &#123;<br>    <span class="hljs-keyword">my</span> $value = $arr[$_];<br>    <span class="hljs-keyword">next</span> <span class="hljs-keyword">if</span> $value != $toFind;<br>    <span class="hljs-keyword">say</span> $value. <span class="hljs-string">&#x27;...got it! index: &#x27;</span>. $_;<br>    <span class="hljs-keyword">last</span><br>&#125; <br></code></pre></div></td></tr></table></figure>
+
+<h1 id="数组操作"><a href="#数组操作" class="headerlink" title="数组操作"></a>数组操作</h1><figure class="highlight perl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs perl"><span class="hljs-keyword">use</span> strict;<br><span class="hljs-keyword">use</span> warnings;<br><span class="hljs-keyword">use</span> <span class="hljs-number">5.010</span>; <span class="hljs-comment"># 指定最低兼容版本，目的是为了开启 say 函数</span><br><br><span class="hljs-comment"># 和 js 的假设一样，数组头部是队列头部，尾部是栈尾部</span><br><span class="hljs-keyword">my</span> @stack = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br><span class="hljs-keyword">say</span> @stack; <span class="hljs-comment"># 123</span><br><span class="hljs-keyword">push</span> @stack, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>;<br><span class="hljs-keyword">say</span> @stack; <span class="hljs-comment"># 123456</span><br><br><span class="hljs-comment"># 注意函数调用的优先级，不是像 haskell 一样左结合，而是某种右结合</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">pop</span> @stack; <span class="hljs-comment"># 6</span><br><br><span class="hljs-keyword">say</span> @stack; <span class="hljs-comment"># 12345</span><br><br><span class="hljs-keyword">unshift</span> @stack, -<span class="hljs-number">1</span>, <span class="hljs-number">0</span>; <br><span class="hljs-keyword">say</span> @stack; <span class="hljs-comment"># -1012345</span><br><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">shift</span> @stack; <span class="hljs-comment"># -1</span><br><span class="hljs-keyword">say</span> @stack; <span class="hljs-comment"># 012345</span><br><br><span class="hljs-comment"># 它们都是 splice 的特例，splice 将数组中特定范围的切片捞出来，替换为另一个数组，并返回捞出来的数组</span><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);<br><span class="hljs-keyword">say</span> <span class="hljs-keyword">splice</span> @arr; <span class="hljs-comment"># 只有 1 个参数，清空数组，并返回清空前的值即 (1,2,3,4)</span><br><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);<br><span class="hljs-keyword">say</span> <span class="hljs-keyword">splice</span> @arr, <span class="hljs-number">2</span>; <span class="hljs-comment"># 2 是要删除的范围的开头，这里会删除原数组的 (3, 4)，并返回 (3, 4)</span><br><span class="hljs-keyword">say</span> @arr; <span class="hljs-comment"># 12</span><br><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);<br><span class="hljs-comment"># 1,2 是要删除的范围的开头和删除的数量</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">splice</span> @arr, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>;  <span class="hljs-comment"># 23</span><br><span class="hljs-keyword">say</span> @arr; <span class="hljs-comment"># 14</span><br><br><span class="hljs-comment"># 隔壁 substr 入参形式也是一样的，从下标 2 开始，取 2 个字符</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">substr</span> <span class="hljs-string">&#x27;hello, world&#x27;</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>; <span class="hljs-comment"># ll</span><br><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>);<br><span class="hljs-comment"># 第四个以后的参数为要用来替换的数组，为什么不需要扩起来？hint：函数参数也是列表</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">splice</span> @arr, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">200</span>, <span class="hljs-number">300</span>; <span class="hljs-comment"># 3</span><br><span class="hljs-keyword">say</span> @arr; <span class="hljs-comment"># 122003004</span><br><br><span class="hljs-comment"># 另外一些列表操作。..join, reverse, map, grep</span><br><span class="hljs-keyword">my</span> @arr = (<span class="hljs-string">&#x27;hello&#x27;</span>, <span class="hljs-string">&#x27;the&#x27;</span>, <span class="hljs-string">&#x27;world&#x27;</span>);<br><span class="hljs-keyword">say</span> @arr; <span class="hljs-comment"># hellotheworld</span><br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;@arr&quot;</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, @arr; <span class="hljs-comment"># hello, the, world</span><br><br><span class="hljs-comment"># reverse，列表上下文下反转数组，标量上下文下反转字符串</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">reverse</span> <span class="hljs-string">&#x27;hello&#x27;</span>; <span class="hljs-comment"># hello（默认就是列表上下文，只有一个元素也是列表上下文，</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">reverse</span> <span class="hljs-string">&#x27;hello&#x27;</span>, <span class="hljs-string">&#x27;world&#x27;</span>; <span class="hljs-comment"># worldhello</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">reverse</span> @arr; <span class="hljs-comment"># worldthehello</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> <span class="hljs-keyword">reverse</span> @arr; <span class="hljs-comment"># dlrowehtolleh，注意 scalar 不能当成函数来看待，行为和函数不一样，它直接影响了 reverse 的行为</span><br><br><span class="hljs-comment"># map，不用解释，当前元素为 $_</span><br><span class="hljs-comment"># 注意 map 里函数和数组之间没有逗号，不知为何，不知这是如何定义的</span><br><span class="hljs-keyword">my</span> @arr = <span class="hljs-string">qw(hello the world)</span>; <span class="hljs-comment"># qw,quote word, 等价于 (&#x27;hello&#x27;, &#x27;the&#x27;, &#x27;world&#x27;)</span><br><span class="hljs-keyword">say</span> @arr; <span class="hljs-comment"># hellotheworld</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, @arr; <span class="hljs-comment"># hello, the, world</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, <span class="hljs-keyword">map</span> &#123;<span class="hljs-keyword">uc</span> $_&#125; @arr; <span class="hljs-comment"># HELLO, THE, WORLD，uc 是 upperCase，$_是当前 map 的元素，可以省略</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, @arr; <span class="hljs-comment"># hello, the, world，无副作用</span><br><br><span class="hljs-comment"># grep，filter</span><br><span class="hljs-keyword">my</span> @lst = <span class="hljs-keyword">qw</span>/<span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">5</span> <span class="hljs-number">6</span> <span class="hljs-number">7</span> <span class="hljs-number">8</span> <span class="hljs-number">9</span>/;<br><span class="hljs-keyword">say</span> <span class="hljs-keyword">grep</span> &#123;$_ % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>&#125; @lst; <span class="hljs-comment"># 2468</span><br><br><span class="hljs-comment"># 结合 grep，eq/== 和 scalar 可以用来判定数组中是否包含特定元素</span><br><span class="hljs-keyword">my</span> @fruits = <span class="hljs-keyword">qw</span>/apple orange banana/;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&#x27;love banana&#x27;</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">scalar</span> <span class="hljs-keyword">grep</span> &#123;$_ eq <span class="hljs-string">&#x27;banana&#x27;</span>&#125; @fruits; <span class="hljs-comment"># love banana</span><br><span class="hljs-keyword">say</span> @fruits; <span class="hljs-comment"># appleorangebanana，grep 无副作用</span><br><span class="hljs-comment"># sort，默认是使用字符串的比较方式，这很多时候不是我们想要的</span><br><span class="hljs-comment"># sort 无副作用</span><br><span class="hljs-keyword">my</span> @elevations = (<span class="hljs-number">19</span>, <span class="hljs-number">1</span>, <span class="hljs-number">7</span>, <span class="hljs-number">23</span>, -<span class="hljs-number">2</span>, <span class="hljs-number">0</span>, <span class="hljs-number">100</span>, <span class="hljs-number">29666</span>);<br><span class="hljs-keyword">say</span> <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, <span class="hljs-keyword">sort</span> @elevations; <span class="hljs-comment"># -2, 0, 1, 100, 19, 23, 29666, 7</span><br><span class="hljs-comment"># sort 第二个参数可以传递一个代码块作为 comparator，其中比较的两个元素分别为 $a，$b，这是常见的约定</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, <span class="hljs-keyword">sort</span> &#123;$a &lt;=&gt; $b&#125; @elevations; <span class="hljs-comment"># -2, 0, 1, 7, 19, 23, 100, 29666，这里的$a，$b 不可省略</span><br><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">map</span> <span class="hljs-keyword">uc</span> $_, <span class="hljs-string">qw(1 2 3 4 5 6 hello)</span>;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="子例程"><a href="#子例程" class="headerlink" title="子例程"></a>子例程</h1><figure class="highlight perl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs perl"><span class="hljs-keyword">use</span> strict;<br><span class="hljs-keyword">use</span> warnings;<br><span class="hljs-keyword">use</span> <span class="hljs-number">5.010</span>; <span class="hljs-comment"># 指定最低兼容版本，目的是为了开启 say 函数</span><br><br><span class="hljs-comment"># 子例程，用户定义的子例程总是接受列表，但内置的函数各有各的行为。</span><br><span class="hljs-comment"># ！！！！！！！！！！！ 子例程是引用传递，引用传递！不是值传递，不是引用的值传递，是引用传递，这和所有编程语言都不一样</span><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">inc</span> </span>&#123;<br>    <span class="hljs-comment"># 函数参数保存在 @_</span><br>    $_[<span class="hljs-number">0</span>]++<br>&#125;<br><span class="hljs-keyword">my</span> $v = <span class="hljs-number">1</span>;<br>inc $v;<br><span class="hljs-keyword">say</span> $v; <span class="hljs-comment"># 2</span><br><span class="hljs-comment"># inc 2; # error, Modification of a read-only value </span><br><br><span class="hljs-comment"># 取参数可以使用 shift 函数</span><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">pureInc</span> </span>&#123;<br>    <span class="hljs-keyword">my</span> $v = <span class="hljs-keyword">shift</span>; <span class="hljs-comment"># 等价于 shift @_</span><br>    <span class="hljs-keyword">return</span> $v + <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">say</span> pureInc <span class="hljs-number">2</span>; <span class="hljs-comment"># 3</span><br><br><span class="hljs-comment"># 多个参数可以使用某种“解构”语法</span><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">add3Num</span> </span>&#123;<br>    <span class="hljs-keyword">my</span> ($a, $b, $c) = @_;<br>    <span class="hljs-keyword">return</span> $a + $b + $c;<br>&#125;<br><span class="hljs-keyword">say</span> add3Num <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>; <span class="hljs-comment"># 6</span><br><span class="hljs-comment"># 更多的参数？传 hash 吧</span><br><br><span class="hljs-comment"># 能够使用 wantarray 函数来检查当前的上下文是否是列表上下文</span><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">contextualSubroutine</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) <span class="hljs-keyword">if</span> <span class="hljs-keyword">wantarray</span>; <br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>; <span class="hljs-comment"># scalar 上下文</span><br>&#125;<br><span class="hljs-keyword">say</span> contextualSubroutine; <span class="hljs-comment"># 123，say 和 print 是列表上下文</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> contextualSubroutine; <span class="hljs-comment"># 1</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h1><figure class="highlight perl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs perl"><span class="hljs-keyword">use</span> strict;<br><span class="hljs-keyword">use</span> warnings;<br><span class="hljs-keyword">use</span> <span class="hljs-number">5.010</span>; <span class="hljs-comment"># 指定最低兼容版本，目的是为了开启 say 函数</span><br><br><span class="hljs-comment"># 定义一个 trim，后面用</span><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">trim</span> </span>&#123;<br>    <span class="hljs-keyword">my</span> $string = <span class="hljs-keyword">shift</span>;<br>    $string =~ <span class="hljs-regexp">s/^\s+//</span>;  <span class="hljs-comment"># 去除开头的空白符</span><br>    $string =~ <span class="hljs-regexp">s/\s+$//</span>;  <span class="hljs-comment"># 去除结尾的空白符</span><br>    <span class="hljs-keyword">return</span> $string;<br>&#125;<br><br><span class="hljs-comment"># tip：程序返回给系统的返回码是 16 位，高 8 位是我们认知中的返回码，0 表示正常退出，低 8 位不用关心</span><br><br><span class="hljs-comment"># perl 能够通过 exit 函数来退出，接受参数为返回给系统的 0-255 的返回码</span><br><span class="hljs-keyword">exit</span> <span class="hljs-number">0</span> <span class="hljs-keyword">if</span> <span class="hljs-number">0</span>; <span class="hljs-comment"># 别！</span><br><br><span class="hljs-comment"># system 函数允许进行系统调用，参数列表为所有参数，返回值为 16 位返回码，标准输出会打印到控制台</span><br><span class="hljs-comment"># 返回码同时也会保存在$? 中，为 16 位，需要右移 8 位</span><br><span class="hljs-keyword">system</span> <span class="hljs-string">&#x27;ls&#x27;</span>, <span class="hljs-string">&#x27;-alh&#x27;</span>, <span class="hljs-string">&#x27;/&#x27;</span>;<br>$? &gt;&gt;= <span class="hljs-number">8</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;ls return code: $?&quot;</span>;<br><br><span class="hljs-comment"># 使用反引号也可以执行命令，返回值在标量上下文下为命令标准输出的字符串形式，列表上下文则按行分割</span><br><span class="hljs-comment"># 若报错，会打印到错误流（应该</span><br><span class="hljs-keyword">my</span> $path = <span class="hljs-string">&#x27;/a/b/c&#x27;</span>;<br><span class="hljs-keyword">my</span> @rootFiles = <span class="hljs-string">`ls $path`</span>;<br>$? &gt;&gt;= <span class="hljs-number">8</span>;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;return code: $?, res: &quot;</span>, <span class="hljs-keyword">join</span> <span class="hljs-string">&#x27;, &#x27;</span>, <span class="hljs-keyword">map</span> &#123;trim $_&#125; @rootFiles;<br><br><span class="hljs-comment"># 文件句柄也是标量</span><br><span class="hljs-comment"># 打开文件，读模式，文件句柄保存在$fn，open 若打开成功返回 true，打开失败返回 false，并将错误信息置于 $!</span><br><span class="hljs-keyword">my</span> $file = <span class="hljs-string">&#x27;/Users/yuuki/code/tmp/a.js&#x27;</span>;<br><span class="hljs-keyword">open</span> <span class="hljs-keyword">my</span> $fn, <span class="hljs-string">&#x27;&lt;&#x27;</span>, $file <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span> <span class="hljs-string">&quot;cannot open $file, reason: $!&quot;</span>;<br><span class="hljs-comment"># readline 函数能读取文件的每一行（显然当前读取位置保存在句柄里面</span><br><span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">my</span> $line = <span class="hljs-keyword">readline</span> $fn;<br>    <span class="hljs-keyword">last</span> <span class="hljs-keyword">unless</span> <span class="hljs-keyword">defined</span> $line; <span class="hljs-comment"># 读取完成后返回 undef，也可以使用 eof 函数检查是否到末尾</span><br>    <span class="hljs-keyword">chomp</span> $line; <span class="hljs-comment"># 移除末尾可能的换行符，注意这个方法有副作用</span><br>&#125;<br><span class="hljs-comment"># 文件句柄会在离开作用域后自己关闭</span><br><br><span class="hljs-keyword">open</span> <span class="hljs-keyword">my</span> $fn, <span class="hljs-string">&#x27;&lt;&#x27;</span>, $file <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span> <span class="hljs-string">&quot;cannot open $file, reason: $!&quot;</span>;<br><span class="hljs-comment"># while (my $line = readline $fn) 看上去很诱人，但它遇到&quot;0&quot;，空字符串也会停止！不要这么做！</span><br><span class="hljs-comment"># &lt;&gt;运算符可以避免该问题，可以认为&lt;&gt;在底层读取一行后会保存到$_，并使用 defined 检查当前是否是 undef，可以认为底层是 while (defined(my $_ = readline $fn))</span><br><span class="hljs-keyword">while</span> (&lt;$fn&gt;) &#123;<br>    <span class="hljs-keyword">chomp</span> $_; <span class="hljs-comment"># 移除末尾换行符</span><br>    <span class="hljs-keyword">say</span> $_;<br>&#125;<br><span class="hljs-comment"># &lt;&gt;运算符可以更酷，它赋值到标量会读一行，赋值给数组，可以读取全部内容到数组中，比如下面统计行号</span><br><span class="hljs-keyword">open</span> <span class="hljs-keyword">my</span> $fn, <span class="hljs-string">&#x27;&lt;&#x27;</span>, $file <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span> <span class="hljs-string">&quot;cannot open $file, reason: $!&quot;</span>;<br><span class="hljs-keyword">my</span> $firstLine = &lt;$fn&gt;;<br><span class="hljs-keyword">print</span> $firstLine; <span class="hljs-comment"># 它自带换行符</span><br><span class="hljs-keyword">my</span> @lastLines = &lt;$fn&gt;;<br><span class="hljs-keyword">chomp</span> <span class="hljs-keyword">foreach</span> @lastLines; <span class="hljs-comment"># 为每一行都去掉末尾的换行符</span><br><span class="hljs-keyword">say</span> @lastLines; <span class="hljs-comment"># 会发现它们全扭在一起了</span><br><span class="hljs-keyword">say</span> <span class="hljs-keyword">scalar</span> @lastLines; <span class="hljs-comment"># 剩下的行数，22 行</span><br><br><span class="hljs-comment"># &lt;&gt; 如果没有参数，会使用标准输入流。</span><br><span class="hljs-comment"># 更更更酷的是，unix 管道也可以当作文件句柄——</span><br><span class="hljs-keyword">open</span> <span class="hljs-keyword">my</span> $rootLs, <span class="hljs-string">&quot;ls / |&quot;</span> <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span> <span class="hljs-string">&quot;execute ls / failed, $!&quot;</span>;<br><span class="hljs-keyword">my</span> @rootFiles = &lt;$rootLs&gt;;<br><span class="hljs-keyword">chomp</span> <span class="hljs-keyword">foreach</span> @rootFiles;<br><span class="hljs-keyword">say</span> <span class="hljs-string">&quot;total count: &quot;</span> . <span class="hljs-keyword">scalar</span> @rootFiles . <span class="hljs-string">&quot;, files: @rootFiles&quot;</span>;<br><br><span class="hljs-comment"># 如何写入文件呢？print 打印内容到输出流，默认是标准输出流，so……</span><br><span class="hljs-comment"># &lt;, &gt;, &gt;&gt;, 和 linux 的习惯一致</span><br><span class="hljs-keyword">open</span> <span class="hljs-keyword">my</span> $writeFile, <span class="hljs-string">&#x27;&gt;&gt;&#x27;</span>, <span class="hljs-string">&#x27;/Users/yuuki/code/tmp/helloworld.txt&#x27;</span> <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span> $!;<br><span class="hljs-keyword">say</span> $writeFile <span class="hljs-string">&#x27;Hello&#x27;</span>; <span class="hljs-comment"># 注意不能逗号分隔，一逗号分隔 say 就选择打印该文件句柄了</span><br><span class="hljs-keyword">say</span> $writeFile <span class="hljs-string">&#x27;World&#x27;</span>; <span class="hljs-comment"># 用户不能自定义这样的函数，只能暂且认为这里 say $writeFile 是一个整体</span><br><br><span class="hljs-comment"># 且慢！在函数参数里定义变量是什么操作？因为 perl 是引用传递，所以定义的变量能直接被函数所修改，这里就像 C#的 out</span><br><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">lastElem</span> </span>&#123;<br>    <span class="hljs-keyword">my</span> $pointer = \$_[<span class="hljs-number">0</span>];<br>    <span class="hljs-keyword">my</span> ($ignore, @last) = @_;<br>    $$pointer = $last[-<span class="hljs-number">1</span>];<br>&#125;<br>lastElem <span class="hljs-keyword">my</span> $last, (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);<br><span class="hljs-keyword">say</span> $last; <span class="hljs-comment"># 3</span><br><br><span class="hljs-comment"># 数组解构</span><br><span class="hljs-keyword">my</span> ($a, $b, @c) = (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>);<br><span class="hljs-keyword">say</span> $a; <span class="hljs-comment"># 1</span><br><span class="hljs-keyword">say</span> $b; <span class="hljs-comment"># 2</span><br><span class="hljs-keyword">say</span> @c; <span class="hljs-comment"># 345</span><br><br><span class="hljs-comment"># 咳咳，回到正题</span><br><span class="hljs-comment"># 检查文件是否存在的一些函数是和 shell 习惯一致的，</span><br><span class="hljs-comment"># -e 文件是否存在</span><br><span class="hljs-comment"># -d 文件是目录，ef 文件是文件</span><br><span class="hljs-comment"># 查询这些函数的文档需要搜 “perl file test”，因为-X 是不搜索 X</span><br><span class="hljs-function"><span class="hljs-keyword">sub</span> <span class="hljs-title">fileExist</span> </span>&#123; <span class="hljs-comment"># 屁话</span><br>    <span class="hljs-keyword">return</span> -e <span class="hljs-keyword">shift</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Perl/">Perl</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/%E5%B8%B8%E7%94%A8%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">常用环境搭建</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08-31GLSL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html">
+                        <span class="hidden-mobile">GLSL 学习笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="研究一下 todo.txt，之后整活">
+<meta property="og:type" content="article">
+<meta property="og:title" content="todo.txt 简明教程">
+<meta property="og:url" content="http://example.com/2022/05-04todo-txt%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="研究一下 todo.txt，之后整活">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-04T06:47:08.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.298Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Foo">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>todo.txt 简明教程 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="todo.txt 简明教程">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-05-04 14:47" pubdate>
+        2022年5月4日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">todo.txt 简明教程</h1>
+            
+            <div class="markdown-body">
+              <p><a target="_blank" rel="noopener" href="https://github.com/todotxt/todo.txt">todo.txt</a> 是一种使用纯文本形式来表示 TODO 清单的一个格式，考虑对其进行一些了解。然后也学习一下 <a target="_blank" rel="noopener" href="https://github.com/todotxt/todo.txt-cli">todo.txt-cli</a> 的使用，它是一个使用 shell 去实现的，控制台的 todo.txt 文件管理脚本。</p>
+<p>并考虑再之后研究之后能否用 Scala 对<code>todo.txt-cli</code>的接口进行一个实现，并使用 OSS 作为存储以符合我的同步需求；用 Scala 的原因既是因为它足够好用，能让我去实践一下 FP，也是因为它能够编译成 js——我希望能在浏览器等平台上去运行它。</p>
+<h1 id="todo-txt"><a href="#todo-txt" class="headerlink" title="todo.txt"></a>todo.txt</h1><p>todo.txt 使用纯文本形式来保存 TODO 清单，其最重要的规则是，<strong>一行一个 TODO</strong>，它的语法如下。</p>
+<svg xmlns="http://www.w3.org/2000/svg" id="svg2" viewBox="0 0 632.2 281">
+    <style>
+        .st0{font-family:Courier;font-size:12px;}
+        .st1{fill:none;stroke:#000000;stroke-miterlimit:10;}
+        .st2{font-family:Arial;font-size:10px;}
+    </style>
+    <rect width="100%" height="100%" fill="#FFF"/>
+    <text class="st0" transform="translate(4.024 172.96)">
+        x (A) 2022-05-16 2022-05-01 learn SpringMVC +chapelShelving @chapel due:2016-05-30
+    </text>
+    <path d="M15.2 159v-6H.5v6m36 0v-6H21.8v6m96.5 0v-6H47.5v6m149.3 0v-6H126v6m483.7.2V153H206v6.1m238.7 22.8v7.2H335V182m274.7-.1v7.2H509V182m-7.5-.1v7.2h-49.1V182" class="st1"/>
+    <text class="st2" transform="rotate(-45 161.175 55.627)">
+        可选 — 标识完成（必须为小写 x）
+    </text>
+    <text class="st2" transform="rotate(-45 171.8 29.976)">
+        可选 -- 标识优先级（A-Z）
+    </text>
+    <text class="st2" transform="rotate(-45 198.684 -34.92)">
+        可选 -- 完成日期
+    </text>
+    <text transform="rotate(-45 237.935 -129.68)">
+        <tspan x="0" y="0" class="st2">可选 -- 创建日期</tspan>
+        <tspan x="0" y="12" class="st2">如果只出现一个日期，则认为是创建日期</tspan>
+    </text>
+    <text transform="rotate(-45 352.18 -405.478)">
+        <tspan x="0" y="-16" class="st2">描述和 tag（可选）</tspan>
+        <tspan x="0" y="0" class="st2">tags 可以出现在任何地方，</tspan>
+        <tspan x="0" y="12" class="st2">名称由非空字符串组成</tspan>
+    </text>
+    <text class="st2" transform="rotate(45 -60.77 576.533)">
+        项目 tag
+    </text>
+    <text class="st2" transform="rotate(45 -17.238 681.627)">
+        上下文 tag
+    </text>
+    <text class="st2" transform="rotate(45 23.978 781.127)">
+        KV tag
+    </text>
+</svg>
+
+<p><code>todo.txt</code>的格式是十分自由的，其设计初衷之一就是要求人类和机器均可读。对每一个 TODO，其有三个维度：</p>
+<ol>
+<li><strong>优先级</strong>：最重要的 TODO 要能够先出现，其通过<code>(A-Z)</code>的语法表示。</li>
+<li><strong>项目</strong>：TODO 应该能够从属于特定项目——人类解决复杂问题的方式就是将其分解为一个个更容易解决的子问题并着手解决。</li>
+<li><strong>上下文</strong>：一个 TODO 要在哪里，在怎样的情况下去完成，换句话说，TODO 的上下文，是需要能够表示的，这样就能让人去关注在当前能够去做的事情。（这似乎是某种称为 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Getting_Things_Done">GTD，Getting Things Done</a> 的哲学，之后去了解一番）</li>
+</ol>
+<p>项目使用<code>+</code>语法去表示，上下文通过<code>@</code>语法去表示，两者都接受非空字符串作为名称，两者都可以出现任意次数。</p>
+<p>比如，下面指定一个最高优先级的，处在学习项目的，上下文为下班后的 TODO：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs todo.txt">(A) @下班后 +学习 Spring MVC<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>我感觉这并非是一个最佳实践——这个 TODO 太大了：学习？学哪个部分？使用还是原理？我认为，项目应当是“+learnSpringMVC”，描述应该是 “中的 blablala”，即：</p>
+<figure class="highlight css"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs css">(<span class="hljs-selector-tag">A</span>) @下班后 +learnSpringMVC RestController<br></code></pre></div></td></tr></table></figure>
+</blockquote>
+<p>然后是 KV tag，这是供开发者去使用的 metadata，语法是<code>key:value</code>。</p>
+<p><code>todo.txt</code>就这些东西…简单，但优雅。</p>
+<h1 id="todo-txt-cli"><a href="#todo-txt-cli" class="headerlink" title="todo.txt-cli"></a>todo.txt-cli</h1><p><code>todo.txt-cli</code>是官方提供的命令行下管理<code>todo.txt</code>的脚本，这里介绍它的使用。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>MacOS 和 Linux 可直接使用，Win 用户可使用 Git For Bash 等终端。</p>
+<p>在 <a target="_blank" rel="noopener" href="https://github.com/todotxt/todo.txt-cli">官方仓库</a> 下载<code>todo.sh</code>和<code>todo.cfg</code>，其中将<code>todo.sh</code>放置到 PATH 中（下面的示例将其改名为<code>todo</code>），将<code>todo.cfg</code>重命名为<code>~/.todo.cfg</code>，然后编辑<code>.todo.cfg</code>，将<code>TODO_DIR</code>变量修改为更合适的位置，比如<code>export TODO_DIR=$&#123;HOME:-$USERPROFILE&#125;/.todo</code>（原配置放到用户目录，简直了！）</p>
+<p>然后进行测试，输入<code>todo add &#39;Hello, Happy World!&#39;</code>，并检查<code>~/.todo/todo.txt</code>是否有数据。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>先创建测试“数据”，直接编辑<code>todo.txt</code>或者通过<code>todo add</code>命令：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gherkin">(A) +健身 <span class="hljs-meta">@早晨</span> <span class="hljs-meta">@晚上</span> <span class="hljs-meta">@楼下</span> 各跳绳 500 个<br>(C) +英语 <span class="hljs-meta">@晚上</span> 完成扇贝阅读一篇文章<br>(A) +吉他 yousician 30 分钟<br>(B) +吉他 +辨识 200 个 note<br>+吉他 完成练习二<br></code></pre></div></td></tr></table></figure>
+
+<ul>
+<li><p>列出所有 TODO：<br><code>todo list</code>（或者<code>todo ls</code>）</p>
+</li>
+<li><p>添加新 TODO：<br><code>todo add &#39;+吉他 爬格子&#39;</code></p>
+</li>
+<li><p>完成特定 TODO，其中 TODO 通过行号指定（在 list 时会显示）：<br><code>todo done 1</code>（或者<code>todo do 1</code>）</p>
+</li>
+<li><p>删除特定 TODO：<br><code>todo rm 1</code></p>
+</li>
+<li><p>列出所有带字符串“完成”的 TODO：<br><code>todo ls 完成</code></p>
+</li>
+<li><p>列出所有<strong>不</strong>带“完成”的 TODO：<br><code>todo ls -完成</code></p>
+</li>
+<li><p>列出所有项目或上下文：<br><code>todo lsprj</code><br><code>todo lsc</code></p>
+</li>
+<li><p>列出所有带吉他项目的 TODO 中出现的项目：<br><code>todo lsprj 吉他</code></p>
+</li>
+</ul>
+<p>先就这些。更多的不如去翻它的 <a target="_blank" rel="noopener" href="https://github.com/todotxt/todo.txt-cli/blob/master/USAGE.md">文档</a>。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Foo/">Foo</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06-01log4j2%E9%85%8D%E7%BD%AE%E5%AE%9E%E8%B7%B5.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">log4j2 配置实践</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04-28%E3%80%8AScala%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E3%80%8B%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86.html">
+                        <span class="hidden-mobile">《Scala 函数式编程》解题笔记——第一部分</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

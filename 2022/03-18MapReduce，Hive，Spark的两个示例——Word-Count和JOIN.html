@@ -1,0 +1,463 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在系统学习 Hive 的 SELECT 之前，我们先来进行一些超有趣的事情——分别使用 MapReduce，Hive，Spark 来实现同一个程序，感受一下三者代码的差异，这里选择去实现一下 WordCount，以及一个表连接的示例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN">
+<meta property="og:url" content="http://example.com/2022/03-18MapReduce%EF%BC%8CHive%EF%BC%8CSpark%E7%9A%84%E4%B8%A4%E4%B8%AA%E7%A4%BA%E4%BE%8B%E2%80%94%E2%80%94Word-Count%E5%92%8CJOIN.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="在系统学习 Hive 的 SELECT 之前，我们先来进行一些超有趣的事情——分别使用 MapReduce，Hive，Spark 来实现同一个程序，感受一下三者代码的差异，这里选择去实现一下 WordCount，以及一个表连接的示例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-18T14:33:20.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.296Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="分布式计算">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-18 22:33" pubdate>
+        2022年3月18日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      11k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MapReduce，Hive，Spark 的两个示例——Word Count 和 JOIN</h1>
+            
+            <div class="markdown-body">
+              <p>在系统学习 Hive 的 SELECT 之前，我们先来进行一些超有趣的事情——分别使用 MapReduce，Hive，Spark 来实现同一个程序，感受一下三者代码的差异，这里选择去实现一下 WordCount，以及一个表连接的示例。</p>
+<span id="more"></span>
+
+<h1 id="Word-Count"><a href="#Word-Count" class="headerlink" title="Word Count"></a>Word Count</h1><p>Word Count，不从它开始从谁开始呢？首先是 MapReduce，使用 Java 语言，代码是庞然大物。</p>
+<h2 id="MapReduce"><a href="#MapReduce" class="headerlink" title="MapReduce"></a>MapReduce</h2><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NeoWordCount</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NeoWordCountMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Mapper</span>&lt;LongWritable, Text, Text, LongWritable&gt; &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LongWritable</span> <span class="hljs-variable">ONE</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LongWritable</span>(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Text</span> <span class="hljs-variable">outputK</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Text</span>();<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">map</span><span class="hljs-params">(LongWritable key, Text value, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>            <span class="hljs-keyword">for</span> (String s : value.toString().split(<span class="hljs-string">&quot; &quot;</span>)) &#123;<br>                outputK.set(s);<br>                context.write(outputK, ONE);<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NeoWordCountReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Reducer</span>&lt;Text, LongWritable, Text, LongWritable&gt; &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LongWritable</span> <span class="hljs-variable">outputV</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LongWritable</span>();<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">reduce</span><span class="hljs-params">(Text key, Iterable&lt;LongWritable&gt; values, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>            <span class="hljs-type">long</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">for</span> (LongWritable value : values) &#123;<br>                sum += value.get();<br>            &#125;<br>            outputV.set(sum);<br>            context.write(key, outputV);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">GenericOptionsParser</span> <span class="hljs-variable">parser</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">GenericOptionsParser</span>(args);<br>        <span class="hljs-type">Job</span> <span class="hljs-variable">job</span> <span class="hljs-operator">=</span> Job.getInstance(parser.getConfiguration());<br>        args = parser.getRemainingArgs();<br><br>        job.setInputFormatClass(TextInputFormat.class);<br>        job.setOutputFormatClass(TextOutputFormat.class);<br><br>        job.setMapOutputKeyClass(Text.class);<br>        job.setMapOutputValueClass(LongWritable.class);<br>        job.setOutputKeyClass(Text.class);<br>        job.setOutputKeyClass(LongWritable.class);<br><br>        job.setMapperClass(NeoWordCountMapper.class);<br>        job.setReducerClass(NeoWordCountReducer.class);<br>        job.setCombinerClass(NeoWordCountReducer.class);<br><br>        FileInputFormat.setInputPaths(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(args[<span class="hljs-number">0</span>]));<br>        FileOutputFormat.setOutputPath(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(args[<span class="hljs-number">1</span>]));<br><br>        System.exit(job.waitForCompletion(<span class="hljs-literal">true</span>) ? <span class="hljs-number">0</span> : <span class="hljs-number">1</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>可以看到，Mapper 和 Reducer 的代码是很显然的，在 Mapper 中，我们将每一行字符串按空格分割，并构造<code>(WORD, 1)</code>的键值对，然后我们通过 Combiner 进行本地聚集，再发送给各个 Reducer，每个 Reducer 对每个 KEY 对应的所有值，进行 sum 操作，得到结果。</p>
+<p>但这里却需要定义一堆东西，更别说 Driver 里的许多东西实际上都是重复的。</p>
+<h2 id="Spark"><a href="#Spark" class="headerlink" title="Spark"></a>Spark</h2><p>我们再来看看 Scala 的 Spark 的代码，Spark 实现 WordCount 其实是对我们这些开发人员最舒服的，但我还没系统学习过 Spark，所以不知道自己的描述是否正确。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 定义函数只是为了能形式化地引入外部变量</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">wordCount</span></span>(sc : <span class="hljs-type">SparkContext</span>, inputPath : <span class="hljs-type">String</span>, outputPath : <span class="hljs-type">String</span>) : <span class="hljs-type">Unit</span> = &#123;<br>  <span class="hljs-comment">// 不使用链式调用也是为了清晰</span><br>  <span class="hljs-keyword">val</span> lines = sc.textFile(inputPath) <span class="hljs-comment">// 读取</span><br>  <span class="hljs-keyword">val</span> words = lines.flatMap(_.split(<span class="hljs-string">&quot; &quot;</span>)) <span class="hljs-comment">// 把字符串按空格切割并展平</span><br>  <span class="hljs-keyword">val</span> wordPairs = words..map((_, <span class="hljs-number">1</span>)) <span class="hljs-comment">// 对每个 word 构造键值对 (WORD, 1)</span><br>  <span class="hljs-keyword">val</span> resultPairs = wordPairs.foldByKey(<span class="hljs-number">0</span>)(_ + _) <span class="hljs-comment">// 折叠操作，该方法应当在本地也会进行聚集……应当</span><br>  resultPairs.saveAsTextFile(outputPath) <span class="hljs-comment">// 保存</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>不要看着 flatMap 就想入非非，<strong>RDD 不是 Monad</strong>！但虽然 RDD 不是 Monad，它仍旧可以使用 for，但这时它的上下文是列表的上下文——flatMap 函数的函数参数不能返回 RDD，因此我们在 for 里所能做的只有列表能做的。</p>
+<p>另外，我不知道为何 Spark 最后得到的结果的 KEY 为何是无序的……按理说经过 shuffle，这里应当是有序的才对，我只能猜测，Spark 利用单进程的方便之处，在折叠时是并行进行的，并输出到同一个文件中，放到 MapReduce 的语境下，就是多个 Reducer 的输出文件为同一个，这样无论如何也不可能得出有序的结果。但这也是符合需求的——我确实没有指定排序。</p>
+<h2 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h2><p>然后是 Hive，这里展示了 Hive 从建模，读取数据到写出数据的全流程。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-operator">/</span><span class="hljs-operator">/</span> 按默认设置建表，默认设置好像是按、<span class="hljs-number">001</span> 分割字段，按、n 分割记录，所以满足需求<br><span class="hljs-operator">/</span><span class="hljs-operator">/</span> 这时候每一行都会被当作一个记录看待<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> docs(line STRING);<br>LOAD DATA INPATH <span class="hljs-string">&#x27;/hdfs/path/to/the/document&#x27;</span> OVERWRITE <span class="hljs-keyword">INTO</span> <span class="hljs-keyword">TABLE</span> docs; <span class="hljs-comment">-- 将文件读入（覆盖）到表中</span><br><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> word_counts <span class="hljs-keyword">AS</span> <br><span class="hljs-keyword">SELECT</span> word, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span><br>(<span class="hljs-keyword">SELECT</span> explode(split(line, <span class="hljs-string">&#x27; &#x27;</span>)) <span class="hljs-keyword">AS</span> word <span class="hljs-keyword">FROM</span> docs) <span class="hljs-keyword">AS</span> w<br><span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> word;<br></code></pre></div></td></tr></table></figure>
+
+<p><code>(SELECT explode(split(line, &#39; &#39;)) AS word FROM docs)</code>需要特别解释一下，这里使用了所谓的<strong>表生成函数（UDTF）</strong> <code>explode</code>，即通过一行数据生成一个表（该函数处理一个 Array，生成一个表，而 split 得到的是 Array），这里是 docs 表中每行数据按空格进行切割，并将每个结果展平，最后得到一张表，表中每一个记录都是一个单词，<strong>可以认为这是一种 flatMap</strong>，反过来说，这种在 Mapper 阶段干 flatMap 的操作，是显然需要使用 UDTF 的。</p>
+<p>在得到这个单词表后，我们将其按照单词进行分组，并对每个分组进行 COUNT 聚集，得到结果并用该查询结果创建一张新表。通过<code>SELECT *</code>可以发现其生成的结果和 MapReduce 的版本一致。</p>
+<h1 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h1><p>现在考虑一个传统的案例——现在有一张部门表和一张雇员表，其中雇员属于特定部门，且有自己的工资，现在要求获取每个部门的工资最大的雇员的信息，相关表的定义如下。</p>
+<figure class="highlight dns"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dns">---- dept.sql ----<br><br>CREATE TABLE IF NOT EXISTS dept (<br>	deptno INT,<br>	dname STRING,<br>	loc INT<br>)<br>ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;,&#x27;<span class="hljs-comment">;</span><br><br>---- dept.txt ----<br><br><span class="hljs-number">10</span>,ACCOUNTING,<span class="hljs-number">1700</span><br><span class="hljs-number">20</span>,RESEARCH,<span class="hljs-number">1800</span><br><span class="hljs-number">30</span>,SALES,<span class="hljs-number">1900</span><br><span class="hljs-number">40</span>,OPERATIONS,<span class="hljs-number">1700</span><br><br>---- emp.sql ----<br><br>CREATE TABLE IF NOT EXISTS emp (<br>	empno INT,<br>	ename STRING,<br>	job STRING,<br>	mgr INT, -- 上级<br>	hiredate STRING, -- 入职时间<br>	sal DOUBLE, -- 薪水<br>	comm DOUBLE, -- 奖金<br>	deptno INT)<br>ROW FORMAT DELIMITED FIELDS TERMINATED BY &#x27;,&#x27;<span class="hljs-comment">;</span><br><br>---- emp.txt ----<br><br><span class="hljs-number">7369</span>,SMITH,CLERK,<span class="hljs-number">7902,1980</span>-<span class="hljs-number">12-17,800</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">20</span><br><span class="hljs-number">7499</span>,ALLEN,SALESMAN,<span class="hljs-number">7698,1981</span>-<span class="hljs-number">2-20,1600</span>.<span class="hljs-number">00,300.00</span>,<span class="hljs-number">30</span><br><span class="hljs-number">7521</span>,WARD,SALESMAN,<span class="hljs-number">7698,1981</span>-<span class="hljs-number">2-22,1250</span>.<span class="hljs-number">00,500.00</span>,<span class="hljs-number">30</span><br><span class="hljs-number">7566</span>,JONES,MANAGER,<span class="hljs-number">7839,1981</span>-<span class="hljs-number">4-2,2975</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">20</span><br><span class="hljs-number">7654</span>,MARTIN,SALESMAN,<span class="hljs-number">7698,1981</span>-<span class="hljs-number">9-28,1250</span>.<span class="hljs-number">00,1400.00</span>,<span class="hljs-number">30</span><br><span class="hljs-number">7698</span>,BLAKE,MANAGER,<span class="hljs-number">7839,1981</span>-<span class="hljs-number">5-1,2850</span>,,<span class="hljs-number">30</span><br><span class="hljs-number">7782</span>,CLARK,MANAGER,<span class="hljs-number">7839,1981</span>-<span class="hljs-number">6-9,2450</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">10</span><br><span class="hljs-number">7788</span>,SCOTT,ANALYST,<span class="hljs-number">7566,1987</span>-<span class="hljs-number">4-19,3000</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">20</span><br><span class="hljs-number">7839</span>,KING,PRESIDENT,,<span class="hljs-number">1981-11-17</span>,<span class="hljs-number">5000</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">10</span><br><span class="hljs-number">7844</span>,TURNER,SALESMAN,<span class="hljs-number">7698,1981</span>-<span class="hljs-number">9-8,1500</span>.<span class="hljs-number">00,0.00,30</span><br><span class="hljs-number">7876</span>,ADAMS,CLERK,<span class="hljs-number">7788,1987</span>-<span class="hljs-number">5-23,1100</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">20</span><br><span class="hljs-number">7900</span>,JAMES,CLERK,<span class="hljs-number">7698,1981</span>-<span class="hljs-number">12-3,950</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">30</span><br><span class="hljs-number">7902</span>,FORD,ANALYST,<span class="hljs-number">7566,1981</span>-<span class="hljs-number">12-3,3000</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">20</span><br><span class="hljs-number">7934</span>,MILLER,CLERK,<span class="hljs-number">7782,1982</span>-<span class="hljs-number">1-23,1300</span>.<span class="hljs-number">00</span>,,<span class="hljs-number">10</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="Hive-1"><a href="#Hive-1" class="headerlink" title="Hive"></a>Hive</h2><p>这个需求和 SQL 非常契合，所以我们先使用 Hive 进行描述，我们显然需要一个内连接来进行此工作。（可能有更简单的方式，但我还没学到）</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> department,employee,salary <span class="hljs-keyword">FROM</span><br>    (<span class="hljs-keyword">SELECT</span><br>        dept.dname <span class="hljs-keyword">AS</span> department,<br>        emp.ename <span class="hljs-keyword">AS</span> employee,<br>        emp.sal <span class="hljs-keyword">AS</span> salary,<br>        <span class="hljs-built_in">RANK</span>() <span class="hljs-keyword">OVER</span> (<span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> dept.deptno <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> emp.sal <span class="hljs-keyword">DESC</span>) <span class="hljs-keyword">as</span> rk<br>    <span class="hljs-keyword">FROM</span> dept <span class="hljs-keyword">JOIN</span> emp <span class="hljs-keyword">ON</span> dept.deptno <span class="hljs-operator">=</span> emp.deptno) <span class="hljs-keyword">AS</span> t<br><span class="hljs-keyword">WHERE</span> rk <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里使用了 RANK 窗口函数，其中根据部门分区，根据工资降序，获取 rank 为 1 的就是工资最高的，这里<strong>耗时 28 秒</strong>。一个更加清晰的表述使用子查询，但 Hive 不支持子查询，所以这里使用 JOIN 来表述。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> dept.dname, emp.ename, emp.sal <span class="hljs-keyword">FROM</span><br>  dept <span class="hljs-keyword">JOIN</span> emp <span class="hljs-keyword">ON</span> dept.deptno <span class="hljs-operator">=</span> emp.deptno<br>       <span class="hljs-keyword">JOIN</span> (<span class="hljs-keyword">SELECT</span> deptno, <span class="hljs-built_in">MAX</span>(sal) <span class="hljs-keyword">AS</span> max_sal <span class="hljs-keyword">FROM</span> emp <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> deptno) <span class="hljs-keyword">AS</span> max_t<br><span class="hljs-keyword">ON</span> max_t.deptno <span class="hljs-operator">=</span> emp.deptno <span class="hljs-keyword">AND</span> max_t.max_sal <span class="hljs-operator">=</span> emp.sal;<br></code></pre></div></td></tr></table></figure>
+
+<p>这个更加麻烦一些，而且性能更加差——两次 JOIN，要执行两次 MapReduce 任务才行，<strong>它耗时 64 秒</strong>（Hive 不是会进行 MapJoin 优化吗？？）。下面的 MapReduce 只描述第一种。</p>
+<h2 id="MapReduce-1"><a href="#MapReduce-1" class="headerlink" title="MapReduce"></a>MapReduce</h2><p>关于 MapReduce 的编写，考虑到部门和雇员是一对多的关系，且部门的数量一定是较少的，我们本可以使用 map 端 join，但为了通用性，我们使用 reduce 端 join，为此，用于 join 的键必须要在键值对的键中，因此，Mapper 的输出的键中应当包含 deptno，然后在 reduce 的值的集合里，我们要让部门作为第一个元素，因此我们需要为此创建一个虚拟键。</p>
+<p>再考虑分区，分组，排序，关于分区，肯定是按 deptno 进行分区；关于分组，我们也是按 deptno 进行分组；关于排序，为了能保证部门在最前面，我们要按 deptno 和虚拟键进行排序，这里也可以把工资也加进来进行排序，以保证第二个元素就能获取到最高的工资，但这其实并无必要。</p>
+<p>根据上面的分析，我们规定，Mapper 的输出类型为<code>&lt;(deptno, virtualKey), Text&gt;</code>（懒得定义一个泛类型了，机械操作太多了），按 deptno 进行分区，按 deptno 进行分组，按 deptno、virtualKey 进行排序；<strong>同时也可以发现，这里可以有一个 Combiner</strong>；Reducer 的输出类型就随意了，人能看就行。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 注意这个需要两个输入，第一个输入是 dept，第二个输入是 emp</span><br><br><span class="hljs-comment">// Mapper 输出的 key</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CombineKey</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">WritableComparable</span>&lt;CombineKey&gt; &#123;<br>    <span class="hljs-keyword">private</span> Integer deptno;<br>    <span class="hljs-keyword">private</span> Integer virtualKey;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">compareTo</span><span class="hljs-params">(CombineKey o)</span> &#123;<br>        <span class="hljs-keyword">if</span> (!deptno.equals(o.deptno))<br>            <span class="hljs-keyword">return</span> deptno.compareTo(o.deptno);<br>        <span class="hljs-keyword">return</span> virtualKey.compareTo(o.virtualKey);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">write</span><span class="hljs-params">(DataOutput out)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        out.writeInt(deptno);<br>        out.writeInt(virtualKey);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">readFields</span><span class="hljs-params">(DataInput in)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        deptno = in.readInt();<br>        virtualKey = in.readInt();<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DeptMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Mapper</span>&lt;LongWritable, Text, CombineKey, Text&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">map</span><span class="hljs-params">(LongWritable key, Text value, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        String[] cols = value.toString().split(<span class="hljs-string">&quot;,&quot;</span>);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">deptno</span> <span class="hljs-operator">=</span> Integer.parseInt(cols[<span class="hljs-number">0</span>]);<br>        <span class="hljs-type">CombineKey</span> <span class="hljs-variable">outputK</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CombineKey</span>();<br>        outputK.deptno = deptno;<br>        outputK.virtualKey = <span class="hljs-number">0</span>;<br>        context.write(outputK, value);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EmpMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Mapper</span>&lt;LongWritable, Text, CombineKey, Text&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">map</span><span class="hljs-params">(LongWritable key, Text value, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        String[] cols = value.toString().split(<span class="hljs-string">&quot;,&quot;</span>);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">deptno</span> <span class="hljs-operator">=</span> Integer.parseInt(cols[<span class="hljs-number">7</span>]);<br>        <span class="hljs-type">CombineKey</span> <span class="hljs-variable">outputK</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CombineKey</span>();<br>        outputK.deptno = deptno;<br>        outputK.virtualKey = <span class="hljs-number">1</span>;<br>        context.write(outputK, value);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DeptnoPartitioner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Partitioner</span>&lt;CombineKey, Text&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getPartition</span><span class="hljs-params">(CombineKey combineKey, Text text, <span class="hljs-type">int</span> numPartitions)</span> &#123;<br>        <span class="hljs-keyword">return</span> (combineKey.deptno.hashCode() &amp; Integer.MAX_VALUE) % numPartitions;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DeptnoGroupComparator</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">WritableComparator</span> &#123;<br>    <span class="hljs-comment">// 永远记着定义 Comparator 的时候别把这茬忘掉了……</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">DeptnoGroupComparator</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>(CombineKey.class, <span class="hljs-literal">true</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">compare</span><span class="hljs-params">(WritableComparable a, WritableComparable b)</span> &#123;<br>        <span class="hljs-keyword">return</span> ((CombineKey) a).deptno.compareTo(((CombineKey) b).deptno);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// Combiner 的职责是在每个 Mapper 本地聚集</span><br><span class="hljs-comment">// 对于 DeptMapper，没有聚集的必要，对于 EmpMapper，可以直接找到该 Mapper 该部门最大工资的雇员，只写它就行</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeCombiner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Reducer</span>&lt;CombineKey, Text, CombineKey, Text&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">reduce</span><span class="hljs-params">(CombineKey key, Iterable&lt;Text&gt; values, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        <span class="hljs-keyword">if</span> (key.virtualKey.equals(<span class="hljs-number">0</span>)) &#123;<br>            <span class="hljs-keyword">for</span> (Text value : values) &#123;<br>                context.write(key, value);<br>            &#125;<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br><br>        <span class="hljs-type">double</span> <span class="hljs-variable">maxSal</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">maxEmp</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><br>        <span class="hljs-keyword">for</span> (Text value : values) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">emp</span> <span class="hljs-operator">=</span> value.toString();<br>            <span class="hljs-type">double</span> <span class="hljs-variable">sal</span> <span class="hljs-operator">=</span> Double.parseDouble(emp.split(<span class="hljs-string">&quot;,&quot;</span>)[<span class="hljs-number">5</span>]);<br>            <span class="hljs-keyword">if</span> (sal &gt; maxSal) &#123;<br>                maxSal = sal;<br>                maxEmp = emp;<br>            &#125;<br>        &#125;<br>        context.write(key, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Text</span>(maxEmp));<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Reducer</span>&lt;CombineKey, Text, NullWritable, Text&gt; &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">reduce</span><span class="hljs-params">(CombineKey key, Iterable&lt;Text&gt; values, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        <span class="hljs-comment">// 虚拟键不可能是 1，如果是 1，则说明这些雇员根本没有对应的部门</span><br>        <span class="hljs-comment">// 考虑当前连接是内连接，这时直接返回即可</span><br><br>        <span class="hljs-keyword">if</span> (key.virtualKey.equals(<span class="hljs-number">1</span>)) &#123;<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br><br>        String[] deptCols = values.iterator().next().toString().split(<span class="hljs-string">&quot;,&quot;</span>);<br><br>        <span class="hljs-type">double</span> <span class="hljs-variable">maxSal</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">maxEmp</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">for</span> (Text value : values) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">emp</span> <span class="hljs-operator">=</span> value.toString();<br>            <span class="hljs-type">double</span> <span class="hljs-variable">sal</span> <span class="hljs-operator">=</span> Double.parseDouble(emp.split(<span class="hljs-string">&quot;,&quot;</span>)[<span class="hljs-number">5</span>]);<br>            <span class="hljs-keyword">if</span> (sal &gt; maxSal) &#123;<br>                maxSal = sal;<br>                maxEmp = emp;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-comment">// 部门没有任何雇员，这里是内连接，也是直接返回</span><br>        <span class="hljs-keyword">if</span> (maxEmp == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br><br>        String[] empCols = maxEmp.split(<span class="hljs-string">&quot;,&quot;</span>);<br><br>        <span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringJoiner</span>(<span class="hljs-string">&quot;,&quot;</span>)<br>                .add(deptCols[<span class="hljs-number">1</span>])<br>                .add(empCols[<span class="hljs-number">1</span>])<br>                .add(empCols[<span class="hljs-number">5</span>])<br>                .toString();<br><br>        context.write(NullWritable.get(), <span class="hljs-keyword">new</span> <span class="hljs-title class_">Text</span>(result));<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>MapReduce 编写这种业务代码真的是非常……非常痛苦，底层细节太多了，远不如 SQL 那样直接，更不用说有三个以上的表进行 reduce 端 join 的时候需要使用多个 MR 任务，且需要注意的细节更多，需要定义更多 Bean……想想就痛苦，和 CRUD 一样的痛苦。</p>
+<h2 id="Spark-1"><a href="#Spark-1" class="headerlink" title="Spark"></a>Spark</h2><p>然后是 Spark 版本。Spark 版本怎么写其实我还没有学过，但跟随着直觉，还是挺容易写的。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">someComplexJob</span></span>(sc : <span class="hljs-type">SparkContext</span>, deptInputPath : <span class="hljs-type">String</span>, empInputPath : <span class="hljs-type">String</span>, outputPath : <span class="hljs-type">String</span>) : <span class="hljs-type">Unit</span> = &#123;<br>  <span class="hljs-keyword">val</span> depts = sc.textFile(deptInputPath)<br>    .map(_.split(<span class="hljs-string">&quot;,&quot;</span>))<br>    .map&#123;cols =&gt; (cols(<span class="hljs-number">0</span>), cols)&#125;<br>  <span class="hljs-keyword">val</span> emps = sc.textFile(empInputPath)<br>    .map(_.split(<span class="hljs-string">&quot;,&quot;</span>))<br>    .map&#123;cols =&gt; (cols(<span class="hljs-number">7</span>), cols)&#125;<br><br>  <span class="hljs-comment">// 值得注意的是，Spark 进行 join 操作不需要</span><br>  <span class="hljs-comment">// 像 MapReduce 那样在 KEY 里给定一个虚拟键，</span><br>  <span class="hljs-comment">// 但相信 Spark 的实现也会采取类似的手段</span><br>  <span class="hljs-keyword">val</span> deptEmps = depts.join(emps)<br><br>  <span class="hljs-comment">// 做一个 max 操作</span><br>  <span class="hljs-comment">// 需注意，reduceByKey 中的参数拿不到 KEY，这点很好</span><br>  <span class="hljs-comment">// 它怎么推断不出来……</span><br>  deptEmps.reduceByKey&#123; (a, b) =&gt;<br>    <span class="hljs-keyword">val</span> (pairA@(_, empA), pairB@(_, empB)) = (a, b)<br>    <span class="hljs-keyword">if</span> (empA(<span class="hljs-number">5</span>).toDouble &gt; empB(<span class="hljs-number">5</span>).toDouble)<br>      pairA<br>    <span class="hljs-keyword">else</span> pairB<br>  &#125;.map&#123;<span class="hljs-keyword">case</span> (_, (dept, emp)) =&gt;<br>    <span class="hljs-type">Array</span>(dept(<span class="hljs-number">1</span>),emp(<span class="hljs-number">1</span>),emp(<span class="hljs-number">5</span>)).mkString(<span class="hljs-string">&quot;,&quot;</span>)<br>  &#125;.saveAsTextFile(outputPath)<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>Spark 的代码真是优雅！但一个遗憾的地方是函数参数无法解构，使用 PartialFunction 解构，它居然说类型推断不出来，要我给出类型……i 服了 you。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总结个啥，我只能说 Spark 太香了。上面的 JOIN 代码，如果在工程实践中应当定义 Bean，MapReduce 进行连接操作时应该使用 GenericWritable 作为 VALUE。实际上本还想写个分布式排序示例，但我对 Hive 和 Spark 都还没学到那里，先跳过了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97/">分布式计算</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-20Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%202%E2%80%94%E2%80%94SORT%EF%BC%8CJOIN%EF%BC%8C%E5%88%86%E5%8C%BA%E7%AD%89.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hive 学习笔记 2——SORT，JOIN，分区等</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-17Hive%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%201%E2%80%94%E2%80%94%E6%9E%B6%E6%9E%84%EF%BC%8CDDL%20%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AF%BC%E5%87%BA%E5%AF%BC%E5%85%A5.html">
+                        <span class="hidden-mobile">Hive 学习笔记 1——架构，DDL 和数据的导出导入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

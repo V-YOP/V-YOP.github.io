@@ -1,0 +1,572 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="这玩意……也就拿来画 AST 吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 graphviz 的使用（残卷）">
+<meta property="og:url" content="http://example.com/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="这玩意……也就拿来画 AST 吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210821222756.png">
+<meta property="og:image" content="http://example.com/images/oss/20210821235744.png">
+<meta property="og:image" content="http://example.com/images/oss/20210814203458.jpg">
+<meta property="article:published_time" content="2021-08-21T16:31:37.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.287Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Graphviz">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210821222756.png">
+  
+  
+  <title>关于 graphviz 的使用（残卷） - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 graphviz 的使用（残卷）">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-22 00:31" pubdate>
+        2021年8月22日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.1k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 graphviz 的使用（残卷）</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>最近学习编译原理，苦于使用 draw.io 这样的软件绘制示意图的时候特别麻烦，于是试图找到更为简单的方案，而 <a target="_blank" rel="noopener" href="https://graphviz.org/">graphviz</a> 就是一个很舒爽的解决方案——它提供了一个名为 dot 的 DSL 用以生成 svg，png 以及其他图像格式的文件。所以这里对它进行一些学习。这软件或许在其他地方也能够使用，比如绘制流程图，状态转移图之类的时候。</p>
+<p>先尝尝鲜——下面是一个表示<code>(19+2)*2</code>的语法树的 dot 代码——</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dot">// 单行和多行注释同 Java<br>// graph 定义无向图<br>graph &#123;<br>    // 节点可以预先定义，也可以直接进行使用，这时其显示的内容就是其名称<br>    MUL [label=&quot;*&quot;]; // [] 中的内容对节点进行描述，显然这里定义了节点所显示的标签<br>    PLUS [label=&quot;+&quot;];<br>    NUM2 [label=2];<br>    NUM2_1 [label=2];<br>	<br>    PLUS -- NUM2; // --标识相连，绘制树的话，左边深度较浅<br>    PLUS -- 19;  // 直接定义和描述了一个新节点<br>    MUL -- &#123;PLUS NUM2_1&#125;; // 等价于 MUL -- PLUS; MUL -- NUM2_1;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>其使用 dot 生成的对应的图如下——</p>
+<svg width="170pt" height="188pt" viewBox="0.00 0.00 170.00 188.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<title>%0</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-184 166,-184 166,4 -4,4"></polygon>
+<!-- MUL -->
+<g id="node1" class="node">
+<title>MUL</title>
+<ellipse fill="none" stroke="#000000" cx="99" cy="-162" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00" fill="#000000">*</text>
+</g>
+<!-- PLUS -->
+<g id="node2" class="node">
+<title>PLUS</title>
+<ellipse fill="none" stroke="#000000" cx="63" cy="-90" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="63" y="-85.8" font-family="Times,serif" font-size="14.00" fill="#000000">+</text>
+</g>
+<!-- MUL&#45;&#45;PLUS -->
+<g id="edge3" class="edge">
+<title>MUL--PLUS</title>
+<path fill="none" stroke="#000000" d="M90.2854,-144.5708C84.6253,-133.2506 77.2784,-118.5568 71.6343,-107.2687"></path>
+</g>
+<!-- NUM2_1 -->
+<g id="node4" class="node">
+<title>NUM2_1</title>
+<ellipse fill="none" stroke="#000000" cx="135" cy="-90" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="135" y="-85.8" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
+</g>
+<!-- MUL&#45;&#45;NUM2_1 -->
+<g id="edge4" class="edge">
+<title>MUL--NUM2_1</title>
+<path fill="none" stroke="#000000" d="M107.7146,-144.5708C113.3747,-133.2506 120.7216,-118.5568 126.3657,-107.2687"></path>
+</g>
+<!-- NUM2 -->
+<g id="node3" class="node">
+<title>NUM2</title>
+<ellipse fill="none" stroke="#000000" cx="27" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
+</g>
+<!-- PLUS&#45;&#45;NUM2 -->
+<g id="edge1" class="edge">
+<title>PLUS--NUM2</title>
+<path fill="none" stroke="#000000" d="M54.2854,-72.5708C48.6253,-61.2506 41.2784,-46.5568 35.6343,-35.2687"></path>
+</g>
+<!-- 19 -->
+<g id="node5" class="node">
+<title>19</title>
+<ellipse fill="none" stroke="#000000" cx="99" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="99" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">19</text>
+</g>
+<!-- PLUS&#45;&#45;19 -->
+<g id="edge2" class="edge">
+<title>PLUS--19</title>
+<path fill="none" stroke="#000000" d="M71.7146,-72.5708C77.3747,-61.2506 84.7216,-46.5568 90.3657,-35.2687"></path>
+</g>
+</svg>
+
+<p>说使用 dot 生成，是因为 graphviz 实际上提供了多种命令来生成图，其代表各种不同的<strong>布局引擎</strong>，其各有特点——</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dot</td>
+<td>渲染的图具有明确方向性。</td>
+</tr>
+<tr>
+<td>neato</td>
+<td>渲染的图缺乏方向性。</td>
+</tr>
+<tr>
+<td>twopi</td>
+<td>渲染的图采用放射性布局。</td>
+</tr>
+<tr>
+<td>circo</td>
+<td>渲染的图采用环型布局。</td>
+</tr>
+<tr>
+<td>fdp</td>
+<td>渲染的图缺乏方向性。</td>
+</tr>
+<tr>
+<td>sfdp</td>
+<td>渲染大型的图，图片缺乏方向性。</td>
+</tr>
+</tbody></table>
+<p>下面通过一些实例和注释描述其使用。</p>
+<h1 id="List"><a href="#List" class="headerlink" title="List"></a>List</h1><p>这里试图展示 Lisp 中的 cons&#x2F;list 的结构。一般来说这种结构使用所谓的“箱子表示法 ”（box notation），如下图来自《ANSI Common Lisp》。</p>
+<p><img src="/images/oss/20210821222756.png"></p>
+<p>这里，每一个 node 都有两个“箱子”（之后都这么称呼），dot 中使用 record 类型的 shape 可以让 node 如此展示。其使用方法如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dot">digraph g &#123;<br>    node [shape = record]; // 可以使用这种方法设定所有 node 的属性<br>    node0[label = &quot;&#123;\&lt;interface\&gt; \n AInterface| |+ hello():void&#125;&quot;];  // 可以使用一些标识符<br>    node1[label = &quot;&lt;f0&gt; A|&lt;f1&gt; BCD&quot;]; <br>    node0 -&gt; node1:f0;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<svg width="112pt" height="173pt" viewBox="0.00 0.00 112.19 173.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 169.2)">
+<title>g</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-169.2 108.1896,-169.2 108.1896,4 -4,4"></polygon>
+<!-- node0 -->
+<g id="node1" class="node">
+<title>node0</title>
+<polygon fill="none" stroke="#000000" points="0,-73.5 0,-164.7 93.4928,-164.7 93.4928,-73.5 0,-73.5"></polygon>
+<text text-anchor="middle" x="46.7464" y="-148.1" font-family="Times,serif" font-size="14.00" fill="#000000">&lt;interface&gt; </text>
+<text text-anchor="middle" x="46.7464" y="-131.3" font-family="Times,serif" font-size="14.00" fill="#000000"> AInterface</text>
+<polyline fill="none" stroke="#000000" points="0,-123.1 93.4928,-123.1 "></polyline>
+<text text-anchor="middle" x="46.7464" y="-106.5" font-family="Times,serif" font-size="14.00" fill="#000000"> </text>
+<polyline fill="none" stroke="#000000" points="0,-98.3 93.4928,-98.3 "></polyline>
+<text text-anchor="middle" x="46.7464" y="-81.7" font-family="Times,serif" font-size="14.00" fill="#000000">+ hello():void</text>
+</g>
+<!-- node1 -->
+<g id="node2" class="node">
+<title>node1</title>
+<polygon fill="none" stroke="#000000" points="33.3032,-.5 33.3032,-36.5 104.1896,-36.5 104.1896,-.5 33.3032,-.5"></polygon>
+<text text-anchor="middle" x="46.3565" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">A</text>
+<polyline fill="none" stroke="#000000" points="59.4098,-.5 59.4098,-36.5 "></polyline>
+<text text-anchor="middle" x="81.7997" y="-14.3" font-family="Times,serif" font-size="14.00" fill="#000000">BCD</text>
+</g>
+<!-- node0&#45;&gt;node1 -->
+<g id="edge1" class="edge">
+<title>node0-&gt;node1:f0</title>
+<path fill="none" stroke="#000000" d="M46.7464,-73.2248C46.7464,-64.632 46.7464,-55.5681 46.7464,-46.7299"></path>
+<polygon fill="#000000" stroke="#000000" points="50.2465,-46.5 46.7464,-36.5 43.2465,-46.5 50.2465,-46.5"></polygon>
+</g>
+</svg>
+
+<p>上面的代码试图展示一个 UML 类图。需要注意的是 node0 中 label 的内容。其包含三个元符号——{}，&lt;&gt;和|。</p>
+<p>其中，|可以认为是各个箱子的分隔符；{}则是对特定数量箱子起作用，其将更改箱子排列的方向（这个元符号用以构造结构更为复杂的箱子）。&lt;&gt;用来定义“锚点”，使可以被 edge 所引用。</p>
+<p>为实现箱型表示法，还有一点需要实现——默认排列是从上到下的，需要改成从左到右，这是通过 graph 的 rankdir 属性实现的。需要注意的是，rankdir 会改变 record 的默认方向。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dot">digraph g &#123;<br>    rankdir=LR;	// 方向<br>    node [shape = record]; // 默认所有 node 都是 record<br>    edge [tailclip=false]; // edge 不会被 clip——这是为了保证箭头从内部伸出<br>    node0[label = &quot;&#123;a | &lt;A&gt;&#125;&quot;]; <br>    node1_0[label = &quot;&#123;&lt;A&gt;|&lt;B&gt;&#125;&quot;];<br>    node1_1[label = &quot;&#123;b|&lt;B&gt;&#125;&quot;];<br>    node2[label = &quot;&#123;c|nil&#125;&quot;];<br>    node3[label = &quot;&#123;d|nil&#125;&quot;];<br>    node0:A:c -&gt; node1_0; // :c 是 node 默认提供的“锚点”，表示从中心开始<br>    node1_0:A:c -&gt; node1_1;<br>    node1_1:A:c -&gt; node2;<br>    node1_0:B:c -&gt; node3;<br>    // &#123;rank=same;node1_0;node1_1;&#125; 这玩意有 bug，对 record 会报错！<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p><img src="/images/oss/20210821235744.png"></p>
+<p>……看起来要表达规则的图形的时候这玩意并不太适合。</p>
+<blockquote>
+<p>  先就这样吧……这玩意出现的 bug 浇灭了我继续的兴趣。反正当前学到的东西足够画 AST 了。</p>
+</blockquote>
+<p><img src="/images/oss/20210814203458.jpg"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Graphviz/">Graphviz</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-21%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B04%E2%80%94%E2%80%94Stone%E8%AF%AD%E6%B3%95%E7%9A%84%E8%AE%BE%E8%AE%A1.html">
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 4——Stone 语法的设计</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

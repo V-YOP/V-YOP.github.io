@@ -1,0 +1,642 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近玩游戏 《Functional》，发现完全使用 lambda 做各种抽象还蛮有趣的，这里做一些关于实践 lambda 的笔记，顺路把 Y 组合子也给咔嚓掉——已经很长一段时间想要去学习它但搁置了。这里使用 js 去实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="lambda 实践">
+<meta property="og:url" content="http://example.com/2022/12-11LambdaInAction.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="最近玩游戏 《Functional》，发现完全使用 lambda 做各种抽象还蛮有趣的，这里做一些关于实践 lambda 的笔记，顺路把 Y 组合子也给咔嚓掉——已经很长一段时间想要去学习它但搁置了。这里使用 js 去实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picx.zhimg.com/80/v2-90fa9b7c1888aef7bc0566b68e9e49d9_1440w.webp?source=1940ef5c">
+<meta property="article:published_time" content="2022-12-11T15:19:35.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.304Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://picx.zhimg.com/80/v2-90fa9b7c1888aef7bc0566b68e9e49d9_1440w.webp?source=1940ef5c">
+  
+  
+  <title>lambda 实践 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="lambda 实践">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-12-11 23:19" pubdate>
+        2022年12月11日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      14k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">lambda 实践</h1>
+            
+            <div class="markdown-body">
+              <p>最近玩游戏 <a target="_blank" rel="noopener" href="https://store.steampowered.com/app/1636730">《Functional》</a>，发现完全使用 lambda 做各种抽象还蛮有趣的，这里做一些关于实践 lambda 的笔记，顺路把 Y 组合子也给咔嚓掉——已经很长一段时间想要去学习它但搁置了。这里使用 js 去实现，它使用箭头函数时的语法已经足够简洁；所有 lambda 符号都写作<code>λ</code>，且所有字面量的 abstraction 都会给予括号。</p>
+<h1 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h1><p>这里先把 lambda 回顾一遍，在 lambda 中，存在着三种表达式——variable，abstraction，application。variable 的语法为任何小写字母，如 x，y，abstraction 的语法如<code>λx.x</code>，application 的语法如<code>A B</code>，其中 A，B 均为表达式。</p>
+<p>下面都是合法的 lambda：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs llvm"><span class="hljs-keyword">x</span><br>λ<span class="hljs-keyword">x</span>.xx<br>(λ<span class="hljs-keyword">x</span>.<span class="hljs-keyword">x</span>) <span class="hljs-keyword">x</span><br></code></pre></div></td></tr></table></figure>
+
+<p>对 lambda，我们能做的唯一一件事其实就是化简，具体来说，是把 Application 化简；比如对<code>(λx.x x) y</code>，对其进行化简就是把 x 替换成 y，得到它的函数体，即<code>y y</code>。</p>
+<p>最后是 abstraction 和 application 的结合性问题，abstraction 是右结合的，application 是左结合的，这就是说：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs llvm">λ<span class="hljs-keyword">x</span>.λy.λz.xyz <span class="hljs-operator">=</span> λ<span class="hljs-keyword">x</span>.(λy.(λz.xyz))<br><span class="hljs-keyword">x</span> y z <span class="hljs-operator">=</span> (<span class="hljs-keyword">x</span> y) z <br></code></pre></div></td></tr></table></figure>
+
+<p>从 js 的上下文来看，abstraction 就是函数定义，application 就是函数应用，下面均以此来称呼 abstraction 和 application。</p>
+<p>哈吉马路哟！</p>
+<h1 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h1><p>在一切开始之前，先预先定义一个 VOID 变量用于填充，它是一个 identity 函数：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs abnf"><span class="hljs-attribute">VOID</span> <span class="hljs-operator">=</span> λx.x<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">VOID</span> = x =&gt; x<br></code></pre></div></td></tr></table></figure>
+
+<p>布尔值是最简单的数据结构，它仅有两个值 True 和 False。</p>
+<p>使用 Lambda 时，我们可以这样定义 Boolean：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs livecodeserver"><span class="hljs-literal">TRUE</span> = λ<span class="hljs-keyword">a</span>.λb.<span class="hljs-keyword">a</span>  <br><span class="hljs-literal">FALSE</span> = λ<span class="hljs-keyword">a</span>.λb.b<br></code></pre></div></td></tr></table></figure>
+
+<p>对应的 js 为：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">TRUE</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> a (<span class="hljs-variable constant_">VOID</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">FALSE</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> b (<span class="hljs-variable constant_">VOID</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>这里其实我并不明确这里的 a 和 b 为何需要是函数，可能是为延迟求值，也可能是为统一“模式匹配”的形式（见下面的 <a href="#%E9%83%A8%E5%88%86%E6%80%BB%E7%BB%93">部分总结</a>），下面有些地方使用了这个形式，有些地方也没有。</p>
+<p>它们的含义都很明确——TRUE 表示一个两参数的函数，返回第一个参数，FALSE 表示一个两参数的函数，返回第二个参数。可以认为，我们把 boolean 通过 lambda 去“编码”了。至于为何要这样编码，去问丘奇吧 hh。</p>
+<p>这样抽象后，我们能够实现 if，if 是这样的结构——它接受三个参数，其中第一个参数是布尔值，若其为真，返回第二个参数，否则返回第三个参数，它的实现是显然的。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs stylus">IF = λc.λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>. c <span class="hljs-selector-tag">a</span> b<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">IF</span> = cond =&gt; <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">cond</span>(a)(b)<br></code></pre></div></td></tr></table></figure>
+
+<p>可以做一下演算，假设 1 和 2 是合法的 lambda 变量：</p>
+<p>对其的使用类似这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<br>  <span class="hljs-variable constant_">IF</span> (<span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-function">() =&gt;</span> <span class="hljs-number">1</span>) (<span class="hljs-function">() =&gt;</span> <span class="hljs-number">2</span>)<br>)<br></code></pre></div></td></tr></table></figure>
+
+<p>在这里，由于 javascript 的弱类型，可以注意到，IF 其实就是 identity 函数<code>x =&gt; x</code>——<code>IF(TRUE)(1)(2) = TRUE(1)(2) = 1</code>，<code>IF(TRUE) = TRUE</code>。</p>
+<p>实现 AND 和 OR 也是简单的，它们的参数均为布尔值，返回值也为布尔值：</p>
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-attr">AND</span> = λa.λb. IF a (IF b <span class="hljs-literal">TRUE</span> <span class="hljs-literal">FALSE</span>) <span class="hljs-literal">FALSE</span><br><span class="hljs-attr">OR</span> = λa.λb. IF a <span class="hljs-literal">TRUE</span> (IF b <span class="hljs-literal">TRUE</span> <span class="hljs-literal">FALSE</span>)<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">AND</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-variable constant_">IF</span> (a) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">IF</span> (b) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">FALSE</span>)) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">FALSE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">OR</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-variable constant_">IF</span> (a) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">IF</span> (b) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">FALSE</span>))<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="Cons"><a href="#Cons" class="headerlink" title="Cons"></a>Cons</h1><p>Cons 的实现如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs stylus">CONS = λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>.λn.λf<span class="hljs-selector-class">.f</span> <span class="hljs-selector-tag">a</span> <span class="hljs-selector-tag">b</span><br>NIL = λn.λf<span class="hljs-selector-class">.e</span><br>CAR = λ<span class="hljs-selector-tag">p</span><span class="hljs-selector-class">.p</span> VOID (λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>.a)<br>CDR = λ<span class="hljs-selector-tag">p</span><span class="hljs-selector-class">.p</span> VOID (λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>.b)<br>IS_NIL = λ<span class="hljs-selector-tag">p</span><span class="hljs-selector-class">.p</span> TRUE FALSE<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">CONS</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">onNil</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">onCons</span> =&gt;</span> onCons (a) (b)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">NIL</span> = onNil =&gt; <span class="hljs-function"><span class="hljs-params">onCons</span> =&gt;</span> onNil (<span class="hljs-variable constant_">VOID</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">CAR</span> = cons =&gt; cons (<span class="hljs-variable constant_">VOID</span>) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> a)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">CDR</span> = cons =&gt; cons (<span class="hljs-variable constant_">VOID</span>) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> b)<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> pairInstance = <span class="hljs-variable constant_">CONS</span> (<span class="hljs-number">1</span>) (<span class="hljs-number">2</span>)<br><span class="hljs-keyword">const</span> car = <span class="hljs-variable constant_">CAR</span> (pairInstance) <span class="hljs-comment">// 1</span><br></code></pre></div></td></tr></table></figure>
+
+<p>Cons 的这个定义<code>a =&gt; b =&gt; onNil =&gt; onCons =&gt; onCons (a) (b)</code>十分有趣，我们可以给它加点括号来更突出这有趣之处：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">CONS</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> (<span class="hljs-function"><span class="hljs-params">onNil</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">onCons</span> =&gt;</span> onCons (a) (b))<br></code></pre></div></td></tr></table></figure>
+
+<p><strong>可以建立这样的心智模型，即 CONS 是这样一个函数，它接受两个参数，去返回一个数据结构，而我们通过去传递给它一个“Matcher”（模式匹配）去获取该数据结构中的值</strong>。同时也可以注意到，NIL 的结构和调用 CONS 返回的数据结构是一致的。</p>
+<p>然后，显然需要实现一个检查 PAIR 是否是 NIL 的函数，这个函数的实现同样很 trick 但能找到模式：</p>
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-attr">IS_NIL</span> = λp. p <span class="hljs-literal">TRUE</span> (λa.λb. <span class="hljs-literal">FALSE</span>)<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">IS_NIL</span> = p =&gt; p (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-variable constant_">FALSE</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>为何这么实现？推导一下就行了：</p>
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel">IS_NIL NIL<br>=&gt; IS_NIL NOTHING<br>=&gt; IS_NIL (λe.λf.e)<br>=&gt; (λe.λf.e) <span class="hljs-built_in">TRUE</span> (λa.λb. <span class="hljs-built_in">FALSE</span>)<br>=&gt; (λf. <span class="hljs-built_in">TRUE</span>) (λa.λb. <span class="hljs-built_in">FALSE</span>)<br>=&gt; <span class="hljs-built_in">TRUE</span><br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel">IS_NIL (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br>=&gt; IS_NIL (CONS <span class="hljs-number">1</span> <span class="hljs-number">2</span>)<br>=&gt; IS_NIL (λe.λf. f <span class="hljs-number">1</span> <span class="hljs-number">2</span>)<br>=&gt; (λe.λf. <span class="hljs-number">1</span> <span class="hljs-number">2</span>) <span class="hljs-built_in">TRUE</span> (λa.λb. <span class="hljs-built_in">FALSE</span>)<br>=&gt; (λf.f <span class="hljs-number">1</span> <span class="hljs-number">2</span>) (λa.λb. <span class="hljs-built_in">FALSE</span>)<br>=&gt; (λa.λb. <span class="hljs-built_in">FALSE</span>) <span class="hljs-number">1</span> <span class="hljs-number">2</span><br>=&gt; <span class="hljs-built_in">FALSE</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这很像模式匹配——只不过我们必须通过函数参数的形式去绑定所有值就是了，比如这个 IS_NIL 函数可以看成这样（使用 Scala 的模式匹配语法）：</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">match</span> cons &#123;<br>  <span class="hljs-keyword">case</span> <span class="hljs-type">NIL</span> -&gt; <span class="hljs-type">TRUE</span><br>  <span class="hljs-keyword">case</span> <span class="hljs-type">CONS</span>(a, b) -&gt; <span class="hljs-type">FALSE</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="Maybe"><a href="#Maybe" class="headerlink" title="Maybe"></a>Maybe</h1><p>照葫芦画瓢，我们可以尝试去抽象 Maybe：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- haskell syntax</span><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Maybe</span> a = <span class="hljs-type">Nothing</span> | <span class="hljs-type">Just</span> a</span><br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight abnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs abnf"><span class="hljs-attribute">NOTHING</span> <span class="hljs-operator">=</span> λe.λf. e<br><span class="hljs-attribute">JUST</span> <span class="hljs-operator">=</span> λa.λe.λf. f a<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">NOTHING</span> = onNothing =&gt; <span class="hljs-function"><span class="hljs-params">onJust</span> =&gt;</span> onNothing (<span class="hljs-variable constant_">VOID</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">JUST</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">onNothing</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">onJust</span> =&gt;</span> onJust (a)<br></code></pre></div></td></tr></table></figure>
+
+<p>map 的操作如 map，flatMap，orElse 也可以定义出来：</p>
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-attr">IS_NOTHING</span> = λm. m <span class="hljs-literal">TRUE</span> (λa.<span class="hljs-literal">FALSE</span>)<br><span class="hljs-attr">FLATMAP</span> = λf.λm. m m (λa. f a)<br><span class="hljs-attr">MAP</span> = λf.λm. m m (λa. JUST (f a))<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">IS_NOTHING</span> = maybe =&gt; maybe (<span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-variable constant_">FALSE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">FLATMAP</span> = f =&gt; <span class="hljs-function"><span class="hljs-params">maybe</span> =&gt;</span> maybe (<span class="hljs-function">() =&gt;</span> maybe) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> f (a))<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">MAP</span> = f =&gt; <span class="hljs-function"><span class="hljs-params">maybe</span> =&gt;</span> maybe (<span class="hljs-function">() =&gt;</span> maybe) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-variable constant_">JUST</span> (f (a)))<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">OR_ELSE</span> = maybe =&gt; <span class="hljs-function"><span class="hljs-params">defaultValue</span> =&gt;</span> maybe (defaultValue) (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> a)<br></code></pre></div></td></tr></table></figure>
+
+<p>使用类似这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> a = <span class="hljs-variable constant_">JUST</span> (<span class="hljs-number">1</span>)<br><span class="hljs-keyword">const</span> b = <span class="hljs-variable constant_">MAP</span> (<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> x + <span class="hljs-number">1</span>) (a)<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<br>    <span class="hljs-variable constant_">OR_ELSE</span> (b) (-<span class="hljs-number">1000</span>)<br>)<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="部分总结"><a href="#部分总结" class="headerlink" title="部分总结"></a>部分总结</h1><p>在 haskell 中，Bool，Cons，Maybe，Either，Tree（二叉树）的类型定义分别如下：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Bool</span> = <span class="hljs-type">True</span> | <span class="hljs-type">False</span></span><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">List</span> a = <span class="hljs-type">Cons</span> a (<span class="hljs-type">List</span> <span class="hljs-title">a</span>) | <span class="hljs-type">Nil</span></span><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Maybe</span> a = <span class="hljs-type">Just</span> a | <span class="hljs-type">Nothing</span></span><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Either</span> a b = <span class="hljs-type">Left</span> a | <span class="hljs-type">Right</span> b</span><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span> a = <span class="hljs-type">Empty</span> | <span class="hljs-type">Node</span> a (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) </span><br></code></pre></div></td></tr></table></figure>
+
+<p>使用 lambda 对其的抽象如下：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs abnf"><span class="hljs-attribute">TRUE</span>  <span class="hljs-operator">=</span> λa.λb. a<br><span class="hljs-attribute">FALSE</span> <span class="hljs-operator">=</span> λa.λb. b<br><br><span class="hljs-attribute">CONS</span> <span class="hljs-operator">=</span> λa.λb.λn.λf. f a b<br><span class="hljs-attribute">NIL</span>  <span class="hljs-operator">=</span>       λn.λf. n<br><br><span class="hljs-attribute">JUST</span>    <span class="hljs-operator">=</span> λa.λn.λf. f a<br><span class="hljs-attribute">NOTHING</span> <span class="hljs-operator">=</span>    λn.λf. n<br><br><span class="hljs-attribute">LEFT</span>  <span class="hljs-operator">=</span> λa.λl.λr. l a<br><span class="hljs-attribute">RIGHT</span> <span class="hljs-operator">=</span> λb.λl.λr. r b<br><br><span class="hljs-attribute">NODE</span>  <span class="hljs-operator">=</span> λa.λb.λc.λe.λn. n a b c<br><span class="hljs-attribute">EMPTY</span> <span class="hljs-operator">=</span>          λe.λn.e<br></code></pre></div></td></tr></table></figure>
+
+<p><strong>可以发现，对任何 ADT，它似乎都能通过 lambda 去抽象，其中，每一个值构造器对应一个函数，其接受值构造器的参数，去构造相应数据结构；然后，我们传递给这个数据结构一个 Matcher，对其进行“模式匹配”并获得值</strong>。</p>
+<h1 id="丘奇数"><a href="#丘奇数" class="headerlink" title="丘奇数"></a>丘奇数</h1><p>通过上面的观念，我们尝试操作一下自然数，<strong>皮亚诺自然数</strong>的 Haskell 定义是这样的：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Nat</span> = <span class="hljs-type">Zero</span> | <span class="hljs-type">Succ</span> <span class="hljs-type">Nat</span></span><br></code></pre></div></td></tr></table></figure>
+
+<p>定义相应 lambda，并去推演 ONE，TWO，THREE……</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">ZERO =    λx.λf. x<br>SUCC = λa.λx.λf. f a<br><br>ONE <br><span class="hljs-section">= SUCC ZERO</span><br><span class="hljs-section">= (λa.λx.λf. f a) (λx.λf. x)</span><br><span class="hljs-section">= (λx.λf. f (λx.λf. x))</span><br><br>TWO <br><span class="hljs-section">= SUCC ONE</span><br><span class="hljs-section">= (λa.λx.λf. f a) (λx.λf. f (λx.λf. x))</span><br><span class="hljs-section">= (λx.λf. f (λx.λf. f (λx.λf. x)))</span><br></code></pre></div></td></tr></table></figure>
+
+<p>但这样的自然数定义实在有点难以形容，这时候就来了<strong>丘奇数</strong>，它修改了 SUCC，把“Matcher”提前应用给了它的“值”：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">ZERO =    λx.λf. x<br>SUCC = λa.λx.λf. f (a x f)<br><br>ONE<br><span class="hljs-section">= SUCC ZERO</span><br><span class="hljs-section">= (λa.λx.λf. f (a x f)) (λx.λf. x)</span><br><span class="hljs-section">= (λx.λf. f x)</span><br><br>TWO<br><span class="hljs-section">= SUCC ONE</span><br><span class="hljs-section">= (λa.λx.λf. f (a x f)) (λx.λf. f x)</span><br><span class="hljs-section">= (λx.λf. f ((λx.λf. f x) x f)) </span><br><span class="hljs-section">= (λx.λf. f (f x))</span><br><br>THREE<br><span class="hljs-section">= SUCC ONE</span><br><span class="hljs-section">= (λa.λx.λf. f (a x f)) (λx.λf. f (f x))</span><br><span class="hljs-section">= (λx.λf. f ((λx.λf. f (f x)) x f)) </span><br><span class="hljs-section">= (λx.λf. f (f (f x)))</span><br></code></pre></div></td></tr></table></figure>
+
+<p>可以发现，自然数的值就是 f 应用的次数，f 应用 n 次，则对应的自然数的值就是 n；其 js 表述如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">ZERO</span> = x =&gt; <span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> x<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">SUCC</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> f (a (x) (f))<br></code></pre></div></td></tr></table></figure>
+
+<p>根据丘奇数的形式，可以很容易地将丘奇数转换为 js 的数字：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">inc</span>(<span class="hljs-params">n</span>) &#123;<br>  <span class="hljs-keyword">return</span> n + <span class="hljs-number">1</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">(λx.λf. f (f (f (f (x))))) 0 inc<br><span class="hljs-section">= inc (inc (inc (inc (0))))</span><br><span class="hljs-section">= 4</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这种形式非常有趣，它像某种 reduce，其中 x 为初始值，f 为 step 函数，我们可以把 f 换成不同的函数（只要它的签名满足<code>A =&gt; A</code>），把 x 换成不同的值（即这里的类型<code>A</code>），比如我们可以去构造一个同这个自然数大小相同长度的列表：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">push0</span>(<span class="hljs-params">x</span>) &#123;<br>  <span class="hljs-keyword">return</span> [<span class="hljs-number">0</span>, ...x]<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">(λx.λf. f (f (f (f (x))))) [] push0<br><span class="hljs-section">= push0 (push0 (push0 (push0 ([]))))</span><br><span class="hljs-section">= [0, 0, 0, 0]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这个性质对定义四则运算非常重要，比如考虑加法，<strong>对任意自然数 n，我们将其加 a，就是将其应用 a 次 SUCC</strong>，形式化地来说，就是：</p>
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel">PLUS <span class="hljs-built_in">n</span> a = SUCC^a <span class="hljs-built_in">n</span><br></code></pre></div></td></tr></table></figure>
+
+<p>那么，如何在 n 上应用 a 次 SUCC 呢？答案很明白了：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs abnf"><span class="hljs-attribute">PLUS</span> <span class="hljs-operator">=</span> λn.λa. a n SUCC<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">PLUS</span> = n =&gt; <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> a (n) (<span class="hljs-variable constant_">SUCC</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>测试一下：</p>
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel">PLUS (SUCC (SUCC (SUCC ZERO))) (SUCC (SUCC ZERO))<br>= (λn.λa. a <span class="hljs-built_in">n</span> SUCC) (SUCC (SUCC (SUCC ZERO))) (SUCC (SUCC ZERO))<br>= (SUCC (SUCC ZERO)) (SUCC (SUCC (SUCC ZERO))) SUCC<br>= (λx.λf.f (f x)) (SUCC (SUCC (SUCC ZERO))) SUCC<br>= SUCC (SUCC (SUCC (SUCC (SUCC ZERO))))<br>= <span class="hljs-number">5</span><br></code></pre></div></td></tr></table></figure>
+
+<p>乘法也很简单——自然数 n 乘以自然数 a，就是<code>0 + n + n + ... + n</code>，其中 n 的个数为 a，我们只需要让 f 的值变为<code>λx. PLUS x n</code>即可，一个简单的闭包罢了：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs livecodeserver">MULTIPLY = λn.λ<span class="hljs-keyword">a</span>. <span class="hljs-keyword">a</span> <span class="hljs-literal">ZERO</span> (λx. PLUS x n)<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">MULTIPLY</span> = n =&gt; <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> a (<span class="hljs-variable constant_">ZERO</span>) (<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-variable constant_">PLUS</span> (x) (n))<br></code></pre></div></td></tr></table></figure>
+
+<p>测试一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-variable constant_">MULTIPLY</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)) (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)))<br>= (λn.λa. a <span class="hljs-variable constant_">ZERO</span> (λx. <span class="hljs-variable constant_">PLUS</span> x n)) (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)) (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)))<br>= (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) <span class="hljs-variable constant_">ZERO</span> (λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)))<br>= (λx.λf.<span class="hljs-property">f</span> (f (f x))) <span class="hljs-variable constant_">ZERO</span> (λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)))<br>= (λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) ((λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) ((λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) (<span class="hljs-variable constant_">ZERO</span>)))<br>= (λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) ((λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) (<span class="hljs-variable constant_">PLUS</span> <span class="hljs-variable constant_">ZERO</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))))<br>= (λx. <span class="hljs-variable constant_">PLUS</span> x (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) (<span class="hljs-variable constant_">PLUS</span> (<span class="hljs-variable constant_">PLUS</span> <span class="hljs-variable constant_">ZERO</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>)))<br>= <span class="hljs-variable constant_">PLUS</span> (<span class="hljs-variable constant_">PLUS</span> (<span class="hljs-variable constant_">PLUS</span> <span class="hljs-variable constant_">ZERO</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))) (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">SUCC</span> <span class="hljs-variable constant_">ZERO</span>))<br>= + (+ (+ (<span class="hljs-number">0</span> <span class="hljs-number">2</span>) <span class="hljs-number">2</span>) <span class="hljs-number">2</span>)<br>= <span class="hljs-number">6</span><br></code></pre></div></td></tr></table></figure>
+
+<p>要定义减法，我们需要先定义 PRED 即前驱，减一操作，即从<code>λx.λf. f (f x)</code> 到<code>λx.λf.f x</code>。这个操作对皮亚诺自然数来说是非常容易的，但对丘奇数（，对我）来说完全不 trival，这里参考 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/64274105/answer/218978613">如何理解丘奇计数的减法？ - Thomas Lin 的回答 - 知乎</a>。</p>
+<p>我们可以去尝试构造这样一个 PAIR 的序列，其中对每一个元素，它的第一个元素是第二个元素的后继，且对序列中后一个元素，它的第一个元素为前一个元素的第一个元素的后继，第二个元素为前一个元素的第二个元素；定义<code>PRED ZERO = ZERO</code>，依此定义这个序列的起始值为<code>(ZERO, ZERO)</code>；</p>
+<p><img src="https://picx.zhimg.com/80/v2-90fa9b7c1888aef7bc0566b68e9e49d9_1440w.webp?source=1940ef5c"></p>
+<p>根据示意图能发现，对任意自然数 n，只要找到这个序列中第 n 个值，它的第二个元素就是它的前驱。</p>
+<p>因此，能够定义起始元素以及步进函数：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs stylus">PAIR = λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>.λf<span class="hljs-selector-class">.f</span> <span class="hljs-selector-tag">a</span> <span class="hljs-selector-tag">b</span><br>FST = λ<span class="hljs-selector-tag">p</span>. <span class="hljs-selector-tag">p</span> (λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>.a)<br>SND = λ<span class="hljs-selector-tag">p</span>. <span class="hljs-selector-tag">p</span> (λ<span class="hljs-selector-tag">a</span>.λ<span class="hljs-selector-tag">b</span>.b)<br><br>START = PAIR ZERO ZERO<br>STEP = λ<span class="hljs-selector-tag">p</span>. PAIR (SUCC (FST p)) (FST p)<br></code></pre></div></td></tr></table></figure>
+
+<p>根据上面的把自然数转换成 js 数字，列表的操作，我们同样可以把自然数直接转换成这个序列中的元素，只消 x，f 的值确定即可，其中 x 为 START（类型为<code>(Nat, Nat)</code>），f 为 STEP（类型为<code>(Nat, Nat) =&gt; (Nat, Nat)</code>），因此，要获取自然数的前驱，我们得到这样的代码：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs abnf"><span class="hljs-attribute">PRED</span> <span class="hljs-operator">=</span> λn. SND (n START STEP)<br></code></pre></div></td></tr></table></figure>
+
+<p>这里做一些测试：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">PRED ZERO<br><span class="hljs-section">= SND (ZERO START STEP)</span><br><span class="hljs-section">= SND ((λx.λf.x) START STEP)</span><br><span class="hljs-section">= SND START</span><br><span class="hljs-section">= SND (ZERO, ZERO)</span><br><span class="hljs-section">= ZERO</span><br><br>PRED (SUCC ZERO)<br><span class="hljs-section">= SND ((SUCC ZERO) START STEP)</span><br><span class="hljs-section">= SND ((λx.λf.f x) START STEP)</span><br><span class="hljs-section">= SND (STEP START)</span><br><span class="hljs-section">= SND (STEP (ZERO, ZERO))</span><br><span class="hljs-section">= SND (SUCC ZERO, ZERO)</span><br><span class="hljs-section">= ZERO</span><br><br>PRED (SUCC (SUCC ZERO))<br><span class="hljs-section">= SND ((SUCC (SUCC ZERO)) START STEP)</span><br><span class="hljs-section">= SND ((λx.λf.f (f x)) START STEP)</span><br><span class="hljs-section">= SND (STEP (STEP START))</span><br><span class="hljs-section">= SND (STEP (SUCC ZERO, ZERO))</span><br><span class="hljs-section">= SND (SUCC (SUCC ZERO), SUCC ZERO)</span><br><span class="hljs-section">= SUCC ZERO</span><br></code></pre></div></td></tr></table></figure>
+
+<p>老实说，它的纯 lambda 形式我实在化简不下去了，这里直接开摆，把上面的 PRED 用 js 实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">PAIR</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> f (a) (b)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">FST</span> = p =&gt; p (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> a)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">SND</span> = p =&gt; p (<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> b)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">START</span> = <span class="hljs-variable constant_">PAIR</span> (<span class="hljs-variable constant_">ZERO</span>) (<span class="hljs-variable constant_">ZERO</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">STEP</span> = p =&gt; <span class="hljs-variable constant_">PAIR</span> (<span class="hljs-variable constant_">SUCC</span> (<span class="hljs-variable constant_">FST</span> (p))) (<span class="hljs-variable constant_">FST</span> (p))<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">PRED</span> = n =&gt; <span class="hljs-variable constant_">SND</span> (n (<span class="hljs-variable constant_">START</span>) (<span class="hljs-variable constant_">STEP</span>))<br></code></pre></div></td></tr></table></figure>
+
+<p>有了 PRED，我们能够定义减法了，自然数 n 减去自然数 a，就是 n 减去 a 次 1，即执行 n 次 PRED</p>
+<figure class="highlight abnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs abnf"><span class="hljs-attribute">MINUS</span> <span class="hljs-operator">=</span> λn.λa. a n PRED<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">MINUS</span> = n =&gt; <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> a (n) (<span class="hljs-variable constant_">PRED</span>)<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="Y-组合子"><a href="#Y-组合子" class="headerlink" title="Y 组合子"></a>Y 组合子</h1><p>这一节参考了<a target="_blank" rel="noopener" href="https://stackoverflow.com/a/6713431">https://stackoverflow.com/a/6713431</a>和<a target="_blank" rel="noopener" href="https://stackoverflow.com/a/6714066">https://stackoverflow.com/a/6714066</a>。</p>
+<p>递归，也就是自己引用自己，比如下面的阶乘函数 fact，在其函数体中引用了自己：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">fact</span>(<span class="hljs-params">n</span>) &#123;<br>  <span class="hljs-keyword">return</span> n === <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : (n * fact (n - <span class="hljs-number">1</span>))<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>但在 lambda 演算中我们无法这样做，因为在 lambda 演算中不存在所谓的“名字”，因此无法直接去编写递归的函数；而通过 Y 组合子，我们便能在不引用自身的情况下编写递归函数，放到 js 的语境下，就是说我们能编写匿名的递归函数。</p>
+<p>但在研究 Y 组合子之前，先来思考一下，怎样的情况下我们能让一个函数去不通过名字来引用自己？显然，这时候要拿到自己只<strong>可</strong>能通过两种方式——去捕获上层变量，或者去从函数参数中拿；其中后者的实现还是比较容易想到的——<strong>调用函数的时候，把自身传递过去就好了</strong>！比如这里编写一个 fib 函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">FIB</span> = f =&gt; <span class="hljs-function"><span class="hljs-params">num</span> =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (num &lt;= <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> num<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">f</span>(f)(num - <span class="hljs-number">1</span>) + <span class="hljs-title function_">f</span>(f)(num - <span class="hljs-number">2</span>)<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">FIB</span>(<span class="hljs-variable constant_">FIB</span>)(<span class="hljs-number">10</span>))<br></code></pre></div></td></tr></table></figure>
+
+<p>虽然乍一眼看起来有点作弊，但这是 lambda 可以实现出来的。我们考虑再来一个阶乘函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">FACT</span> = f =&gt; <span class="hljs-function"><span class="hljs-params">num</span> =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (num === <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-number">1</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">f</span>(f)(num - <span class="hljs-number">1</span>) * num<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">FACT</span>(<span class="hljs-variable constant_">FACT</span>)(<span class="hljs-number">10</span>)) <span class="hljs-comment">// 3628800</span><br></code></pre></div></td></tr></table></figure>
+
+<p>容易注意到，这玩意调用的时候是有特定的模式的——<code>F(F)(...args)</code>，我们将这个模式抽象一波：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">MAGIC</span> = f =&gt; <span class="hljs-function"><span class="hljs-params">n</span> =&gt;</span> <span class="hljs-title function_">f</span>(<span class="hljs-title function_">f</span>(f))(n)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FIB</span> = <span class="hljs-title function_">MAGIC</span>(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">num</span> =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (num &lt;= <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> num<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">f</span>(f)(num - <span class="hljs-number">1</span>) + <span class="hljs-title function_">f</span>(f)(num - <span class="hljs-number">2</span>)<br>&#125;)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">FIB</span>(<span class="hljs-number">10</span>)) <span class="hljs-comment">// 55</span><br></code></pre></div></td></tr></table></figure>
+
+<p>可以看到，这玩意已经部分能满足需求了，但蛋疼的一点是，在编写该递归函数的时候，每次调用自己都得写<code>f(f)(...)</code>，这比较麻烦，这种思考方式不可行。</p>
+<p>现在回到递归函数，第一步，来写一个递归的 fact 函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">factorial</span>(<span class="hljs-params">n</span>) &#123;<br>  <span class="hljs-keyword">return</span> n === <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : <span class="hljs-title function_">factorial</span>(n - <span class="hljs-number">1</span>) * n<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>第二步，我们可以把这个函数变成“Supplier”，这种形式和上面的显然是等价的，其中参数<code>_</code>显然被直接扔掉了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">fact</span>(<span class="hljs-params">_</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">n</span> =&gt;</span> n === <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : <span class="hljs-title function_">fact</span>(_)(n - <span class="hljs-number">1</span>) * n<br>&#125;<br><br><span class="hljs-keyword">const</span> factorial = <span class="hljs-title function_">fact</span>(_) <span class="hljs-comment">// _为任何值</span><br></code></pre></div></td></tr></table></figure>
+
+<p>第三步：直到上一步，事情还是 trival 的，函数仍旧引用了自己，为了解决这个问题，再抽象一层，我们可以把函数体里的<code>fact(_)</code>通过参数去传入，这要求<code>_ = fact(_)</code>，这里令<code>_ = recur</code>，得到<code>recur = fact(recur)</code>，将参数<code>_</code>替换为<code>recur</code>，将函数体中的<code>fact(_)</code>替换为<code>fact(recur)</code>，替换为<code>recur</code>，得到：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">fact</span> = recur =&gt; <br>  <span class="hljs-function"><span class="hljs-params">n</span> =&gt;</span> n === <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : <span class="hljs-title function_">recur</span>(n - <span class="hljs-number">1</span>) * n<br></code></pre></div></td></tr></table></figure>
+
+<p>而 recur 的定义其实就是这个：<code>recur = fact(recur)</code>，这里引用了自己，所以必须要使用递归函数去定义；而且这不是 haskell，所以不能用 point-free 风格，这里必须要知道 recur 的类型，而这是容易看出来的：<code>number =&gt; number</code>，下面便是结果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">recur</span>(<span class="hljs-params">x</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">fact</span>(recur)(x)<br>&#125;<br><br><span class="hljs-keyword">const</span> factorial = <span class="hljs-title function_">fact</span>(recur)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">factorial</span>(<span class="hljs-number">10</span>))<br></code></pre></div></td></tr></table></figure>
+
+<p>好的，现在 fact 不是递归函数了，但我们又引入了一个新的递归函数 recur（欣慰的是，所有递归函数最后都能抽象成无显式递归的“body”和这样一个 recur 函数。</p>
+<p>我们对 recur 采用和第一步到第二步同样的手段，即给它包一层 Supplier：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">recur</span>(<span class="hljs-params">_</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fact</span>(<span class="hljs-title function_">recur</span>(_))(x)<br>&#125;<br><span class="hljs-keyword">const</span> factorial = <span class="hljs-title function_">fact</span>(<span class="hljs-title function_">recur</span>())<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">factorial</span>(<span class="hljs-number">10</span>))<br></code></pre></div></td></tr></table></figure>
+
+<!-- 
+TODO：这一步怎么来的
+-->
+
+<p>然后，问题就在于如何处理<code>_</code>和<code>recur(_)</code>了，我实在弄不明白，把答案列出来：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">recur</span> = f =&gt;<br>  <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fact</span>(<span class="hljs-title function_">f</span>(f))(x)<br></code></pre></div></td></tr></table></figure>
+
+<p><strong>虽然有点跳跃，但这里的 f，它就是 recur 本身</strong>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> factorial = <span class="hljs-title function_">recur</span>(recur)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">factorial</span>(<span class="hljs-number">10</span>))<br></code></pre></div></td></tr></table></figure>
+
+<p>现在，所有的显式递归都已经移除，把最终的代码都列出来：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">fact</span> = recur =&gt; <br>  <span class="hljs-function"><span class="hljs-params">n</span> =&gt;</span> n === <span class="hljs-number">0</span> ? <span class="hljs-number">1</span> : <span class="hljs-title function_">recur</span>(n - <span class="hljs-number">1</span>) * n<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">recur</span> = f =&gt;<br>  <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fact</span>(<span class="hljs-title function_">f</span>(f))(x)<br>  <br><span class="hljs-keyword">const</span> factorial = <span class="hljs-title function_">recur</span>(recur)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">factorial</span>(<span class="hljs-number">10</span>))<br></code></pre></div></td></tr></table></figure>
+
+<p>容易发现，这里只有 fact 是“变”量，换成其它的递归函数，只有 fact 会改变，因此，我们将这个模式抽象出来，就得到了 Y 组合子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">Y</span> = fn =&gt; (<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fn</span>(<span class="hljs-title function_">f</span>(f))(x))(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fn</span>(<span class="hljs-title function_">f</span>(f))(x))<br></code></pre></div></td></tr></table></figure>
+
+<p>它很容易使用 lambda 去表述：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs llvm">Y <span class="hljs-operator">=</span> λfn. (λf.λ<span class="hljs-keyword">x</span>. fn (f f) <span class="hljs-keyword">x</span>) (λf.λ<span class="hljs-keyword">x</span>. fn (f f) <span class="hljs-keyword">x</span>)<br></code></pre></div></td></tr></table></figure>
+
+<p>这形式比想象中简单多了 hhh，可惜它的发明过程怕是值几篇博士论文吧？</p>
+<h1 id="Lazy-List"><a href="#Lazy-List" class="headerlink" title="Lazy List"></a>Lazy List</h1><p>有了 Y 组合子，现在可以自由地耍花活了，该操作操作列表了，但在此之前先和皮亚诺自然数过两招，不然列表存啥元素呢？这里首先给出皮亚诺自然数的定义，以及其到 javascript 数字类型的转换函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">// Nat = Zero | Succ Nat</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">ZERO</span> = z =&gt; <span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> z<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">SUCC</span> = n =&gt; <span class="hljs-function"><span class="hljs-params">z</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> <span class="hljs-title function_">s</span>(n)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TO_NUMBER</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">nat</span> =&gt;</span> <span class="hljs-title function_">nat</span>(<span class="hljs-number">0</span>)(<span class="hljs-function"><span class="hljs-params">pred</span> =&gt;</span> <span class="hljs-number">1</span> + <span class="hljs-title function_">f</span>(pred)))<br></code></pre></div></td></tr></table></figure>
+
+<p>皮亚诺自然数的加法也是简单的——对两个自然数<code>a</code>，<code>b</code>相加，检查<code>a</code>是否是<code>ZERO</code>，若是，则返回<code>b</code>，若不是，则令<code>a</code>为<code>(SUCC c)</code>，对<code>c</code>，<code>(SUCC b)</code>相加；乘法同样简单，对两个自然数<code>a</code>，<code>b</code>相乘，检查<code>a</code>是否是<code>ZERO</code>，若是，则返回<code>ZERO</code>，若不是，则令<code>a</code>为<code>(SUCC c)</code>，求<code>c</code>，<code>b</code>的乘积和<code>b</code>的和：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">PLUS</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">plus</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">a</span>(b)(<span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> <span class="hljs-title function_">plus</span>(c)(<span class="hljs-title function_">SUCC</span>(b))))<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">MULTIPLY</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">multiply</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">a</span>(<span class="hljs-variable constant_">ZERO</span>)(<span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> <span class="hljs-title function_">plus</span>(b)(<span class="hljs-title function_">multiply</span>(c)(b))))<br></code></pre></div></td></tr></table></figure>
+
+<p>这就足够了，下面实现列表相关操作，这里要求列表是惰性的，即 b 为返回 CDR 的函数，下面实现一下 map-filter-reduce，并实现 take 和 iterate，最终去实现一个自然数列表，取前 10 项奇数（本想取前 100 项，然而发现这爆栈了）的和；其中因为布尔值和自然数都未使用上面那种非严格求值的形式，这里定义了一个<code>LAZY_IF</code>来保证 if 为“短路”操作：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">TRUE</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> a <br><span class="hljs-keyword">const</span> <span class="hljs-title function_">FALSE</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> b <br><span class="hljs-keyword">const</span> <span class="hljs-title function_">IF</span> = cond =&gt; <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">cond</span>(a)(b)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">AND</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">IF</span>(a)(<span class="hljs-title function_">IF</span>(b)(<span class="hljs-variable constant_">TRUE</span>)(<span class="hljs-variable constant_">FALSE</span>))(<span class="hljs-variable constant_">FALSE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">OR</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">IF</span>(a)(<span class="hljs-variable constant_">TRUE</span>)(<span class="hljs-title function_">IF</span>(b)(<span class="hljs-variable constant_">TRUE</span>)(<span class="hljs-variable constant_">FALSE</span>))<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">NOT</span> = a =&gt; <span class="hljs-title function_">IF</span>(a)(<span class="hljs-variable constant_">FALSE</span>)(<span class="hljs-variable constant_">TRUE</span>)<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">Y</span> = fn =&gt; (<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fn</span>(<span class="hljs-title function_">f</span>(f))(x))(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-title function_">fn</span>(<span class="hljs-title function_">f</span>(f))(x))<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">ZERO</span> =      z =&gt; <span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> z<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">SUCC</span> = n =&gt; <span class="hljs-function"><span class="hljs-params">z</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> <span class="hljs-title function_">s</span>(n)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">PRED</span> = nat =&gt; <span class="hljs-title function_">nat</span>(<span class="hljs-variable constant_">ZERO</span>)(<span class="hljs-function"><span class="hljs-params">pred</span> =&gt;</span> pred)<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">IS_ZERO</span> = nat =&gt; <span class="hljs-title function_">nat</span>(<span class="hljs-variable constant_">TRUE</span>)(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">FALSE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TO_NUMBER</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">nat</span> =&gt;</span> <span class="hljs-title function_">nat</span>(<span class="hljs-number">0</span>)(<span class="hljs-function"><span class="hljs-params">pred</span> =&gt;</span> <span class="hljs-number">1</span> + <span class="hljs-title function_">f</span>(pred)))<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">PLUS</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">plus</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">a</span>(b)(<span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> <span class="hljs-title function_">plus</span>(c)(<span class="hljs-title function_">SUCC</span>(b))))<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">MULTIPLY</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">multiply</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">a</span>(<span class="hljs-variable constant_">ZERO</span>)(<span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> <span class="hljs-title function_">PLUS</span>(b)(<span class="hljs-title function_">multiply</span>(c)(b))))<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">EQUAL</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">equal</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <br>  <span class="hljs-title function_">a</span>(<span class="hljs-title function_">b</span>(<span class="hljs-variable constant_">TRUE</span>)(<span class="hljs-function"><span class="hljs-params">predB</span> =&gt;</span> <span class="hljs-variable constant_">FALSE</span>))(<span class="hljs-function"><span class="hljs-params">predA</span> =&gt;</span> <span class="hljs-title function_">b</span>(<span class="hljs-variable constant_">FALSE</span>)(<span class="hljs-function"><span class="hljs-params">predB</span> =&gt;</span> <span class="hljs-title function_">equal</span>(predA)(predB))))<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">LAZY_IF</span> = cond =&gt; <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">cond</span>(a)(b)()<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">EQUAL1</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">equal</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <br>  <span class="hljs-variable constant_">IF</span> (<span class="hljs-title function_">IS_ZERO</span>(a)) <br>    (<span class="hljs-variable constant_">IF</span> (<span class="hljs-title function_">IS_ZERO</span>(b)) (<span class="hljs-variable constant_">TRUE</span>) (<span class="hljs-variable constant_">FALSE</span>)) <br>    (<span class="hljs-variable constant_">LAZY_IF</span> (<span class="hljs-title function_">IS_ZERO</span>(b)) (<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">FALSE</span>) (<span class="hljs-function">() =&gt;</span> equal (<span class="hljs-variable constant_">PRED</span> (a)) (<span class="hljs-variable constant_">PRED</span> (b))))) <br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">ONE</span> = <span class="hljs-title function_">SUCC</span>(<span class="hljs-variable constant_">ZERO</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TWO</span> = <span class="hljs-title function_">SUCC</span>(<span class="hljs-variable constant_">ONE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">THREE</span> = <span class="hljs-title function_">SUCC</span>(<span class="hljs-variable constant_">TWO</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FOUR</span> = <span class="hljs-title function_">SUCC</span>(<span class="hljs-variable constant_">THREE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FIVE</span> = <span class="hljs-title function_">SUCC</span>(<span class="hljs-variable constant_">FOUR</span>)<br><br><span class="hljs-comment">// 展示一波互调递归</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">IS_EVEN_</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">isEven</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">isOdd</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">nat</span> =&gt;</span> <span class="hljs-title function_">LAZY_IF</span>(<span class="hljs-title function_">IS_ZERO</span>(nat))(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">TRUE</span>)(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">isOdd</span>(isEven)(<span class="hljs-title function_">PRED</span>(nat))))<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">IS_ODD_</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">isOdd</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">isEven</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">nat</span> =&gt;</span> <span class="hljs-title function_">LAZY_IF</span>(<span class="hljs-title function_">IS_ZERO</span>(nat))(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">FALSE</span>)(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">isEven</span>(isOdd)(<span class="hljs-title function_">PRED</span>(nat))))<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">IS_ODD</span> = <span class="hljs-title function_">IS_ODD_</span>(<span class="hljs-variable constant_">IS_EVEN_</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">IS_EVEN</span> = <span class="hljs-title function_">IS_EVEN_</span>(<span class="hljs-variable constant_">IS_ODD_</span>)<br><br><span class="hljs-comment">// List a = Nil | Cons a (List a)</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">NIL</span> =            n =&gt; <span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> n<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">CONS</span> = a =&gt; <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">n</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">c</span> =&gt;</span> <span class="hljs-title function_">c</span>(a)(b)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">CAR</span> = lst =&gt; <span class="hljs-title function_">lst</span>()(<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> a)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">CDR</span> = lst =&gt; <span class="hljs-title function_">lst</span>()(<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span> <span class="hljs-title function_">b</span>())<br><br><span class="hljs-comment">// js 数组到 List</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TO_JS_ARRAY</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">f</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> <span class="hljs-title function_">lst</span>([])(<span class="hljs-function"><span class="hljs-params">head</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">tail</span> =&gt;</span> [head, ...<span class="hljs-title function_">f</span>(<span class="hljs-title function_">tail</span>())]))<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">MAP</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">map</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">fn</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> <span class="hljs-title function_">lst</span>(<span class="hljs-variable constant_">NIL</span>)(<span class="hljs-function"><span class="hljs-params">head</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">tail</span> =&gt;</span> <span class="hljs-title function_">CONS</span>(<span class="hljs-title function_">fn</span>(head))(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">map</span>(fn)(<span class="hljs-title function_">tail</span>()))))<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FILTER</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">filter</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">fn</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> <span class="hljs-title function_">lst</span>(<span class="hljs-variable constant_">NIL</span>)(<span class="hljs-function"><span class="hljs-params">head</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">tail</span> =&gt;</span> <br>  <span class="hljs-title function_">LAZY_IF</span>(<span class="hljs-title function_">fn</span>(head))<br>    (<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">CONS</span>(head)(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">filter</span>(fn)(<span class="hljs-title function_">tail</span>())))<br>    (<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">filter</span>(fn)(<span class="hljs-title function_">tail</span>()))))<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">ITERATE</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">iterate</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">seed</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">fn</span> =&gt;</span> <span class="hljs-title function_">CONS</span>(seed)(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">iterate</span>(<span class="hljs-title function_">fn</span>(seed))(fn)))<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">NAT_LIST</span> = <span class="hljs-title function_">ITERATE</span>(<span class="hljs-variable constant_">ZERO</span>)(<span class="hljs-variable constant_">SUCC</span>)<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">ODD_LIST</span> = <span class="hljs-title function_">FILTER</span>(<span class="hljs-variable constant_">IS_ODD</span>)(<span class="hljs-variable constant_">NAT_LIST</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">EVEN_LIST</span> = <span class="hljs-title function_">FILTER</span>(<span class="hljs-variable constant_">IS_EVEN</span>)(<span class="hljs-variable constant_">NAT_LIST</span>)<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FOLDL</span> = <span class="hljs-title function_">Y</span>(<span class="hljs-function"><span class="hljs-params">foldl</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">zero</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">fn</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> <span class="hljs-title function_">lst</span>(zero)(<span class="hljs-function"><span class="hljs-params">head</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">tail</span> =&gt;</span> <span class="hljs-title function_">foldl</span>(<span class="hljs-title function_">fn</span>(zero)(head))(fn)(<span class="hljs-title function_">tail</span>())))<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">SUM</span> = <span class="hljs-title function_">FOLDL</span>(<span class="hljs-variable constant_">ZERO</span>)(<span class="hljs-variable constant_">PLUS</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">TAKE</span> = nat =&gt; <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> <span class="hljs-title function_">LAZY_IF</span>(<span class="hljs-title function_">IS_ZERO</span>(nat))(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable constant_">NIL</span>)(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">lst</span>(<span class="hljs-variable constant_">NIL</span>)(<span class="hljs-function"><span class="hljs-params">head</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">tail</span> =&gt;</span> <span class="hljs-title function_">CONS</span>(head)(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">TAKE</span>(<span class="hljs-title function_">PRED</span>(nat))(<span class="hljs-title function_">tail</span>()))))<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">TEN</span> = <span class="hljs-title function_">MULTIPLY</span>(<span class="hljs-variable constant_">TWO</span>)(<span class="hljs-variable constant_">FIVE</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FIRST_TEN_ODD</span> = <span class="hljs-title function_">TAKE</span>(<span class="hljs-variable constant_">TEN</span>)(<span class="hljs-variable constant_">ODD_LIST</span>)<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">TO_JS_ARRAY</span>(<span class="hljs-title function_">MAP</span>(<span class="hljs-variable constant_">TO_NUMBER</span>)(<span class="hljs-variable constant_">FIRST_TEN_ODD</span>))) <span class="hljs-comment">// [ 1, 3, 5, 7, 9, 11, 13, 15, 17, 19 ]</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">TO_NUMBER</span>(<span class="hljs-title function_">SUM</span>(<span class="hljs-variable constant_">FIRST_TEN_ODD</span>))) <span class="hljs-comment">// 100</span><br><br></code></pre></div></td></tr></table></figure>
+
+<p>就这样了，之后预备看《The Little Schemer》，多去了解一下递归，以及深入了解 Y 组合子。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/64274105">https://www.zhihu.com/question/64274105</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/298996358">https://zhuanlan.zhihu.com/p/298996358</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/312895562">https://zhuanlan.zhihu.com/p/312895562</a></li>
+<li><a target="_blank" rel="noopener" href="https://matt.might.net/articles/js-church/">https://matt.might.net/articles/js-church/</a></li>
+<li><a target="_blank" rel="noopener" href="https://matt.might.net/articles/implementation-of-recursive-fixed-point-y-combinator-in-javascript-for-memoization/">https://matt.might.net/articles/implementation-of-recursive-fixed-point-y-combinator-in-javascript-for-memoization/</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01-15Haskell%E7%BC%96%E7%A8%8B%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">使用 Docker 搭建 Haskell 开发环境</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11-13learnVexflowByExample.html">
+                        <span class="hidden-mobile">Learn Vexflow By Example</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

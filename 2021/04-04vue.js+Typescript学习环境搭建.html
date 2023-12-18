@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="なせば大抵なんとかなる">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue.js+Typescript 学习环境搭建">
+<meta property="og:url" content="http://example.com/2021/04-04vue.js+Typescript%E5%AD%A6%E4%B9%A0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="なせば大抵なんとかなる">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-04T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.284Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>vue.js+Typescript 学习环境搭建 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="vue.js+Typescript 学习环境搭建">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-04-04 08:00" pubdate>
+        2021年4月4日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">vue.js+Typescript 学习环境搭建</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>最简单的解决方案其实是使用 vite 和 vue3.x，零配置！我现在毕设前端项目使用该解决方案，非常方便。</p>
+</blockquote>
+<!--Hello, Happy World-->
+
+<p>毕设的前端项目打算使用 vue.js+typescript+vue-baidu-map+<del>layUI</del>搭建。不过现在面临的一个主要问题是我对 vue 完全不懂，而它又是我的项目不可或缺的……vue 那超级强大的数据绑定功能对这个项目实在太重要了，可以说离开 vue 我根本找不到切入点，所以必须硬着头皮上。</p>
+<p>现阶段我并不打算直接开始做前端项目，而是先写一些小项目练习 typescript 和 vue.js。而这篇文章的目的则是搭建一个适合学习的环境。我当前所阅读的书籍是《Vue.js 项目实战》，它完全没有使用 vue-cli，全是在浏览器中进行的，因此我也选择不使用 vue-cli（但是毕设我肯定是要用 vue-cli 来生成项目的），不使用 webpack 中除 ts-loader 以外的其他 loader。具体说来有这样的目标——</p>
+<ul>
+<li>以<code>./src/index.js</code>为 entry，生成<code>./dist/index.js</code>（这里限定文件名为 index.js，是因为默认的名称 main.js 在我的电脑上总会有一些奇怪的 bug）</li>
+<li>只使用 ts-loader，也就是说不能在 ts 文件里 import 除 js&#x2F;ts 以外的其他文件</li>
+<li>html 硬编码手动引入 js 以及其他资源（如 css），不使用 webpack 所提供的插件</li>
+<li>使用 http-server 作为服务器，使用<code>webpack --watch</code>命令来自动编译</li>
+<li>不使用 vue-cli</li>
+<li>正确引入 vue</li>
+</ul>
+<p>那么，开始吧。</p>
+<h1 id="初始化-webpack-项目"><a href="#初始化-webpack-项目" class="headerlink" title="初始化 webpack 项目"></a>初始化 webpack 项目</h1><p>总之首先创建一个空目录，cd 进去，输入命令<code>webpack init</code>（当然，在此之前需要安装 webpack）——</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs pgsql">$ webpack init<br># 下面是对各种选项的选择<br>? Will your application have multiple bundles? <span class="hljs-keyword">No</span><br>? Which will be your application entry <span class="hljs-type">point</span>? src/<span class="hljs-keyword">index</span><br>? <span class="hljs-keyword">In</span> which folder <span class="hljs-keyword">do</span> you want <span class="hljs-keyword">to</span> store your <span class="hljs-keyword">generated</span> bundles? dist<br>? Will you use one <span class="hljs-keyword">of</span> the below JS solutions? Typescript<br>? Will you use one <span class="hljs-keyword">of</span> the below CSS solutions? <span class="hljs-keyword">No</span><br>? <span class="hljs-keyword">Do</span> you want <span class="hljs-keyword">to</span> use webpack-dev-<span class="hljs-keyword">server</span>? <span class="hljs-keyword">No</span><br>? <span class="hljs-keyword">Do</span> you want <span class="hljs-keyword">to</span> simplify the creation <span class="hljs-keyword">of</span> HTML files <span class="hljs-keyword">for</span> your bundle? <span class="hljs-keyword">No</span><br>? <span class="hljs-keyword">Do</span> you want <span class="hljs-keyword">to</span> <span class="hljs-keyword">add</span> PWA support? <span class="hljs-keyword">No</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这已经初始化完成项目了，先运行一次<code>npm run build</code>进行一次编译以创建 dist 文件夹（或者手动创建，没什么区别），并将项目根目录下 index.html 文件移入 dist 文件夹中并编辑，在 body 尾部引入 index.js。</p>
+<h1 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h1><p>接下来需要编辑 webpack.config.js，和 package.json。</p>
+<h2 id="编辑-package-json"><a href="#编辑-package-json" class="headerlink" title="编辑 package.json"></a>编辑 package.json</h2><p>对 package.json 的编辑实际上只需要在 scripts 中插入一个命令——</p>
+<figure class="highlight erlang"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs erlang">...<br><span class="hljs-string">&quot;scripts&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;build&quot;</span>: <span class="hljs-string">&quot;webpack&quot;</span>,<br>    <span class="hljs-string">&quot;watch&quot;</span>: <span class="hljs-string">&quot;webpack --watch &amp; http-server -p 8080 -s ./dist/&quot;</span><br>  &#125;,<br>...<br></code></pre></div></td></tr></table></figure>
+
+<p>这样，只需输入<code>npm run watch</code>便可启动一个服务器并自动进行编译了。这里的 http-server 加入-s 命令以不进行输出（它的输出信息一般来说没啥意义）。</p>
+<p>这种方式好像关闭比较麻烦……得手动 kill 才行，我对 bash 理解不多，不知道如何解决。</p>
+<h2 id="编辑-webpack-config-js"><a href="#编辑-webpack-config-js" class="headerlink" title="编辑 webpack.config.js"></a>编辑 webpack.config.js</h2><p>对 webpack.config.js 文件的编辑也只需要更改一处地方——给 entry 定义名称为 index 以正确生成文件。&#x2F;dist&#x2F;index.js，否则默认的名称是 main.js。</p>
+<figure class="highlight node-repl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs node-repl"><span class="hljs-meta prompt_">...</span><br>entry: &#123;index : &#x27;./src/index.ts&#x27;&#125;,<br><span class="hljs-meta prompt_">...</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="测试是否搭建成功"><a href="#测试是否搭建成功" class="headerlink" title="测试是否搭建成功"></a>测试是否搭建成功</h2><p>在 src 文件夹中中创建（编辑）两个文件——</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">// util.ts</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">hello</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;hello, happy world!&quot;</span>);<br>&#125;<br><span class="hljs-keyword">export</span> &#123;<br>    hello<br>&#125;<br><br><span class="hljs-comment">// index.ts，入口文件</span><br><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> util <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./util&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;Hello World from your main file!&#x27;</span>);<br>util.<span class="hljs-title function_">hello</span>();<br></code></pre></div></td></tr></table></figure>
+
+<p>输入<code>npm run watch</code>并进入 localhost:8080，检查 console 是否有正确输出。</p>
+<h1 id="引入-vue-js"><a href="#引入-vue-js" class="headerlink" title="引入 vue.js"></a>引入 vue.js</h1><p>输入<code>npm i vue</code>安装 vue 模块，然后编辑。&#x2F;node_module&#x2F;vue&#x2F;package.json，删除 main 项和 module 项的值中的 runtime——</p>
+<figure class="highlight erlang"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs erlang">...<br><span class="hljs-string">&quot;main&quot;</span>: <span class="hljs-string">&quot;dist/vue.common.js&quot;</span>,<br><span class="hljs-string">&quot;module&quot;</span>: <span class="hljs-string">&quot;dist/vue.esm.js&quot;</span>,<br>...<br></code></pre></div></td></tr></table></figure>
+
+<p>这一步（似乎）是因为这个模块默认导入的是运行时的模块，模板功能无法使用。网络上建议通过编辑 vue.config.js 来调整，但这里的项目并非使用 vue-cli 搭建，即使配置也无效果，所以就先暂且这样。</p>
+<h2 id="编辑-tsconfig-json"><a href="#编辑-tsconfig-json" class="headerlink" title="编辑 tsconfig.json"></a>编辑 tsconfig.json</h2><p>在 compilerOptions 中插入——</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><span class="hljs-attr">&quot;moduleResolution&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;Node&quot;</span><span class="hljs-punctuation">,</span><br><span class="hljs-attr">&quot;strict&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span><br></code></pre></div></td></tr></table></figure>
+
+<p>需要注意的是，使用了 strict 选项后需要自己声明一些玩意，参见 <a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/typescript.html">这里</a>。</p>
+<h2 id="测试-vue-是否成功引入"><a href="#测试-vue-是否成功引入" class="headerlink" title="测试 vue 是否成功引入"></a>测试 vue 是否成功引入</h2><p>编辑 index.html，在 body 中插入一个 div 作为 Vue 的 el。</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;root&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;&#123;message&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;message&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>编辑 index.ts 文件，初始化 Vue 对象。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">Vue</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;vue&quot;</span>;<br><br><span class="hljs-keyword">type</span> <span class="hljs-title class_">Data</span> = &#123;<br>    <span class="hljs-attr">message</span>: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">const</span> vue = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>    <span class="hljs-attr">el</span>: <span class="hljs-string">&quot;#root&quot;</span>,<br>    <span class="hljs-attr">data</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) : <span class="hljs-title class_">Data</span> &#123;<br>        <span class="hljs-keyword">return</span> &#123;<br>            <span class="hljs-attr">message</span>: <span class="hljs-string">&quot;hello, happy world!&quot;</span><br>        &#125;<br>    &#125;<br>&#125;);<br></code></pre></div></td></tr></table></figure>
+
+<p>输入<code>npm run watch</code>，进入 localhost:8080，随意向文本框中输入内容，观察 p 标签中内容是否改变。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/05-27%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%BA%9Bhaskell%E7%9A%84%E5%88%97%E8%A1%A8%E6%93%8D%E4%BD%9C.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一些 haskell 的列表操作的实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03-25%E4%BB%8D%E6%97%A7%E6%98%AF%E5%85%B3%E4%BA%8E%E6%AF%95%E8%AE%BE.html">
+                        <span class="hidden-mobile">仍旧是关于毕设</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello, MapReduce——Word Count">
+<meta property="og:url" content="http://example.com/2022/02-19MapReduce%E7%9A%84hello-world.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
+<meta property="og:image" content="http://example.com/images/oss/20220218215040.png">
+<meta property="article:published_time" content="2022-02-19T01:17:33.000Z">
+<meta property="article:modified_time" content="2023-12-18T12:56:30.117Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="MapReduce">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
+  
+  
+  <title>Hello, MapReduce——Word Count - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Hello, MapReduce——Word Count">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-02-19 09:17" pubdate>
+        2022年2月19日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hello, MapReduce——Word Count</h1>
+            
+            <div class="markdown-body">
+              <p>感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/V-YOP/yuuki-hadoop"><img src="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg"></a></p>
+<p>总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce。这里做下关于 MapReduce，以及它的第一课——WordCount 的笔记，主要参考 Hadoop 权威指南以及尚硅谷的视频（官方文档未免跳的太快）。</p>
+<span id="more"></span>
+
+<h2 id="MapReduce-是什么"><a href="#MapReduce-是什么" class="headerlink" title="MapReduce 是什么"></a>MapReduce 是什么</h2><p>MapReduce 是一个基于 Hadoop 平台的，高度并行的<strong>分布式运算框架</strong>（与此相对地，HDFS 是系统），它能充分利用多核处理器，并具有高度的容错性，能够处理海量的数据。用户只需继承简单的抽象类便可轻易嵌入自己的业务逻辑并交付给服务器（实际上是 Yarn，ResourceManager）执行。同时借助 Hadoop Stream，它可以使用其他语言对 Mapper，Reducer 进行编写。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 MapReduce 的优缺点</span></summary>
+        <blockquote><p>MapReduce 的优点如下——</p>
+<ol>
+<li>容易编程，对用户来说，他只需要关心 Map 和 Reduce 的业务逻辑即可，关于任务的调度和分配，各节点的通信等细节都是透明的（必须表扬这点：它对此做了足够的抽象，以至于相关代码在本地执行还是在远程的 HDFS 上执行对用户来说都是一样的，因此对其进行调试非常容易——在本地执行即可）</li>
+<li>容易横向扩展</li>
+<li>高容错性，即使特定节点的任务失败了，它仍旧能自动地将该任务分配给其它节点，不会导致整个任务直接挂掉</li>
+<li>支持海量数据（TB 级，PB 级）的计算</li>
+</ol>
+<p>缺点如下——</p>
+<ol>
+<li>无法支持实时计算</li>
+<li>不擅长流式计算——使用的数据必须预先准备，无法后续再添加；Spark 擅长此项</li>
+<li>不擅长迭代式计算——后面的计算需要使用前面计算的结果的计算；Spark 擅长此项</li>
+</ol>
+</blockquote>
+        
+    </details>
+  
+
+<p>关于 MapReduce 为什么叫 MapReduce，我认为这是因为它的执行过程典型地出现了 Map 和 Reduce 操作——</p>
+<p>它首先会将任务划分成互相独立的多个部分，交与各节点去执行，得到一个输出，如果将任务的各部分看作一个集合，这就成为了一个典型的 Map 操作——<strong>对集合的每一个元素执行相同的操作，得到对应的结果并组成新的集合</strong>。划分任务由框架负责，而各节点执行的 Map 操作称为 <strong>MapTask</strong>，大小为块大小。</p>
+<blockquote>
+<p>但有一说一，MapTask执行的操作更像是<code>flatMap</code>，每一次执行Map操作时都能够向上下文中写入复数的数据，这些数据最终是扁平的。</p>
+</blockquote>
+<p>将各节点的输出结果进行汇总得到最终结果是算法的第二部分。如果将各 MapTask 的结果当成一个集合，则这就成为了一个典型的 Reduce 操作——<strong>将集合中每一个元素“积累”到一个值上</strong>，而每一个 Reducer 的行为实际上也是 reduce——将 Mapper 的中间结果中的“一类值”累积到一个值中；各节点要进行的 Reduce 操作称为 <strong>ReduceTask</strong>。</p>
+<p>当然，<strong>问题远没有这么简单</strong>，比如这里想当然可以提一个问题——Reduce 操作怎么并行？<span class="heimu">答案应该可以概括为——每个 ReduceTask 处理“同一类”数据。</span>显然我们不能单单从函数式编程的角度来对 MapReduce 望文生义——在 MapReduce 的实际架构中，还得引入几个额外角色——<code>Combiner</code>，<code>Partitioner</code>；在 Map 和 Reduce 阶段中间，有着所谓的 shuffle 阶段；MapReduce 强迫数据必须使用 KV 对的形式……想必这些都是为了能最好地并行化。</p>
+<p>一个需要特别注意的地方是，MapReduce 的输入，输出以及所有中间结果必须保存在硬盘上（但不一定保存在 HDFS 里，如 Map 的中间结果是不会落到 HDFS，而是落到本地文件系统中），这会增加许多 IO 时间，实际上让 Hadoop 难以处理实时计算任务。</p>
+<blockquote>
+<p><strong>不一定！如果自定义 OutputFormat，输出可以不是 HDFS，它可以是数据库，本地硬盘，或第三方系统！</strong></p>
+</blockquote>
+<p>题外话——关于并行的 reduce，我想到了 java8 stream 里的 reduce，它和 Java8-reduce 都为并行情况做了特殊处理，并且它们中都有个叫”Combiner”的角色，虽然其在两者中发挥的作用是不同的。为此，<a href="/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html" title="关于 Java8 的 stream 中的 reduce 操作">我去了解了一下关于 java8-reduce 的使用</a>。</p>
+<h2 id="WordCount-一窥"><a href="#WordCount-一窥" class="headerlink" title="WordCount 一窥"></a>WordCount 一窥</h2><p>先从一个实例来看一看怎么编写 MapReduce 的业务代码，这里选择官方推荐的教程案例——wordCount，统计字符串中各单词的数量。</p>
+<p>WordCount 程序可以这样描述——</p>
+<ol>
+<li>先将输入字符串按行切分成许多个 MapTask，分配给各节点处理</li>
+<li>各节点将 MapTask 中的字符串每行按字符串划分，统计每行每个单词的出现，将结果输出</li>
+<li>MapTask 的结果在本地预先进行一次聚集，经框架汇总和处理后被按特定顺序进行排序、分组、将每个组传递给特定的 ReduceTask，分配给各 Reducer 节点处理（MapTask 的数量和数据集的大小成正比，而 ReduceTask 的数量是独立指定的）</li>
+<li>各节点统计各单词出现次数，输出结果到文件中</li>
+<li>框架汇总输出文件，得到最终输出文件</li>
+</ol>
+<p><img src="/images/oss/20220218215040.png"></p>
+<p>每个 ReduceTask 都包含所有 MapTask 的结果的一部分，比如说，假设它的 partitioner 是按字符串的“基数”进行分区，则 MapTask1，2，3 的结果中可能所有 A、B、C 开头的所有单词会传递给 ReduceTask1，D、E、F 开头的所有单词会传递给 ReduceTask2……<strong>但实际的 partitioner 一般使用哈希算法，以保证分区尽量均匀；而用户则需要保证每个 MapTask 的输出值尽量均匀，即每个 K 对应的 V 的数量尽量相同，从而保证每个 ReduceTask 的工作量基本相同</strong>。</p>
+<p>另外，也是由于每个 ReduceTask 都需要拿到所有 MapTask 的结果的一部分，<strong>ReduceTask 因此享受不到数据本地化的优势——MapTask 的结果必须通过网络传输给 ReduceTask</strong>。</p>
+<p>MapReduce 程序中，用户最少需要编写三个部分——<strong>Driver：程序的入口，创建配置和 job；Mapper：处理 MapTask 的业务类；Reducer：处理 ReduceTask 的业务类</strong>。</p>
+<p><strong>Mapper 和 Reducer 使用和产生的数据都为 KV 对的形式</strong>，Mapper 的接口形如<code>Mapper&lt;KEYIN, VALUEIN, KEYOUT, VALUEOUT&gt;</code>，其中 KEYIN 为输入数据的标识符，VALUEIN 为输入数据，KEYOUT 结果数据的标识符，VALUEOUT 为结果数据，Mapper 中的 map 方法为我们需要重写的业务方法，它的签名为<code>void map(KEYIN, VALUEIN, Context)</code>（Context 为实现 MapperContext 的类，它包含了所有所需类型信息），<strong>map 方法对每一个输入数据的 KV 对都会调用一次</strong>，Context 负责对应输出文件等信息，看签名就知道，这方法的结果必须要通过 Context 写出去。</p>
+<p>在 WordCount 实例中，KEYIN 是行的偏移量（不是行号，是该行相对于文件开头偏移多少字节），VALUEIN 是该行的内容。WordCount 的 Mapper 大概长这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// IntWritable 对应 Integer，Text 对应 String，Hadoop 为了提供更轻量级的序列化功能，为所有基本类型都做了一定的包装，使用它自己的一套序列化机制</span><br><span class="hljs-comment">// 可惜！倘若 Hadoop 使用 Scala，因而有 implicit 之类的机制，就可以直接使用原生类型了</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WordCountMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Mapper</span>&lt;LongWritable, Text, Text, IntWritable&gt; &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Text</span> <span class="hljs-variable">outputK</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Text</span>();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">IntWritable</span> <span class="hljs-variable">ONE</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IntWritable</span>(<span class="hljs-number">1</span>);<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">map</span><span class="hljs-params">(LongWritable key, Text value, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        <span class="hljs-keyword">for</span> (String s : value.toString().split(<span class="hljs-string">&quot;\\s&quot;</span>)) &#123;<br>            outputK.set(s);<br>            <span class="hljs-comment">// write 应该是一个 append 操作，在文件尾部插入这样一个 KV 对</span><br>            <span class="hljs-comment">// 改变 outputK 的值是不要紧的，甚至是官方推荐的</span><br>            context.write(outputK, ONE);<br>        &#125;<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">            Mapper 看到的数据就像</span><br><span class="hljs-comment">            1 hello, happy world! hello, kokoro!</span><br><span class="hljs-comment">            2 happy! lucky! smile! yeah!</span><br><span class="hljs-comment">            Mapper 生成的数据就像</span><br><span class="hljs-comment">            hello 1</span><br><span class="hljs-comment">            happy 1</span><br><span class="hljs-comment">            world 1</span><br><span class="hljs-comment">            hello 1</span><br><span class="hljs-comment">            kokoro 1</span><br><span class="hljs-comment">            happy 1</span><br><span class="hljs-comment">            lucky 1</span><br><span class="hljs-comment">            ...</span><br><span class="hljs-comment">            虽然看起来很傻，但是 Hadoop 考虑过这种情况——Combiner</span><br><span class="hljs-comment">        */</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于拉模式和推模式</span></summary>
+        <blockquote><p>Mapper 的 map 方法是典型的<strong>推模式</strong>——服务端，即任务的上下文，一行一行地把数据推给 mapper 的 map 方法，期待其做出动作，该操作就像处理 STDIN，消息队列的接受者，MVC 框架中的控制器……</p>
+<p>而<strong>拉模式</strong>，则是把所需的数据直接拿到而进行处理，倘若重写 run 方法，就能得到所谓的拉模式了，也可以将每一行数据都暂存在成员变量中，在 cleanup 方法时一次性全处理掉，这似乎也可以称作一种拉模式？</p>
+</blockquote>
+        
+    </details>
+  
+
+<p>Reducer 接口的签名为<code>Reducer&lt;KEYIN, VALUEIN, KEYOUT, VALUEOUT&gt;</code>，它的输入的类型必须和 Mapper 的输出的类型一致。Reducer 的接口和 Mapper 的形状一样，但是它的行为和 Mapper 不同：<strong>Reducer 的业务方法 reduce 对“每一类”的对象，即 KEY 相同的所有 KV 对数据执行一次</strong>，这可以从 reduce 的方法签名中一窥——<code>void reduce(KEYIN, Iterable&lt;VALUEIN&gt;, Context)</code>。显然，框架必须在内部做一些分组的活。</p>
+<p>Reducer 的示例大概长这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WordCountReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Reducer</span>&lt;Text, IntWritable, Text, IntWritable&gt; &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">IntWritable</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IntWritable</span>();<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">reduce</span><span class="hljs-params">(Text key, Iterable&lt;IntWritable&gt; values, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-comment">// 一个典型的 reduce 操作，values.reduce((acc, x) -&gt; acc + x.get(), 0)</span><br>        <span class="hljs-keyword">for</span> (IntWritable value : values) &#123;<br>            sum += value.get(); <br>        &#125;<br><br>        res.set(sum);<br>        context.write(key, res);<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">            （不考虑 Combiner 的话）reducer 看到的数据就像</span><br><span class="hljs-comment">            hello [1,1,1,1] </span><br><span class="hljs-comment">            world [1,1,1]</span><br><span class="hljs-comment">            ...</span><br><span class="hljs-comment">            reducer 生成的数据就像</span><br><span class="hljs-comment">            hello 4</span><br><span class="hljs-comment">            world 3</span><br><span class="hljs-comment">            ...</span><br><span class="hljs-comment">        */</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于对官方示例的一个吐槽</span></summary>
+        <blockquote><p>Hadoop 的官方示例把用到的 Text 和 IntWritable 都作为成员变量了，这虽然性能会好一些（真的会好吗？在现在的 jvm 这样变态的优化下？），但是严重影响了代码的可理解性（任何有编码经验的人都知道把可变对象的引用传给别人后再对它进行修改绝不是好主意）。</p>
+<p>为了强迫自己接受这种写法，这里必须记住一个前提——<code>context.write</code>方法接收到输入后会立刻进行某种复制（或持久化），因此它引用的数据，即 Text 和 IntWritable 即使修改了也不会产生任何影响。这个前提在细节上出现错误也不要紧，的确是这个效果就好。</p>
+</blockquote>
+        
+    </details>
+  
+
+<p>Driver 的示例平平无奇，这里是使用本地文件系统的情况。很棒的一点是，无论是直接跑还是打成 jar 包发到 hadoop 集群里跑，它的代码（甚至配置）是不需要做任何改动的。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">Configuration</span> <span class="hljs-variable">conf</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Configuration</span>();<br>        <span class="hljs-type">Job</span> <span class="hljs-variable">job</span> <span class="hljs-operator">=</span> Job.getInstance(conf, <span class="hljs-string">&quot;word count&quot;</span>);<br>        job.setJarByClass(Main.class);<br>        job.setMapperClass(WordCountMapper.class);<br>        job.setCombinerClass(WordCountReducer.class);<br>        job.setReducerClass(WordCountReducer.class);<br>        job.setOutputKeyClass(Text.class);<br>        job.setOutputValueClass(IntWritable.class);<br>        FileInputFormat.addInputPath(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(<span class="hljs-string">&quot;file:///Users/mememe/tmp/input&quot;</span>));<br>        FileOutputFormat.setOutputPath(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(<span class="hljs-string">&quot;file:///Users/mememe/tmp/output&quot;</span>));<br>        System.exit(job.waitForCompletion(<span class="hljs-literal">true</span>) ? <span class="hljs-number">0</span> : <span class="hljs-number">1</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>示例代码<a target="_blank" rel="noopener" href="https://github.com/V-YOP/code-repository/tree/master/hadoop_mapreduce/src/main/java">见此</a>。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MapReduce/">MapReduce</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/02-21Zookeeper%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 Zookeeper 的一些笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/02-17%E5%85%B3%E4%BA%8EJava8-stream%E4%B8%AD%E7%9A%84reduce%E6%93%8D%E4%BD%9C.html">
+                        <span class="hidden-mobile">关于 Java8 的 stream 中的 reduce 操作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

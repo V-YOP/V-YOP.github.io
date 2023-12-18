@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="再 放 送">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面向对象七原则，单例模式，简单工厂模式">
+<meta property="og:url" content="http://example.com/2021/02-03%E4%B8%83%E5%8E%9F%E5%88%99%EF%BC%8C%E5%8D%95%E4%BE%8B%EF%BC%8C%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="再 放 送">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/03/p3NMC6PLIDz7Tlf.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/03/Jm3hjWitEsNFA8f.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/03/sJDeV3hPQFrTgOW.png">
+<meta property="article:published_time" content="2021-02-01T10:01:07.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.282Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/03/p3NMC6PLIDz7Tlf.png">
+  
+  
+  <title>面向对象七原则，单例模式，简单工厂模式 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="面向对象七原则，单例模式，简单工厂模式">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-01 18:01" pubdate>
+        2021年2月1日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">面向对象七原则，单例模式，简单工厂模式</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>最近忧心忡忡……该沉下心来，好好运动，好好学习了。</p>
+<h1 id="面向对象七原则"><a href="#面向对象七原则" class="headerlink" title="面向对象七原则"></a>面向对象七原则</h1><p>面向对象编程有七个设计原则，相较于设计模式来说，它们是“根基”——</p>
+<ul>
+<li>单一职责原则（Single Responsibility Principle，SRP）</li>
+<li>开闭原则（Open-Closed Principle，OCP）</li>
+<li>里氏代换原则（Liskov Substitution Principle，LSP）</li>
+<li>依赖倒转原则（Dependency Inversion Principle，DIP）</li>
+<li>接口隔离原则（Interface Segregation Principle，ISP）</li>
+<li>合成复用原则（Composite Reuse Principle，CRP）</li>
+<li>迪米特法则（<strong>Law</strong> of Demeter，LoD）</li>
+</ul>
+<p>面向对象的程序应当是可复用，易维护的，而要做到这一点，遵守七个原则是不可或缺的。</p>
+<p>单一职责原则，就是要求<strong>控制类的粒度</strong>，让<strong>一个类只负责一个功能领域中的相应职责</strong>。也就是说，让各个类各司其职，将不同的职责封装到不同的类中，不能让某个类一手包办所有事情。因为，<strong>一个类的职责越多，它被复用的可能性就越小</strong>。</p>
+<p>开闭原则，就是要求软件<strong>对扩展开放，对修改封闭</strong>，即尽量在不修改原有代码的情况下进行扩展。</p>
+<p>里氏代换原则，就是要求<strong>所有应用基类的地方都可以使用子类对象且不发生错误</strong>（用术语说，这玩意是<strong>透明</strong>的）。也就是说尽量使用基类类型，而不使用子类类型。<strong>父类应当是抽象类或接口</strong>。在 Java 编程中，我们常常使用数据结构的接口作为要使用的数据结构的类型也是遵循了这样一个原则。如<code>List&lt;Integer&gt; arr = new ArrayList&lt;&gt;();</code>。基类的数组可以引用子类对象也是这样一个原理。</p>
+<p>依赖倒转原则，就是要求<strong>细节应当依赖于抽象</strong>，而非抽象依赖于细节。也就是说，<strong>要针对接口编程</strong>，而非针对实现编程。Java 将数据结构定义成接口遵循了这个原则。上面的例子<code>List&lt;Integer&gt; arr = new ArrayList&lt;&gt;();</code>也实现了依赖倒转原则，它将一个具体对象<strong>依赖注入</strong>到了一个抽象的接口中，<strong>所谓针对抽象层编程</strong>（所使用的对象只能使用抽象层中定义的方法）。</p>
+<blockquote>
+<p>一般来说，抽象是依赖于细节的。比如，我们从数字，字符串等数据类型里抽象出 Comparable 接口；从向量，链表里抽象出 iterable 接口（实际上是抽象出来这些数据类型所共有的某些性质）……这些接口，也就是“抽象”，是从细节中来的！而我们在定义新的数据类型的时候，是根据需要和设计，让这个数据类型实现所需的一些功能，这时候就为这些功能规定相应接口（或者已有的接口）并 implements，这时就有了“倒转”，细节是依赖于抽象了！</p>
+</blockquote>
+<p>接口隔离原则，就是要求<strong>使用多个专门的接口，而非一个总接口</strong>，也就是说，客户端不应该依赖于那些它不需要的接口（这会破坏程序的封装性，带来很多无用代码）。这和单一职责原则是相似的。</p>
+<p>合成复用原则，就是要求<strong>尽量使用组合，而非继承达到复用的目的</strong>。也就是说，尽量使用委托的手段。因为继承会让子类与父类耦合程度很高，父类的实现细节会暴露给子类，从而破坏封装性。而且从基类继承的实现是静态的，无法在运行时改变。</p>
+<p>迪米特法则，就是要求<strong>对象与尽量少的其他对象进行通信</strong>。符合迪米特法则的系统在要修改某个模块时，会尽量少地影响其他模块，从而降低系统的耦合度。具体来说，就是系统中的对象只和它的“朋友”通信。且这里的“朋友”要尽量少。</p>
+<h1 id="创建对象的艺术——创建型模式"><a href="#创建对象的艺术——创建型模式" class="headerlink" title="创建对象的艺术——创建型模式"></a>创建对象的艺术——创建型模式</h1><p>创建型模式（Creational Pattern）关注对象的创建过程，以<strong>将对象的创建和使用分离，在使用对象时无需关注其创建细节，从而降低系统的耦合度</strong>。</p>
+<p>创建型模式主要回答三个问题——创建什么（What）？谁创建（Who）？什么时候创建（When）？</p>
+<h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><p>所谓单例模式，就是<strong>只有单个实例</strong>的类。显然，要实现单例模式，构造函数必须对外界不可见。</p>
+<p>一个问题是，为什么要使用单例模式，而非使用全为 static 方法（成员）的类呢？但就其达到的结果来说，两者是等同的，但是两者的<strong>语义</strong>是不同的。static 关键字代表<strong>所有实例共同持有</strong>，其虽然能够保证成员唯一性，但是这并非是它的直接意图。并且单例模式的类可以有继承，能够实现面相抽象层编程的需要。像 Spring 中使用的 Bean 一般来说都是单例的。</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>其使用场景是那些确实只需要一个实例的情况，比如 windows 的任务管理器，无论有多少个实例，其所表示的东西都是相同的，如当前各进程的情况，CPU，内存的占用率等等。</p>
+<p>单例模式有三种实现——懒汉式，饿汉式，IoDH（延迟加载）。<strong>懒汉式在客户端第一次获取该类实例时进行初始化，其后直接返回单例，懒汉式为了维护线程安全性需要进行特殊处理；饿汉式在类加载时进行初始化，保证线程安全，但是其可能在初始化后得不到使用，从而有资源（内存）上的浪费；IoDH 结合了懒汉式和饿汉式的优点，保证在第一次请求该类实例时进行初始化，而其线程安全性由 Java 虚拟机保证</strong>。</p>
+<h2 id="饿汉式单例"><a href="#饿汉式单例" class="headerlink" title="饿汉式单例"></a>饿汉式单例</h2><p>饿汉式是最简单的单例模式的实现。顾名思义，饿汉，所以它要贪婪，无论这个类调不调用，先构造这个单例再说。所以，饿汉式是指<strong>类加载时即进行初始化</strong>。</p>
+<p>一个简单的实例如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">EagerSingleton</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">EagerSingleton</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">EagerSingleton</span>(); <span class="hljs-comment">// !    </span><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">EagerSingleton</span> <span class="hljs-params">()</span> &#123; <span class="hljs-comment">/* . . . */</span> &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> EagerSingleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>    <span class="hljs-comment">// . . .</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>显然，它会造成一定的资源的浪费，因为可能 getInstance() 并没有被执行时，实例就已经被初始化，从而造成资源上的浪费。</p>
+<p>需要注意的是，实例和构造函数应当是 private 的。</p>
+<h2 id="懒汉式单例"><a href="#懒汉式单例" class="headerlink" title="懒汉式单例"></a>懒汉式单例</h2><p>懒汉式是懒惰（lazy）的，它只在需要它的时候上场。也就是说，懒汉式指在第一次请求实例时进行初始化。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LazySingleton</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LazySingleton</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>; <span class="hljs-comment">//！</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">LazySingleton</span> <span class="hljs-params">()</span> &#123; <span class="hljs-comment">/* . . . */</span> &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> LazySingleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">if</span> (instance == <span class="hljs-literal">null</span>) <span class="hljs-comment">// 未初始化</span><br>            instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LazySingleton</span>();<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>    <span class="hljs-comment">// . . .</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>显然，getInstance 方法是线程不安全的，在多线程条件下无法保证只有一个实例。给该方法添加 synchronized 关键字可以保证线程安全性，但是这会非常影响系统性能，那么，只给构造这一行 synchronized 关键字如何呢？这样如果已经被初始化，同步代码块就不会被执行了！比如这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> LazySingleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (instance == <span class="hljs-literal">null</span>) &#123;<span class="hljs-comment">// 未初始化</span><br>        <span class="hljs-keyword">synchronized</span> (LazySingleton.class) &#123;<br>            instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LazySingleton</span>();<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> instance;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>但这仍旧是线程不安全的！如果线程 a，b 并发执行，同时达到 synchronized 代码块，仍然会创建多个实例。必须要在 synchronized 关键字内再次进行检查（这个称为<strong>双重检查锁定</strong>），并且要对 instance 使用 volatile 关键字进行修饰以保证其可见性。结果代码如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LazySingleton</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">LazySingleton</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>; <span class="hljs-comment">//！</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">LazySingleton</span> <span class="hljs-params">()</span> &#123; <span class="hljs-comment">/* . . . */</span> &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> LazySingleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (instance == <span class="hljs-literal">null</span>) &#123;<span class="hljs-comment">// 未初始化</span><br>        <span class="hljs-keyword">synchronized</span> (LazySingleton.class) &#123;<br>            <span class="hljs-keyword">if</span> (instance == <span class="hljs-literal">null</span>) &#123;<br>                instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LazySingleton</span>();<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>    <span class="hljs-comment">// . . .</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="IoDH（延迟加载）式单例"><a href="#IoDH（延迟加载）式单例" class="headerlink" title="IoDH（延迟加载）式单例"></a>IoDH（延迟加载）式单例</h2><p>延迟加载（IoDH）使用 Java 提供的静态内部类并让实例由其持有，实例如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton</span> <span class="hljs-params">()</span> &#123; <span class="hljs-comment">/* . . . */</span> &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HolderClass</span> &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Singleton</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton</span>(); <br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Singleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> HolderClass.instance;<br>    &#125;<br>    <span class="hljs-comment">// . . .</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>顾名思义，这个 instance 只有在 getInstance 方法第一次被调用时才加载。<strong>且线程安全性被 Java 虚拟机所保证</strong>。是最优解。但是该手段是局限于编程语言的，很多语言不支持它。</p>
+<h2 id="单例模式的优缺点"><a href="#单例模式的优缺点" class="headerlink" title="单例模式的优缺点"></a>单例模式的优缺点</h2><p>单例模式的优点在于，其<strong>可以严格控制客户端的访问</strong>，且只有一个对象实例，因此可以节约系统资源。同时其可以进行扩展，比如允许一定数量的实例（称为多例类）。</p>
+<p>缺点在于，<strong>其没有抽象层</strong>，因而扩展有困难，且<strong>职责过重，违背了单一职责原则，其既要负责业务，又要提供创建对象的方法（工厂方法），对象的创建和对象本身的功能耦合了</strong>。最后，单例的对象如果丢失了引用，可能被 GC 掉，这很多时候是不符合预期的。</p>
+<h1 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h1><p>简单工厂模式并不属于 23 条设计模式，但是也是比较常用的。</p>
+<p>所有工厂模式的初衷是将类的创建和使用分离，具体来说，如果客户端要使用一个类，<strong>它不应该既创建这个类，又使用这个类</strong>，否则会造成耦合。</p>
+<p>简单工厂模式其实就是将所需类的创建的责任交给一个所谓的<strong>工厂类</strong>，从而客户端不需要再负责类的创建，只需要负责类的使用，即进行了解耦。</p>
+<h2 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h2><h3 id="ver-0-1"><a href="#ver-0-1" class="headerlink" title="ver 0.1"></a>ver 0.1</h3><p>考虑书中所举的例子——给用户提供一个图表库，其给定参数生成相应的图表…假设现在已经有了柱状图，饼状图，折线图…下面的代码为了简便，省略掉初始化图表所需要的其他数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Chart</span> &#123;<br>    <span class="hljs-keyword">private</span> String type;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Chart</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-built_in">this</span>.type = type;<br>        <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;histogram&quot;</span>)) &#123;<br>            <span class="hljs-comment">// 初始化柱状图</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;pie&quot;</span>)) &#123;<br>            <span class="hljs-comment">//初始化饼状图</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;line&quot;</span>)) &#123;<br>            <span class="hljs-comment">// 初始化折线图</span><br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">display</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;histogram&quot;</span>)) &#123;<br>            <span class="hljs-comment">// 展示柱状图</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;pie&quot;</span>)) &#123;<br>            <span class="hljs-comment">//展示饼状图</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;line&quot;</span>)) &#123;<br>            <span class="hljs-comment">// 展示折线图</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>客户端将如下调用——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Chart</span> <span class="hljs-variable">graph</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Chart</span>(<span class="hljs-string">&quot;line&quot;</span>);<br>        graph.display();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>问题在哪里呢？首先，太多 if-else 了，可能有性能上的影响（而且也太过不优雅了）；然后，类的创建和类的使用都耦合在这一个类里，职责过重，违反了单一职责原则；最后，如果要添加新产品，需要更改源代码（而且是两处），违反了开闭原则。简单工厂只能解决这里的“然后”。</p>
+<h3 id="ver-0-2"><a href="#ver-0-2" class="headerlink" title="ver 0.2"></a>ver 0.2</h3><p>第一步的优化是抽象出这些图表的共同性质（哲学上的），定义一个抽象父类（图表），而这些具体的图表则作为对这个父类的子类或实现。这样，可以将 Chart 类拆分，将每个具体实现的代码分别放置到不同的类中。在这里，父类使用抽象类实现（书中使用的是接口，我认为抽象类更符合这里的语义）。总之得到这样的类图（子类一定有成员变量，其构造函数是一定有参数的，这里省略了）——</p>
+<p><img src="https://i.loli.net/2021/02/03/p3NMC6PLIDz7Tlf.png"></p>
+<p>之后，客户端应如下调用——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Chart</span> <span class="hljs-variable">graph</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LineChart</span>();<br>        graph.display();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>现在，没有那些 if-else 逻辑了，如果要新增需求（新的表），只需要编写新的子类即可。但是这里类的创建和类的使用仍然是客户端同时负责的，因此仍旧有耦合。</p>
+<h3 id="ver-1-0"><a href="#ver-1-0" class="headerlink" title="ver 1.0"></a>ver 1.0</h3><p>为了解决这耦合，可以使用简单工厂模式。而为此，上面的 if-else 又要被请回来了（这绝非必须，只不过是这个设计模式要求这样而已）。</p>
+<p>总之，这里定义一个工厂类，它要接管所有 Chart 类的构造和初始化（区分开是因为构造后可能仍旧并非是所需的实例）。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ChartFactory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Chart <span class="hljs-title function_">getChart</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;histogram&quot;</span>)) &#123;<br>            <span class="hljs-comment">// 返回一个柱状图的实例</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;pie&quot;</span>)) &#123;<br>            <span class="hljs-comment">//返回一个饼状图的实例</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equalsIgnoreCase(<span class="hljs-string">&quot;line&quot;</span>)) &#123;<br>            <span class="hljs-comment">// 返回一个折线图的实例</span><br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>; <span class="hljs-comment">// 或者抛个异常之类的</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>客户端将这样调用——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Chart</span> <span class="hljs-variable">graph</span> <span class="hljs-operator">=</span> ChartFactory.getChart(<span class="hljs-string">&quot;line&quot;</span>);<br>        graph.display();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>现在，解决了创建和使用关系的问题，客户端只有使用的职责，创建的职责交由工厂类执行。但是仍有一个问题——如果要更改要展示的图表，需要更改源代码，违反了开闭原则。这样每次更改后都需要重新编译，无法”热更新“。解决方式是将这个字符串保存在配置文件中，使用一定的库进行读取。这里不需要赘述了。</p>
+<p>一个简化的点是，可以将工厂类和抽象产品类结合，作为抽象产品类的一个方法。这样可以简化掉一个类，但是会导致类间的关系有点古怪。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Chart</span>&#123;<br>    <span class="hljs-comment">// . . .</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Chart <span class="hljs-title function_">factoryMethod</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// . . .</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>简单工厂模式可以归纳出如下角色——<strong>工厂，抽象产品，具体产品</strong>。其关系如下——</p>
+<p><img src="https://i.loli.net/2021/02/03/Jm3hjWitEsNFA8f.png"></p>
+<p>抽象产品作为产品的父类，应当持有所有产品的公共代码，各个具体产品持有各自的私有代码。工厂是简单工厂模式的核心，它负责创建所有产品实例的内部逻辑。</p>
+<p>使用工厂模式创建对象，相较于使用 new 或反射机制等创建对象，其优势在于对对象的创建和使用进行了解耦，使实现更加灵活。如果在构造后还需要进行其他处理，只需要在工厂类中进行处理即可，不需再付诸在客户端中。如果产品需求更新，只需更改工厂类的源代码即可。</p>
+<p>简单工厂模式的优点在于——</p>
+<ol>
+<li>分离了对象的创建和使用，降低耦合性。</li>
+<li>客户端无需知道所创建实例的具体类型，只需给定参数即可。</li>
+<li>参数可以由配置文件给出，系统更加灵活。</li>
+</ol>
+<p>缺点在于——</p>
+<ol>
+<li>工厂类负责了所有产品的创建逻辑，<strong>其职责仍旧是过重的</strong>。</li>
+<li>如果增加新的具体产品，需要修改工厂类的创造逻辑，增加维护成本。（下一个要学习的设计模式——工厂方法模式将解决这个问题，使新增产品不需要修改已有代码）</li>
+<li>系统中类的个数会增加，不利于理解和维护。</li>
+<li>工厂方法是静态的，不利于继承。（我猜测抽象工厂模式可以解决这个问题）</li>
+</ol>
+<p><img src="https://i.loli.net/2021/02/03/sJDeV3hPQFrTgOW.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">DFS 从入门到入坟——全排列和八皇后问题</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01-27%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95.html">
+                        <span class="hidden-mobile">模板方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

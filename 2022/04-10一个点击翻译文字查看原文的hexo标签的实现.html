@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="紧绷的精神松懈下来后，马上就感觉不知道该做什么事情了，因此决定去做一下 All About Monads 的翻译，但我也觉得保留原文是非常必要的，因此这里尝试模拟一下 angular 的文档的设计，在点击文字时能够看到原文，效果类似这样。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个点击翻译文字查看原文的 hexo 标签的实现">
+<meta property="og:url" content="http://example.com/2022/04-10%E4%B8%80%E4%B8%AA%E7%82%B9%E5%87%BB%E7%BF%BB%E8%AF%91%E6%96%87%E5%AD%97%E6%9F%A5%E7%9C%8B%E5%8E%9F%E6%96%87%E7%9A%84hexo%E6%A0%87%E7%AD%BE%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="紧绷的精神松懈下来后，马上就感觉不知道该做什么事情了，因此决定去做一下 All About Monads 的翻译，但我也觉得保留原文是非常必要的，因此这里尝试模拟一下 angular 的文档的设计，在点击文字时能够看到原文，效果类似这样。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/202204041044633.png">
+<meta property="article:published_time" content="2022-04-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.297Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Foo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/202204041044633.png">
+  
+  
+  <title>一个点击翻译文字查看原文的 hexo 标签的实现 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="一个点击翻译文字查看原文的 hexo 标签的实现">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-10 00:00" pubdate>
+        2022年4月10日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">一个点击翻译文字查看原文的 hexo 标签的实现</h1>
+            
+            <div class="markdown-body">
+              <p>紧绷的精神松懈下来后，马上就感觉不知道该做什么事情了，因此决定去做一下 All About Monads 的翻译，但我也觉得保留原文是非常必要的，因此这里尝试模拟一下 angular 的文档的设计，在点击文字时能够看到原文，效果类似这样。</p>
+<p><img src="/images/oss/202204041044633.png"></p>
+<span id="more"></span>
+
+<p>为了让它能够开箱即用，相关的 js 代码也是直接生成在 tag 里了，因此这个 tag 标签 copy 即可用。如果要尽量减少生成的 html 文件大小，可以把这个 trans_id 方法加到模板里，然后通过 onclick 中的函数调用里来给定参数，</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">/*</span><br><span class="hljs-comment">syntax:</span><br><span class="hljs-comment">&#123;% trans %&#125;</span><br><span class="hljs-comment">我是友纪。</span><br><span class="hljs-comment">@@@</span><br><span class="hljs-comment">I am Yuuki.</span><br><span class="hljs-comment">&#123;% endtrans %&#125;</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">let</span> counter = <span class="hljs-number">0</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">nextCount</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> counter++<br>&#125;<br><br>hexo.<span class="hljs-property">extend</span>.<span class="hljs-property">tag</span>.<span class="hljs-title function_">register</span>(<span class="hljs-string">&#x27;trans&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">ignored, content</span>) &#123;<br>  <span class="hljs-keyword">const</span> splitted = content.<span class="hljs-title function_">split</span>(<span class="hljs-string">&quot;@@@&quot;</span>)<br>  <span class="hljs-keyword">if</span> (splitted.<span class="hljs-property">length</span> &lt;= <span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`trans 标签使用语法错误！标签中未出现@@@！，原文：<span class="hljs-subst">$&#123;content&#125;</span>`</span>)<br>  &#125;<br>  <span class="hljs-keyword">if</span> (splitted.<span class="hljs-property">length</span> &gt;= <span class="hljs-number">3</span>) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`trans 标签使用语法错误！标签中出现多于 2 次（<span class="hljs-subst">$&#123;splitted.length&#125;</span>次）@@@！，原文：<span class="hljs-subst">$&#123;content&#125;</span>`</span>)<br>  &#125;<br><br>  <span class="hljs-keyword">const</span> [trans, original] = splitted.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">str</span> =&gt;</span> hexo.<span class="hljs-property">render</span>.<span class="hljs-title function_">renderSync</span>(&#123; <span class="hljs-attr">text</span>: str, <span class="hljs-attr">engine</span>: <span class="hljs-string">&#x27;markdown&#x27;</span> &#125;))<br><br>  <span class="hljs-comment">// 原本是想使用原文或翻译的哈希值来作为 id 的，但又想到没这必要，直接用一个自增的变量就好，这说明 hexo 的标签可以是有副作用的</span><br>  <span class="hljs-keyword">const</span> id = <span class="hljs-title function_">nextCount</span>()<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`</span><br><span class="hljs-string">    &lt;script&gt;</span><br><span class="hljs-string">    function trans_<span class="hljs-subst">$&#123;id&#125;</span>() &#123;</span><br><span class="hljs-string">      const elem = document.getElementById(&quot;ori_<span class="hljs-subst">$&#123;id&#125;</span>&quot;)</span><br><span class="hljs-string">      if (elem.style[&quot;display&quot;] === &quot;none&quot;) &#123;</span><br><span class="hljs-string">        elem.style[&quot;display&quot;] = &quot;&quot;</span><br><span class="hljs-string">      &#125; else &#123;</span><br><span class="hljs-string">        elem.style[&quot;display&quot;] = &quot;none&quot;</span><br><span class="hljs-string">      &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string">    &lt;/script&gt;</span><br><span class="hljs-string">    &lt;div onclick=&quot;trans_<span class="hljs-subst">$&#123;id&#125;</span>()&quot;&#x27;&gt;<span class="hljs-subst">$&#123;trans&#125;</span>&lt;/div&gt;</span><br><span class="hljs-string">    &lt;div id=&quot;ori_<span class="hljs-subst">$&#123;id&#125;</span>&quot; style=&quot;border-top: 1px dashed #0273D4;margin-top:-15px;display:none&quot;&gt;<span class="hljs-subst">$&#123;original&#125;</span>&lt;/div&gt;</span><br><span class="hljs-string">  `</span>;<br><br>&#125;, &#123; <span class="hljs-attr">ends</span>: <span class="hljs-literal">true</span> &#125;);<br></code></pre></div></td></tr></table></figure>
+
+<p>点击下面的文字试试？</p>
+
+    <script>
+    function trans_0() {
+      const elem = document.getElementById("0")
+      if (elem.style["display"] === "none") {
+        elem.style["display"] = ""
+      } else {
+        elem.style["display"] = "none"
+      }
+    }
+    </script>
+    <div onclick="trans_0()"><p>我们经常使用类型变量和类型构造器来描述计算的抽象特性。比如，多态类型<code>Maybe a</code>是这样一个类型，它的所有计算都可能返回一个值或者<code>Nothing</code>。这样，我们就能离开容器持有的东西的细节，专注在容器的属性上。</p>
+</div>
+    <div id="0" style="border-top: 1px dashed #0273D4;margin-top:-15px;display:none"><p>We often use type variables with type constructors to describe abstract features of a computation. For example, the polymorphic type Maybe a is the type of all computations that may return a value or Nothing. In this way, we can talk about the properties of the container apart from any details of what the container might hold. </p>
+</div>
+  
+
+<p>它的使用如下。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs markdown">&#123;% trans %&#125;<br>我们经常使用类型变量和类型构造器来描述计算的抽象特性。比如，多态类型<span class="hljs-code">`Maybe a`</span>是这样一个类型，它的所有计算都可能返回一个值或者<span class="hljs-code">`Nothing`</span>。这样，我们就能离开容器持有的东西的细节，专注在容器的属性上。<br>@@@<br>We often use type variables with type constructors to describe abstract features of a computation. For example, the polymorphic type <span class="hljs-code">`Maybe a`</span> is the type of all computations that may return a value or <span class="hljs-code">`Nothing`</span>. In this way, we can talk about the properties of the container apart from any details of what the container might hold. <br>&#123;% endtrans %&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>一个比较麻烦的地方是，hexo 的标签似乎是不支持嵌套的，这非常降低它的泛用性。</p>
+<hr>
+<p>后来又选择使用 docsify 来编写该文档了，所以实现方式需要改变，现在考虑使用特定的标签去作为起始，分割，结束，这些标签应当不会干扰 markdown 的渲染。当前使用<code>&lt;!-- xxx --&gt;</code>来作为分割，实现虽然粗糙但也堪用。具体实现参照文档。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Foo/">Foo</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04-16Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%83%B0%E6%80%A7%E6%B1%82%E5%80%BC.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Scala 学习笔记——惰性求值</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94Prelude.html">
+                        <span class="hidden-mobile">微服务学习笔记 1——Prelude</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

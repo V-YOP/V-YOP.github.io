@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="稍稍稍稍地学那么一点点 git……">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对 git 的一些使用的笔记">
+<meta property="og:url" content="http://example.com/2021/08-02%E5%85%B3%E4%BA%8Egit%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="稍稍稍稍地学那么一点点 git……">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210729163029.png">
+<meta property="og:image" content="http://example.com/images/oss/20210729165515.png">
+<meta property="og:image" content="http://example.com/images/oss/20210730093849.png">
+<meta property="og:image" content="http://example.com/images/oss/20210731112956.png">
+<meta property="og:image" content="http://example.com/images/oss/20210731115150.png">
+<meta property="og:image" content="http://example.com/images/oss/20210731181603.png">
+<meta property="og:image" content="http://example.com/images/oss/20210731182926.png">
+<meta property="og:image" content="http://example.com/images/oss/20210731202320.png">
+<meta property="og:image" content="http://example.com/images/oss/20210731202341.png">
+<meta property="article:published_time" content="2021-08-02T07:10:27.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.286Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210729163029.png">
+  
+  
+  <title>对 git 的一些使用的笔记 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="对 git 的一些使用的笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-02 15:10" pubdate>
+        2021年8月2日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">对 git 的一些使用的笔记</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>对 git 的了解，仅限于对其概念，命令的了解是绝对不够的（实际上我现在也不能算了解），重要的是掌握相应的<strong>最佳实践</strong>。这里进行一些笔记。我对马上掌握 git 不抱任何期望——这玩意显然是应当在实践中掌握的。</p>
+<h1 id="纵览"><a href="#纵览" class="headerlink" title="纵览"></a>纵览</h1><p><img src="/images/oss/20210729163029.png"></p>
+<p>一个 git 项目可以分为三部分——工作目录，暂存区，git 仓库。其中，工作目录代表项目某个版本提取出的内容（就像某时刻的快照——当前的也可以）；git 仓库代表。git 目录下的内容，其是项目中最重要的部分，包括项目原数据以及对象数据库，<strong>从远程克隆仓库时，拷贝的就是 git 仓库的数据</strong>；暂存区是一个文件，保存下次提交时的文件列表信息。</p>
+<p>git 的最简单的工作流程可以归纳如下——</p>
+<ol start="0">
+<li>克隆远程仓库（将会克隆整个 git 仓库的所有数据——这也就是说其会拉取每一个文件的所有版本到本地，而非仅当前所需要的文件）或初始化新仓库</li>
+<li>修改文件</li>
+<li>将文件的快照加入暂存区（<code>git add</code>命令）</li>
+<li>提交暂存区内容到仓库——这将生成永久性的快照（<code>git commit</code>命令）</li>
+</ol>
+<p>在这个工作流程中，文件在各个阶段将会有不同状态，这取决于文件是否被追踪，修改是否已经暂存。</p>
+<p><img src="/images/oss/20210729165515.png"></p>
+<blockquote>
+<p>关于将修改加入到暂存区这一步，如果在文件 add 后再次编辑文件。文件将同时处于 Modified 和 Staged 状态——Staged 是编辑前被 add 的文件快照，Modified 是编辑后的文件，这时需再次执行 add 命令，但是旧的 add 命令的结果会被覆盖——如果需要保存该结果，应当在此时进行 commit。</p>
+</blockquote>
+<p><code>git status -s</code>命令会紧凑地显示各被修改的文件的情况。其中，?? 代表未追踪，A 表示新添加到暂存区，左边的 M 表示文件修改且存入暂存区，右边的 M 表示文件修改且未存入暂存区。但这个或许没有必要了解——IDE 一般都提供了更丰富的表现方式。</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git status -s</span><br> M README						# 修改但未暂存<br>MM Rakefile					# 暂存后被再次修改且未暂存<br>A  lib/git.rb				# 新添加到暂存区<br>M  lib/simplegit.rb	# 修改且暂存<br>?? LICENSE.txt			# 未追踪<br></code></pre></div></td></tr></table></figure>
+
+<p><code>git diff</code>命令将会显示当前尚未暂存文件和上一次提交&#x2F;暂存文件的差别（<strong>未暂存的改动</strong>），<code>git diff --staged</code>命令显示当前暂存文件和上一次提交文件的差别（<strong>已暂存的改动</strong>）。</p>
+<p><code>git commit</code>命令将会把暂存区的快照进行提交并成为项目的一个快照（这个快照使能够完全回溯到项目的这个状态，快照是相对项目而言的，而非相对某个文件而言的；git 的版本控制指的是<strong>对项目的版本控制</strong>，而不是对各个文件的版本控制），在将来可以回退到该快照，或者进行比较等操作。也可以使用<code>git commit -a</code>来一次提交所有跟踪过的文件，而不需要进行暂存。</p>
+<p><img src="/images/oss/20210730093849.png"></p>
+<h1 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h1><p>分支——<strong>把工作从开发主线上分离开来，以免影响开发主线</strong>。git <strong>鼓励在工作流程中频繁使用分支和合并</strong>。这是说，最好在每次要进行修改的时候都创建新分支，进行编辑和测试后合并到原分支。也可以说，分支的目的是为了更好的合并。</p>
+<p>这分支图一定是分分合合的。git 的默认分支（同时一般也是“主干”）的名字是 master，<code>git init</code>默认会创建名为 master 的分支。</p>
+<h2 id="创建和切换分支"><a href="#创建和切换分支" class="headerlink" title="创建和切换分支"></a>创建和切换分支</h2><p>分支的实质是一个可以移动的指针，其能够指向任意一个快照。每次提交都会形成项目的一个快照，而创建新分支的操作则是创建一个可移动的指针引用当前快照，而进行提交（commit）时，提交的快照则会从这里进行分支，同时指针也会移动。创建新分支的命令是<code>git branch &lt;name&gt;</code>。</p>
+<p>如，下图使用<code>git branch testing</code>命令创建了一个新分支，这个分支和 master 指向同一个快照（下面称为<strong>操作对象</strong>）。这里的 HEAD 也指向一个分支——当前的本地分支，在这里是 master，创建分支时不会改变当前分支。</p>
+<blockquote>
+<p>HEAD 分支可以直接引用操作对象吗？</p>
+</blockquote>
+<blockquote>
+<p>图片中的箭头代表包含指针指向对象。每一个对象都有一个指针让它能够引用它的父对象。</p>
+</blockquote>
+<p><img src="/images/oss/20210731112956.png"></p>
+<p><code>git checkout &lt;branchname&gt;</code> 命令使能够切换分支（这里的<code>&lt;branchname&gt;</code>也可以为操作对象）。</p>
+<p>切换分支时，HEAD 会指向切换后的分支，同时工作目录的内容变为切换后分支的快照内容。在上面的例子里，如果这时进行编辑和提交，前后的分支就指向不同操作对象了。这时候再对前面的分支进行提交，就产生了<strong>分叉</strong>。</p>
+<p><img src="/images/oss/20210731115150.png"></p>
+<p>分支可以通过<code>git branch -f &lt;branchname&gt; &lt;target&gt;</code>进行强制的移动。target 可以为相对路径，也可以为绝对路径。</p>
+<p>关于对分支的使用，一般来说可以遵循这样的流程（就像 add，commit，push 这样的流程一样）——</p>
+<ol>
+<li>为实现某需求，创建一个分支</li>
+<li>在该分支上进行工作</li>
+<li>完成工作后，合并分支到主分支</li>
+</ol>
+<h2 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h2><p>合并操作显然是一个非常重要的部分。合并使用<code>git merge &lt;branchname&gt;</code>命令。合并时会将当前的分支和待合并的分支进行合并——在这里，<strong>当前的分支的指针会移动，而待合并的分支指针不动</strong>。</p>
+<p>下面是一个示例，在 C1 时，项目进行了分支以进行 bug 的修复，现在修复完了，而 main 分支也进行了更新，现在如何将 bugFix 的改动合并到当前的 main 分支上呢？</p>
+<p><img src="/images/oss/20210731181603.png"></p>
+<p>答案是将当前分支设为 main，并进行 merge 操作，具体命令如下——</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git checkout main</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">git merge bugFix</span><br></code></pre></div></td></tr></table></figure>
+
+<p>最终会达到这样的结果——可以看到 bugFix 指针并未移动，main 则移动了。可见，<strong>main 是这次合并的主体</strong>，它把 bugFix 的内容融合进自己，让自己演进了。在进行合并操作时，应按照这样的语义来选择合并的主体。</p>
+<p><img src="/images/oss/20210731182926.png"></p>
+<p><code>git rebase</code>也能够进行合并操作，它的作用就如其名——转移父对象，就是更改当前指针的父对象。其能造成更加线性的提交历史。</p>
+<p>下面是一个示例，展示了执行下面命令的前后状态。</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git checkout bugFix</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">git rebase main</span><br></code></pre></div></td></tr></table></figure>
+
+<p><img src="/images/oss/20210731202320.png"></p>
+<p><img src="/images/oss/20210731202341.png"></p>
+<p>可以看到，bugFix 的父对象成为 main 了。现在只需要移动 main 到新节点即可。</p>
+<h1 id="远程仓库"><a href="#远程仓库" class="headerlink" title="远程仓库"></a>远程仓库</h1><p>对远程仓库进行各种操作是 git 使用中不可或缺的部分。一个 git 仓库可以有多个远程仓库。</p>
+<p><code>git remote [-v | --verbose]</code>命令允许对项目的远程仓库进行查看，其中<code>-v</code>将会显示更详细的信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SHELL"><span class="hljs-meta prompt_">$ </span><span class="language-bash">git remote -v</span><br>bakkdoor  https://github.com/bakkdoor/grit (fetch)<br>bakkdoor  https://github.com/bakkdoor/grit (push)<br>cho45     https://github.com/cho45/grit (fetch)<br>cho45     https://github.com/cho45/grit (push)<br>defunkt   https://github.com/defunkt/grit (fetch)<br>defunkt   https://github.com/defunkt/grit (push)<br>koke      git://github.com/koke/grit.git (fetch)<br>koke      git://github.com/koke/grit.git (push)<br>origin    git@github.com:mojombo/grit.git (fetch)<br>origin    git@github.com:mojombo/grit.git (push)<br></code></pre></div></td></tr></table></figure>
+
+<p>Continued…</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Git/">Git</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/08-14%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%AE%9E%E7%8E%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《两周自制脚本语言》笔记 1——基于正则表达式的词法分析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-01MyBatisPlus%E7%9A%84%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8.html">
+                        <span class="hidden-mobile">MybatisPlus 的一些基本使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

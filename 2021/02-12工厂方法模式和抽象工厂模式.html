@@ -1,0 +1,499 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="没有骚话可说……">
+<meta property="og:type" content="article">
+<meta property="og:title" content="工厂方法模式和抽象工厂模式">
+<meta property="og:url" content="http://example.com/2021/02-12%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E5%92%8C%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="没有骚话可说……">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/08/5AMIoksLVbWHmrq.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/08/zBmUGiTKaI3gJ2O.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/11/V3FXR61CPSQIY8h.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/11/t69KeXsqVWA4wYg.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/11/2YaRnI9xEwMzKLO.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/11/icOJlbfS5TkphdG.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/11/xZuFakIJcoBAj9i.png">
+<meta property="og:image" content="https://i.loli.net/2021/02/12/Mhk6Xzbqm4Y15DG.png">
+<meta property="article:published_time" content="2021-02-12T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.283Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/08/5AMIoksLVbWHmrq.png">
+  
+  
+  <title>工厂方法模式和抽象工厂模式 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="工厂方法模式和抽象工厂模式">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-12 08:00" pubdate>
+        2021年2月12日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      12k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">工厂方法模式和抽象工厂模式</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<h1 id="工厂方法模式（Factory-Method）"><a href="#工厂方法模式（Factory-Method）" class="headerlink" title="工厂方法模式（Factory Method）"></a>工厂方法模式（Factory Method）</h1><blockquote>
+<p>这个模式在之前看《图解设计模式》已经有部分了解，那本书并没有解释为何工厂方法模式要求一个抽象工厂的角色……这里讲的比较清楚。</p>
+</blockquote>
+<p>简单工厂的主要一个缺点是，工厂类的职责过重，存在大量 if-else 逻辑，且如果添加新产品时<strong>必须要修改工厂类</strong>，这违反了开闭原则和单一职责原则（而且，添加子类需要修改基类，这个怎么说也感觉有点怪吧？）。而工厂方法模式则消除了这一缺点——它给所有工厂一个抽象的基类（或接口），给每个产品提供它对应的工厂。如果添加新产品，只需要定义新的工厂类和产品即可。客户端可以通过反射等手段进行调用。</p>
+<h2 id="从简单工厂到工厂方法"><a href="#从简单工厂到工厂方法" class="headerlink" title="从简单工厂到工厂方法"></a>从简单工厂到工厂方法</h2><p>书中举了个十分容易理解的例子（不过我认为有改进的空间）——</p>
+<p>客户需要一个日志记录器，且需要能不更改源代码（即不需要重新编译）灵活选择不同的记录器。需求分析发现，<strong>日志记录器的初始化比较复杂</strong>，可能需要初始化其他相关的类，可能需要配置工作环境等，如果都写在构造函数里会<strong>导致构造函数庞大，不利于维护</strong>。因此，使用简单工厂方法进行系统设计，其中 LoggerFactory 为工厂角色，FileLogger，DatabaseLogger 为具体产品，Logger 为抽象产品——</p>
+<p><img src="https://i.loli.net/2021/02/08/5AMIoksLVbWHmrq.png"></p>
+<p>代码如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// Logger.java</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Logger</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeLog</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FileLogger</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Logger</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeLog</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个 fileLogger&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">DatabaseLogger</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Logger</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeLog</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个 DatabaseLogger&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// LoggerFactory.java</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LoggerFactory</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">LoggerFactory</span><span class="hljs-params">()</span>&#123;&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Logger <span class="hljs-title function_">getLogger</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-type">Logger</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">if</span> (type.equals(<span class="hljs-string">&quot;FileLogger&quot;</span>)) &#123;<br>            res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileLogger</span>();<br>            <span class="hljs-comment">// 做一些处理</span><br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type.equals(<span class="hljs-string">&quot;DatabaseLogger&quot;</span>)) &#123;<br>            res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">DatabaseLogger</span>();<br>            <span class="hljs-comment">// 做另一些处理</span><br>        &#125;<br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// Main.java 客户端</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(<span class="hljs-string">&quot;FileLogger&quot;</span>); <span class="hljs-comment">// 可以写在配置文件里</span><br>        logger.writeLog();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>现在，缺点来了，一旦需要增加新的 logger，必须更改工厂类，并且工厂类包含所有 logger 的初始化代码，职责过重。现在，通过使用工厂方法模式来解决这个问题。</p>
+<p>工厂方法的要点在于，给定一个抽象工厂类，任何具体工厂作为它的子类，对每一个工厂，都有一定的产品与之适配。用户构造工厂时以抽象工厂为类型。形如下面的代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">LoggerFactory</span> <span class="hljs-variable">loggerFactory</span> <span class="hljs-operator">=</span> LoggerFactory.getFactory(<span class="hljs-string">&quot;Logger&quot;</span>); <span class="hljs-comment">// 也可以写在配置文件里</span><br>    <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> loggerFactory.getLogger();<br>    logger.writeLog();<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里的 getFactory 是个 static 方法，它应当根据字符串返回对应的工厂。书中的示例将这相关的代码放到外面，而我觉得这个方法其实很适合作为抽象工厂的一个静态方法。这里也可以将要生成的工厂写在配置文件里以保证开闭原则。</p>
+<p>这个方法中可以仍旧使用 if-else 来返回工厂（这陷入了一个循环吗？并非如此，因为工厂的初始化是简单的，不需要抽象工厂关心的，它只需返回一个 new 的对象即可。但是这仍旧违反了开闭原则——添加新工厂还是要修改抽象工厂的源代码），也可以使用反射机制。</p>
+<p>简单工厂模式可以使用反射来去掉 if-else 循环吗？不可以！每个具体产品的初始化过程是不同的，因此不同产品的初始化代码不能被抽象到一致。而工厂方法模式将产品的初始化下放到具体工厂中，其<strong>只负责具体工厂的初始化</strong>——只需要调用其构造函数即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// LoggerFactory.java</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LoggerFactory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Logger <span class="hljs-title function_">createLogger</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> LoggerFactory <span class="hljs-title function_">getFactory</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">return</span> (LoggerFactory) Class.forName(type).newInstance();<br>        &#125;<br>        <span class="hljs-keyword">catch</span> (Exception e) &#123; <span class="hljs-comment">// 应该进一步处理</span><br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// Main.java</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">LoggerFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> LoggerFactory.getFactory(<span class="hljs-string">&quot;FileLoggerFactory&quot;</span>); <span class="hljs-comment">// 可以写在配置文件里</span><br>        <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> factory.createLogger();<br>        logger.writeLog();<br>    &#125;<br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+
+<p>要添加新的实例？没问题，创建两个新文件，比如 ImageLogger.java 和 ImageLoggerFactory.java，其中 ImageLogger 要继承 Logger 类，ImageLoggerFactory 要继承 LoggerFactory 类，然后在配置文件里修改要生成的工厂即可。这里完全不需要更改任何源代码，只需要增加文件即可！这保证了开闭原则——对扩展开放，对修改封闭。</p>
+<p>这里也可以进行一些优化，比如重载 createLogger 方法以适应更多情况，比如可以直接在抽象工厂中定义 writeLog 方法，使客户端可以使用抽象工厂直接进行操作（这里使用了模板方法）——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LoggerFactory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Logger <span class="hljs-title function_">createLogger</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> LoggerFactory <span class="hljs-title function_">getFactory</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">return</span> (LoggerFactory) Class.forName(type).newInstance();<br>        &#125;<br>        <span class="hljs-keyword">catch</span> (Exception e) &#123; <span class="hljs-comment">// 应该进一步处理</span><br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeLog</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.createLogger(); <span class="hljs-comment">// 模板方法模式——定义一个处理流程，让子类实现其中的具体步骤。</span><br>        logger.writeLog();<br>    &#125;<br>    <span class="hljs-comment">// 客户端</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">LoggerFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> LoggerFactory.getFactory(<span class="hljs-string">&quot;FileLoggerFactory&quot;</span>); <span class="hljs-comment">// 可以写在配置文件里</span><br>        factory.writeLog();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>工厂方法模式的优点是显而易见的，保证开闭原则，且消除了简单工厂中工厂类负担过重的问题，且用户不需知道自己究竟使用的是什么类即可完成任务（从直接使用变成间接使用……感觉这是保持开闭原则不可或缺的。..）。而它的缺点是会让系统中的类的数量<strong>成对增加</strong>，且要使用反射等手段，影响了系统的理解难度。</p>
+<p>工厂方法模式的类图如下——</p>
+<p><img src="https://i.loli.net/2021/02/08/zBmUGiTKaI3gJ2O.png"></p>
+<h1 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h1><p>工厂方法的缺点在于，它一个工厂只负责一类产品，因此会导致类的数量增加，增加维护难度。抽象工厂模式要求它的<strong>具体工厂</strong>并非只生成一类产品，而是一“族”产品。这对要求所有产品都符合一定规范是必要的，比如不同操作系统的各种 UI 控件，比如软件的皮肤……</p>
+<p>一族所指的并非是相似的关系，或者父类相同的关系，如白色按钮和蓝色按钮，而是具有相互约束关系的东西，即使它们没有直接关系，比如某个操作系统下的文本框和按钮（它们都是属于这个操作系统的）。</p>
+<p>工厂方法模式和抽象工厂模式的差别在于，工厂方法模式中每个具体工厂生产一类产品，比如白色按钮，红色按钮，蓝色按钮…抽象工厂模式中每个具体工厂生产一族产品，比如白色按钮，白色弹窗……可以说，<strong>工厂方法模式（中的每一系列工厂）针对的是一个产品等级结构（一系列继承结构），抽象工厂模式则需要面对多个产品等级结构。每一个工厂等级结构都需要负责多个不同产品等级结构中工厂的创建</strong>。</p>
+<p>显然，抽象工厂模式中，抽象工厂应当定义生成所有产品的接口，当为抽象工厂模式中这一族产品添加新成员的时候，需要修改所有具体工厂和抽象工厂的源代码。抽象工厂模式对添加产品族是符合开闭原则的，但是对修改产品等级结构（也就是说修改，添加新的产品到产品族中）是不符合开闭原则的。<strong>开闭原则的倾斜性</strong>。</p>
+<p><img src="https://i.loli.net/2021/02/11/V3FXR61CPSQIY8h.png"></p>
+<p>工厂方法模式没有所谓产品族的实现，如果要添加新的产品族，需要添加一系列的工厂和产品，且这些工厂和产品间在代码上是没有直接关系的，需要提供额外约束（要求用户只使用同一个产品族的产品），增加维护成本。但是工厂方法模式对于修改产品等级结构是符合开闭原则的——只需要创建新的产品和工厂类即可。</p>
+<blockquote>
+<p>这个设计模式是最具抽象性和一般性的，我觉得我的描述也挺抽象的。</p>
+</blockquote>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>书中的例子还满贴切的，可以直接用——</p>
+<p>考虑这样的情景——要给软件添加“皮肤”的功能，现在假设有 Spring 皮肤和 Summer 皮肤，设计者先使用工厂方法进行系统设计——</p>
+<p><img src="https://i.loli.net/2021/02/11/t69KeXsqVWA4wYg.png"></p>
+<p>用户应当一次选择一种皮肤——也就是说使用同一族的产品（SummerTextField，SummerButton……），而使用工厂方法，用户要选择逐个配置选择哪个具体工厂，当然也可以使用字符串拼接+反射等方式来进行约束，但是仍旧是比较复杂的（而且抽象，难以调试，维护）。且每次添加新的皮肤（产品族），需要对每一个产品都新增一个具体工厂，增加了类的数量。</p>
+<blockquote>
+<p>这里其实拿不同操作系统的 UI 为例更好，这年代，谁拿 Java 写 UI 啊（</p>
+</blockquote>
+<p>考虑到有添加新皮肤（新的产品族）的需求，没有添加新的组件（新的产品等级结构）的需求，使用抽象工厂模式进行重构——</p>
+<p><img src="https://i.loli.net/2021/02/11/2YaRnI9xEwMzKLO.png"></p>
+<p>其代码如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 抽象工厂</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SkinFactory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Button <span class="hljs-title function_">createButton</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> TextField <span class="hljs-title function_">createTextField</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ComboBox <span class="hljs-title function_">createComboBox</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> SkinFactory <span class="hljs-title function_">getSkinFactory</span><span class="hljs-params">(String type)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">return</span> (SkinFactory) Class.forName(type).newInstance();<br>        &#125;<br>        <span class="hljs-keyword">catch</span> (Exception e) &#123; <span class="hljs-comment">// 应该进一步处理</span><br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 各个组件的接口</span><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Button</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">displayButton</span><span class="hljs-params">()</span>;<br>&#125;<br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TextField</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">displayTextField</span><span class="hljs-params">()</span>;<br>&#125;<br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ComboBox</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">displayComboBox</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-comment">// ---------具体工厂和具体组件----------</span><br><span class="hljs-comment">//SummerSkinFactory</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SummerSkinFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">SkinFactory</span> &#123;<br>    <span class="hljs-keyword">public</span> Button <span class="hljs-title function_">createButton</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SummerButton</span>();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> TextField <span class="hljs-title function_">createTextField</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SummerTextField</span>();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> ComboBox <span class="hljs-title function_">createComboBox</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SummerComboBox</span>();<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SummerTextField</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">TextField</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">displayTextField</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;一个 Summer 皮肤的文本框&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SummerButton</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Button</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">displayButton</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;一个 Summer 皮肤的按钮&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SummerComboBox</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ComboBox</span> &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">displayComboBox</span><span class="hljs-params">()</span> &#123;<br>		System.out.println(<span class="hljs-string">&quot;一个 Summer 皮肤的复选框&quot;</span>);<br>	&#125; <br>&#125;<br><br><span class="hljs-comment">//SpringSkinFactory 和 Summer 的基本一致，不复制了</span><br><br><span class="hljs-comment">// 客户端</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">SkinFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> SkinFactory.getSkinFactory(<span class="hljs-string">&quot;SpringSkinFactory&quot;</span>);<br>        factory.createButton().displayButton();<br>        factory.createComboBox().displayComboBox();<br>        factory.createTextField().displayTextField();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>要添加和使用新皮肤？没问题，添加新的具体的皮肤工厂和相应的组件即可。添加新组件？emmmm，大刀阔斧地改吧。优缺点我觉得已经说够了。</p>
+<p>抽象工厂模式的一般形式如图——</p>
+<p><img src="https://i.loli.net/2021/02/11/icOJlbfS5TkphdG.png"></p>
+<h1 id="做一做题目"><a href="#做一做题目" class="headerlink" title="做一做题目"></a>做一做题目</h1><p>两个题目——提供一个程序，它能读取不同编码的图像文件，需保证扩展性和灵活性；针对不同操作系统平台，提供一套游戏操作控制类（OperatonController）和游戏界面控制类（InterfaceController），需封装这些类的初始化过程。</p>
+<p>第一个题目显然适合用工厂方法模式，假设图像的编码总是符合它的后缀，对所有有多后缀的编码格式，都假设它是其中一个编码——比如对 jpeg 和 jpg，假设只有 jpg。</p>
+<p>代码如下，这里 ImageReader 是抽象工厂，JPGReader 和 PNGReader 则是具体工厂，Image 是抽象产品，JPG，PNG 是具体产品，它们理应返回 Image 作为产品，考虑到要根据后缀选择工厂，所以后缀应当作为工厂的一个域（这恐怕在实际生产中是不合理的，应当掩盖掉具体工厂的构造，直接返回 Image）——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ImageReader</span> &#123;<br>    String path;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ImageReader</span><span class="hljs-params">(String path)</span>&#123;<br>        <span class="hljs-built_in">this</span>.path = path;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Image <span class="hljs-title function_">readImage</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ImageReader <span class="hljs-title function_">getReader</span><span class="hljs-params">(String path)</span> &#123;<br>        String[] split = path.split(<span class="hljs-string">&quot;\\.&quot;</span>);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">postfix</span> <span class="hljs-operator">=</span> split[split.length-<span class="hljs-number">1</span>].toUpperCase();<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">return</span> (ImageReader) Class.forName(postfix + <span class="hljs-string">&quot;Reader&quot;</span>).getConstructor(String.class).newInstance(path);<br>        &#125;<br>        <span class="hljs-keyword">catch</span> (Exception e) &#123; <span class="hljs-comment">// 应该进一步处理</span><br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Image</span> &#123;<br>    String path;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Image</span><span class="hljs-params">(String path)</span> &#123;<br>        <span class="hljs-built_in">this</span>.path = path;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">JPGReader</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ImageReader</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">JPGReader</span><span class="hljs-params">(String path)</span> &#123;<br>        <span class="hljs-built_in">super</span>(path);<br>    &#125;<br>    <span class="hljs-keyword">public</span> Image <span class="hljs-title function_">readImage</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;读取 JPG 文件：&quot;</span> + path);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">JPG</span>(path);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">JPG</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Image</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">JPG</span><span class="hljs-params">(String path)</span> &#123;<br>        <span class="hljs-built_in">super</span>(path);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;展示这个 JPG 的信息&quot;</span>);<br>    &#125;<br>    <br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">PNGReader</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ImageReader</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">PNGReader</span><span class="hljs-params">(String path)</span> &#123;<br>        <span class="hljs-built_in">super</span>(path);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> PNG <span class="hljs-title function_">readImage</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;读取 PNG 文件：&quot;</span> + path);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PNG</span>(path);<br>    &#125;<br>    <br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">PNG</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Image</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">PNG</span><span class="hljs-params">(String path)</span> &#123;<br>        <span class="hljs-built_in">super</span>(path);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">show</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;展示这个 PNG 的信息&quot;</span>);<br>    &#125;<br>    <br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;/home/abc/hello.jpg&quot;</span>;<br>        <span class="hljs-type">ImageReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> ImageReader.getReader(path); <span class="hljs-comment">// 使用 ImageReader 直接返回图像在这里更合理些</span><br>        <span class="hljs-type">Image</span> <span class="hljs-variable">Image</span> <span class="hljs-operator">=</span> reader.readImage();<br>        Image.show();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2021/02/11/xZuFakIJcoBAj9i.png"></p>
+<p>更加合适的解决方案是这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ImageReader</span> &#123;<br>    String path;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ImageReader</span><span class="hljs-params">(String path)</span>&#123;<br>        <span class="hljs-built_in">this</span>.path = path;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Image <span class="hljs-title function_">readImage</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Image <span class="hljs-title function_">getImage</span><span class="hljs-params">(String path)</span> &#123;<br>        String[] split = path.split(<span class="hljs-string">&quot;\\.&quot;</span>);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">postfix</span> <span class="hljs-operator">=</span> split[split.length-<span class="hljs-number">1</span>].toUpperCase();<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">return</span> ((ImageReader) Class.forName(postfix + <span class="hljs-string">&quot;Reader&quot;</span>).getConstructor(String.class).newInstance(path)).readImage();<br>        &#125;<br>        <span class="hljs-keyword">catch</span> (Exception e) &#123; <span class="hljs-comment">// 应该进一步处理</span><br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">path</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;/home/abc/hello.jpg&quot;</span>;<br>        <span class="hljs-type">Image</span> <span class="hljs-variable">image</span> <span class="hljs-operator">=</span> ImageReader.getImage(path);<br>        image.show();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>第二个题目，每个操作系统下的各种组件显然是属于一个产品族的，这里显然要使用抽象工厂模式。角色分类如下——ControllerFactory 为抽象工厂类，定义 createOperatonController 和 createInterfaceController 抽象方法。它们返回 OperatonController 和 InterfaceController，这是两个抽象产品，它们属于一个产品族。AndroidControllerFactory 和 IOSControllerFactory 为两个具体工厂，它们生产 AndroidOperatonController，AndroidInterfaceController 和 IOSOperatonController，IOSInterfaceController 这四个具体产品。</p>
+<p><img src="https://i.loli.net/2021/02/12/Mhk6Xzbqm4Y15DG.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 抽象层</span><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ControllerFactory</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> OperationController <span class="hljs-title function_">createOperationController</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> InterfaceController <span class="hljs-title function_">createInterfaceController</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ControllerFactory <span class="hljs-title function_">getControllerFactory</span><span class="hljs-params">(String systemType)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">return</span> (ControllerFactory) Class.forName(systemType + <span class="hljs-string">&quot;ControllerFactory&quot;</span>).newInstance();<br>        &#125;<br>        <span class="hljs-keyword">catch</span> (Exception e) &#123; <span class="hljs-comment">// 应该进一步处理</span><br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OperationController</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span>;<br>&#125;<br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">InterfaceController</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-comment">// Android 的具体工厂和产品族</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AndroidControllerFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ControllerFactory</span>&#123;<br><br>    <span class="hljs-keyword">public</span> OperationController <span class="hljs-title function_">createOperationController</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AndroidOperationController</span>();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> InterfaceController <span class="hljs-title function_">createInterfaceController</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AndroidInterfaceController</span>();<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AndroidOperationController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">OperationController</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;初始化 Android 的操作控制类&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AndroidInterfaceController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">InterfaceController</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;初始化 Android 的界面控制类&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// IOS 的具体工厂和产品族</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">IOSControllerFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ControllerFactory</span>&#123;<br><br>    <span class="hljs-keyword">public</span> OperationController <span class="hljs-title function_">createOperationController</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IOSOperationController</span>();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> InterfaceController <span class="hljs-title function_">createInterfaceController</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IOSInterfaceController</span>();<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">IOSOperationController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">OperationController</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;初始化 IOS 的操作控制类&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">IOSInterfaceController</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">InterfaceController</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;初始化 IOS 的界面控制类&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 客户端</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123; <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ControllerFactory</span> <span class="hljs-variable">factory</span> <span class="hljs-operator">=</span> ControllerFactory.getControllerFactory(<span class="hljs-string">&quot;IOS&quot;</span>);<br>        factory.createInterfaceController().doSomething();<br>        factory.createOperationController().doSomething();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>挺复杂，但其实也不太复杂，重要的是如何将其运用到具体开发中。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02-16%E6%97%A5%E8%AF%AD%E4%B8%AD%E6%95%B0%E8%AF%8D%E5%92%8C%E9%87%8F%E8%AF%8D%E7%9A%84%E8%AF%BB%E6%B3%95.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">日语中数词和量词的读法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02-10DFS%E2%80%94%E2%80%94%E5%85%A8%E6%8E%92%E5%88%97%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98.html">
+                        <span class="hidden-mobile">DFS 从入门到入坟——全排列和八皇后问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

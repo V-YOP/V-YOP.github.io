@@ -1,0 +1,826 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="听说模式这个词被滥用了，那么我也来为此添砖加瓦。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner">
+<meta property="og:url" content="http://example.com/2022/03-06MapReduce%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F1%E2%80%94%E2%80%94Mapper%EF%BC%8CReducer%EF%BC%8CCombiner.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="听说模式这个词被滥用了，那么我也来为此添砖加瓦。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20220305234151.png">
+<meta property="og:image" content="http://example.com/images/oss/20220305234151.png">
+<meta property="og:image" content="http://example.com/images/oss/20220306234133.png">
+<meta property="article:published_time" content="2022-03-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.294Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="MapReduce">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20220305234151.png">
+  
+  
+  <title>MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-06 00:00" pubdate>
+        2022年3月6日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      30k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MapReduce 开发模式 1——Mapper，Reducer，Combiner，Partitioner</h1>
+            
+            <div class="markdown-body">
+              <p>开始根据《深入理解 Hadoop》去学习 MapReduce 的编程模式。MapReduce 的接口看上去是十分简单的，但显然，<strong>为了尽量快地能够将其用于工程实践，首先学点模式肯定是最合适的</strong>。</p>
+<p>这里特意使用“<strong>开发模式</strong>”，而非“编程模式”，“设计模式”，这是因为 MapReduce 的编写中，Mapper，Reducer 的设计和 Job 的配置是密不可分的，并且需要程序员对 MapReduce 全流程及其原理有一定的理解，<strong>这里涉及的东西显然不止于编程</strong>（下面的实际内容也偏向理论和原理更多，没多少代码，代码也都很简单），因此我使用“开发模式”这一说法。</p>
+<p>MapReduce 中主要包含 6 个用户可以自定义的组件&#x2F;角色，按照数据的流向为顺序，他们是——</p>
+<ol>
+<li>InputFormat</li>
+<li>Mapper</li>
+<li>Partitioner</li>
+<li>Combiner</li>
+<li>Reducer</li>
+<li>OutputFormat</li>
+</ol>
+<p>各种开发模式主要相关的是中间四个角色，即 Mapper，Combiner，Partitioner，Reducer，先对它们进行了解，同时辅以一些代码示例，使用 Java 和 Scala 表达，之后或许会一直使用 Scala，很性感。</p>
+<hr>
+<p>Hive 证明，SQL 能翻译成 MapReduce 程序，但反过来说，<strong>我们也可以使用 SQL 来说明 MapReduce 的一些模式</strong>——</p>
+<ul>
+<li><strong>SELECT</strong>：即 Map 操作，筛选&#x2F;构造特定列</li>
+<li><strong>WHERE</strong>：即 Filter 操作，筛选特定行（即特定 KV 对，称作行是因为它符合直觉一些）</li>
+<li><strong>AGGREGATION</strong>：即 Reduce，聚集操作，将一个分组聚合成一个值，比如 MAX，MIN，SUM，COUNT 等</li>
+<li><strong>SORTING</strong>：对输出结果进行排序</li>
+<li><strong>JOIN</strong>：根据不同表&#x2F;查询结果的相同列进行连接操作</li>
+</ul>
+<p>十分显然，<strong>Map 阶段可以执行 SELECT，WHERE 操作，Map 阶段同时负责以及 GROUP BY——返回值的 KEY 就是用于分组的字段；而 Reduce 阶段执行的则是 AGGREGATION</strong>。SORTING 和 JOIN 不那么显然，之后再说。排序当前猜测是 Partitioner 执行的。</p>
+<blockquote>
+<p>当然，MapReduce 的能力绝对不限于 SQL，这么说只是因为它更容易理解罢了。我实际上确实有一些怀疑——使用函数式编程的术语对 MR 进行表述是否比 SQL 更容易理解和贴合实际？</p>
+</blockquote>
+<p>学习过程中将试图使用该书中所提到的 <a target="_blank" rel="noopener" href="https://community.amstat.org/jointscsg-section/dataexpo/dataexpo2009">航空数据</a>，其为标准的 csv 格式（以及一些 html 文档），解压后得到的 csv 文件内容类似下面，<strong>首行是表头，应当剔除掉</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs csv">Year,Month,DayofMonth,DayOfWeek,DepTime,CRSDepTime,ArrTime,CRSArrTime,UniqueCarrier,FlightNum,TailNum,ActualElapsedTime,CRSElapsedTime,AirTime,ArrDelay,DepDelay,Origin,Dest,Distance,TaxiIn,TaxiOut,Cancelled,CancellationCode,Diverted,CarrierDelay,WeatherDelay,NASDelay,SecurityDelay,LateAircraftDelay<br>1987,10,14,3,741,730,912,849,PS,1451,NA,91,79,NA,23,11,SAN,SFO,447,NA,NA,0,NA,0,NA,NA,NA,NA,NA<br>1987,10,15,4,729,730,903,849,PS,1451,NA,94,79,NA,14,-1,SAN,SFO,447,NA,NA,0,NA,0,NA,NA,NA,NA,NA<br>1987,10,17,6,741,730,918,849,PS,1451,NA,97,79,NA,29,11,SAN,SFO,447,NA,NA,0,NA,0,NA,NA,NA,NA,NA<br>1987,10,18,7,729,730,847,849,PS,1451,NA,78,79,NA,-2,-1,SAN,SFO,447,NA,NA,0,NA,0,NA,NA,NA,NA,NA<br>1987,10,19,1,749,730,922,849,PS,1451,NA,93,79,NA,33,19,SAN,SFO,447,NA,NA,0,NA,0,NA,NA,NA,NA,NA<br></code></pre></div></td></tr></table></figure>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于各种数据的字段及其说明</span></summary>
+        <blockquote><table>
+<thead>
+<tr>
+<th align="center">字段名称</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Year</td>
+<td align="center">该航班的年份（1987 到 2008）</td>
+</tr>
+<tr>
+<td align="center">Month</td>
+<td align="center">月份（1-12）</td>
+</tr>
+<tr>
+<td align="center">DayofMonth</td>
+<td align="center">月份的日期（1-31）</td>
+</tr>
+<tr>
+<td align="center">DayOfWeek</td>
+<td align="center">周几，1&#x3D;周一，7&#x3D;周日</td>
+</tr>
+<tr>
+<td align="center">DepTime</td>
+<td align="center">本地时区的航班起飞时间，HHMM 格式，前不补零，如 753 表示 07:53，1503 表示 15:03</td>
+</tr>
+<tr>
+<td align="center">CRSDepTime</td>
+<td align="center">原定起飞时间，格式同上</td>
+</tr>
+<tr>
+<td align="center">ArrTime</td>
+<td align="center">实际到达时间，格式同上</td>
+</tr>
+<tr>
+<td align="center">CRSArrTime</td>
+<td align="center">原定到达时间，格式同上</td>
+</tr>
+<tr>
+<td align="center">UniqueCarrier</td>
+<td align="center">航空公司代码</td>
+</tr>
+<tr>
+<td align="center">FlightNum</td>
+<td align="center">航班的唯一标识</td>
+</tr>
+<tr>
+<td align="center">TailNum</td>
+<td align="center">飞机的唯一标识</td>
+</tr>
+<tr>
+<td align="center">ActualElapsedTime</td>
+<td align="center">实际飞行时间（分）</td>
+</tr>
+<tr>
+<td align="center">CRSElapsedTime</td>
+<td align="center">原定飞行时间（分）</td>
+</tr>
+<tr>
+<td align="center">AirTIme</td>
+<td align="center">总的飞行时间（分）</td>
+</tr>
+<tr>
+<td align="center">ArrDelay</td>
+<td align="center">到达延迟时间（分）</td>
+</tr>
+<tr>
+<td align="center">DepDelay</td>
+<td align="center">起飞延迟时间（分）</td>
+</tr>
+<tr>
+<td align="center">Origin</td>
+<td align="center">起飞机场代码</td>
+</tr>
+<tr>
+<td align="center">Dest</td>
+<td align="center">目的地机场代码</td>
+</tr>
+<tr>
+<td align="center">Distance</td>
+<td align="center">总飞行距离（英里）</td>
+</tr>
+<tr>
+<td align="center">TaxiIn</td>
+<td align="center">航班到达期间，出租车进入时间（分）</td>
+</tr>
+<tr>
+<td align="center">TaxiOut</td>
+<td align="center">起飞期间，出租车离开时间（分）</td>
+</tr>
+<tr>
+<td align="center">Cancelled</td>
+<td align="center">航班是否取消，1&#x3D;是，0&#x3D;否</td>
+</tr>
+<tr>
+<td align="center">CancellationCode</td>
+<td align="center">取消原因，A&#x3D;承运，B&#x3D;天气，C&#x3D;NAS，D&#x3D;安全问题</td>
+</tr>
+<tr>
+<td align="center">Diverted</td>
+<td align="center">是否改道，1&#x3D;是，0&#x3D;否</td>
+</tr>
+<tr>
+<td align="center">CarrierDelay</td>
+<td align="center">航空公司造成的延误时间（分）</td>
+</tr>
+<tr>
+<td align="center">WeatherDelay</td>
+<td align="center">天气造成的延误时间（分）</td>
+</tr>
+<tr>
+<td align="center">NASDelay</td>
+<td align="center">国家空管系统（NAS）造成的延误时间（分）</td>
+</tr>
+<tr>
+<td align="center">SecurityDelay</td>
+<td align="center">安全原因造成的延误时间（分）</td>
+</tr>
+<tr>
+<td align="center">LateAircraftDelay</td>
+<td align="center">该航班在上个机场到达晚点而造成在本机场到达延迟时间（分）</td>
+</tr>
+</tbody></table>
+<p><strong>一切空值都使用 NA 表示，各个字段都需要考虑 NA 的情况</strong>。</p>
+<p>这里提供一个类来为原始数据建模，方便能快速和类型安全地取得数据，取得特定列的数据的代码见下面 SelectClause 的使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.function.Function;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">AirlineCol</span> &#123;<br>    Year(<span class="hljs-number">0</span>),<br>    Month(<span class="hljs-number">1</span>),<br>    DayofMonth(<span class="hljs-number">2</span>),<br>    DayOfWeek(<span class="hljs-number">3</span>),<br>    DepTime(<span class="hljs-number">4</span>),<br>    CRSDepTime(<span class="hljs-number">5</span>),<br>    ArrTime(<span class="hljs-number">6</span>),<br>    CRSArrTime(<span class="hljs-number">7</span>),<br>    UniqueCarrier(<span class="hljs-number">8</span>),<br>    FlightNum(<span class="hljs-number">9</span>),<br>    TailNum(<span class="hljs-number">10</span>),<br>    ActualElapsedTime(<span class="hljs-number">11</span>),<br>    CRSElapsedTime(<span class="hljs-number">12</span>),<br>    AirTime(<span class="hljs-number">13</span>),<br>    ArrDelay(<span class="hljs-number">14</span>),<br>    DepDelay(<span class="hljs-number">15</span>),<br>    Origin(<span class="hljs-number">16</span>),<br>    Dest(<span class="hljs-number">17</span>),<br>    Distance(<span class="hljs-number">18</span>),<br>    TaxiIn(<span class="hljs-number">19</span>),<br>    TaxiOut(<span class="hljs-number">20</span>),<br>    Cancelled(<span class="hljs-number">21</span>),<br>    CancellationCode(<span class="hljs-number">22</span>),<br>    Diverted(<span class="hljs-number">23</span>),<br>    CarrierDelay(<span class="hljs-number">24</span>),<br>    WeatherDelay(<span class="hljs-number">25</span>),<br>    NASDelay(<span class="hljs-number">26</span>),<br>    SecurityDelay(<span class="hljs-number">27</span>),<br>    LateAircraftDelay(<span class="hljs-number">28</span>);<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> index;<br>    AirlineCol(<span class="hljs-type">int</span> index) &#123;<br>        <span class="hljs-built_in">this</span>.index = index;<br>    &#125;<br>    <br>    <span class="hljs-comment">// 不把 Function 接口直接暴露出去</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ColGetter</span> &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Function&lt;AirlineCol, String&gt; fn;<br><br>        <span class="hljs-keyword">private</span> <span class="hljs-title function_">ColGetter</span><span class="hljs-params">(Function&lt;AirlineCol, String&gt; fn)</span> &#123;<br>            <span class="hljs-built_in">this</span>.fn = fn;<br>        &#125;<br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getCol</span><span class="hljs-params">(AirlineCol colEnum)</span> &#123;<br>            <span class="hljs-keyword">return</span> fn.apply(colEnum);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ColGetter <span class="hljs-title function_">get</span><span class="hljs-params">(String[] cols)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ColGetter</span>((col) -&gt; cols[col.index]);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+</blockquote>
+        
+    </details>
+  
+
+<p>下面，按照各种子句来一一学习各种开发模式，其中穿插着一些关于 MR 本身的概念。</p>
+<h1 id="Mapper——SELECT-和-WHERE"><a href="#Mapper——SELECT-和-WHERE" class="headerlink" title="Mapper——SELECT 和 WHERE"></a>Mapper——SELECT 和 WHERE</h1><p>典型的 MapReduce 程序主要包含两个阶段——Map 阶段和 Reduce 阶段，其中包含四个角色——Mapper，Combiner，Partitioner，Reducer。</p>
+<p>但并非所有 Job 都需要所有的这些角色：倘若不需要 Reduce 阶段，这是说，倘若作业仅使用 SELECT 和 WHERE 就能够表述的话，仅需要自定义 Mapper 角色即可。这种情况包括对原始数据进行清理，格式化，筛选等操作。</p>
+<h2 id="SELECT-子句（flatMap-操作）"><a href="#SELECT-子句（flatMap-操作）" class="headerlink" title="SELECT 子句（flatMap 操作）"></a>SELECT 子句（flatMap 操作）</h2><p>SELECT 子句用于筛选特定列，更准确的说是将每行原数据映射成为新数据。</p>
+<p>考虑这样一个需求——将原数据转换成下面格式的数据：</p>
+<ul>
+<li>航班的日期，格式为年&#x2F;月&#x2F;日</li>
+<li>周几</li>
+<li>预计起飞时间</li>
+<li>预计到达时间</li>
+<li>起飞机场的代码</li>
+<li>到达机场的代码</li>
+<li>航班总里程</li>
+<li>实际飞行时间</li>
+<li>计划飞行时间</li>
+<li>起飞延迟时间</li>
+<li>到达延迟时间</li>
+</ul>
+<p>解决方法非常显然——获取每一行数据，通过原数据构造所需新数据，向上下文中写入新数据，这是一个典型的 SELECT，只不过做了一些字段拼接和转换之类的操作罢了。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">SelectClause 代码见此</span></summary>
+        <blockquote><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.apache.commons.lang3.StringUtils;<br><span class="hljs-keyword">import</span> org.apache.hadoop.fs.Path;<br><span class="hljs-keyword">import</span> org.apache.hadoop.io.LongWritable;<br><span class="hljs-keyword">import</span> org.apache.hadoop.io.NullWritable;<br><span class="hljs-keyword">import</span> org.apache.hadoop.io.Text;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.Job;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.Mapper;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.input.FileInputFormat;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.input.TextInputFormat;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.util.StringJoiner;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 《深入理解 Hadoop》的第一个示例，演示 Select 子句的使用</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SelectClause</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SelectClauseMapper</span> <br>    <span class="hljs-comment">// 输出的数据不需要主键，也不需要排序，所以使用 NullWritable</span><br>    <span class="hljs-comment">// 如果使用其它的类型，则每行开头都会有一个、t</span><br>            <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Mapper</span>&lt;LongWritable, Text, NullWritable, Text&gt; &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Text</span> <span class="hljs-variable">outputV</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Text</span>();<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">map</span><span class="hljs-params">(LongWritable key, Text value, Context context)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException &#123;<br>            <span class="hljs-comment">// 表头</span><br>            <span class="hljs-keyword">if</span> (value.toString().startsWith(<span class="hljs-string">&quot;Year&quot;</span>)) &#123;<br>                <span class="hljs-keyword">return</span>;<br>            &#125;<br>            AirlineCol.<span class="hljs-type">ColGetter</span> <span class="hljs-variable">cols</span> <span class="hljs-operator">=</span> AirlineCol.build(value.toString().split(<span class="hljs-string">&quot;,&quot;</span>));<br><br>            <span class="hljs-comment">// 很壮观</span><br>            <span class="hljs-type">String</span> <span class="hljs-variable">date</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringJoiner</span>(<span class="hljs-string">&quot;/&quot;</span>)<br>                    .add(cols.getCol(AirlineCol.Year))<br>                    .add(StringUtils.leftPad(cols.getCol(AirlineCol.Month), <span class="hljs-number">2</span>, <span class="hljs-string">&quot;0&quot;</span>))<br>                    .add(StringUtils.leftPad(cols.getCol(AirlineCol.DayofMonth), <span class="hljs-number">2</span>, <span class="hljs-string">&quot;0&quot;</span>))<br>                    .toString();<br>            <span class="hljs-type">String</span> <span class="hljs-variable">dayOfWeek</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.DayOfWeek);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">depTime</span> <span class="hljs-operator">=</span> StringUtils.leftPad(cols.getCol(AirlineCol.DepTime), <span class="hljs-number">4</span>, <span class="hljs-string">&quot;0&quot;</span>);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">arrTime</span> <span class="hljs-operator">=</span> StringUtils.leftPad(cols.getCol(AirlineCol.ArrTime), <span class="hljs-number">4</span>, <span class="hljs-string">&quot;0&quot;</span>);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">origin</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.Origin);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">dest</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.Dest);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">distance</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.Distance);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">actualElapsedTime</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.ActualElapsedTime);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">CRSElapsedTime</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.CRSElapsedTime);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">depDelay</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.DepDelay);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">arrDelay</span> <span class="hljs-operator">=</span> cols.getCol(AirlineCol.ArrDelay);<br><br>            <span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringJoiner</span>(<span class="hljs-string">&quot;,&quot;</span>)<br>                    .add(date)<br>                    .add(dayOfWeek)<br>                    .add(depTime)<br>                    .add(arrTime)<br>                    .add(origin)<br>                    .add(dest)<br>                    .add(distance)<br>                    .add(actualElapsedTime)<br>                    .add(CRSElapsedTime)<br>                    .add(depDelay)<br>                    .add(arrDelay)<br>                    .toString();<br>            outputV.set(result);<br><br>            context.write(NullWritable.get(), outputV);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 不需要 Reducer</span><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException, InterruptedException, ClassNotFoundException &#123;<br>        <span class="hljs-type">Job</span> <span class="hljs-variable">job</span> <span class="hljs-operator">=</span> Job.getInstance();<br>        job.setJarByClass(SelectClause.class);<br><br>        <span class="hljs-comment">// TextInputFormat 为默认值，继承 FileOutputFormat</span><br>        <span class="hljs-comment">// TextInputFormat 逐行读取数据，对压缩文件能透明地处理</span><br>        job.setInputFormatClass(TextInputFormat.class);<br>        <span class="hljs-comment">// TextOutFormat 默认输出未压缩的文本文件</span><br>        job.setOutputFormatClass(TextOutputFormat.class);<br><br>        job.setMapOutputKeyClass(NullWritable.class);<br>        job.setMapOutputValueClass(Text.class);<br>        <span class="hljs-comment">// 不需要设置</span><br>        <span class="hljs-comment">// job.setOutputKeyClass(NullWritable.class);</span><br>        <span class="hljs-comment">// job.setOutputValueClass(NullWritable.class);</span><br><br>        job.setMapperClass(SelectClauseMapper.class);<br>        job.setNumReduceTasks(<span class="hljs-number">0</span>);<br><br>        FileInputFormat.setInputPaths(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(args[<span class="hljs-number">0</span>]));<br>        FileOutputFormat.setOutputPath(job, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Path</span>(args[<span class="hljs-number">1</span>]));<br><br>        System.exit(job.waitForCompletion(<span class="hljs-literal">true</span>) ? <span class="hljs-number">0</span> : <span class="hljs-number">1</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+</blockquote>
+        
+    </details>
+  
+
+<blockquote>
+<p>非常有趣的是，在本地跑 1987.csv 的时候，它切分了 4 个 Split，这说明本地的块大小默认为 32M，这是很合理的，因为在本地一般执行的是测试数据，量一般不大，同时又要照顾一下并发测试的需求。</p>
+</blockquote>
+<h3 id="配置项"><a href="#配置项" class="headerlink" title="配置项"></a>配置项</h3><p>代码本身没有什么麻烦的地方，主要是配置部分有很多需要学习的地方，虽然已经学过一些了，但我认为重复一次是好主意。setJar 之类的方法先略过——</p>
+<p><code>setInputFormatClass</code>，设置 InputFormat，默认值为 TextInputFormat，这里显式地设定了。TextInputFormat 逐行读取数据，对压缩文件能透明地处理。<strong>InputFormat 的泛型需和 Mapper 的输入 KV 匹配</strong>（不匹配也没有关系，比如之前的代码有继承<code>Mapper&lt;Object, Text, ..., ...&gt;</code>的，使用更广泛的类型并不会报错。</p>
+<p><code>TextInputFormat</code>的签名为<code>class TextInputFormat extends FileInputFormat&lt;LongWritable, Text&gt;</code>，注意它<strong>不带泛型</strong>，所以让 Mapper 的输入有一定的强制性。</p>
+<p><code>setOutputFormatClass</code>，设置 OutputFormat，OutputFormat 决定输出时的行为，比如输出的格式，位置等（HDFS，数据库，第三方系统……），默认值为 TextOutputFormat，其默认行为将把输出数据一行一行地输出到不压缩的文本文件中。</p>
+<p><code>TextOutputFormat</code>的签名为<code>class TextOutputFormat&lt;K, V&gt; extends FileOutputFormat&lt;K, V&gt;</code>，<strong>它的类型参数仍旧没有给定</strong>，所以给 Reducer（或者 Mapper，如果没有 Reducer 的话） 输出类型的设定是比较自由的。</p>
+<p><code>setMapOutputKeyClass</code>和<code>setMapOutputValueClass</code>，设置 Mapper 输出值的类型，需和 Mapper 的输出 KV 匹配。这两个配置显然被<code>OutputFormat</code>所使用以用于序列化 Mapper 的输出值。<code>setOutputKeyClass</code>，<code>setOutputValueClass</code>同理，设置 Reducer 输出值的类型。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 OutputKey 和 OutputValue 设置的问题</span></summary>
+        <blockquote><p><a target="_blank" rel="noopener" href="https://www.dictionary.com/browse/tldr">TL;DR</a>，最佳实践是无论任何时候都给定 Map 和 Reduce 输出的 Class。</p>
+<p>其实 OutputKeyClass，OutputValueClass，MapOutputKeyClass，MapOutputValueClass 这四个类并非一定要配置，<strong>它们究竟是否被使用取决于使用的 OutputFormat</strong>。</p>
+<p><span style="color: #FF0000">默认的 TextOutputFormat 不会使用这几个类的信息</span>——<strong>它的实现中直接调用了 K，V 对象的 toString 方法，并未使用上面的配置，仅仅是使用 instanceof 规定了 NullWritable 的情况</strong>，因此使用 TextOutputFormat 时，只有 Mapper 和 Reducer 的输出结果对实际的输出格式有影响，上面的配置不产生任何影响。</p>
+<p>但是，不能靠特例来投机取巧，试图少敲几行代码，这增大了心智负担，在进行配置时需要强迫人去了解各种 OutputFormat 的具体实现乃至源码。因此，<strong>应当保证一致性，无论何种情况都给定 Mapper 和 Reducer 输出值的类型配置，以减少心智负担</strong>，且这样绝对不会抛出运行时异常，只要配置的没有错误的话。</p>
+<p>顺带一提，书中说因为 Mapper 和 Reducer 的泛型会被擦除，所以无法在运行时知道 Mapper 和 Reducer 的输出的类型，所以需要手动设定。这说法是错误的——<strong>泛型实现类的泛型是不会被擦除的，在运行时能够获取到</strong>。</p>
+</blockquote>
+        
+    </details>
+  
+
+<p><code>setMapperClass</code>，字面意思。</p>
+<p><code>setNumReduceTasks</code>，设置 Reducer 的数量，设为 0 以避免 Reduce 阶段。</p>
+<p><code>waitForCompletion</code>，提交任务，参数为 true 表示打印日志到控制台。</p>
+<h3 id="运行方法"><a href="#运行方法" class="headerlink" title="运行方法"></a>运行方法</h3><p>在本地执行时非常方便，在 IDEA 的 Run Configuration 中配置 CLI 参数为输入输出路径，点击 Run 即可，因此不表。</p>
+<p>在集群上运行时需要打 jar 包，考虑到现在是容器化的时代，应当让打出来的 jar 包包含所有依赖，以使其能够在无任何依赖的情况下执行，不需要在 Hadoop 集群上添加依赖库（当然，至少学习情况下应该这样……不知道生产环境怎么处理）。为此，需要在 pom 下添加下面的配置——</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>8<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">target</span>&gt;</span>8<span class="hljs-tag">&lt;/<span class="hljs-name">target</span>&gt;</span><br>      <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>maven-assembly-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.4.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>        <span class="hljs-comment">&lt;!--打包时，包含所有依赖的 jar 包--&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">descriptorRefs</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-name">descriptorRef</span>&gt;</span>jar-with-dependencies<span class="hljs-tag">&lt;/<span class="hljs-name">descriptorRef</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">descriptorRefs</span>&gt;</span><br>      <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>然后，执行<code>mvn package</code>打包，丢到集群里，用<code>hadoop jar /path/to/jar SelectClause /hdfs/path/input /hdfs/path/output</code>命令来执行 jar 包。注意 output 文件夹需不存在，为空也不行。</p>
+<p>使用 1987 和 1988 两年的数据作为输入，通过日志能够发现 2 个 bz2 文件构造了 2 个 split（即使它解压后比 128M 大得多！）。待运行完毕后，能看到目录下生成了 2 个 Map 结果文件——</p>
+<figure class="highlight subunit"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs subunit">[root@hive share]# hdfs dfs -ls /output<br>Found 3 items<br>-rw-r--r--   3 yuuki supergroup          0 2022<span class="hljs-string">-03</span><span class="hljs-string">-05</span> 08:57 /output/_SUCCESS<br>-rw-r--r--   3 yuuki supergroup  245082556 2022<span class="hljs-string">-03</span><span class="hljs-string">-05</span> 08:57 /output/part-m<span class="hljs-string">-00000</span><br>-rw-r--r--   3 yuuki supergroup   61719917 2022<span class="hljs-string">-03</span><span class="hljs-string">-05</span> 08:56 /output/part-m<span class="hljs-string">-00001</span><br></code></pre></div></td></tr></table></figure>
+
+<p>输出内容的顺序是不一定的，比如可能 00000 文件是 1988，00001 是 1987 年的数据。</p>
+<h2 id="WHERE-子句（filter-操作）"><a href="#WHERE-子句（filter-操作）" class="headerlink" title="WHERE 子句（filter 操作）"></a>WHERE 子句（filter 操作）</h2><p>现在又来了一个需求——<strong>筛选</strong>出飞机到达或起飞的实际时间延迟超过 n 分钟的航班，同时标识航班推迟的时刻——是在起点推迟（飞机起飞慢了），还是在目的地推迟（飞机到达慢了），还是都有推迟，分别使用 O，D，B 表示。显然该操作需要结合 SELECT 和 WHERE 子句。</p>
+<blockquote>
+<p>使用简写字母表示的目的是为了尽可能减少数据长度，从而减少 IO。</p>
+</blockquote>
+<p>该需求同时要求延迟时间 n 要能够通过外部自定义而非硬编码，这一点通过 <strong>Configuration 类</strong>做到。每一个 Task，无论是 Mapper 还是 Reducer，<strong>在运行时都能够访问到一个所谓的 Configuration 的实例，其数据是在提交任务时给定的</strong>。因此，在提交任务时设置任务所需要的配置（hadoop jar 的-D 参数可以用来配置它）就成为可能。</p>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">WhereClause 的代码见此</span></summary>
+        <blockquote><p>试着使用 Scala 来写，确实更清爽很多，但仍旧完全是命令式的。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> org.apache.hadoop.fs.<span class="hljs-type">Path</span><br><span class="hljs-keyword">import</span> org.apache.hadoop.io.&#123;<span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.input.&#123;<span class="hljs-type">FileInputFormat</span>, <span class="hljs-type">TextInputFormat</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.output.&#123;<span class="hljs-type">FileOutputFormat</span>, <span class="hljs-type">TextOutputFormat</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.&#123;<span class="hljs-type">Job</span>, <span class="hljs-type">Mapper</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.util.<span class="hljs-type">GenericOptionsParser</span><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">WhereClauseMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>] </span>&#123;<br>  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> delayInMinutes: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span>;<br><br>  <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> outputK = <span class="hljs-type">NullWritable</span>.get<br>  <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> outputV = <span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>()<br><br>  <span class="hljs-comment">// setup 方法在初次启动时调用，通常用于获取特定资源，以及初始化配置</span><br>  <span class="hljs-comment">// 还有个 cleanup，主要用于释放资源</span><br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setup</span></span>(context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    delayInMinutes = context.getConfiguration.getInt(<span class="hljs-string">&quot;map.where.delay&quot;</span>, <span class="hljs-number">1</span>)<br>  &#125;<br><br>  <span class="hljs-comment">// 只能说……写得很痛苦</span><br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(key: <span class="hljs-type">LongWritable</span>, value: <span class="hljs-type">Text</span>, context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">if</span> (value.toString.startsWith(<span class="hljs-string">&quot;Year&quot;</span>)) &#123;<br>      <span class="hljs-keyword">return</span><br>    &#125;<br>    <span class="hljs-comment">// 重用 SelectClause 的映射操作</span><br>    <span class="hljs-keyword">val</span> cols = <span class="hljs-type">SelectClause</span>.parse(value.toString).split(<span class="hljs-string">&quot;,&quot;</span>)<br><br>    <span class="hljs-comment">// 有一些 NA 的情况</span><br>    <span class="hljs-keyword">val</span> depDel = cols(<span class="hljs-number">8</span>).toIntOption.getOrElse(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">val</span> arrDel = cols(<span class="hljs-number">9</span>).toIntOption.getOrElse(<span class="hljs-number">0</span>)<br><br>    <span class="hljs-keyword">if</span> (depDel &lt; delayInMinutes &amp;&amp; arrDel &lt; delayInMinutes) &#123;<br>      <span class="hljs-keyword">return</span><br>    &#125;<br><br>    <span class="hljs-keyword">val</span> resultStr = cols.mkString(<span class="hljs-string">&quot;,&quot;</span>) + &#123;<br>      <span class="hljs-keyword">if</span> (depDel &gt;= delayInMinutes &amp;&amp; arrDel &gt;= delayInMinutes) <span class="hljs-string">&quot;,B&quot;</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (depDel &gt;= delayInMinutes) <span class="hljs-string">&quot;,O&quot;</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (arrDel &gt;= delayInMinutes) <span class="hljs-string">&quot;,D&quot;</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;&quot;</span><br>    &#125;<br><br>    outputV.set(resultStr)<br>    context.write(outputK, outputV)<br>  &#125;<br><br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">WhereClause</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// 使用 Hadoop 提供的工具来解析命令行</span><br>    <span class="hljs-comment">// 实际上这才是 Driver 类编写的最佳实践</span><br>    <span class="hljs-keyword">val</span> parser = <span class="hljs-keyword">new</span> <span class="hljs-type">GenericOptionsParser</span>(args)<br><br>    <span class="hljs-comment">// 解构出前两个元素作为输入和输出路径</span><br>    <span class="hljs-comment">// getRemainingArgs 方法将获取所有参数以外的东西</span><br>    <span class="hljs-keyword">val</span> inputPath +: outputPath +: _ = parser.getRemainingArgs.toSeq.map(<span class="hljs-keyword">new</span> <span class="hljs-type">Path</span>(_))<br>    <span class="hljs-comment">// -D map.where.delay 实际上就是在这里注入给 Job 的</span><br>    <span class="hljs-keyword">val</span> job = <span class="hljs-type">Job</span>.getInstance(parser.getConfiguration)<br><br>    job.setJarByClass(<span class="hljs-type">WhereClause</span>.getClass)<br>    job.setInputFormatClass(classOf[<span class="hljs-type">TextInputFormat</span>])<br>    <span class="hljs-comment">// Scala 是如何做到这个的？？</span><br>    job.setOutputFormatClass(classOf[<span class="hljs-type">TextOutputFormat</span>[<span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>]])<br><br>    job.setMapOutputKeyClass(classOf[<span class="hljs-type">NullWritable</span>])<br>    job.setMapOutputValueClass(classOf[<span class="hljs-type">NullWritable</span>])<br><br>    job.setMapperClass(classOf[<span class="hljs-type">WhereClauseMapper</span>])<br>    job.setNumReduceTasks(<span class="hljs-number">0</span>)<br><br>    <span class="hljs-type">FileInputFormat</span>.setInputPaths(job, inputPath)<br>    <span class="hljs-type">FileOutputFormat</span>.setOutputPath(job, outputPath)<br><br>    <span class="hljs-type">System</span>.exit &#123;<br>      <span class="hljs-keyword">if</span> (job.waitForCompletion(<span class="hljs-literal">true</span>)) <span class="hljs-number">0</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-number">1</span><br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+</blockquote>
+        
+    </details>
+  
+
+<p>首先不设置<code>map.where.delay</code>，调用<code>hadoop jar xx.jar WhereClause /data/sampledata /output</code>，能看到 Map 前后 Record 数量分别为 6513924，6513883，没有筛选掉多少，这说明只有极少数的航班的延误时间能够小于 1 分钟；然后设置该配置，调用<code>hadoop jar xx.jar WhereClause -D map.where.delay=100 /data/sampledata /output</code>，会发现 Map 后的 Record 数量为 2630774，筛选了超过一半的航班（这延误率有点夸张吧 hhh）。</p>
+<h3 id="关于-GenericOptionParser"><a href="#关于-GenericOptionParser" class="headerlink" title="关于 GenericOptionParser"></a>关于 GenericOptionParser</h3><p>注意！这里的<code>-D map.where.delay=100</code>，对它的解析并非是<code>hadoop jar</code>命令的结果，而是在 Driver 类中所使用的 <code>GenericOptionParser</code>，它负责解析出一些常用的配置。<code>hadoop jar</code>的语法为<code>hadoop jar &lt;jar&gt; [mainClass] args...</code>，这里的 args 直接作为控制台参数传递给 Main 方法。</p>
+<p><code>GenericOptionParser</code>一般来说仅用于传递自定义的参数<code>-D &lt;name&gt;=&lt;value&gt;</code>，或者传递第三方库，后者为了方便不进行使用。</p>
+<p>然后，重复一遍使用 GenericOptionParser 后 Driver 的样板（这里其实有很多“个性”，称不上样板），我喜欢样板——</p>
+<ul>
+<li>使用控制台参数创建 GenericOptionParser</li>
+<li>从 GenericOptionParser 中解构出 Configuration 和 inputPath，outputPath</li>
+<li>根据 Configuration 创建 Job</li>
+<li>通过 Class 设置 Jar</li>
+<li>设置 InputFormat，OutputFormat</li>
+<li>设置 MapOutputKey，MapOutputValue，OutputKey，OutputValue</li>
+<li>设置 Mapper，Reducer（如果没有 Reducer，设置 Reducer task 数目为 0）</li>
+<li>使用 FileInputFormat，FileOutputFormat 的静态方法设置输入路径和输出路径</li>
+<li>提交任务</li>
+</ul>
+<h1 id="Reducer——GROUP-BY，AGGREGATION"><a href="#Reducer——GROUP-BY，AGGREGATION" class="headerlink" title="Reducer——GROUP BY，AGGREGATION"></a>Reducer——GROUP BY，AGGREGATION</h1><p>常用的聚合查询包括聚集函数，如 SUM，COUNT，MAX，MIN 等，以及两个子句 GROUP BY，HAVING。</p>
+<p>但在此之前，我们先来看看在编程语言中的集合的 GroupBy 操作。Haskell 的 GroupBy 并不典型，这里看 Scala 的。</p>
+<h2 id="关于-Scala-和-SQL-的-Group-By-操作"><a href="#关于-Scala-和-SQL-的-Group-By-操作" class="headerlink" title="关于 Scala 和 SQL 的 Group By 操作"></a>关于 Scala 和 SQL 的 Group By 操作</h2><p>Scala 中，集合的 GroupBy 操作的签名为——</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs mathematica"><span class="hljs-operator">//</span> 集合包含元素类型为 <span class="hljs-variable">A</span><br><span class="hljs-variable">def</span> <span class="hljs-built_in">GroupBy</span><span class="hljs-punctuation">[</span><span class="hljs-built_in">K</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">(</span><span class="hljs-variable">f</span><span class="hljs-operator">:</span> <span class="hljs-variable">A</span> <span class="hljs-operator">=&gt;</span> <span class="hljs-built_in">K</span><span class="hljs-punctuation">)</span> <span class="hljs-operator">:</span> <span class="hljs-built_in">Map</span><span class="hljs-punctuation">[</span><span class="hljs-built_in">K</span><span class="hljs-operator">,</span> <span class="hljs-built_in">C</span><span class="hljs-punctuation">]</span> <span class="hljs-operator">//</span> <span class="hljs-built_in">C</span> 是原集合的类型，如 <span class="hljs-built_in">List</span><span class="hljs-punctuation">[</span><span class="hljs-variable">A</span><span class="hljs-punctuation">]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>函数 f 用于构造 key，得到相同 key 的实体会被分到同一个组中。</p>
+<p>考虑一个学生实体及相关的数据。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Student</span>(<span class="hljs-params">id      : <span class="hljs-type">Int</span>, <span class="hljs-comment">// 主键</span></span></span><br><span class="hljs-params"><span class="hljs-class">                   classId : <span class="hljs-type">Int</span>,</span></span><br><span class="hljs-params"><span class="hljs-class">                   name    : <span class="hljs-type">String</span>,</span></span><br><span class="hljs-params"><span class="hljs-class">                   age     : <span class="hljs-type">Int</span></span>)</span><br><br><span class="hljs-keyword">val</span> datas = <span class="hljs-type">List</span>(<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">0</span>, <span class="hljs-number">101</span>, <span class="hljs-string">&quot;king halo&quot;</span>, <span class="hljs-number">15</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">1</span>, <span class="hljs-number">101</span>, <span class="hljs-string">&quot;haru urara&quot;</span>, <span class="hljs-number">14</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">2</span>, <span class="hljs-number">101</span>, <span class="hljs-string">&quot;seiun sky&quot;</span>, <span class="hljs-number">16</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">3</span>, <span class="hljs-number">102</span>, <span class="hljs-string">&quot;tokai teio&quot;</span>, <span class="hljs-number">15</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">4</span>, <span class="hljs-number">102</span>, <span class="hljs-string">&quot;special week&quot;</span>, <span class="hljs-number">16</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">5</span>, <span class="hljs-number">103</span>, <span class="hljs-string">&quot;silence suzuka&quot;</span>, <span class="hljs-number">16</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">6</span>, <span class="hljs-number">104</span>, <span class="hljs-string">&quot;amami haruka&quot;</span>, <span class="hljs-number">17</span>),<br>  <span class="hljs-type">Student</span>(<span class="hljs-number">7</span>, <span class="hljs-number">104</span>, <span class="hljs-string">&quot;kisaragi chihaya&quot;</span>, <span class="hljs-number">17</span>)<br>)<br></code></pre></div></td></tr></table></figure>
+
+<p>对其调用<code>groupBy(_.classId)</code>后，会得到——</p>
+<p><img src="/images/oss/20220305234151.png"></p>
+<p>然后，试图统计每个班级的平均年龄以及该班级的所有学生的 id（的拼接），全部代码为——</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 没有 average 函数，需要自定义一个，不考虑泛用性了</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">average</span></span>(lst : <span class="hljs-type">List</span>[<span class="hljs-type">Int</span>]) : <span class="hljs-type">Double</span> = &#123;<br>  <span class="hljs-keyword">val</span> (sum, len) = lst.foldLeft((<span class="hljs-number">0</span>, <span class="hljs-number">0</span>))&#123;<br>    <span class="hljs-keyword">case</span> ((sum, len), elem) =&gt; (sum + elem, len + <span class="hljs-number">1</span>)<br>  &#125;<br>  sum / len.toDouble<br>&#125;<br><br>a.groupBy(_.classId).map &#123; <span class="hljs-keyword">case</span> (k, v) =&gt;<br>  <span class="hljs-type">List</span>(k,     average(v.map(_.age)),     v.map(_.id).mkString(<span class="hljs-string">&quot;,&quot;</span>)) <span class="hljs-comment">// LOOK AT ME!</span><br>&#125;.map(_.mkString(<span class="hljs-string">&quot;\t\t&quot;</span>)).mkString(<span class="hljs-string">&quot;\n&quot;</span>)<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">结果：</span><br><span class="hljs-comment">101        15.0        0,1,2</span><br><span class="hljs-comment">102        15.5        3,4</span><br><span class="hljs-comment">103        16.0        5</span><br><span class="hljs-comment">104        17.0        6,7</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>再从 SQL 的角度来看，在进行 GROUP BY 操作后，会得到上图的结果，被 GROUP BY 的字段不是原子的，这并不符合 SQL 的要求，因此必须要使用某种手段将这字段集合“聚集”到一起，形成单个值。这种聚集手段一般来说是聚集函数。</p>
+<blockquote>
+<p>之前学习 SQL 的时候就没有掌握这里……总的来说，GROUP BY 操作实际上就是构造这样的表，KEY 以外的字段（即 VALUE）不是原子的，需要进行某种“聚集”操作，将它变成原子的。</p>
+</blockquote>
+<p>对应的 SQL 为——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> IF <span class="hljs-keyword">EXISTS</span> student_t;<br><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> student_t (<br>  id <span class="hljs-type">INT</span>(<span class="hljs-number">10</span>) <span class="hljs-keyword">PRIMARY</span> KEY,<br>  class_id <span class="hljs-type">INT</span>(<span class="hljs-number">10</span>),<br>  stud_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">32</span>),<br>  age <span class="hljs-type">INT</span>(<span class="hljs-number">10</span>)<br>);<br><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> student_t <span class="hljs-keyword">VALUES</span><br>(<span class="hljs-number">0</span>, <span class="hljs-number">101</span>, &quot;king halo&quot;, <span class="hljs-number">15</span>),<br>(<span class="hljs-number">1</span>, <span class="hljs-number">101</span>, &quot;haru urara&quot;, <span class="hljs-number">14</span>),<br>(<span class="hljs-number">2</span>, <span class="hljs-number">101</span>, &quot;seiun sky&quot;, <span class="hljs-number">16</span>),<br>(<span class="hljs-number">3</span>, <span class="hljs-number">102</span>, &quot;tokai teio&quot;, <span class="hljs-number">15</span>),<br>(<span class="hljs-number">4</span>, <span class="hljs-number">102</span>, &quot;special week&quot;, <span class="hljs-number">16</span>),<br>(<span class="hljs-number">5</span>, <span class="hljs-number">103</span>, &quot;silence suzuka&quot;, <span class="hljs-number">16</span>),<br>(<span class="hljs-number">6</span>, <span class="hljs-number">104</span>, &quot;amami haruka&quot;, <span class="hljs-number">17</span>),<br>(<span class="hljs-number">7</span>, <span class="hljs-number">104</span>, &quot;kisaragi chihaya&quot;, <span class="hljs-number">17</span>);<br><br><span class="hljs-keyword">select</span> class_id, <span class="hljs-built_in">AVG</span>(age), GROUP_CONCAT(id) <span class="hljs-keyword">FROM</span> student_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> class_id; <span class="hljs-comment">-- 可以在这里使用各种聚集函数</span><br><span class="hljs-comment">-- 这里的行为就相当于是，筛选出了待聚集字段中的 age 和 id，然后对 age 进行求和，对 id 进行聚集，这两个操作是可以同时进行的（可以在同一个迭代里同时进行）。</span><br><span class="hljs-comment">-- 一切聚集操作都可以“并行”吗？</span><br></code></pre></div></td></tr></table></figure>
+
+<p> 对比 SQL 和 Scala 的操作，能够发现两者基本是一致的——它们的行为是：（首先按 Where 进行筛选操作！）首先按标识符分组，然后相当于是创建了一张仅有两个字段的临时表，其中第一个字段为标识符，第二个字段为对应该标识符的实体的集合，这时候的任务就变成了对每个标识符对应实体的集合进行“聚集”（reduce 操作；众所周知，reduce 操作可以实现 map 操作），构造一个原子的值或列簇。</p>
+<h2 id="GROUP-BY-子句和-聚集函数"><a href="#GROUP-BY-子句和-聚集函数" class="headerlink" title="GROUP BY 子句和 聚集函数"></a>GROUP BY 子句和 聚集函数</h2><p>考虑这样的需求，我们需要知道<strong>每</strong>月航班准时到达或起飞的比例，知道<strong>每</strong>月航班取消或改道比例等，像这种需求，就是<strong>要求把数据按特定字段（如日期，编号，性别等）进行分组，对每一组分别进行聚集操作</strong>，从而能够获取特定于该字段上下文的特定信息，比如“每个月的航班数量”，“每个姓氏的数量”，“每个班级的人数”……</p>
+<p>直接从一个例子开始，我们需要从原始数据中获取到这些信息——</p>
+<ul>
+<li>月份</li>
+<li>该月航班数量</li>
+<li>准时到达的比例</li>
+<li>到达延迟的比例</li>
+<li>准时起飞的比例</li>
+<li>延迟起飞的比例</li>
+<li>取消的比例</li>
+<li>改航的比例</li>
+</ul>
+<p>考虑到原始数据的结构，我们需要从原始数据的结构中取出如下信息，即 Mappser 部分——</p>
+<ul>
+<li>航班的月份</li>
+<li>航班到达延迟时间（为 0 的认为没有延迟）</li>
+<li>航班起飞延迟时间（同上）</li>
+<li>是否取消</li>
+<li>是否改航</li>
+</ul>
+<p>这里只有 SELECT 操作，没有 WHERE 操作，获取这样的数据对应的 SQL 为——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">month</span>, arrDelay, depDelay, canceled, diverted <span class="hljs-keyword">FROM</span> airline_t;<br></code></pre></div></td></tr></table></figure>
+
+<p>这样得到的数据是每个航班的数据，并非是按月分组的数据，因此我们先加上<code>GROUP BY</code>——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-comment">-- can&#x27;t run!</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">month</span>, arrDelay, depDelay, canceled, diverted <span class="hljs-keyword">FROM</span> airline_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> <span class="hljs-keyword">month</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p>按 month 分组后，arrDelay，depDelay，canceled，diverted 这四个字段就不是原子的了，需要使用聚集函数，<strong>而具体如何进行聚集呢？这由业务决定</strong>（废话）。</p>
+<p>再次考虑需求，可以看到，我们要做的主要是要统计每个月的航班数量，以及准时到达的数量，准时起飞的数量，取消的数量，改航的数量，然后就能够计算上面的所有比例了，容易得到下面的 SQL——</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span><br>                                                 <span class="hljs-keyword">month</span>,<br>  <span class="hljs-built_in">COUNT</span>(<span class="hljs-number">1</span>)                                    <span class="hljs-keyword">AS</span> airline_count,<br>  <span class="hljs-built_in">COUNT</span>(arrDelay <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">OR</span> <span class="hljs-keyword">NULL</span>) <span class="hljs-operator">/</span> airline_count <span class="hljs-keyword">AS</span> arrive_in_time,<br>  <span class="hljs-number">1</span> <span class="hljs-operator">-</span> arrive_in_time                          <span class="hljs-keyword">AS</span> arrive_delay,<br>  <span class="hljs-built_in">COUNT</span>(depDelay <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">OR</span> <span class="hljs-keyword">NULL</span>) <span class="hljs-operator">/</span> airline_count <span class="hljs-keyword">AS</span> dep_in_time,<br>  <span class="hljs-number">1</span> <span class="hljs-operator">-</span> dep_in_time                             <span class="hljs-keyword">AS</span> dep_delay,<br>  <span class="hljs-built_in">COUNT</span>(canceled <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">OR</span> <span class="hljs-keyword">NULL</span>) <span class="hljs-operator">/</span> airline_count <span class="hljs-keyword">AS</span> is_canceled,<br>  <span class="hljs-built_in">COUNT</span>(diverted <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">OR</span> <span class="hljs-keyword">NULL</span>) <span class="hljs-operator">/</span> airline_count <span class="hljs-keyword">AS</span> is_diverted<br><span class="hljs-keyword">FROM</span> airline_t <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> <span class="hljs-keyword">month</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p>下面，开始编写相应的 Mapper 和 Reducer，同时尽可能减少输出的数据长度。</p>
+<p>关于 Mapper 的编写，目前有三种考虑——</p>
+<ol>
+<li>只做简单的映射操作，将相应字段取得即可。</li>
+<li>根据问题背景，设置输出的 KV 对格式为<code>&lt;Text, IntWritable&gt;</code>，其中 K 为月份，V 为按二进制位对特定状况进行标识的一个数字，如（从右往左数）第一个 bit 为 1 时，则到达延误，第二个 bit 为 1 时则出发延误，第三个 bit 表示航班取消，第四个 bit 表示航班改航。</li>
+<li>将各个延误情况区分开，比如 9 月某个航班既出发延误，又到达延误，则向上下文中写入三个 KV 对，分别标识一条记录（任何航班都会插入该条），一条出发延误记录，一条到达延误记录，<code>(&quot;09&quot;, 0)</code>，<code>(&quot;09&quot;, 1)</code>，<code>(&quot;09&quot;, 2)</code></li>
+</ol>
+<blockquote>
+<p>记录即 KV 对。</p>
+</blockquote>
+<p>第一种方法……字面意思，有一些完全没有必要的信息（如具体的延误时间）发送给了 Reducer，比较浪费；第二种方法需要的网络 IO 较少，但实现比较麻烦；第三种方法实现最为方便，但网络 IO 较多，这里使用第三种方法。</p>
+<blockquote>
+<p>但最大的问题是，这三种方案都无法使用 Combiner 或者需要另外定义 Combiner。应当使用一个集合类型如 ArrayWritable 作为 Mapper 的输出值。这待后面谈到 Combiner 时再说。</p>
+</blockquote>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">优化前的 AggregationMRJob 见此</span></summary>
+        <blockquote><p>之后的示例里就不写 Driver 了，顶多提及一下重要配置。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">import</span> org.apache.hadoop.fs.<span class="hljs-type">Path</span><br><span class="hljs-keyword">import</span> org.apache.hadoop.io.&#123;<span class="hljs-type">IntWritable</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.&#123;<span class="hljs-type">Job</span>, <span class="hljs-type">Mapper</span>, <span class="hljs-type">Reducer</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.input.&#123;<span class="hljs-type">FileInputFormat</span>, <span class="hljs-type">TextInputFormat</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.mapreduce.lib.output.&#123;<span class="hljs-type">FileOutputFormat</span>, <span class="hljs-type">TextOutputFormat</span>&#125;<br><span class="hljs-keyword">import</span> org.apache.hadoop.util.<span class="hljs-type">GenericOptionsParser</span><br><br><span class="hljs-keyword">import</span> java.lang<br><br><span class="hljs-comment">// Mapper 的输出为（月份， 标识符）</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AggregationMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">IntWritable</span>] </span>&#123;<br><br>  <span class="hljs-comment">// 为了让代码业务逻辑更明显，不使用类变量存储输出的 Writable 对象了</span><br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(key: <span class="hljs-type">LongWritable</span>, value: <span class="hljs-type">Text</span>, context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">IntWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">import</span> <span class="hljs-type">AirlineCol</span>._<br>    <span class="hljs-keyword">if</span> (value.toString.startsWith(<span class="hljs-string">&quot;Year&quot;</span>)) &#123;<br>      <span class="hljs-keyword">return</span><br>    &#125;<br>    <span class="hljs-keyword">val</span> colGetter = <span class="hljs-type">AirlineCol</span>.build(value.toString.split(<span class="hljs-string">&quot;,&quot;</span>))<br><br>    <span class="hljs-comment">// Scala 默认居然没有提供 padLeft……真的假的？</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">padLeft</span></span>(str : <span class="hljs-type">String</span>, len : <span class="hljs-type">Int</span>, c : <span class="hljs-type">Char</span>) : <span class="hljs-type">String</span> =<br>      str.reverse.padTo(len, c).reverse<br><br>    <span class="hljs-keyword">val</span> month = padLeft(colGetter(<span class="hljs-type">Month</span>), <span class="hljs-number">2</span>, &#x27;<span class="hljs-number">0</span>&#x27;)<br>    <span class="hljs-keyword">val</span> arrDelay = colGetter(<span class="hljs-type">ArrDelay</span>).toIntOption.getOrElse(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">val</span> depDelay = colGetter(<span class="hljs-type">DepDelay</span>).toIntOption.getOrElse(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">val</span> isCancelled = colGetter(<span class="hljs-type">Cancelled</span>) == <span class="hljs-string">&quot;1&quot;</span><br>    <span class="hljs-keyword">val</span> isDiverted = colGetter(<span class="hljs-type">Diverted</span>) == <span class="hljs-string">&quot;1&quot;</span><br><br>    context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), <span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(<span class="hljs-number">0</span>))<br>    <span class="hljs-keyword">if</span> (arrDelay &gt; <span class="hljs-number">0</span>) &#123;<br>      context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), <span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(<span class="hljs-number">1</span>))<br>    &#125;<br>    <span class="hljs-keyword">if</span> (depDelay &gt; <span class="hljs-number">0</span>) &#123;<br>      context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), <span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(<span class="hljs-number">2</span>))<br>    &#125;<br>    <span class="hljs-keyword">if</span> (isCancelled) &#123;<br>      context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), <span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(<span class="hljs-number">3</span>))<br>    &#125;<br>    <span class="hljs-keyword">if</span> (isDiverted) &#123;<br>      context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), <span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(<span class="hljs-number">4</span>))<br>    &#125;<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AggregationReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">IntWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(key: <span class="hljs-type">Text</span>, values: lang.<span class="hljs-type">Iterable</span>[<span class="hljs-type">IntWritable</span>], context: <span class="hljs-type">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">IntWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// 将 Java 的 Iterable 转换为 Scala 的 Iterable</span><br>    <span class="hljs-keyword">import</span> scala.jdk.<span class="hljs-type">CollectionConverters</span>.<span class="hljs-type">IterableHasAsScala</span><br><br>    <span class="hljs-keyword">val</span> (recordCount, arrDelayCount, depDelayCount, cancelCount, divertCount) =<br>      values.asScala.foldLeft((<span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>)) &#123; (counter, elem) =&gt;<br>        elem.get <span class="hljs-keyword">match</span> &#123;<br>          <span class="hljs-keyword">case</span> <span class="hljs-number">0</span> =&gt; counter.copy(_1 = counter._1 + <span class="hljs-number">1</span>)<br>          <span class="hljs-keyword">case</span> <span class="hljs-number">1</span> =&gt; counter.copy(_2 = counter._2 + <span class="hljs-number">1</span>)<br>          <span class="hljs-keyword">case</span> <span class="hljs-number">2</span> =&gt; counter.copy(_3 = counter._3 + <span class="hljs-number">1</span>)<br>          <span class="hljs-keyword">case</span> <span class="hljs-number">3</span> =&gt; counter.copy(_4 = counter._4 + <span class="hljs-number">1</span>)<br>          <span class="hljs-keyword">case</span> <span class="hljs-number">4</span> =&gt; counter.copy(_5 = counter._5 + <span class="hljs-number">1</span>)<br>        &#125;<br>      &#125;<br><br>    <span class="hljs-keyword">val</span> result = recordCount.toString +<span class="hljs-string">&quot;,&quot;</span> + <span class="hljs-type">List</span>(<br>      <span class="hljs-number">1</span> - arrDelayCount / recordCount, <span class="hljs-comment">// 准时到达</span><br>      arrDelayCount / recordCount, <span class="hljs-comment">// 延迟到达</span><br>      <span class="hljs-number">1</span> - depDelayCount / recordCount, <span class="hljs-comment">// 准时出发</span><br>      depDelayCount / recordCount, <span class="hljs-comment">// 延迟出发</span><br>      cancelCount / recordCount, <span class="hljs-comment">// 取消</span><br>      divertCount / recordCount <span class="hljs-comment">// 改航</span><br>    ).map(s =&gt; (s * <span class="hljs-number">100</span>).toString.take(<span class="hljs-number">5</span>) + <span class="hljs-string">&quot;%&quot;</span>).mkString(<span class="hljs-string">&quot;,&quot;</span>) <span class="hljs-comment">// 格式化一下</span><br>    context.write(key, <span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(result))<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 演示 GROUP BY 子句的使用</span><br><span class="hljs-comment"> */</span><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">AggregationMRJob</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// 1. 根据 args 初始化 GenericOptionParser</span><br>    <span class="hljs-keyword">val</span> parser = <span class="hljs-keyword">new</span> <span class="hljs-type">GenericOptionsParser</span>(args)<br>    <span class="hljs-comment">// 2. 获取输入，输出路径</span><br>    <span class="hljs-keyword">val</span> inputPath +: outputPath +: _ = parser.getRemainingArgs.toSeq.map(<span class="hljs-keyword">new</span> <span class="hljs-type">Path</span>(_))<br>    <span class="hljs-comment">// 3. 获取 Configuration，构造 Job</span><br>    <span class="hljs-keyword">val</span> job = <span class="hljs-type">Job</span>.getInstance(parser.getConfiguration)<br>    job setJarByClass <span class="hljs-type">AggregationMRJob</span>.getClass<br>    <span class="hljs-comment">// 4. 设置 InputFormat, OutputFormat</span><br>    job setInputFormatClass classOf[<span class="hljs-type">TextInputFormat</span>]<br>    job setOutputFormatClass classOf[<span class="hljs-type">TextOutputFormat</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>]]<br>    <span class="hljs-comment">// 5. 设置 Mapper 和 Reducer 的输出类型</span><br>    job setMapOutputKeyClass classOf[<span class="hljs-type">Text</span>]<br>    job setMapOutputValueClass classOf[<span class="hljs-type">IntWritable</span>]<br>    job setOutputKeyClass classOf[<span class="hljs-type">Text</span>]<br>    job setOutputValueClass classOf[<span class="hljs-type">Text</span>]<br>    <span class="hljs-comment">// 6. 设置 Mapper，Reducer</span><br>    job setMapperClass classOf[<span class="hljs-type">AggregationMapper</span>]<br>    job setReducerClass classOf[<span class="hljs-type">AggregationReducer</span>]<br>    job setNumReduceTasks <span class="hljs-number">1</span> <span class="hljs-comment">// 默认值</span><br>    <span class="hljs-comment">// 7. 设置输入输出路径</span><br>    <span class="hljs-type">FileInputFormat</span>.setInputPaths(job, inputPath)<br>    <span class="hljs-type">FileOutputFormat</span>.setOutputPath(job, outputPath)<br>    <span class="hljs-comment">// 8. 启动</span><br>    <span class="hljs-type">System</span> exit &#123;<br>      <span class="hljs-keyword">if</span> (job waitForCompletion <span class="hljs-literal">true</span>) <span class="hljs-number">0</span><br>      <span class="hljs-keyword">else</span> <span class="hljs-number">1</span><br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+</blockquote>
+        
+    </details>
+  
+
+<p>得到的数据如下，这里并没有使用标准 CSV 格式，如果使用，则输出的 KEY 应该使用 NullWritable 类型。</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">01</span>	<span class="hljs-number">436950</span>.<span class="hljs-number">0</span>,<span class="hljs-number">40</span>.<span class="hljs-number">08</span>%,<span class="hljs-number">59</span>.<span class="hljs-number">91</span>%,<span class="hljs-number">54</span>.<span class="hljs-number">54</span>%,<span class="hljs-number">45</span>.<span class="hljs-number">45</span>%,<span class="hljs-number">3</span>.<span class="hljs-number">605</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">527</span>%<br><span class="hljs-attribute">02</span>	<span class="hljs-number">412579</span>.<span class="hljs-number">0</span>,<span class="hljs-number">41</span>.<span class="hljs-number">29</span>%,<span class="hljs-number">58</span>.<span class="hljs-number">70</span>%,<span class="hljs-number">56</span>.<span class="hljs-number">87</span>%,<span class="hljs-number">43</span>.<span class="hljs-number">12</span>%,<span class="hljs-number">1</span>.<span class="hljs-number">774</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">305</span>%<br><span class="hljs-attribute">03</span>	<span class="hljs-number">445080</span>.<span class="hljs-number">0</span>,<span class="hljs-number">42</span>.<span class="hljs-number">68</span>%,<span class="hljs-number">57</span>.<span class="hljs-number">31</span>%,<span class="hljs-number">57</span>.<span class="hljs-number">95</span>%,<span class="hljs-number">42</span>.<span class="hljs-number">04</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">701</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">237</span>%<br><span class="hljs-attribute">04</span>	<span class="hljs-number">427325</span>.<span class="hljs-number">0</span>,<span class="hljs-number">48</span>.<span class="hljs-number">68</span>%,<span class="hljs-number">51</span>.<span class="hljs-number">31</span>%,<span class="hljs-number">62</span>.<span class="hljs-number">74</span>%,<span class="hljs-number">37</span>.<span class="hljs-number">25</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">564</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">248</span>%<br><span class="hljs-attribute">05</span>	<span class="hljs-number">435916</span>.<span class="hljs-number">0</span>,<span class="hljs-number">49</span>.<span class="hljs-number">28</span>%,<span class="hljs-number">50</span>.<span class="hljs-number">71</span>%,<span class="hljs-number">62</span>.<span class="hljs-number">35</span>%,<span class="hljs-number">37</span>.<span class="hljs-number">64</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">602</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">245</span>%<br><span class="hljs-attribute">06</span>	<span class="hljs-number">431299</span>.<span class="hljs-number">0</span>,<span class="hljs-number">50</span>.<span class="hljs-number">06</span>%,<span class="hljs-number">49</span>.<span class="hljs-number">93</span>%,<span class="hljs-number">61</span>.<span class="hljs-number">60</span>%,<span class="hljs-number">38</span>.<span class="hljs-number">39</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">278</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">216</span>%<br><span class="hljs-attribute">07</span>	<span class="hljs-number">441118</span>.<span class="hljs-number">0</span>,<span class="hljs-number">49</span>.<span class="hljs-number">15</span>%,<span class="hljs-number">50</span>.<span class="hljs-number">84</span>%,<span class="hljs-number">60</span>.<span class="hljs-number">36</span>%,<span class="hljs-number">39</span>.<span class="hljs-number">63</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">623</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">329</span>%<br><span class="hljs-attribute">08</span>	<span class="hljs-number">446769</span>.<span class="hljs-number">0</span>,<span class="hljs-number">48</span>.<span class="hljs-number">97</span>%,<span class="hljs-number">51</span>.<span class="hljs-number">02</span>%,<span class="hljs-number">60</span>.<span class="hljs-number">69</span>%,<span class="hljs-number">39</span>.<span class="hljs-number">30</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">554</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">281</span>%<br><span class="hljs-attribute">09</span>	<span class="hljs-number">424075</span>.<span class="hljs-number">0</span>,<span class="hljs-number">51</span>.<span class="hljs-number">76</span>%,<span class="hljs-number">48</span>.<span class="hljs-number">23</span>%,<span class="hljs-number">67</span>.<span class="hljs-number">38</span>%,<span class="hljs-number">32</span>.<span class="hljs-number">61</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">480</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">190</span>%<br><span class="hljs-attribute">10</span>	<span class="hljs-number">441670</span>.<span class="hljs-number">0</span>,<span class="hljs-number">47</span>.<span class="hljs-number">72</span>%,<span class="hljs-number">52</span>.<span class="hljs-number">27</span>%,<span class="hljs-number">63</span>.<span class="hljs-number">27</span>%,<span class="hljs-number">36</span>.<span class="hljs-number">72</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">522</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">186</span>%<br><span class="hljs-attribute">11</span>	<span class="hljs-number">420861</span>.<span class="hljs-number">0</span>,<span class="hljs-number">43</span>.<span class="hljs-number">60</span>%,<span class="hljs-number">56</span>.<span class="hljs-number">39</span>%,<span class="hljs-number">58</span>.<span class="hljs-number">38</span>%,<span class="hljs-number">41</span>.<span class="hljs-number">61</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">835</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">249</span>%<br><span class="hljs-attribute">12</span>	<span class="hljs-number">438454</span>.<span class="hljs-number">0</span>,<span class="hljs-number">43</span>.<span class="hljs-number">13</span>%,<span class="hljs-number">56</span>.<span class="hljs-number">86</span>%,<span class="hljs-number">56</span>.<span class="hljs-number">86</span>%,<span class="hljs-number">43</span>.<span class="hljs-number">13</span>%,<span class="hljs-number">1</span>.<span class="hljs-number">055</span>%,<span class="hljs-number">0</span>.<span class="hljs-number">308</span>%<br></code></pre></div></td></tr></table></figure>
+
+<h3 id="关于-Reducer"><a href="#关于-Reducer" class="headerlink" title="关于 Reducer"></a>关于 Reducer</h3><p>每个 Mapper 的结果会按照 KEY 进行<strong>排序</strong>和 <strong>Shuffle</strong>（非常重要），分别发送给不同的 Reducer，Reducer 的输入类型需和 Mapper 的输出类型匹配，<strong>每个 Reducer 都将拿到一些 KEY 对应的记录的集合</strong>，比如 ReducerA 会拿到 KEY 为<code>01</code>，<code>03</code>的记录集合，ReducerB 会拿到<code>02</code>，<code>04</code>的记录的集合（通常不是这样，KEY 会被进行哈希以保证平均）……这里的操作非常重要，之后必须得自己学习。</p>
+<blockquote>
+<p>Mapper 的结果会按 KEY 分发给不同的 Reducer，这是说，特定的 KEY 必定会发送且只发送给一个特定的 Reducer；每一个 Reducer 会接受每个 Mapper 的结果，这是说特定的 Reducer 看到的每一个 KEY，它的 VALUE 会来自每一个 Mapper。</p>
+</blockquote>
+<p>在取得集合后，Reducer 对每个 KEY，都会将其对应的记录集合进行聚集操作，这就是每一次调用 reduce 函数所做的事情。比如，一个 Mapper 的输出结果可能是这样——</p>
+<figure class="highlight node-repl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs node-repl">01 0<br>01 1<br>01 2<br>01 0<br><span class="hljs-meta prompt_">...</span><br>03 0<br>03 1<br>03 0<br>03 3<br>03 0<br><span class="hljs-meta prompt_">...</span><br></code></pre></div></td></tr></table></figure>
+
+<p>它传递给 Reducer 后，可能变成这样，它本质上和此图结构相同。</p>
+<p><img src="/images/oss/20220305234151.png"></p>
+<figure class="highlight basic"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs basic"><span class="hljs-symbol">01 </span>[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">0</span>,...] <br><span class="hljs-symbol">03 </span>[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>,<span class="hljs-number">0</span>,...]<br></code></pre></div></td></tr></table></figure>
+
+<p>后面的工作就是典型的对集合进行聚集的操作了。需注意的是，它不会一开始就把整个集合全部都加载到内存，那在大数据量大情况下百分百会把内存用完，这也是为什么它传递过来的是一个 Iterable 对象，只允许用户流式地去访问集合。</p>
+<p>Reducer 有几个重要的规律&#x2F;原则——</p>
+<ul>
+<li>对每一个 Reducer，<strong>每调用一次 reduce 方法，就是处理一个 KEY 对应的记录集合</strong>，即<strong>一个或多个</strong> Mapper 输出的一部分。</li>
+<li>对同一个 Reducer，<strong>它处理的 KEY 是经过排序的，但 KEY 对应的记录集合默认并不排序</strong>，运行过程中可能还会发生变化；用户可以自定义<strong>二次排序</strong>方法对 VALUE 集合进行排序。</li>
+<li><strong>Reducer 之间是不排序的</strong>，如 ReducerA 可能会拿到 01,03,05,07,09,11 月的 KEY，ReducerB 可能拿到 02,04,06,08,10,12 月的 KEY；Reducer 之间的排序也是可以自定义的。</li>
+</ul>
+<h3 id="关于-Combiner"><a href="#关于-Combiner" class="headerlink" title="关于 Combiner"></a>关于 Combiner</h3><p>需求解决了，但是这并非是个合适的解决方案——分析输出的日志可以发现平均每一条记录会导致 Mapper 产生两条记录，假设现在有 1 亿条数据，则有 2 亿条记录会被传递给 Reducer。<strong>Reducer 通常是无法做到数据本地性的，因此需要 Mapper 将结果通过网络传输给 Reducer，这会造成大量的损耗，而 Combiner 有助于缓解这一问题</strong>。</p>
+<p>考虑上面提到的 Mapper 的输出结果，它显然能做优化——有那么多<code>01 0</code>，为啥不能先在本地直接先做一次聚集，然后再传递给 Reducer 呢？这能减少非常大量的 IO（在这个场景下，得有四五个数量级了）！</p>
+<p><strong>Combiner 就是服务这样的目的——为每一个 Mapper 的输出在本地预先进行聚集，从而减少网络 IO</strong>。<strong>Combiner 使用 Reducer 接口</strong>，因为其行为也是 reduce。Combiner 的输入要和 Mapper 的输出匹配，输出要和 Reducer 的输入匹配，<span style="color: #FF0000">Combiner 的输入必须和输出一致</span>。</p>
+<p><strong>为什么 Combiner 的输入和输出要一致？因为 Combiner 的调用次数是不确定的，Mapper 的结果可能会经过多次 Combine 操作才最终聚集起来</strong>，而因此 Combiner 的输出必须要能够作为其它 Combiner 的输入。这和 java8-stream 的 reduce 操作非常类似。</p>
+<p>为此，我们必须对 Mapper，Reducer 全部都进行重写以匹配 Combiner 的需求。</p>
+<p>这里选择让 Mapper 的输出类似<code>01 [1,0,0,0,0]   01 [1,1,0,0,0]...</code>，Combiner 就合并同样的 KEY，得到<code>01 [1999,888,77,66,55]...</code>，然后 Reducer 再次进行再一次的合并操作，得到最终结果<span class="heimu">其实这样的话 Combiner 和 Reducer 的逻辑是基本一样的，差别在于最后的输出不一样</span>。</p>
+<blockquote>
+<p>书上使用 MapWritable，但是是当作 Bean 对象使用的…不知道性能如何。</p>
+<p>使用 ArrayWritable 需要注意，<strong>如果该类型作为 Reducer 的输入类型，则需要定义其子类并给定空构造函数</strong>，传递该数组内的 Writable 的 class，因为其在运行时会通过反射创建该类，而默认的 ArrayWritable 不提供空构造函数。</p>
+</blockquote>
+
+    <details style="margin-bottom:15px; margin-top:15px">
+        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">带上 Combiner 的 AggregationMRJob 代码</span></summary>
+        <blockquote><p>两个坑，第一个是 ArrayWritable 如果有反序列化的需求（如作为 Combiner，Reducer 的输入）的话，必须要继承和编写空构造函数才能用，第二个是<code>Array[IntWritable]</code>不能转换成<code>Array[Writable]</code>，<strong>Java 的数组不能逆变，协变</strong>。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">IntArrayWritable</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">ArrayWritable</span>(<span class="hljs-params">classOf[<span class="hljs-type">IntWritable</span>]</span>)</span><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">IntArrayWritable</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">apply</span></span>(values : <span class="hljs-type">Array</span>[<span class="hljs-type">Writable</span>]) : <span class="hljs-type">IntArrayWritable</span> = &#123;<br>    <span class="hljs-keyword">val</span> res = <span class="hljs-keyword">new</span> <span class="hljs-type">IntArrayWritable</span><br>    res.set(values)<br>    res<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">// Mapper 的输出为（月份， 标识符）</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AggregationMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>] </span>&#123;<br><br>  <span class="hljs-comment">// 为了让代码业务逻辑更明显，不使用类变量存储输出的 Writable 对象了</span><br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(key: <span class="hljs-type">LongWritable</span>, value: <span class="hljs-type">Text</span>, context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">import</span> <span class="hljs-type">AirlineCol</span>._<br>    <span class="hljs-keyword">if</span> (value.toString.startsWith(<span class="hljs-string">&quot;Year&quot;</span>)) &#123;<br>      <span class="hljs-keyword">return</span><br>    &#125;<br>    <span class="hljs-keyword">val</span> colGetter = <span class="hljs-type">AirlineCol</span>.build(value.toString.split(<span class="hljs-string">&quot;,&quot;</span>))<br><br>    <span class="hljs-comment">// Scala 默认居然没有提供 padLeft……真的假的？</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">padLeft</span></span>(str : <span class="hljs-type">String</span>, len : <span class="hljs-type">Int</span>, c : <span class="hljs-type">Char</span>) : <span class="hljs-type">String</span> =<br>      str.reverse.padTo(len, c).reverse<br><br>    <span class="hljs-keyword">val</span> month = padLeft(colGetter(<span class="hljs-type">Month</span>), <span class="hljs-number">2</span>, &#x27;<span class="hljs-number">0</span>&#x27;)<br>    <span class="hljs-keyword">val</span> arrDelay = colGetter(<span class="hljs-type">ArrDelay</span>).toIntOption.getOrElse(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">val</span> depDelay = colGetter(<span class="hljs-type">DepDelay</span>).toIntOption.getOrElse(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">val</span> isCancelled = colGetter(<span class="hljs-type">Cancelled</span>) == <span class="hljs-string">&quot;1&quot;</span><br>    <span class="hljs-keyword">val</span> isDiverted = colGetter(<span class="hljs-type">Diverted</span>) == <span class="hljs-string">&quot;1&quot;</span><br><br>    context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), <span class="hljs-type">IntArrayWritable</span>(<span class="hljs-type">Array</span>(<br>      <span class="hljs-number">1</span>, <span class="hljs-keyword">if</span> (arrDelay &gt; <span class="hljs-number">0</span>) <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>, <span class="hljs-keyword">if</span> (depDelay &gt; <span class="hljs-number">0</span>) <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>, <span class="hljs-keyword">if</span> (isCancelled) <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>, <span class="hljs-keyword">if</span> (isDiverted) <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span><br>    ).map(<span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(_))))<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AggregationCombiner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(key: <span class="hljs-type">Text</span>, values: lang.<span class="hljs-type">Iterable</span>[<span class="hljs-type">IntArrayWritable</span>], context: <span class="hljs-type">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">import</span> scala.jdk.<span class="hljs-type">CollectionConverters</span>.<span class="hljs-type">IterableHasAsScala</span><br>    <span class="hljs-keyword">val</span> result = values.asScala.map(_.get).foldLeft(<span class="hljs-type">Array</span>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>)) &#123;(acc, cols) =&gt;<br>      cols.map(_.asInstanceOf[<span class="hljs-type">IntWritable</span>].get).zip(acc).map &#123;<span class="hljs-keyword">case</span> (a, b) =&gt; a + b&#125;<br>    &#125;<br>    context.write(key, <span class="hljs-type">IntArrayWritable</span>(result.map(<span class="hljs-keyword">new</span> <span class="hljs-type">IntWritable</span>(_))))<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AggregationReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(key: <span class="hljs-type">Text</span>, values: lang.<span class="hljs-type">Iterable</span>[<span class="hljs-type">IntArrayWritable</span>], context: <span class="hljs-type">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">IntArrayWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// 将 Java 的 Iterable 转换为 Scala 的 Iterable</span><br>    <span class="hljs-keyword">import</span> scala.jdk.<span class="hljs-type">CollectionConverters</span>.<span class="hljs-type">IterableHasAsScala</span><br><br>    <span class="hljs-keyword">val</span> <span class="hljs-type">Array</span>(recordCount,arrDelayCount,depDelayCount,cancelCount,divertCount) = values.asScala.map(_.get).foldLeft(<span class="hljs-type">Array</span>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>)) &#123;(acc, cols) =&gt;<br>      cols.map(_.asInstanceOf[<span class="hljs-type">IntWritable</span>].get).zip(acc).map &#123;<span class="hljs-keyword">case</span> (a, b) =&gt; a + b&#125;<br>    &#125;.map(_.toDouble)<br><br>    <span class="hljs-keyword">val</span> result = recordCount.toString +<span class="hljs-string">&quot;,&quot;</span> + <span class="hljs-type">List</span>(<br>      <span class="hljs-number">1</span> - arrDelayCount / recordCount, <span class="hljs-comment">// 准时到达</span><br>      arrDelayCount / recordCount, <span class="hljs-comment">// 延迟到达</span><br>      <span class="hljs-number">1</span> - depDelayCount / recordCount, <span class="hljs-comment">// 准时出发</span><br>      depDelayCount / recordCount, <span class="hljs-comment">// 延迟出发</span><br>      cancelCount / recordCount, <span class="hljs-comment">// 取消</span><br>      divertCount / recordCount <span class="hljs-comment">// 改航</span><br>    ).map(s =&gt; (s * <span class="hljs-number">100</span>).toString.take(<span class="hljs-number">5</span>) + <span class="hljs-string">&quot;%&quot;</span>).mkString(<span class="hljs-string">&quot;,&quot;</span>) <span class="hljs-comment">// 格式化一下</span><br>    context.write(key, <span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(result))<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+</blockquote>
+        
+    </details>
+  
+
+<h1 id="Partitioner"><a href="#Partitioner" class="headerlink" title="Partitioner"></a>Partitioner</h1><p>Partitioner 的作用一言以蔽之，就是<strong>将 Mapper 的中间结果进行分组，并将同一组的 KV 对发送给同一个 Reducer 处理</strong>，可以说 Partitioner 是为了<span style="color: #FF0000">负载均衡</span>。</p>
+<p>MR 中默认的 Partitioner 为 HashPartitioner，实现如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HashPartitioner</span>&lt;K, V&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Partitioner</span>&lt;K, V&gt; &#123;<br>  <span class="hljs-comment">/** Use &#123;<span class="hljs-doctag">@link</span> Object#hashCode()&#125; to partition. */</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getPartition</span><span class="hljs-params">(K key, V value, <span class="hljs-type">int</span> numReduceTasks)</span> &#123;<br>    <span class="hljs-keyword">return</span> (key.hashCode() &amp; Integer.MAX_VALUE) % numReduceTasks;<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这意味着几件事——</p>
+<ol>
+<li>Partitioner 默认根据 KEY 的哈希值来进行分区，和 VALUE 无关，但可以自定义 Partitioner 使在分区时利用上 VALUE</li>
+<li>一定的 KEY 一定会发送给一定的 Reducer</li>
+<li>如果自定义 Bean 作为 Reducer 的 KEY，应当实现 hashCode，以保证同一个 KEY 一定发送给同一个 Reducer，不然的话默认按内存地址作为哈希值，相等的两个 KEY 可能会发送给不同的 Reducer，这会导致错误结果，比如对于 WordCount 程序，可能在输出中会出现<code>hello 93 ... hello 194</code>，出现了多个同样的 KEY，这结果是不符合预期的。</li>
+<li>getPartition 应当是纯函数（是如此吗？）</li>
+</ol>
+<p>但 Partitioner 仍然在有时候有自定义的需求，比如，对于那些淡季旺季差别很明显的数据呢？考虑分析每月旅游业的一些数据，在 5 月至 10 月是旅游业的旺季，数据量非常大，特别是 5 月，10 月，和其它月份可能有上十倍的差距，而其他时间就是淡季。</p>
+<p>这时候，HashPartitioner 是无法起到“负载均衡”的作用的，不同 Reducer 因为分到的月份不同，因此得到的数据量就有可能有很大差异，因而执行时间就会有差异，造成一定的资源浪费，这时候就非常适合根据业务需求自定义 Partitioner。</p>
+<p>再比如，当我们想要让每个组生成独立的文件的时候，我们也可以自定义自己的 Partitioner，这时一般 Partitioner 和 ReduceTask 数量耦合。</p>
+<p>需注意，<strong>Partitioner 的泛型为 Mapper 的输出类型</strong>（当然，也是 Combiner 的输出类型）。</p>
+<h2 id="栗子"><a href="#栗子" class="headerlink" title="栗子"></a>栗子</h2><p>考虑将每个月的航班数据分离成独立的文件，从而能够方便对每月数据进行进一步分析这个需求，这里就很适合自定义 Partitioner。</p>
+<p>首先，在 Driver 类中，需要指明 ReduceTask 的数量以及 Partitioner，根据需要，这里应当指定为 12 个——</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala">job.setNumReduceTasks(<span class="hljs-number">12</span>)<br>job.setPartitionerClass(classOf[<span class="hljs-type">MonthPartitioner</span>])<br></code></pre></div></td></tr></table></figure>
+
+<p>自定义的 Partitioner 特别简单，将第 n 月分给第 n 个 Reducer 即可，注意 Reducer 的索引从 0 开始——</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MonthPartitioner</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Partitioner</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPartition</span></span>(key: <span class="hljs-type">Text</span>, value: <span class="hljs-type">Text</span>, numPartitions: <span class="hljs-type">Int</span>): <span class="hljs-type">Int</span> =<br>    key.toString.toInt - <span class="hljs-number">1</span>   <span class="hljs-comment">// &quot;01&quot;对应 Reducer 0，&quot;02&quot;对应 Reducer 1...</span><br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SplitByMonthMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(key: <span class="hljs-type">LongWritable</span>, value: <span class="hljs-type">Text</span>, context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-keyword">if</span> (value.toString.startsWith(<span class="hljs-string">&quot;Year&quot;</span>))<br>      <span class="hljs-keyword">return</span><br><br>    <span class="hljs-keyword">val</span> colGetter = <span class="hljs-type">AirlineCol</span>.build(value.toString.split(<span class="hljs-string">&quot;,&quot;</span>))<br><br>    <span class="hljs-keyword">val</span> month = colGetter(<span class="hljs-type">AirlineCol</span>.<span class="hljs-type">Month</span>)<br>    context.write(<span class="hljs-keyword">new</span> <span class="hljs-type">Text</span>(month), value)<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SplitByMonthReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(key: <span class="hljs-type">Text</span>, values: lang.<span class="hljs-type">Iterable</span>[<span class="hljs-type">Text</span>], context: <span class="hljs-type">Reducer</span>[<span class="hljs-type">Text</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">Text</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// Reducer 能够收集到特定月的所有数据，这里什么都不需要做，直接输出即可</span><br>    values.forEach(context.write(<span class="hljs-type">NullWritable</span>.get, _))<br>  &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>编写完成后进行运行，能看到输出文件夹下有 12 个结果文件，每个结果文件包含一定月的数据，如 00000 为 1 月，00001 为 2 月，00011 为 12 月，这种映射是不会改变的。<strong>但是每个结果文件内的数据并不有序</strong>。</p>
+<p>该需求不需要 Combiner。</p>
+<h1 id="MapReduce-Perspective"><a href="#MapReduce-Perspective" class="headerlink" title="MapReduce Perspective"></a>MapReduce Perspective</h1><p>一张图了事，细节之后再议。这里一个需要注意的地方是，<strong>Partitioner 的执行是在 Combiner 之前</strong>（这问题网上争论不一啊……经我本地的测试，确实是 Partitioner 先执行），所以是先分区，然后排序，然后再本地合并。</p>
+<p>为啥是这样呢？我猜测是因为排序之后 Combine 操作才好进行，<strong>容易对每个 KEY 都并行，顺序地执行 Combine 操作</strong>（CPU 缓存友好？）；如果不排序的话就需要维护每个 KEY 的索引列表了，可能实现会更复杂些？这个过程在内存中进行，所以我认为这和硬盘是否顺序读写无关。</p>
+<p><img src="/images/oss/20220306234133.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MapReduce/">MapReduce</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SQL 学习笔记——GROUP BY，JOIN，窗口函数</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-02Scala%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%A8%A1%E5%BC%8F%E5%8C%B9%E9%85%8D.html">
+                        <span class="hidden-mobile">Scala 学习笔记——模式匹配</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,709 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="第一次实现如此复杂的东西，让人颇为激动呢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现">
+<meta property="og:url" content="http://example.com/2021/09-05%E3%80%8A%E4%B8%A4%E5%91%A8%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%8B%E7%AC%94%E8%AE%B05%E2%80%94%E2%80%94%E5%85%B3%E4%BA%8E%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="第一次实现如此复杂的东西，让人颇为激动呢。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210904214746.svg">
+<meta property="og:image" content="http://example.com/images/oss/20210904234812.svg">
+<meta property="og:image" content="http://example.com/images/oss/20210822231117.png">
+<meta property="article:published_time" content="2021-08-21T16:38:27.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.287Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="编译原理">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210904214746.svg">
+  
+  
+  <title>《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-08-22 00:38" pubdate>
+        2021年8月22日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      11k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《两周自制脚本语言》笔记 5——关于语法分析器生成器的实现</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<blockquote>
+<p> 好像好多地方的 Literal 都拼写成 Literial 了……只能说这是一个 feature。</p>
+</blockquote>
+<h1 id="Parser-的组成和原理"><a href="#Parser-的组成和原理" class="headerlink" title="Parser 的组成和原理"></a>Parser 的组成和原理</h1><p>这里模仿该作者的 Parser 库，对 LL(1) 语法分析器生成器（后面都称其为 Parser）进行实现。这里因为我觉得作者的代码结构非常复杂且难以理解，因此就按照自己的意愿进行了修改。再次确认其功能——<strong>根据用户给定的匹配模式（Element 序列）对 Token 序列进行匹配，生成一定的抽象语法树</strong>。</p>
+<p>语法分析最终生成的 AST 可以认为包含四种元素——</p>
+<ol>
+<li><strong>Token</strong>：来自词法分析的 Token 将会成为 ASTLeaf，即叶节点的成员，每一个叶节点都将对应一个 Token；</li>
+<li><strong>ASTList <strong>和</strong> ASTLeaf</strong>：没有被给予更丰富信息的原始 AST 节点。ASTList 将持有一个 ASTree 的数组，ASTLeaf 将持有 Token；</li>
+<li><strong>继承节点类</strong>：<strong>用户和库中</strong>预先定义的一些节点类，比如 NumberLiterial，WhileStatement，PrimaryExpr 等，这些类将继承 ASTList 或 ASTLeaf 类，同时对 eval 方法进行实现（这并非语法分析的范畴）。这个类群是 AST 中最重要的部分——对 AST 的编译或解释执行必须要利用其<strong>类型信息</strong>。如果想要对语言进行扩展，就必须要在该类群中编写新类，同时将其在 Parser 中引入。甚至可以要求不允许使用原生 ASTList，ASTLeaf，而必须完全使用继承节点类来构造 AST。</li>
+<li><strong>ParserPattern</strong>：用户自定义的语法分析器，其实质是一种<strong>匹配模式</strong>，其将通过 Java 方法的链式调用对 EBNF 进行表达，同时<strong>规定其将生成的 AST 节点的根结点以及子节点的信息</strong>。</li>
+</ol>
+<p>Parser 所要做的，就是提供给用户这些功能——</p>
+<ol>
+<li>通过 Java 代码对 EBNF 进行直接描述。</li>
+<li>在能够描述 EBNF 的基础上，能够在进行匹配时，自定义能够保留哪些内容，生成哪些内容，也就是说自定义子树序列的结构（总不能把匹配到的东西全都拿走吧？）。</li>
+<li>在能够描述 EBNF 的基础上，能够自定义生成的子树根结点的类型，或者推断出一个类型（这里说的类型指上面的第三种元素）。</li>
+</ol>
+<p>这些功能总结来说，就是<strong>让用户能够根据 EBNF 和 Java 代码定义语法规则以及生成 AST 结构</strong>。</p>
+<p>关于第 2 步的具体含义，这里举用作者的 Parser 库一个例子——对这样一个 BNF 范式——</p>
+<figure class="highlight arcade"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs arcade">adder : <span class="hljs-built_in">NUMBER</span> <span class="hljs-string">&quot;+&quot;</span> <span class="hljs-built_in">NUMBER</span><br></code></pre></div></td></tr></table></figure>
+
+<p>使用下面两种 Parser 代码，对字符串<code>25 + 17</code>能够生成两种不同结构的 AST——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">adder</span> <span class="hljs-operator">=</span> rule(PlusExpr.class)<br>    .number().sep(<span class="hljs-string">&quot;+&quot;</span>).number();  <span class="hljs-comment">// sep 表示匹配分隔符，因此将丢弃</span><br></code></pre></div></td></tr></table></figure>
+
+<svg width="164pt" height="132pt" viewBox="0.00 0.00 164.00 131.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 127.6)">
+<title>g</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-127.6 159.9998,-127.6 159.9998,4 -4,4"></polygon>
+<!-- ROOT -->
+<g id="node1" class="node">
+<title>ROOT</title>
+<polygon fill="none" stroke="#000000" points="43.8344,-87.1 43.8344,-123.1 111.1654,-123.1 111.1654,-87.1 43.8344,-87.1"></polygon>
+<text text-anchor="middle" x="77.4999" y="-101" font-family="Times,serif" font-size="14.00" fill="#000000">PlusExpr</text>
+</g>
+<!-- LEAF_A -->
+<g id="node2" class="node">
+<title>LEAF_A</title>
+<polygon fill="none" stroke="#000000" points="0,-.5 0,-50.1 68.9998,-50.1 68.9998,-.5 0,-.5"></polygon>
+<text text-anchor="middle" x="34.4999" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="0,-25.3 68.9998,-25.3 "></polyline>
+<text text-anchor="middle" x="34.4999" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">token=25</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_A -->
+<g id="edge1" class="edge">
+<title>ROOT-&gt;LEAF_A</title>
+<path fill="none" stroke="#000000" d="M67.7425,-86.9921C63.311,-78.768 57.9193,-68.7621 52.779,-59.2225"></path>
+<polygon fill="#000000" stroke="#000000" points="55.792,-57.4357 47.9671,-50.2927 49.6297,-60.7563 55.792,-57.4357"></polygon>
+</g>
+<!-- LEAF_C -->
+<g id="node3" class="node">
+<title>LEAF_C</title>
+<polygon fill="none" stroke="#000000" points="87,-.5 87,-50.1 155.9998,-50.1 155.9998,-.5 87,-.5"></polygon>
+<text text-anchor="middle" x="121.4999" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="87,-25.3 155.9998,-25.3 "></polyline>
+<text text-anchor="middle" x="121.4999" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">token=17</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_C -->
+<g id="edge2" class="edge">
+<title>ROOT-&gt;LEAF_C</title>
+<path fill="none" stroke="#000000" d="M87.4842,-86.9921C92.0188,-78.768 97.5359,-68.7621 102.7958,-59.2225"></path>
+<polygon fill="#000000" stroke="#000000" points="105.9559,-60.7397 107.7195,-50.2927 99.826,-57.3598 105.9559,-60.7397"></polygon>
+</g>
+</svg>
+
+<p>可以看到，这个 AST 中<code>+</code>被舍弃掉了，如果想要对这个 AST 进行计算，则必须利用 PlusExpr 这个根结点的<strong>类型信息</strong>。下面是另一种实现——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">adder</span> <span class="hljs-operator">=</span> rule(Expr.class)<br>    number().identifier(<span class="hljs-string">&quot;+&quot;</span>).number(); <span class="hljs-comment">// identifier 表示匹配且保留特定标识符</span><br></code></pre></div></td></tr></table></figure>
+
+<svg width="251pt" height="132pt" viewBox="0.00 0.00 251.00 131.60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 127.6)">
+<title>g</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-127.6 246.9998,-127.6 246.9998,4 -4,4"></polygon>
+<!-- ROOT -->
+<g id="node1" class="node">
+<title>ROOT</title>
+<polygon fill="none" stroke="#000000" points="94.4999,-87.1 94.4999,-123.1 148.4999,-123.1 148.4999,-87.1 94.4999,-87.1"></polygon>
+<text text-anchor="middle" x="121.1065" y="-101" font-family="Times,serif" font-size="14.00" fill="#000000">Expr</text>
+</g>
+<!-- LEAF_A -->
+<g id="node2" class="node">
+<title>LEAF_A</title>
+<polygon fill="none" stroke="#000000" points="0,-.5 0,-50.1 68.9998,-50.1 68.9998,-.5 0,-.5"></polygon>
+<text text-anchor="middle" x="34.4999" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="0,-25.3 68.9998,-25.3 "></polyline>
+<text text-anchor="middle" x="34.4999" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">token=25</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_A -->
+<g id="edge1" class="edge">
+<title>ROOT-&gt;LEAF_A</title>
+<path fill="none" stroke="#000000" d="M101.7583,-86.9921C92.145,-78.1745 80.2988,-67.3086 69.2404,-57.1654"></path>
+<polygon fill="#000000" stroke="#000000" points="71.4829,-54.473 61.7476,-50.2927 66.7512,-59.6316 71.4829,-54.473"></polygon>
+</g>
+<!-- LEAF_B -->
+<g id="node3" class="node">
+<title>LEAF_B</title>
+<polygon fill="none" stroke="#000000" points="87.4578,-.5 87.4578,-50.1 155.542,-50.1 155.542,-.5 87.4578,-.5"></polygon>
+<text text-anchor="middle" x="121.4999" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="87.4578,-25.3 155.542,-25.3 "></polyline>
+<text text-anchor="middle" x="121.4999" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">token=+</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_B -->
+<g id="edge2" class="edge">
+<title>ROOT-&gt;LEAF_B</title>
+<path fill="none" stroke="#000000" d="M121.4999,-86.9921C121.4999,-79.1071 121.4999,-69.5843 121.4999,-60.4049"></path>
+<polygon fill="#000000" stroke="#000000" points="125,-60.2927 121.4999,-50.2927 118,-60.2927 125,-60.2927"></polygon>
+</g>
+<!-- LEAF_C -->
+<g id="node4" class="node">
+<title>LEAF_C</title>
+<polygon fill="none" stroke="#000000" points="174,-.5 174,-50.1 242.9998,-50.1 242.9998,-.5 174,-.5"></polygon>
+<text text-anchor="middle" x="208.4999" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="174,-25.3 242.9998,-25.3 "></polyline>
+<text text-anchor="middle" x="208.4999" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">token=17</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_C -->
+<g id="edge3" class="edge">
+<title>ROOT-&gt;LEAF_C</title>
+<path fill="none" stroke="#000000" d="M141.2415,-86.9921C150.8548,-78.1745 162.701,-67.3086 173.7594,-57.1654"></path>
+<polygon fill="#000000" stroke="#000000" points="176.2486,-59.6316 181.2522,-50.2927 171.5169,-54.473 176.2486,-59.6316"></polygon>
+</g>
+</svg>
+
+<p>显然，这个实现更具一般性，能够表达所有的双目运算。而且还能玩花活——中间的 ASTLeaf 可以被替换成树，或者说，表达式！返回一个中缀运算符的表达式！就如同下面的 Scheme 代码一样。</p>
+<figure class="highlight scheme"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scheme">(<span class="hljs-name"><span class="hljs-built_in">define</span></span> a-plus-abs-b (<span class="hljs-name">a</span> b)<br>  ((<span class="hljs-name"><span class="hljs-built_in">if</span></span> (<span class="hljs-name"><span class="hljs-built_in">&gt;</span></span> b <span class="hljs-number">0</span>) + -) a b))<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="Parser-的设计和实现"><a href="#Parser-的设计和实现" class="headerlink" title="Parser 的设计和实现"></a>Parser 的设计和实现</h1><p>Parser 库的编写包括两个部分——ParserElement，ParserPattern，其关系就像原作者代码中的 Element 和 Parser，只不过将其分离到不同文件中。</p>
+<h2 id="ParserElement-以及一些例子"><a href="#ParserElement-以及一些例子" class="headerlink" title="ParserElement 以及一些例子"></a>ParserElement 以及一些例子</h2><p>ParserElement 表示解析器的“元素”，ParserPattern 由 ParserElement 序列组成，利用其来表示一整个模式，<strong>模式也是一种“元素”</strong>。任何 EBNF 都将表示为 ParserElement 的序列，并能够依序进行解析。</p>
+<p>ParserElement 的定义如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">ParserElement</span> &#123;<br>    Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ASTree</span>&gt; getTargetClass(); <span class="hljs-comment">// 目标类应当是继承 ASTree 接口的，这是毋庸置疑的——它要充当 AST 中的特定节点</span><br>    Optional&lt;ASTree&gt; <span class="hljs-title function_">parse</span><span class="hljs-params">(Lexer lexer)</span>;<br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">match</span><span class="hljs-params">(Lexer lexer)</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>每一个 ParserElement 都代表一种特定的匹配规则的实现，这种规则通常能够和 EBNF 中的元符号对应。ParserElement 有三个方法——getTargetClass：标识这个模式元素进行匹配后返回的 AST 子树的类型；parse：对该模式元素进行应用，通过词法分析器获取到 ASTree 并返回。这里使用了 Optional，标识其可能返回空值——就如上面示例中的 sep 方法；match：查看是否可以解析。</p>
+<p>下面举几个示例——NumberLiterialElement，SepElement。</p>
+<p>首先是 SepElement，它能够读取和丢弃非终结符。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 识别形如&quot;&#123;&quot;，&quot;)&quot;的终止符的 Parser 元素</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SepElement</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ParserElement</span> &#123;<br>    String[] sepNames;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SepElement</span><span class="hljs-params">(String[] names)</span> &#123;<br>        sepNames = names;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ASTree</span>&gt; getTargetClass() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>    <span class="hljs-comment">// 不返回结果，直接丢弃</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title function_">parse</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-keyword">if</span> (!match(lexer)) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ParseException</span>(lexer.peek(<span class="hljs-number">0</span>));<br>        lexer.read();<br>        <span class="hljs-keyword">return</span> Optional.empty();<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">match</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-keyword">if</span> (!lexer.peek(<span class="hljs-number">0</span>).isIdentifier())<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">for</span> (String name : sepNames)<br>            <span class="hljs-keyword">if</span> (Objects.equals(name, lexer.peek(<span class="hljs-number">0</span>).getText()))<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后是 NumberLiterialElement，它能够读取一个数值字面量并返回一个 NumberLiteral——这是预先定义的一个继承 ASTLeaf 的类——如果没有特别指定返回类型的话。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NumberLiteralElement</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ParserElement</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ASTLeaf</span>&gt; clazz;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">NumberLiteralElement</span><span class="hljs-params">(Class&lt;? extends ASTLeaf&gt; clazz)</span> &#123;<br>        <span class="hljs-built_in">this</span>.clazz = clazz;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">NumberLiteralElement</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.clazz = <span class="hljs-literal">null</span>;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ASTree</span>&gt; getTargetClass() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.clazz;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title function_">parse</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-keyword">if</span> (clazz == <span class="hljs-literal">null</span>)<br>            <span class="hljs-keyword">return</span> Optional.of(<span class="hljs-keyword">new</span> <span class="hljs-title class_">NumberLiteral</span>(lexer.read()));<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">ASTree</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> clazz.getDeclaredConstructor(Token.class).newInstance(lexer.read());;<br>            <span class="hljs-keyword">return</span> Optional.of(res);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> Optional.empty();<br>        &#125;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">match</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-keyword">return</span> lexer.peek(<span class="hljs-number">0</span>).isNumber();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>显然，ParserPattern 也应当是 ParserElement——元素实际上也是一种模式，模式也可以当作一个元素来看待，其也能够和其他元素相组合成为更复杂的模式。</p>
+<h2 id="ParserPattern"><a href="#ParserPattern" class="headerlink" title="ParserPattern"></a>ParserPattern</h2><p>ParserPattern 是最主要的类——用户通过声明和构造特定 ParserPattern 来使其能够和特定 EBNF 范式对应。ParserPattern 实际上也是一种 ParserElement，区别在于其并非是原子的，而是包括了一个 Element 序列，其本身不负责具体的匹配（但是仍旧是保存有返回类型的），而是将匹配工作<strong>委托</strong>给其 Element 序列去执行。</p>
+<p>下面是 ParserPattern 的源代码——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ParserPattern</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ParserElement</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> List&lt;ParserElement&gt; parserElems;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ASTree</span>&gt; clazz;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">ParserPattern</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>(<span class="hljs-literal">null</span>);<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">ParserPattern</span><span class="hljs-params">(Class&lt;? extends ASTList&gt; rootClazz)</span> &#123;<br>        <span class="hljs-built_in">this</span>.clazz = rootClazz;<br>        <span class="hljs-built_in">this</span>.parserElems = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ParserPattern <span class="hljs-title function_">rule</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> rule(<span class="hljs-literal">null</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ParserPattern <span class="hljs-title function_">rule</span><span class="hljs-params">(Class&lt;? extends ASTList&gt; rootClazz)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ParserPattern</span>(rootClazz);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">ASTree</span>&gt; getTargetClass() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.clazz;<br>    &#125;<br><br>    <span class="hljs-comment">// 可见，其将委托给 Element 序列进行匹配并返回结果</span><br>    <span class="hljs-comment">// 这里强制要求，ParserPattern 必须返回 ASTList 及其子类</span><br>    <span class="hljs-comment">// 这是非常不优雅的，解决方案有几个——要么在创建过程时就进行修正，要么在创建完成后进行操作。否则这会对求值造成影响</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title function_">parse</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        List&lt;ASTree&gt; res = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (ParserElement elem : parserElems)<br>            elem.parse(lexer).ifPresent(res::add);<br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.clazz == <span class="hljs-literal">null</span>)<br>            <span class="hljs-keyword">return</span> Optional.of(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTList</span>(res));<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">ASTree</span> <span class="hljs-variable">tmpTree</span> <span class="hljs-operator">=</span> clazz.getDeclaredConstructor(res.getClass()).newInstance(res);<br>            <span class="hljs-keyword">return</span> Optional.of(tmpTree);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> Optional.empty();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">match</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-keyword">if</span> (parserElems.size() == <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        <span class="hljs-keyword">return</span> parserElems.get(<span class="hljs-number">0</span>).match(lexer);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title function_">sep</span><span class="hljs-params">(String...sepNames)</span> &#123;<br>        parserElems.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">SepElement</span>(sepNames));<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title function_">number</span><span class="hljs-params">(Class&lt;? extends ASTLeaf&gt; clazz)</span> &#123;<br>        parserElems.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">NumberLiteralElement</span>(clazz));<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title function_">number</span><span class="hljs-params">()</span> &#123;<br>        parserElems.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">NumberLiteralElement</span>(<span class="hljs-literal">null</span>));<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br>	<span class="hljs-comment">// ....</span><br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+
+<p>ParserPattern 的使用方法上面已经描述了。匹配简单的终结符的 Element 是容易编写的，但是那些复杂的呢？对非终结符如何处理？[]，{}，|元符号该如何处理？这才是最大的考验。</p>
+<h2 id="必须的非终结符（ast）"><a href="#必须的非终结符（ast）" class="headerlink" title="必须的非终结符（ast）"></a>必须的非终结符（ast）</h2><p>首先解决非终结符。非终结符的实现还是容易想到的——它也是用户所定义的 ParserPattern，因此它甚至都不需要另外定义，加一个方法即可——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ParserPattern</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ParserElement</span> &#123;<br>    <span class="hljs-comment">// ....</span><br>	<span class="hljs-keyword">public</span> ParserPattern <span class="hljs-title function_">ast</span><span class="hljs-params">(ParserPattern parserPattern)</span> &#123;<br>        parserElems.add(parserPattern);<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>    &#125;<br>    <span class="hljs-comment">// ....</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>下面对其进行一下测试，看能否行得通，试一个非常简单的 EBNF——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">adder : NUMBER add NUMBER<br>add   : add1<br>add1  : <span class="hljs-string">&quot;+&quot;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>对应的定义代码如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 这里其实没必要这样定义——只有在有递归定义的时候才需要这样。但这样清晰些</span><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">adder_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">add_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">add1_</span> <span class="hljs-operator">=</span> rule();<br><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">adder</span> <span class="hljs-operator">=</span> adder_.number().ast(add_).number();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">add</span> <span class="hljs-operator">=</span> add_.token(add1_);<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">add1</span> <span class="hljs-operator">=</span> add1_.sep(<span class="hljs-string">&quot;+&quot;</span>);<br></code></pre></div></td></tr></table></figure>
+
+<p>对字符串<code>25 + 17</code>最终结果如图。</p>
+<svg width="247pt" height="291pt" viewBox="0.00 0.00 247.00 291.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 287.2)">
+<title>g</title>
+<polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-287.2 242.9998,-287.2 242.9998,4 -4,4"></polygon>
+<!-- ROOT -->
+<g id="node1" class="node">
+<title>ROOT</title>
+<polygon fill="none" stroke="#000000" points="87.3898,-246.7 87.3898,-282.7 151.61,-282.7 151.61,-246.7 87.3898,-246.7"></polygon>
+<text text-anchor="middle" x="119.4999" y="-260.6" font-family="Times,serif" font-size="14.00" fill="#000000">ASTList</text>
+</g>
+<!-- LEAF_A -->
+<g id="node2" class="node">
+<title>LEAF_A</title>
+<polygon fill="none" stroke="#000000" points="0,-160.1 0,-209.7 68.9998,-209.7 68.9998,-160.1 0,-160.1"></polygon>
+<text text-anchor="middle" x="34.4999" y="-193.1" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="0,-184.9 68.9998,-184.9 "></polyline>
+<text text-anchor="middle" x="34.4999" y="-168.3" font-family="Times,serif" font-size="14.00" fill="#000000">token=25</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_A -->
+<g id="edge1" class="edge">
+<title>ROOT-&gt;LEAF_A</title>
+<path fill="none" stroke="#000000" d="M100.2121,-246.5921C90.8199,-237.7745 79.2459,-226.9086 68.4417,-216.7654"></path>
+<polygon fill="#000000" stroke="#000000" points="70.8074,-214.1856 61.1212,-209.8927 66.0162,-219.289 70.8074,-214.1856"></polygon>
+</g>
+<!-- LEAF_B0 -->
+<g id="node3" class="node">
+<title>LEAF_B0</title>
+<polygon fill="none" stroke="#000000" points="87.3898,-166.9 87.3898,-202.9 151.61,-202.9 151.61,-166.9 87.3898,-166.9"></polygon>
+<text text-anchor="middle" x="119.4999" y="-180.8" font-family="Times,serif" font-size="14.00" fill="#000000">ASTList</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_B0 -->
+<g id="edge2" class="edge">
+<title>ROOT-&gt;LEAF_B0</title>
+<path fill="none" stroke="#000000" d="M119.4999,-246.5921C119.4999,-236.6953 119.4999,-224.2181 119.4999,-213.0786"></path>
+<polygon fill="#000000" stroke="#000000" points="123,-212.9362 119.4999,-202.9362 116,-212.9362 123,-212.9362"></polygon>
+</g>
+<!-- LEAF_C -->
+<g id="node6" class="node">
+<title>LEAF_C</title>
+<polygon fill="none" stroke="#000000" points="170,-160.1 170,-209.7 238.9998,-209.7 238.9998,-160.1 170,-160.1"></polygon>
+<text text-anchor="middle" x="204.4999" y="-193.1" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="170,-184.9 238.9998,-184.9 "></polyline>
+<text text-anchor="middle" x="204.4999" y="-168.3" font-family="Times,serif" font-size="14.00" fill="#000000">token=17</text>
+</g>
+<!-- ROOT&#45;&gt;LEAF_C -->
+<g id="edge5" class="edge">
+<title>ROOT-&gt;LEAF_C</title>
+<path fill="none" stroke="#000000" d="M138.7877,-246.5921C148.1799,-237.7745 159.7539,-226.9086 170.5581,-216.7654"></path>
+<polygon fill="#000000" stroke="#000000" points="172.9836,-219.289 177.8786,-209.8927 168.1924,-214.1856 172.9836,-219.289"></polygon>
+</g>
+<!-- LEAF_B1 -->
+<g id="node4" class="node">
+<title>LEAF_B1</title>
+<polygon fill="none" stroke="#000000" points="87.3898,-87.1 87.3898,-123.1 151.61,-123.1 151.61,-87.1 87.3898,-87.1"></polygon>
+<text text-anchor="middle" x="119.4999" y="-101" font-family="Times,serif" font-size="14.00" fill="#000000">ASTList</text>
+</g>
+<!-- LEAF_B0&#45;&gt;LEAF_B1 -->
+<g id="edge3" class="edge">
+<title>LEAF_B0-&gt;LEAF_B1</title>
+<path fill="none" stroke="#000000" d="M119.4999,-166.7921C119.4999,-156.8953 119.4999,-144.4181 119.4999,-133.2786"></path>
+<polygon fill="#000000" stroke="#000000" points="123,-133.1362 119.4999,-123.1362 116,-133.1362 123,-133.1362"></polygon>
+</g>
+<!-- LEAF_B2 -->
+<g id="node5" class="node">
+<title>LEAF_B2</title>
+<polygon fill="none" stroke="#000000" points="85.4578,-.5 85.4578,-50.1 153.542,-50.1 153.542,-.5 85.4578,-.5"></polygon>
+<text text-anchor="middle" x="119.4999" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">ASTLeaf</text>
+<polyline fill="none" stroke="#000000" points="85.4578,-25.3 153.542,-25.3 "></polyline>
+<text text-anchor="middle" x="119.4999" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">token=+</text>
+</g>
+<!-- LEAF_B1&#45;&gt;LEAF_B2 -->
+<g id="edge4" class="edge">
+<title>LEAF_B1-&gt;LEAF_B2</title>
+<path fill="none" stroke="#000000" d="M119.4999,-86.9921C119.4999,-79.1071 119.4999,-69.5843 119.4999,-60.4049"></path>
+<polygon fill="#000000" stroke="#000000" points="123,-60.2927 119.4999,-50.2927 116,-60.2927 123,-60.2927"></polygon>
+</g>
+</svg>
+
+<p>虽然实现了，但是这种嵌套有点离谱——这是 ParserPattern 返回 ASTList 导致的必然结果。因此对其的修改势在必行，但是现在先把所有功能都搭起来先。</p>
+<h2 id="元符号-（or）"><a href="#元符号-（or）" class="headerlink" title="元符号|（or）"></a>元符号|（or）</h2><p>|是原始 BNF 范式中仅有的元符号。其的实现也是容易理解的——它保存一个 ParserPattern 集合。在进行匹配时，遍历集合，找到同其能够进行匹配的 ParserPattern 并利用其进行解析。考虑到这里实现的语法分析器是 LL(1) 的，因此并不考虑有多匹配的情况（这么看起来，好像 LL(k) 实现起来并不复杂）。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OrElement</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ParserElement</span> &#123;<br>    <span class="hljs-comment">// ....</span><br>	<span class="hljs-keyword">private</span> ParserPattern <span class="hljs-title function_">choose</span><span class="hljs-params">(Lexer lexer)</span> &#123; <span class="hljs-comment">// 选择 parser 的方法</span><br>            <span class="hljs-keyword">for</span> (ParserPattern parser : parsers)<br>                <span class="hljs-keyword">if</span> (parser.match(lexer))<br>                    <span class="hljs-keyword">return</span> parser;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title function_">parse</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>        <span class="hljs-type">ParserPattern</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> choose(lexer);<br>        <span class="hljs-keyword">if</span> (p == <span class="hljs-literal">null</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ParseException</span>(lexer.peek(<span class="hljs-number">0</span>)); <span class="hljs-comment">// 一个都没找到说明出现语法错误</span><br>        <span class="hljs-keyword">return</span> p.parse(lexer);<br>    &#125;<br>    <span class="hljs-comment">// ....</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>实验 or 的方法比较简单——处理不定长度的字符串试试。测试的 BNF 和 Java 定义如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// adder : &quot;+&quot; expr | EOL // 试了好多次，终于写出来啦……</span><br><span class="hljs-comment">// expr : NUMBER adder</span><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">adder_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">expr_</span> <span class="hljs-operator">=</span> rule();<br><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">adder</span> <span class="hljs-operator">=</span> adder_.or(<br>    rule().token(<span class="hljs-string">&quot;+&quot;</span>).ast(expr_),<br>    rule().sep(<span class="hljs-string">&quot;\\n&quot;</span>) <span class="hljs-comment">// 似乎不使用 EBNF 的话，必须要给定空终结符才能进行这种递归…</span><br>);<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">expr</span> <span class="hljs-operator">=</span> expr_.number().ast(adder_);<br></code></pre></div></td></tr></table></figure>
+
+<p>对<code>1 + 2 + 3 + 4 + 5 + 6</code>，其生成的 AST 令人感叹——<code>(1 ((+ (2 ((+ (3 ((+ (4 ((+ (5 ((+ (6 (())))))))))))))))))</code>，图就不画了，总之验证这种写法确实达到了效果。出现这种情况的原因是 ASTList 默认的创建方式——把所有生成的 AST 节点全当成子树。</p>
+<p>接下来还有{}元符号，[] 元符号，其分别对应 repeat 方法，maybe 和 option 方法。在这里，关于 repeat 方法需要注意的是，其是贪婪的，将会持续进行匹配直到不再合法，书中好像没有明确体现这一点。对其的实现留待之后吧。毕竟到周一啦。</p>
+<blockquote>
+<p>  进行了更多思考，觉得对于 Parser 的设计，应当只提供一些最基本的方法——即能够对非终结符，终结符，各种 EBNF 元符号进行表述的方法，并要求用户来提供&#x2F;自定义其他方法（无论是通过继承还是通过组合，委托都可），从而给予用户最大的可扩展性。</p>
+</blockquote>
+<hr>
+<p>自上次写这玩意已经过了两个星期了，本打算另开文章再水一篇笔记，想想还是算了，同时决定从实践的角度再次重新看待我正在学习的东西。</p>
+<p>我学习编译原理的目的并非是做出来一个通用编程语言——当前对其的学习只是为了让我能够对编程语言的底层，如符号表，作用域之类的概念能够有更加深刻的理解，仅此而已，编写新语言既困难也无必要——而是帮助我能够更好地利用编译原理的知识**编写 DSL **来辅助特定工作。考虑到我总是一头扎进技术细节里，必须时时刻刻提醒自己这一点。</p>
+<h1 id="其他元符号"><a href="#其他元符号" class="headerlink" title="其他元符号"></a>其他元符号</h1><p>接下来的任务是解决、{}和、[] 元符号，其意义分别是：<strong>贪婪地</strong>匹配 0 次或无数次；匹配 0 次或一次。这里使用 repeat 和 maybe 为这两个元符号命名。</p>
+<p>当前的 Stone 语言中 block 和 statement 比较典型地使用了这两个元符号——</p>
+<figure class="highlight nim"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs nim"><span class="hljs-keyword">block</span>		: <span class="hljs-string">&quot;&#123;&quot;</span> [ statement ] &#123;(<span class="hljs-string">&quot;;&quot;</span> | <span class="hljs-type">EOL</span>) [statement]&#125; <span class="hljs-string">&quot;&#125;&quot;</span> <br>statement	: <span class="hljs-string">&quot;if&quot;</span> <span class="hljs-type">expr</span> <span class="hljs-keyword">block</span> [ <span class="hljs-string">&quot;else&quot;</span> <span class="hljs-keyword">block</span> ]<br>		| <span class="hljs-string">&quot;while&quot;</span> <span class="hljs-type">expr</span> <span class="hljs-keyword">block</span><br>		| simple<br></code></pre></div></td></tr></table></figure>
+
+<p>其在作者的 Java 代码表述如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-type">Parser</span> <span class="hljs-variable">block</span> <span class="hljs-operator">=</span> rule(BlockStmnt.class)<br>    .sep(<span class="hljs-string">&quot;&#123;&quot;</span>).option(statement0)<br>    .repeat(rule().sep(<span class="hljs-string">&quot;;&quot;</span>, Token.EOL).option(statement0))<br>    .sep(<span class="hljs-string">&quot;&#125;&quot;</span>);<br><span class="hljs-type">Parser</span> <span class="hljs-variable">statement</span> <span class="hljs-operator">=</span> statement0.or(<br>    rule(IfStmnt.class).sep(<span class="hljs-string">&quot;if&quot;</span>).ast(expr).ast(block)<br>    	.option(rule().sep(<span class="hljs-string">&quot;else&quot;</span>).ast(block)),<br>    rule(WhileStmnt.class).sep(<span class="hljs-string">&quot;while&quot;</span>).ast(expr).ast(block),simple);<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="元符号、-——repeat"><a href="#元符号、-——repeat" class="headerlink" title="元符号、{}——repeat"></a>元符号、{}——repeat</h2><p>首先需要明确，repeat 和 maybe 解析的结果是什么？这是容易想到的——repeat 应当返回一个 ASTList，因为其可能匹配多次，需要保存这无数次匹配之结果，maybe 可以返回一个 ASTLeaf，也可以返回一个 ASTList，通过其子树数量为 0 还是 1 来表示其是否匹配到了，这里使用 ASTList。</p>
+<blockquote>
+<p>  <code>expr : factor &#123; OP factor &#125;</code>也是一个、{}符号使用的一个典型例子，但是对其不适合直接使用 repeat 方法：能拿它的解析结果——一个 factor 和一个 ASTList——整什么花活？它生成的 AST 没有任何意义！比如对<code>1 + 2 * 3 + 4 / 5</code>，它将生成<strong>类似</strong>这样的 AST，它显然是没有任何价值的——</p>
+<p>  <img src="/images/oss/20210904214746.svg"></p>
+<p>  为此，作者专门提供了 expression 方法用来对表达式进行描述。其使用了算符优先分析法。这个在之后再进行实现（大概罢！）。</p>
+</blockquote>
+<p>repeat 的实现仍旧是简单的——匹配过程中维护一个 ASTree 的 List，不断循环进行匹配，保存匹配结果直到无法再匹配下去，然后返回一个以该 List 为子树集合的 ASTList。其关键 Java 代码如下——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Optional&lt;ASTree&gt; <span class="hljs-title function_">parse</span><span class="hljs-params">(Lexer lexer)</span> &#123;<br>    <span class="hljs-type">ASTList</span> <span class="hljs-variable">lst</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTList</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;());<br>    <span class="hljs-keyword">while</span> (pattern.match(lexer)) &#123; <span class="hljs-comment">// 贪婪！</span><br>        lst.children().add(pattern.parse(lexer).get());<br>    &#125;<br>    <span class="hljs-keyword">return</span> Optional.of(lst);<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>对前面实现过的四则运算语言，其将这样表述——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/*</span><br><span class="hljs-comment">    factor		:	NUMBER | &quot;(&quot; expr &quot;)&quot;</span><br><span class="hljs-comment">    term		:	factor &#123; (&quot;*&quot; | &quot;/&quot;) factor &#125;</span><br><span class="hljs-comment">    expr		:	term &#123; (&quot;+&quot; | &quot;-&quot;) term &#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">factor_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">term_</span> <span class="hljs-operator">=</span> rule();<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">expr_</span> <span class="hljs-operator">=</span> rule();<br><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">factor</span> <span class="hljs-operator">=</span> factor_.or(<br>    rule().number(),<br>    rule().sep(<span class="hljs-string">&quot;(&quot;</span>).ast(expr_).sep(<span class="hljs-string">&quot;)&quot;</span>)<br>);<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">term</span> <span class="hljs-operator">=</span> term_.ast(factor_).repeat(rule().token(<span class="hljs-string">&quot;*&quot;</span>, <span class="hljs-string">&quot;/&quot;</span>).ast(factor_));<br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">expr</span> <span class="hljs-operator">=</span> expr_.ast(term_).repeat(<br>    rule().or(rule().token(<span class="hljs-string">&quot;+&quot;</span>, <span class="hljs-string">&quot;-&quot;</span>).ast(term_))<br>);<br></code></pre></div></td></tr></table></figure>
+
+<p>下图展示了<code>1 + 2 * 3</code>，<code>1 * 2 + 3</code>“修剪”后所代表 AST，可以看到其优先级确实被表达了，且其结构较为规整，通过后序遍历仍旧可以得到结果——</p>
+<p><img src="/images/oss/20210904234812.svg"></p>
+<p>显然，repeat 的局限性很大——它生成的 AST 结构有时候会比较复杂，难以理解。因此应当被用到<strong>有序并列</strong>结构的表达，如代码块中各语句，就极其适合使用 repeat。</p>
+<h2 id="元符号、-——maybe"><a href="#元符号、-——maybe" class="headerlink" title="元符号、[]——maybe"></a>元符号、[]——maybe</h2><p>既然 repeat 已经能够实现，maybe 的实现也不是问题——匹配到就匹配到，匹配不到就给个空的 ASTList。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-title class_">Optional</span>&lt;<span class="hljs-title class_">ASTree</span>&gt; <span class="hljs-title function_">parse</span>(<span class="hljs-params">Lexer lexer</span>) &#123;<br>	<span class="hljs-keyword">if</span> (pattern.<span class="hljs-title function_">match</span>(lexer))<br>    	<span class="hljs-keyword">return</span> pattern.<span class="hljs-title function_">parse</span>(lexer);<br>    <span class="hljs-keyword">return</span> <span class="hljs-title class_">Optional</span>.<span class="hljs-title function_">of</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ASTList</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;()));<br>&#125;<br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-built_in">boolean</span> <span class="hljs-title function_">match</span>(<span class="hljs-params">Lexer lexer</span>) &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>现在实现一个 if-then-else 进行测试。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// ifStmnt : &quot;if&quot; expr &quot;then&quot; expr [&quot;else&quot; expr]</span><br><span class="hljs-type">ParserPattern</span> <span class="hljs-variable">ifStmnt</span> <span class="hljs-operator">=</span> <br>    rule().sep(<span class="hljs-string">&quot;if&quot;</span>).ast(expr).sep(<span class="hljs-string">&quot;then&quot;</span>).ast(expr)<br>    	.maybe(rule().sep(<span class="hljs-string">&quot;else&quot;</span>).ast(expr));<br></code></pre></div></td></tr></table></figure>
+
+<p>其生成 AST 是可以预料的，因此不进行展示。</p>
+<blockquote>
+<p>  决定就到这里，虽然对这个语法分析器生成器的实现很不满意，但是我认为没必要钻得更深，使用现成的如 JavaCC 之类的开源工具即可。对这本书的学习也告一段落，去研究 DSL 去，这对框架编写可能会有帮助。</p>
+</blockquote>
+<p><img src="/images/oss/20210822231117.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09-15%E3%80%90%E8%BD%AC%E8%BD%BD%E3%80%91%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%9A%8F%E6%83%B3%E2%80%94%E2%80%94%E5%A4%9A%E7%94%A8%E7%BB%84%E5%90%88%E6%9D%A5%E4%BB%A3%E6%9B%BF%E7%BB%A7%E6%89%BF.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【转载】面向对象随想——多用组合来代替继承</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/08-21%E5%85%B3%E4%BA%8Egraphviz%E7%9A%84%E4%BD%BF%E7%94%A8.html">
+                        <span class="hidden-mobile">关于 graphviz 的使用（残卷）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

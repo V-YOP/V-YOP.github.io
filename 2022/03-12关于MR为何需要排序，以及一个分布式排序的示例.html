@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 MR 为何需要排序，以及一个分布式排序的示例">
+<meta property="og:url" content="http://example.com/2022/03-12%E5%85%B3%E4%BA%8EMR%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%8E%92%E5%BA%8F%EF%BC%8C%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%92%E5%BA%8F%E7%9A%84%E7%A4%BA%E4%BE%8B.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-11T23:06:35.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.295Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="MapReduce">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 MR 为何需要排序，以及一个分布式排序的示例 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 MR 为何需要排序，以及一个分布式排序的示例">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-12 07:06" pubdate>
+        2022年3月12日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 MR 为何需要排序，以及一个分布式排序的示例</h1>
+            
+            <div class="markdown-body">
+              <p>之前去了解了一下关于MapReduce的几个比较疑惑的问题，认为有必要专门记录一下，同时也给定一个分布式排序的示例，这应用到了这里谈到的特性。但学习过程中我实际上没有参考多少权威资料，全凭一孔之见，所以非常大的可能有错误。</p>
+<span id="more"></span>
+
+<h1 id="一些疑问及我对它的理解"><a href="#一些疑问及我对它的理解" class="headerlink" title="一些疑问及我对它的理解"></a>一些疑问及我对它的理解</h1><h2 id="为何-MapReduce-需要排序？"><a href="#为何-MapReduce-需要排序？" class="headerlink" title="为何 MapReduce 需要排序？"></a>为何 MapReduce 需要排序？</h2><p>有时候我会想，为啥 MapReduce 中的数据需要排序呢？感觉不排序也没什么问题呀？Map 阶段得到了所需的 KV 对，把 KEY 哈希完后直接发送给对应的 Reducer，等拿到这个 KEY 的所有数据就直接开始 reduce 操作呗？</p>
+<p>我认为这里有一个比较主要的原因是，<strong>对无序的数据集合进行分组（和 reduce）操作是非常昂贵的</strong>。倘若要获取某个 KEY 的所有记录，需要遍历整个集合。这样，我们在 reduce 方法中的那种操作就会很迷惑——<strong>对每一个 key，都把所有记录遍历一遍，拿到对应的分组</strong>。但考虑到访问特定分组必须是<strong>流式</strong>的，这是必要之举。</p>
+<p>这和在普通应用中的分组操作不同，考虑我们在普通应用中进行分组的方法，我们会去定义一个名为 bucket 的哈希表，key 为分组的键，而 value 为记录的集合，我们将迭代整个记录的集合并将其存放在对应的 bucket 中。这就是问题所在——<strong>大数据量大情况下我们是无法在内存中维护这样一个 bucket 的</strong>。</p>
+<p>基于这种限制，我认为，如果要对无序的巨量记录进行流式的分组和 reduce 操作，其时间复杂度将是 n^2——对每一个 key，都遍历整个记录集合。</p>
+<p>而对有序的集合呢？那问题就容易了，考虑到有序的集合中，同一个 KEY 的记录总是紧挨着的，我们直接维护一个当前的 KEY，遍历整个集合，如果该 KEY 和当前相等，就说明还是这个 KEY 的数据，向用户的 reduce 方法的 value 迭代器里再添一个，如果不相等，则说明是下一个 KEY，终止当前的 reduce 方法，起一个新的。这样，就能在线性时间复杂度的情况下流式地 reduce 掉整个集合了。</p>
+<p>我认为，这就是排序的意义，同时这应该也是 KV 存储的意义——让并行性本就不如 map 阶段的 reduce 阶段能更加轻松。同时，排序也使得可以容易得到易处理，人类可读的数据。</p>
+<p>如果事实就是如此，那说数据被分组其实是一个谎言——其实什么都没干，只是顺序地迭代集合罢了，只不过表现出来的行为（接口等）是分组而已。但这种抽象，这种“谎言”是非常有趣的。</p>
+<p>顺带一提，Haskell 的列表的 group 行为和这非常相似。事实证明，这种算法甚至能够处理无穷列表，或许一切流式操作都有如此特性吧。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- Haskell 代码</span><br><br><span class="hljs-title">duetNat</span> = [<span class="hljs-number">1</span> ..] &gt;&gt;= \i -&gt; [i, i] <span class="hljs-comment">-- [1, 1, 2, 2, 3, 3, ...]</span><br><span class="hljs-comment">-- &gt;&gt;&gt; take 10 $ group duetNat</span><br><span class="hljs-comment">-- [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]</span><br></code></pre></div></td></tr></table></figure>
+
+<p>但参考谷歌的论文对 MR 中进行排序的论述，感觉我可能想太多——</p>
+<blockquote>
+<p>我们确保在给定的分区中，中间 key&#x2F;value pair 数据的处理顺序是按照 key 值增量顺序处理的。这样的顺 序保证对每个分成生成一个有序的输出文件，<strong>这对于需要对输出文件按 key 值随机存取的应用非常有意义， 对在排序输出的数据集也很有帮助</strong>。</p>
+<p>We guarantee that within a given partition, the intermediate key&#x2F;value pairs are processed in increasing key order. This ordering guarantee makes it easy to generate a sorted output file per partition, <strong>which is useful when the output file format needs to support efficient random access lookups by key, or users of the output find it convenient to have the data sorted</strong>.</p>
+</blockquote>
+<blockquote>
+<p>另外，JOIN 操作对于有序的集合的复杂度为<code>O(n)</code>，这也是排序的一个必要之处。</p>
+</blockquote>
+<h2 id="为何-Partitioner-执行在-Combiner-之前？"><a href="#为何-Partitioner-执行在-Combiner-之前？" class="headerlink" title="为何 Partitioner 执行在 Combiner 之前？"></a>为何 Partitioner 执行在 Combiner 之前？</h2><p>太长不看，两个原因——整个集合排序开销大，分区后容易并行 combine</p>
+<p>MR 在执行 partitioner 后将每个分组进行排序，再传递给 Combiner，为什么不先 Combine 后再进行排序呢？我怀疑他们是想让 Reducer 和 Combiner 行为一致：接受的 key 总是按顺序的。</p>
+<p>而倘若先进行 Combine，<strong>则 Combine 之前必须进行排序</strong>，而这样开销更大，假设原记录数为 n，则时间复杂度为 nlogn，而假设分了 k 个区，对每个区进行排序，总时间复杂度为 k * (n&#x2F;k) * (log n &#x2F; k)，即 n * (log n &#x2F; k)，这还是没有考虑到分过区后每个区可以并行地排序的情况！因此，显然分区后对每个分区进行局部排序开销更小。况且，如果两个 KEY 本就该分给不同的 Reducer，那么对它们进行排序有什么意义呢？</p>
+<p>而且，分过区后，可以非常容易地对每个分区进行并行的 combine 操作（当然，不分区也能进行并行的 combine，就像 java8-stream 的 reduce 方法一样）。</p>
+<p>但这些猜测仍旧无法彻底让我信服，还得之后再研究。</p>
+<h1 id="分布式排序"><a href="#分布式排序" class="headerlink" title="分布式排序"></a>分布式排序</h1><p>当只有一个 Reducer 时，MR 可以用于进行分布式排序。它的原理利用了 MR 的执行流程。</p>
+<p>每个 Mapper 处理完自己的所有记录集合后，会传递给 Partitioner 进行分区操作，Partitioner 分完区后，每个分区的结果会按照 KEY 进行排序，经过 Combiner 后发送给对应的 Reducer。</p>
+<p>每个 Reducer 都将接受每一个 Mapper 传递过来的记录集合，每一个 Mapper 的集合都是有序的，但所有 Mapper（传递给它）的集合总的来说是无序的，因此，Reducer 会进行一种所谓的多路归并算法，将每一个 Mapper 传递的局部有序的集合归并在一起，得到一个整体有序的最终集合，并用于分组。</p>
+<p>当只有一个 Reducer 时，所有 Mapper 的有序的集合都将发送给它，并由它进行归并，排序后传递给用户的 reduce 方法。因此，用户接受到的 reduce 方法，它看到的 KEY 是按顺序的，此时若直接把 KEY 输出，最终得到的结果文件里就是排完序的结果。</p>
+<figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-comment">// 在特定文件夹里创建 16 个文件，每个文件里包含 500 万个数</span><br><span class="hljs-comment">// 总共约 1520M 大小</span><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">CreateInputFiles</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> path = <span class="hljs-string">&quot;/路径/到/输入路径&quot;</span><br>  (<span class="hljs-number">0</span> until <span class="hljs-number">16</span>).foreach &#123;i =&gt;<br>    <span class="hljs-keyword">val</span> writer = <span class="hljs-keyword">new</span> <span class="hljs-type">FileWriter</span>(<span class="hljs-string">s&quot;<span class="hljs-subst">$path</span>/<span class="hljs-subst">$i</span>.txt&quot;</span>)<br>    (<span class="hljs-number">0</span> until <span class="hljs-number">5000000</span>).foreach(_ =&gt; writer.write(<span class="hljs-type">Math</span>.abs(<span class="hljs-type">Random</span>.nextLong()) + <span class="hljs-string">&quot;\n&quot;</span>))<br>    writer.close()<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DistributedSortMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>] </span>&#123;<br>  <span class="hljs-keyword">val</span> outputK = <span class="hljs-keyword">new</span> <span class="hljs-type">LongWritable</span>()<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(key: <span class="hljs-type">LongWritable</span>, value: <span class="hljs-type">Text</span>, context: <span class="hljs-type">Mapper</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">Text</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    value.toString.toLongOption <span class="hljs-keyword">match</span> &#123;<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">None</span> =&gt; &#123;&#125;<br>      <span class="hljs-keyword">case</span> <span class="hljs-type">Some</span>(longValue) =&gt; &#123;<br>        outputK.set(longValue)<br>        context.write(outputK, <span class="hljs-type">NullWritable</span>.get)<br>      &#125;<br>    &#125;<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DistributedSortReducer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Reducer</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>] </span>&#123;<br>  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">reduce</span></span>(key: <span class="hljs-type">LongWritable</span>, values: lang.<span class="hljs-type">Iterable</span>[<span class="hljs-type">NullWritable</span>], context: <span class="hljs-type">Reducer</span>[<span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>, <span class="hljs-type">LongWritable</span>, <span class="hljs-type">NullWritable</span>]#<span class="hljs-type">Context</span>): <span class="hljs-type">Unit</span> = &#123;<br>    <span class="hljs-comment">// 为什么要调用 forEach 呢？因为可能有多个值相等，这时候它们会被分在一个组里</span><br>    <span class="hljs-comment">// 直接打印到结果文件里，那就只留下了不重复的了</span><br>    <span class="hljs-comment">// 当然，在这里没必要，在 Long 这么大的范围，8000 万条数据还真的不容易撞</span><br>    values.forEach(_ =&gt; context.write(key, <span class="hljs-type">NullWritable</span>.get))<br>  &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">DistributedSortJob</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">App</span> </span>&#123;<br>  <span class="hljs-keyword">val</span> parser = <span class="hljs-keyword">new</span> <span class="hljs-type">GenericOptionsParser</span>(args)<br>  <span class="hljs-keyword">val</span> job = <span class="hljs-type">Job</span>.getInstance(parser.getConfiguration)<br>  <span class="hljs-keyword">val</span> inputPath +: outputPath +: _ = parser.getRemainingArgs.toSeq.map(<span class="hljs-keyword">new</span> <span class="hljs-type">Path</span>(_))<br><br>  job.setInputFormatClass(classOf[<span class="hljs-type">TextInputFormat</span>])<br>  job.setOutputKeyClass(classOf[<span class="hljs-type">TextOutputFormat</span>[_,_]])<br>  job.setMapOutputKeyClass(classOf[<span class="hljs-type">LongWritable</span>])<br>  job.setMapOutputValueClass(classOf[<span class="hljs-type">NullWritable</span>])<br>  job.setOutputKeyClass(classOf[<span class="hljs-type">LongWritable</span>])<br>  job.setOutputValueClass(classOf[<span class="hljs-type">NullWritable</span>])<br><br>  job.setMapperClass(classOf[<span class="hljs-type">DistributedSortMapper</span>])<br>  job.setReducerClass(classOf[<span class="hljs-type">DistributedSortReducer</span>])<br>  <span class="hljs-type">FileInputFormat</span>.setInputPaths(job, inputPath)<br>  <span class="hljs-type">FileOutputFormat</span>.setOutputPath(job, outputPath)<br><br>  <span class="hljs-type">System</span>.exit(<span class="hljs-keyword">if</span> (job.waitForCompletion(<span class="hljs-literal">true</span>)) <span class="hljs-number">0</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>)<br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+
+<p>这种分布式排序的缺陷之一在于，只有一个 Reducer，因而限制了该过程的并行性，在性能上不太够。一个解决方案是自定义 Partitioner，<strong>使每个 Reducer 之间接受的 KEY 是有序的</strong>，既然 Reducer 之间是有序的，每个 Reducer 内部都是有序的，则整体就是有序的。Spark 似乎使用类似的分区方式。但这种分区方式是和业务耦合的，需要自定义。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MapReduce/">MapReduce</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03-13%E5%8A%9B%E6%89%A3SQL%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">力扣 SQL 刷题笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-10SQL%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94GROUP-BY%EF%BC%8CJOIN%EF%BC%8C%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0.html">
+                        <span class="hidden-mobile">SQL 学习笔记——GROUP BY，JOIN，窗口函数</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

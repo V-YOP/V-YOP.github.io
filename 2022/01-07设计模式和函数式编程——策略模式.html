@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="半年没有学习设计模式了，这半年以来主要做的框架开发工作，也算是有一些实践经验（虽然远远不够），同时也是了解了很多函数式编程的概念，写的代码里状态越来越少，代码风格越来越声明式（好久没写过原生的 for 和 while 了 hhh），也开始觉得一些设计模式变得臃肿起来了。现在继续回来学习设计模式，顺便看看它们结合函数式编程中的概念会对样板代码有如何的简化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式和函数式编程——策略模式">
+<meta property="og:url" content="http://example.com/2022/01-07%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E2%80%94%E2%80%94%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="半年没有学习设计模式了，这半年以来主要做的框架开发工作，也算是有一些实践经验（虽然远远不够），同时也是了解了很多函数式编程的概念，写的代码里状态越来越少，代码风格越来越声明式（好久没写过原生的 for 和 while 了 hhh），也开始觉得一些设计模式变得臃肿起来了。现在继续回来学习设计模式，顺便看看它们结合函数式编程中的概念会对样板代码有如何的简化。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20210926020709.png">
+<meta property="article:published_time" content="2022-01-07T13:40:48.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.291Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20210926020709.png">
+  
+  
+  <title>设计模式和函数式编程——策略模式 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="设计模式和函数式编程——策略模式">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-07 21:40" pubdate>
+        2022年1月7日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      8.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">设计模式和函数式编程——策略模式</h1>
+            
+            <div class="markdown-body">
+              <p>半年没有学习设计模式了，这半年以来主要做的框架开发工作，也算是有一些实践经验（虽然远远不够），同时也是了解了很多函数式编程的概念，写的代码里状态越来越少，代码风格越来越声明式（好久没写过原生的 for 和 while 了 hhh），也开始觉得一些设计模式变得臃肿起来了。现在继续回来学习设计模式，顺便看看它们结合函数式编程中的概念会对样板代码有如何的简化。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>今年第一篇笔记。</p>
+</blockquote>
+<p>这里我选择了策略模式进行学习，之后是命令模式和状态模式，选择其的原因是因为这三个模式经由借助 Java8 所提供的函数式的工具——函数式接口和闭包——能很大程度地简化。</p>
+<h2 id="函数式接口和闭包"><a href="#函数式接口和闭包" class="headerlink" title="函数式接口和闭包"></a>函数式接口和闭包</h2><p>函数式接口结合 Lambda 表达式，使我们能够书写作为值&#x2F;字面量的函数。这样，将函数作为值来看待，作为入参传入，作为返回值等使用方法都变得明显和符合直觉了。曾经我们只能够传递“名词”给函数，而现在我们能传递“动词”了。</p>
+<p>而闭包使我们能够捕获外部作用域的变量，从而构造一个“穷人的类”——就如同类是数据和行为的一个聚合一样，闭包函数也是这样一个聚合，只不过行为只有一种罢了，比如说下面两个 Counter 完全可以认为是等价的——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">IntSupplier <span class="hljs-title function_">counter</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// Java 限制捕获的值必须是不变的，或者说“实际上 final”的</span><br>    <span class="hljs-comment">// 因此如果要想改变捕获的变量的值的话，必须让变量作为引用类型，而值作为该类型包含的状态</span><br>    <span class="hljs-comment">// 最佳实践是使用长度为 1 的数组，将状态包裹在数组中，对其进行修改不会改变 count 的值（即该引用）</span><br>    <span class="hljs-comment">// 但倘若类型中有泛型，创建其的数组是无法实现的，可以考虑将变量捕获为特定类的状态</span><br>    <span class="hljs-type">int</span>[] count = &#123;<span class="hljs-number">0</span>&#125;; <br>    <span class="hljs-keyword">return</span> () -&gt; &#123;<br>        <span class="hljs-keyword">return</span> count[<span class="hljs-number">0</span>]++;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Counter</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getAndIncrement</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> count++;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>再考虑另一个情形——我们试图用多线程执行某个 task，而这个 task 有一个依赖的对象。如果在上古时代的 Java，我们必须创建一个实现 Runnable 的类来包含相应依赖，比如需要这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeTask</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> SomeDependency someDependency;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SomeTask</span><span class="hljs-params">(SomeDependency someDependency)</span> &#123;<br>        <span class="hljs-built_in">this</span>.someDependency = someDependency;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// ...</span><br>        someDependency.call();<br>        <span class="hljs-comment">// ...</span><br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 客户端代码</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">SomeDependency</span> <span class="hljs-variable">someDependency</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SomeDependency</span>();<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">SomeTask</span>(someDependency)).start();<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>这里故意没有使用匿名实现类，但其实使用匿名实现类的话也需要用到闭包。</p>
+</blockquote>
+<p>需要多加一个类！如果这个类只用一次的话，那也太麻烦了！而在 Java 8 里，我们可以这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">SomeDependency</span> <span class="hljs-variable">someDependency</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SomeDependency</span>();<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(()-&gt;&#123;<br>        <span class="hljs-comment">// ...</span><br>        someDependency.call(); <span class="hljs-comment">// 通过闭包直接捕获 someDependency，优雅极了，而且也挺符合直觉</span><br>        <span class="hljs-comment">// ...</span><br>    &#125;).start();<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>如果我们有多个 task 都会利用这个依赖呢？旧时代的 Java 就只能对每个 task 都创建一个类了。我们可以用方法引用（本质上也是匿名函数）来解决这个问题——建立一个类来包含依赖的对象，把每个 task 作为一个方法并在方法中使用该依赖，如 taskA，taskB。</p>
+<p>或者也可以通过函数参数来注入依赖，如 taskC，使用时使用匿名函数对该 task 进行调用，注入依赖。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">TaskContainer</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> SomeDependency someDependency;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">TaskContainer</span><span class="hljs-params">(SomeDependency someDependency)</span> &#123;<br>        <span class="hljs-built_in">this</span>.someDependency = someDependency;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> TaskContainer <span class="hljs-title function_">inject</span><span class="hljs-params">(SomeDependency someDependency)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TaskContainer</span>(someDependency);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">taskA</span><span class="hljs-params">()</span> &#123;<br>        someDependency.call();<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">taskB</span><span class="hljs-params">()</span> &#123;<br>        someDependency.call();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">taskC</span><span class="hljs-params">(SomeDependency someDependency)</span> &#123;<br>        someDependency.call();<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">SomeDependency</span> <span class="hljs-variable">someDependency</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SomeDependency</span>();<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; TaskContainer.inject(someDependency).taskA()).start();<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(TaskContainer.inject(someDependency)::taskB).start();<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(() -&gt; TaskContainer.taskC(someDependency)).start();<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>容易发现，这样的代码虽然更加简短，但是却是破坏了开闭原则的——各种 Task 都定义在这个类里，如果要增加新的 Task，则必须要修改源代码。但这在实践上真的会造成影响吗？应当具体问题具体分析。</p>
+<p>也需要知道的是，虽然 Java 8 为函数式编程做了一些努力，但它的完善程度仍旧是远远不够的，它仍旧试图把函数都当作特定类型的对象来对待，这样即使两个函数的函数签名相同，它们两个也未必是能够互换使用的。这在异常处理，函数组合等地方都带来了很大的麻烦，而 Scala 或 Kotlin 在这方面做的很好——首先函数的签名就是函数的类型，这在很多时候甚至比<strong>被迫的</strong>命名还要清晰——<code>Int -&gt; Int</code>可比<code>IntUnaryOperator</code>要好理解的多了；而且函数仍被当作类来看待，因此也具有自己的方法——和其他的函数进行组合等。这是 Java 做不到的（Java 提供的函数式接口似乎普遍包含了一个组合方法<code>andThen</code>，<code>Function</code>接口包含了<code>compose</code>，但是并不统一），即使能做到也缺乏泛用性。而试图进行柯里化等操作时，得到的函数签名更是不忍直视，比如<code>Int -&gt; Int -&gt; Int -&gt; Int</code>会得到<code>Function&lt;Integer, Function&lt;Integer, Function&lt;Integer, Integer&gt;&gt;&gt;</code>，并且调用时也得<code>fn.apply(1).apply(2).apply(3)</code>，实在难以使用。</p>
+<h2 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h2><blockquote>
+<p>定义一系列的算法，把它们一个个封装起来，并且使它们可相互替换。本模式使得算法可独立于使用它的客户而变化。</p>
+</blockquote>
+<p>策略模式就本质上说来，就是将为特定目的&#x2F;接口的算法封装在同样接口的类中，使我们能够方便添加新的算法，以及更换&#x2F;切换使用的算法。策略模式无论是从面向对象的角度还是从函数式的角度都是非常容易理解的。一个简单的例子就是，JDBC 如何适配多个数据库？答案是提供同样的接口，为每个数据库都对该接口进行实现，在运行时选择使用的数据库的对应的实现类。</p>
+<p>考虑这样的一个简单情景——我们在维护一个电影院的售票系统，现在我们要根据用户的年龄和类型来计算票价（假设票价只和用户的年龄和类型相关，和电影等其它属性无关）。根据票价的规则，我们快速整出来一个原型——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">TicketService</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>    <span class="hljs-comment">// 票价算法</span><br>    <span class="hljs-type">int</span> <span class="hljs-title function_">getPrice</span><span class="hljs-params">(<span class="hljs-type">int</span> age, <span class="hljs-type">int</span> type)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">base</span> <span class="hljs-operator">=</span> <span class="hljs-number">50</span>;<br>        <span class="hljs-keyword">switch</span> (type) &#123;<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br>                <span class="hljs-keyword">if</span> (age &lt; <span class="hljs-number">18</span>) <span class="hljs-keyword">return</span> base - <span class="hljs-number">10</span>;<br>                <span class="hljs-keyword">return</span> base;<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>                <span class="hljs-keyword">if</span> (age &lt; <span class="hljs-number">18</span>) <span class="hljs-keyword">return</span> (<span class="hljs-type">int</span>) (base * <span class="hljs-number">0.9</span> - <span class="hljs-number">10</span>);<br>                <span class="hljs-keyword">return</span> (<span class="hljs-type">int</span>) (base * <span class="hljs-number">0.9</span>);<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:<br>                <span class="hljs-keyword">return</span> base / <span class="hljs-number">2</span>;<br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;错误的 type&quot;</span>); <span class="hljs-comment">// 该函数可能抛出异常，这说明它是一个偏函数。我们可以通过函数式的手段解决它</span><br>        &#125; <br>    &#125;<br><br>    <span class="hljs-comment">// 客户端代码</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">buyTicket</span><span class="hljs-params">(User user, Movie movie)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">price</span> <span class="hljs-operator">=</span> getPrice(user.getAge(), user.getType());<br>        System.out.printf(<span class="hljs-string">&quot;用户%s 的票价为：%s\n&quot;</span>, user.getName(), price);<br>        <span class="hljs-comment">// do some bussiness......</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>We did it！代码很简单，可是它真能“不忘初心”吗？non non 哒哟！基础价变了怎么办？成年人的定义变了怎么办？遇上节日了不打折吗？会员的折扣变了怎么办？显然，这代码可抵抗不了业务的变化，它必须得动。</p>
+<h2 id="介绍和示例"><a href="#介绍和示例" class="headerlink" title="介绍和示例"></a>介绍和示例</h2><p>能够发现，当我们进行对计算规则进行改变的时候，我们实际上只需要改变 getPrice 方法中的内容，而 buyTicket 方法，以及 getPrice 的签名（接口）都是不变的。答案很显然了，我们把 getPrice 抽象成接口，而让具体的算法去实现这样的接口就行了，而 buyTicket 则利用该接口对具体算法进行使用。这样的接口就称为策略（Strategy）。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">PriceStrategy</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-title function_">getPrice</span><span class="hljs-params">(<span class="hljs-type">int</span> age, <span class="hljs-type">int</span> type)</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StrategyA</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">PriceStrategy</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-type">int</span> <span class="hljs-title function_">getPrice</span><span class="hljs-params">(<span class="hljs-type">int</span> age, <span class="hljs-type">int</span> type)</span> &#123;<br>        <span class="hljs-comment">// ...</span><br>    &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StrategyB</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">PriceStrategy</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-type">int</span> <span class="hljs-title function_">getPrice</span><span class="hljs-params">(<span class="hljs-type">int</span> age, <span class="hljs-type">int</span> type)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">100</span>; <span class="hljs-comment">// 很平等（</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TicketService</span> &#123;<br>    <span class="hljs-keyword">private</span> PriceStrategy priceStrategy;<br><br>    <span class="hljs-comment">// 非 Spring 环境下当然也可以进行依赖注入</span><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setPriceStrategy</span><span class="hljs-params">(PriceStrategy priceStrategy)</span> &#123;<br>        <span class="hljs-built_in">this</span>.priceStrategy = priceStrategy;<br>    &#125;<br><br>    <span class="hljs-comment">// 客户端代码</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">buyTicket</span><span class="hljs-params">(User user, Movie movie)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">price</span> <span class="hljs-operator">=</span> priceStrategy.getPrice(user.getAge(), user.getType());<br>        System.out.printf(<span class="hljs-string">&quot;用户%s 的票价为：%s\n&quot;</span>, user.getName(), price);<br>        <span class="hljs-comment">// do some bussiness......</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这样，当业务有调整的时候，只需要编写新的策略，并通过配置文件等形式修改注入的具体策略即可，甚至能够在运行时对使用的策略进行修改。我们还可以让策略之间互相依赖，比如对另外一个策略的票价再打个折之类的。</p>
+<p>总而言之（真快啊！），策略模式中出现三种角色——<strong>上下文</strong>（context），使用策略的地方，即客户端；<strong>抽象策略</strong>，或者说策略的接口，其将被上下文所使用；<strong>具体策略</strong>，顾名思义。</p>
+<h2 id="FP-的观点"><a href="#FP-的观点" class="headerlink" title="FP 的观点"></a>FP 的观点</h2><p>从函数式编程的角度来看，这一个个的具体的策略类实际上是一个个具有同样的接口&#x2F;签名的函数，它们被命名，被保存了。于是，我们可以<strong>通过函数来表示具体策略，让函数的签名来代替抽象策略</strong>，从而消灭抽象策略这一角色，在上下文中直接使用符合该函数签名的函数作为具体策略。比如，这里的 getPrice 函数，它的签名为<code>(int, int) -&gt; int</code>，或者从 Java 的话说，<code>BiFunction&lt;Integer, Integer, Integer&gt;</code>或<code>Function&lt;Tuple2&lt;Integer, Integer&gt;, Integer&gt;</code>，抽象策略的类就可直接使用该函数类来代替，而具体策略只需要实现该接口的示例。比如我们可以这么写——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">TicketService</span> &#123;<br><br>    <span class="hljs-comment">// 应当通过依赖注入的方式传入，这样也能在函数体中通过闭包来引入依赖。</span><br>    <span class="hljs-keyword">private</span> BiFunction&lt;Integer, Integer, Integer&gt; getPrice = (age, type) -&gt; &#123;<br>        <span class="hljs-comment">// ...</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">42</span>;<br>    &#125;;<br><br>    <span class="hljs-comment">// 客户端代码</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">buyTicket</span><span class="hljs-params">(User user, Movie movie)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">price</span> <span class="hljs-operator">=</span> priceStrategy.apply(user.getAge(), user.getType());<br>        System.out.printf(<span class="hljs-string">&quot;用户%s 的票价为：%s\n&quot;</span>, user.getName(), price);<br>        <span class="hljs-comment">// do some bussiness......</span><br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h2><p>对同一个接口，需要能够切换多个实现的情况下使用策略模式非常适合，比如前面说到的票价计算场景，以及选择使用介质的缓存（本地，内存，磁盘，网络），统一不同的文件系统等。需注意的是如果策略包含多个方法，则还是使用面向对象的手段更方便些。</p>
+<h2 id="进一步"><a href="#进一步" class="headerlink" title="进一步"></a>进一步</h2><p>我们可以通过函数组合的方法对不同策略进行组合，达到复用代码，或者对结果进行“代理”的目的。比如我们可以让策略的返回值来乘以一个数来模拟打折情况——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java">BiFunction&lt;Integer, Integer, Integer&gt; beforeStrategy = (age, type) -&gt; &#123;<br>    <span class="hljs-keyword">return</span>  <span class="hljs-number">42</span>;<br>&#125;;<br>BiFunction&lt;Integer, Integer, Integer&gt; afterStrategy0 = (age, type) -&gt; &#123;<br>    <span class="hljs-keyword">return</span> (<span class="hljs-type">int</span>) (beforeStrategy.apply(age, type) * <span class="hljs-number">0.9</span>);<br>&#125;;<br>BiFunction&lt;Integer, Integer, Integer&gt; afterStrategy1 = beforeStrategy.andThen(price -&gt; (<span class="hljs-type">int</span>) (price * <span class="hljs-number">0.9</span>));<br></code></pre></div></td></tr></table></figure>
+
+<p>我们也可以通过流式接口等形式来创建策略的工厂类，通过 DSL 来描述业务，最终创建出最后的服务，比如可能可以这样——</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 随便写写</span><br>BiFunction&lt;Integer, Integer, Integer&gt; someStrategy = <br>    PriceStrategyFactory<br>        .from((age, type) -&gt; <span class="hljs-number">42</span>)<br>        .precondition((age, type) -&gt; age &gt; <span class="hljs-number">0</span> &amp;&amp; <span class="hljs-number">0</span> &lt;= type &amp;&amp; type &lt;= <span class="hljs-number">3</span>)<br>        .andThen(price -&gt; price + <span class="hljs-number">100</span>)<br>        .onError(Exception::printStackTrace)<br>        .build();<br></code></pre></div></td></tr></table></figure>
+
+<p>甚至利用动态语言等的特性，嵌入个 lua 虚拟机整整活？这里还会有无数的骚操作，但是我想不出来了，告辞！</p>
+<h2 id="关于函数组合"><a href="#关于函数组合" class="headerlink" title="关于函数组合"></a>关于函数组合</h2><p>什么是函数组合？我们知道，数学上的函数是两个集合之间的映射，如 f(x) &#x3D; x + 1 （x ∈ R）为一个实数集到实数集的映射。而类型可以认为是一个数据的集合，如 int 型代表……-1, 0, 1, ……的集合，char 型代表’a’, ‘b’, ……的集合。计算机中的函数因此也可表示从集合到集合的映射，如上面的 getPrice 函数，其可以表达为<code>(int, int) -&gt; int</code>，即一个<code>(int, int)</code>——int 型和 int 型的笛卡尔积——的集合到 int 型的映射。</p>
+<p>如果我们有一个函数<code>f : A -&gt; B</code>，其中 A 为输入值的类型，B 为输出值的类型，又有一个函数<code>g : B -&gt; C</code>，这样我们就可以组合这两个函数，得到函数<code>g . f : A -&gt; C</code>。其中<code>(g . f)(x) = g(f(x))</code>。</p>
+<p>扯这些有啥用呢？我们可以通过函数签名来对函数进行组合，从而把简单的函数组装成复杂的函数，以更声明式的手段表达业务逻辑。比如在 Java 中，我们可以写<code>Stream.of(1, 2, 3).filter(i -&gt; i % 2 == 1).map(i -&gt; i * 3).reduce(0, Integer::sum)</code>，而在函数式语言中，我们会写<code>sum . map (* 3) . filter (\i -&gt; div i 2 == 1)</code>。一个 js 的例子如下——</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">// 首先定义 filter，map 的柯里化形式——</span><br><span class="hljs-comment">// filter : (Int -&gt; Bool) -&gt; [Int] -&gt; [Int]</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">filter</span> = algo =&gt; <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> lst.<span class="hljs-title function_">filter</span>(algo)<br><span class="hljs-comment">// map : (Int -&gt; Int) -&gt; [Int] -&gt; [Int]</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">map</span> = algo =&gt; <span class="hljs-function"><span class="hljs-params">lst</span> =&gt;</span> lst.<span class="hljs-title function_">map</span>(algo)<br><span class="hljs-comment">// sum : [Int] -&gt; Int</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">sum</span> = lst =&gt; lst.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a + b, <span class="hljs-number">0</span>)<br><br><span class="hljs-comment">// compose : (B -&gt; C) -&gt; (A -&gt; B) -&gt; (A -&gt; C)</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">compose</span> = b2c =&gt; <span class="hljs-function"><span class="hljs-params">a2b</span> =&gt;</span> &#123;<br>    <span class="hljs-comment">// A -&gt; C，x 类型是 A</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_">b2c</span>(<span class="hljs-title function_">a2b</span>(x))<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 考虑到 compose 这个函数太难看了（看起来像 Lisp），这里也给定了 haskell 形式的描述</span><br><span class="hljs-comment">// someAlgo : [Int] -&gt; Int = sum . map (* 3) . filter (\i -&gt; div i 2 == 1)</span><br><span class="hljs-keyword">const</span> someAlgo = compose (sum) (compose (map (<span class="hljs-function"><span class="hljs-params">i</span> =&gt;</span> i * <span class="hljs-number">3</span>)) (filter (<span class="hljs-function"><span class="hljs-params">i</span> =&gt;</span> i % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>)))<br></code></pre></div></td></tr></table></figure>
+
+<p>在 Java 中，我们对数据进行链式的处理，而在函数式编程中，我们通过组合小的，易理解、处理、证明的函数来构造最终的复杂函数并将其应用到数据上。显然后者是形式更加清晰（至少在 Haskell 里是这样的……），测试更为容易，更加容易进行复用的。</p>
+<p><img src="/images/oss/20210926020709.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01-08%E5%85%B3%E4%BA%8ETypeReference.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 TypeReference</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/12-10%E4%B9%90%E8%A7%82%E9%94%81%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0.html">
+                        <span class="hidden-mobile">乐观锁的简单实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

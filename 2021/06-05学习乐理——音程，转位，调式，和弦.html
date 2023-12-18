@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="学点乐理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习乐理笔记——音程，转位，调式……">
+<meta property="og:url" content="http://example.com/2021/06-05%E5%AD%A6%E4%B9%A0%E4%B9%90%E7%90%86%E2%80%94%E2%80%94%E9%9F%B3%E7%A8%8B%EF%BC%8C%E8%BD%AC%E4%BD%8D%EF%BC%8C%E8%B0%83%E5%BC%8F%EF%BC%8C%E5%92%8C%E5%BC%A6.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="学点乐理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-05T14:59:43.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.284Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="乐理">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>学习乐理笔记——音程，转位，调式…… - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="学习乐理笔记——音程，转位，调式……">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-05 22:59" pubdate>
+        2021年6月5日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">学习乐理笔记——音程，转位，调式……</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<h1 id="音程"><a href="#音程" class="headerlink" title="音程"></a>音程</h1><p>音程为两个音之间的“距离”，以半音数为单位。一个八度中，音程可以为：纯一度，小二度，大二度，小三度，大三度，纯四度，增四度，减五度，纯五度，小六度，大六度，小七度，大七度，纯八度。其和半音数的对应关系如表。</p>
+<table>
+<thead>
+<tr>
+<th align="center">纯一度</th>
+<th align="center">小二度</th>
+<th align="center">大二度</th>
+<th align="center">小三度</th>
+<th align="center">大三度</th>
+<th align="center">纯四度</th>
+<th align="center">增四度</th>
+<th align="center">减五度</th>
+<th align="center">纯五度</th>
+<th align="center">小六度</th>
+<th align="center">大六度</th>
+<th align="center">小七度</th>
+<th align="center">大七度</th>
+<th align="center">纯八度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">8</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">12</td>
+</tr>
+</tbody></table>
+<p>纯一度即为自身与自身，间隔 0 个半音，比如 C-C，D-D。</p>
+<p>小二度为间隔 1 个半音，C 大调上有 B-C，E-F。</p>
+<p>大二度为间隔 2 个半音，C 大调上有 C-D，D-E，F-G，G-A，A-B。</p>
+<p>小三度为间隔 3 个半音，C 大调上有 D-F，E-G，A-C。</p>
+<p>大三度为间隔 4 个半音，C 大调上有 C-E,F-A，G-B。</p>
+<p>增四度、减五度间隔 6 个半音，为 F-B，B-F（下一个八度的 F）。</p>
+<p>纯四度间隔 5 个半音，为除 F-B 之外的所有四度。</p>
+<p>纯五度间隔 7 个半音，为除 B-F 之外的所有五度。</p>
+<p>小六度间隔 8 个半音，C 大调上有 E-C，A-F，B-G。</p>
+<p>……</p>
+<h1 id="转位"><a href="#转位" class="headerlink" title="转位"></a>转位</h1><p>根据上面的音程，可以发现各音程间存在一定的规律——将半音数为 n 的音程反转即可得到半音数为 12-n 的音程，比如 C-E 为大三度，E-C 就为小六度（这里的 C 为下一个八度里的 C）。F-B 为增四度，B-F 为减五度。这称为音程的转位。</p>
+<p>总结来说互为转位的音程有如下规律：</p>
+<ul>
+<li>相加为九度。<br>比如大三度转位得到小六度，纯四度转位得到纯五度，相加为九度。</li>
+<li>大小互换，增减互换，纯则不变。<br>例子同上。</li>
+</ul>
+<p>根据这个规律，实际上只需要记忆从纯一度到增四度&#x2F;减五度的音程即可，其后的通过转位进行计算。</p>
+<h1 id="调式"><a href="#调式" class="headerlink" title="调式"></a>调式</h1><p>可以认为调式是一组音阶，其中各个音之间的音程是确定的。调式和主音确定所谓的<strong>调性</strong>。</p>
+<p>现在主要学习了大调和自然小调，大调为分别相隔全全半全全全半（全指一个全音即两个半音，半指一个半音）组成的音阶，小调则相隔全半全全半全全，可以发现大调和小调有“全全半全全”这公共的部分，也就是说将大调最后的“全半”移到前面就能够变成小调，小调最前的全半移到后面就能变成大调。这里就能够获得所谓的关系调（也叫平行调）和同主调的计算方法。</p>
+<p>所谓关系调就是组成的音完全相同的大小调，如 C 大调和 a 小调，同主调就是主音相同的大小调，如 C 大调和 c 小调。</p>
+<p>获取一个大调的关系小调，只需对该大调向左循环移位，直到六级音（下属音）到达第一位为止，比如 C 大调为 CDEFGAB，其六级音为 A，得出的关系小调为 ABCDEFG，为 a 小调（其实实质就是获取主音向下小三度的音——大调的六级音和主音音程一定是大六度，转位后为小三度）。获取小调的关系大调，也只需向左循环移位，直到三级音（属音）到达第一位（主音向上小三度）。</p>
+<p>获取一个大调的同主小调，只需将 3，6，7 级音下降半音即可。可以这样理解：</p>
+<p>大调：n +2 +2 +1 +2 +2 +2 +1<br>小调：n +2 +1 +2 +2 +1 +2 +2</p>
+<p>假设主音是 n，大调的一级音就为 n+2，二级音为 n+2+2……以此类推，最后一个音一定是 n+12（下一个八度的 n）。将大调转成小调，就得调整各级音相对于前一个音的升高（即这里的+i）和小调的一致。</p>
+<p>对第二级音，大小调是一致的，不需要修改。</p>
+<p>对第三级音，大调比小调高 1，因此<strong>减去 1</strong>，把这个 1 当做类似加法的进位看待。</p>
+<p>对第四级音，大调的+1 进 1 得到+2，和小调一致，不变。第五级音也不变。</p>
+<p>对第六级音，大调比小调高 1，**减去 1 **作进位。</p>
+<p>对第七级音，大调加上进位得到+3，**减去 1 **作进位。</p>
+<p>对第八级音，大调比小调高 1，进 1 得到+2，和小调一致。</p>
+<p>总之，为了让大调的音阶能够变化成小调的音阶，需要对 3，6，7 级音降一个半音，并填补在后面的音上。</p>
+<p>小调转大调则正相反，将 3，6，7 级音加上一个半音即可。</p>
+<h1 id="和弦"><a href="#和弦" class="headerlink" title="和弦"></a>和弦</h1><p>和弦即同时奏响多个音，按音的数量有三和弦，七和弦等，按音程的组合有大&#x2F;小和弦，增&#x2F;减和弦等。</p>
+<p>所谓三和弦，就是由三个音组成的和弦，第二个音和第三个音和第一个音分别是三度，五度，因此分别称为三度音，五度音，第一个音称为根音。三和弦中由大三度，小三度组成的和弦称为大三和弦，如 C-E-G，写作 C，由小三度，大三度组成的和弦称为小三和弦，如 D-F-A，写作 Dm，由小三度和小三度组成的和弦称为减三和弦，如 B-D-F，写作 Bdim。</p>
+<p>按照某个调的音阶排列的和弦称为顺阶和弦或调内和弦，其性质是所有组成和弦的音都在调内。如 C 大调的顺阶和弦为 C，Dm，Em，F，G，Am，Bdim。</p>
+<p>七和弦为四个音组成的和弦，因根音和第四个音（七度音）相差七度得名。</p>
+<p>continued…. 这玩意不是一蹴而就的东西，要多次反哺才行。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%B9%90%E7%90%86/">乐理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/06-29%E5%85%B3%E4%BA%8ESpring%E7%9A%84IoC%E5%92%8CAOP.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 Spring 的 IoC 和 AOP</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/05-27%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%BA%9Bhaskell%E7%9A%84%E5%88%97%E8%A1%A8%E6%93%8D%E4%BD%9C.html">
+                        <span class="hidden-mobile">一些 haskell 的列表操作的实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

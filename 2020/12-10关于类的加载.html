@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="从具体到抽象，再从抽象到具体。这是认识的一般规律。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于类的加载">
+<meta property="og:url" content="http://example.com/2020/12-10%E5%85%B3%E4%BA%8E%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="从具体到抽象，再从抽象到具体。这是认识的一般规律。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/10/BPLWlZMCSYReHDc.png">
+<meta property="og:image" content="https://i.loli.net/2020/12/10/iGmcEZOxaTwkBJU.png">
+<meta property="article:published_time" content="2020-12-10T00:39:35.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.279Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/10/BPLWlZMCSYReHDc.png">
+  
+  
+  <title>关于类的加载 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于类的加载">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-10 08:39" pubdate>
+        2020年12月10日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于类的加载</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<h1 id="类的加载过程"><a href="#类的加载过程" class="headerlink" title="类的加载过程"></a>类的加载过程</h1><p>当我们 new 一个对象，或者使用对象的静态方法，静态变量等操作时，JVM 会先检查类是否被加载（我们知道，它被加载到方法区），如果未加载，则使用类加载器（<code>ClassLoader</code>）将类进行加载并<strong>初始化</strong>。这里需要注意的是，初始化并非是一定发生的。调用类的静态常量（静态常量存在方法区中，在链接阶段被初始化，静态变量也存在于方法区中，不过要在初始化阶段通过<code>&lt;clinit&gt;()</code>方法初始化）等操作并不会触发类的初始化。</p>
+<p>类的生命周期可以分为 7 步——<strong>加载</strong>，<strong>验证</strong>，<strong>准备</strong>，<strong>解析</strong>，<strong>初始化</strong>，<strong>使用</strong>和<strong>卸载</strong>。其中，类的初始化过程为前五步。</p>
+<p>验证，准备，解析过程可以归结为<strong>链接</strong>过程。因而，一般说类的初始化过程分为三步——<strong>加载</strong>，<strong>链接</strong>，<strong>初始化</strong>。</p>
+<p>再次强调，类的初始化不是一定发生的。但是如果要使用一个类，其加载和链接是必定发生的。</p>
+<h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>加载主要完成——</p>
+<ol>
+<li>通过全类名获取定义类的二进制字节流（通过 ZIP，JAR 包，Class 文件以及其他）到内存中</li>
+<li>将字节流代表的静态存储结构（也就是 Class 字节码）转换为方法区的<strong>运行时</strong>数据结构</li>
+<li>在<strong>堆</strong>（！）中生成一个代表该类的<code>java.lang.Class</code>对象，它是方法区的这些数据的<strong>访问入口</strong></li>
+</ol>
+<p>总之，是把 Class 字节码加载到方法区中，然后在堆中生成<code>Class</code>对象作为其入口。</p>
+<p>其中，<strong>第一步（获取类的二进制字节流）是高度可自定义的。可以自定义类加载器（重写类加载器的<code>loadClass()</code>方法）来控制字节流的获取方式。</strong></p>
+<blockquote>
+<p>数组类型不通过类加载器执行，而是 JVM 直接创建。</p>
+</blockquote>
+<p>关于这一步，<strong>类加载器</strong>和<strong>双亲委派机制</strong>是需要学习的。</p>
+<p>加载阶段和链接阶段是可以并行执行的。</p>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>验证是链接的第一步，它主要是验证 Class 文件（当然，已经被加载到方法区了）的合法性。</p>
+<p><img src="https://i.loli.net/2020/12/10/BPLWlZMCSYReHDc.png"></p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>准备阶段主要<strong>为 static 变量在方法区（！）中分配内存并设置初始值</strong>。</p>
+<p>该阶段，静态变量和静态常量的行为是不同的，比如我们定义<code>public static int variable = 123; public static final int constant = 456;</code>，在这一步中，<code>variable</code>会被赋<code>int</code>型的零值（0），而<code>constant</code>会被赋值 456。这表明——</p>
+<ul>
+<li>静态常量的初始化在准备（链接）阶段就被完成。</li>
+<li>静态变量的<strong>真正的</strong>初始化在类初始化过程<code>&lt;clinit&gt;()</code>方法中进行。在准备阶段只会被赋变量类型的初始值。</li>
+</ul>
+<p>因此，调用类的静态常量不会触发类的初始化操作，就是因为其在准备阶段已经被初始化过了，可以直接使用。</p>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>解析就是将常量池中的符号引用替换为直接引用的过程。解析动作主要针对类或接口，字段（field），类方法，接口方法，方法类型，方法句柄和调用限定符这 7 类符号引用进行。</p>
+<p>这里的直接引用是直接指向目标的指针，相对偏移量或一个间接定位到目标的句柄。在运行时，这些符号引用必须被转换成直接引用，因此 JVM 才能明确获得它们的位置。比如，当程序要执行一个方法，系统就需要明确知道这个方法所在的位置。JVM 为每个类都准备了一个方法表来存放类中所有的方法。当需要调用一个类的方法的时候，只需要知道它在方法表中的偏移量。（有点麻，这个之后肯定还得继续学习）</p>
+<p>总之，<strong>解析是虚拟机将常量池中的符号应用替换为直接引用的过程，也就是得到类或字段，方法在内存中的指针或偏移量</strong>。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>初始化是类加载的最后一步，其真正地执行类中定义的 Java 程序代码（static 声明和 static 初始化块）。它会合并所有 static 的代码，将其组合为<code>&lt;clinit&gt;()</code>方法并执行。类的初始化并非是一定会被执行的。</p>
+<blockquote>
+<p>类的初始化只有在主动使用类（静态变量，静态方法，实例变量，实例方法……）时出现，其有五种情况——</p>
+<ol>
+<li>当遇到 new 、 getstatic、putstatic 或 invokestatic 这 4 条直接码指令时，比如 new 一个类，读取一个静态字段（未被 final 修饰）、或调用一个类的静态方法时。<ul>
+<li>当 jvm 执行 new 指令时会初始化类。即当程序创建一个类的实例对象。</li>
+<li>当 jvm 执行 getstatic 指令时会初始化类。即程序访问类的静态变量（不是静态常量，常量会被加载到运行时常量池）。</li>
+<li>当 jvm 执行 putstatic 指令时会初始化类。即程序给类的静态变量赋值。</li>
+<li>当 jvm 执行 invokestatic 指令时会初始化类。即程序调用类的静态方法。</li>
+</ul>
+</li>
+<li>使用 <code>java.lang.reflect</code> 包的方法对类进行反射调用时如 Class.forname(“…”).newInstance() 等等。 如果类没初始化，需要触发其初始化。</li>
+<li>初始化一个类，如果其父类还未初始化，则先触发该父类的初始化。</li>
+<li>当虚拟机启动时，用户需要定义一个要执行的主类 （包含 main 方法的那个类），虚拟机会先初始化这个类。</li>
+<li>MethodHandle 和 VarHandle 可以看作是轻量级的反射调用机制，而要想使用这 2 个调用， 就必须先使用 findStaticVarHandle 来初始化要调用的类。</li>
+<li><strong>「补充 <a target="_blank" rel="noopener" href="https://github.com/Snailclimb/JavaGuide/issues/745">issue745</a>」</strong> 当一个接口中定义了 JDK8 新加入的默认方法（被 default 关键字修饰的接口方法）时，如果有这个接口的实现类发生了初始化，那该接口要在其之前被初始化。</li>
+</ol>
+</blockquote>
+<h2 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h2><p>类的卸载就是该类的<code>Class</code>对象被 GC。</p>
+<p>类的卸载有三个前提——</p>
+<ol>
+<li>该类所有实例对象被 GC，即堆中不存在该类的实例对象</li>
+<li>该类没有在其它任何地方被引用</li>
+<li><strong>该类的类加载器实例被 GC</strong></li>
+</ol>
+<p><strong>JDK 自带的三个类加载器 BootstrapClassLoader,ExtClassLoader,AppClassLoader 不会被 GC，因而它们加载的类不会被卸载</strong>。</p>
+<p>学这些只是让我更加清楚地认识到，JVM 和字节码是必须要深入学习的…</p>
+<h1 id="类加载器（ClassLoader）"><a href="#类加载器（ClassLoader）" class="headerlink" title="类加载器（ClassLoader）"></a>类加载器（ClassLoader）</h1><p>类加载器的作用就是将。class 文件加载到内存的方法区中。</p>
+<p>Java 内置了三个 ClassLoader。除了 BootstrapClassLoader，其他类加载器都由 Java 实现，它们都继承自 java.lang.ClassLoader。按加载的优先级，它们由顶层向底层分为：</p>
+<ol>
+<li><code>BootstrapClassLoader</code>是启动类加载器，它由 C++实现，加载<code>%JAVA_HOME%/lib</code>目录下的 jar 包和类，或者被<code>-Xbootclasspath</code>参数指定的路径中的所有类。</li>
+<li><code>ExtensionClassLoader</code>是扩展类加载器，它加载目录<code>%JRE_HOME%/lib/ext</code>下的 jar 包和类，或者被<code>java.ext.dirs</code>系统变量所指定路径下的 jar 包。</li>
+<li><code>AppClassLoader</code>是应用程序类加载器，它面向用户，加载当前应用 classpath 下所有 jar 包和类。</li>
+</ol>
+<h2 id="双亲委派模型"><a href="#双亲委派模型" class="headerlink" title="双亲委派模型"></a>双亲委派模型</h2><p>每一个类都有加载它的类加载器。类加载器默认使用<strong>双亲委派模型</strong>。即类加载时，系统（该类加载器）首先判断当前类是否被加载过，如果已加载则直接返回，如果未加载，则尝试加载。</p>
+<p>加载时，该类加载器首先会把请求委派给父类加载器的<code>loadClass()</code>处理。因此，该请求会被递归传送到顶层的启动类加载器<code>BootstrapClassLoader</code>中。当父类加载器无法处理时，才由自己处理。当父类加载器为 null 时，会启动类加载器<code>BootstrapClassLoader</code>作为父类加载器。</p>
+<p><strong>双亲委派模型可以避免类的重复加载，并保证 Java 的核心 API 不被篡改</strong>。</p>
+<p>应该注意，这里的“双亲”只是用来指代“辈分”，而不是用来指代“父母”。</p>
+<h2 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h2><p>通过继承<code>ClassLoader</code>，我们可以自定义自己的类加载器。</p>
+<p><img src="https://i.loli.net/2020/12/10/iGmcEZOxaTwkBJU.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                      <a class="hover-with-bg" href="/tags/JVM/">JVM</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12-10%E7%82%B9%E5%87%BBRun%E6%8C%89%E9%92%AE%E6%97%B6%EF%BC%8CJVM%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">点击 Run 按钮时，JVM 做了什么？</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12-08%E5%85%B3%E4%BA%8EJava%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F.html">
+                        <span class="hidden-mobile">关于 Java 运行时的内存区域</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

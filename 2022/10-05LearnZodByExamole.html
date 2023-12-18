@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Zod 是 Typescript 的运行时校验库，学习其以方便类型检查，对代码的优雅以及减少样板代码是比较重要的，何况其除类型检查外还有一些更强的约束，对业务代码开发有利。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learn Zod By Examole">
+<meta property="og:url" content="http://example.com/2022/10-05LearnZodByExamole.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="Zod 是 Typescript 的运行时校验库，学习其以方便类型检查，对代码的优雅以及减少样板代码是比较重要的，何况其除类型检查外还有一些更强的约束，对业务代码开发有利。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-10-05T09:27:15.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.303Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Typescript">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Learn Zod By Examole - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Learn Zod By Examole">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-10-05 17:27" pubdate>
+        2022年10月5日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Learn Zod By Examole</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>WORKING…</p>
+</blockquote>
+<p>Zod 是 Typescript 的运行时校验库，学习其以方便类型检查，对代码的优雅以及减少样板代码是比较重要的，何况其除类型检查外还有一些更强的约束，对业务代码开发有利。</p>
+<p>Zod 最佳的学习文档就是其官方文档，这里的笔记主要是参照 <a target="_blank" rel="noopener" href="https://github.com/colinhacks/zod">官方文档</a>，但聚焦最常用的部分。</p>
+<p>Zod 就同其他的一些类型校验库一样，通过值而非类型的形式去定义类型（且提供从这种类型定义中获取编译期类型的手段），从而将类型信息能够留到运行时以用于校验，学习的重点在于如何将 typescript 的类型定义转换成 Zod 的值定义。</p>
+<h1 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h1><figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123;z, <span class="hljs-title class_">ZodError</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;zod&#x27;</span><br><span class="hljs-comment">// 所有 primitive 类型都有直接的值定义，这种值定义称为 schema</span><br><br><span class="hljs-comment">// primitive values</span><br>z.<span class="hljs-title function_">string</span>();<br>z.<span class="hljs-title function_">number</span>();<br>z.<span class="hljs-title function_">bigint</span>();<br>z.<span class="hljs-title function_">boolean</span>();<br>z.<span class="hljs-title function_">date</span>();<br><br><span class="hljs-comment">// empty types</span><br>z.<span class="hljs-title function_">undefined</span>();<br>z.<span class="hljs-title function_">null</span>();<br>z.<span class="hljs-title function_">void</span>(); <span class="hljs-comment">// accepts undefined</span><br><br><span class="hljs-comment">// catch-all types</span><br><span class="hljs-comment">// allows any value</span><br>z.<span class="hljs-title function_">any</span>();<br>z.<span class="hljs-title function_">unknown</span>();<br><br><span class="hljs-comment">// never type</span><br><span class="hljs-comment">// allows no values</span><br>z.<span class="hljs-title function_">never</span>();<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">StringType</span> = z.<span class="hljs-title function_">string</span>()<br><span class="hljs-comment">// 使用 z.infer 类型和 typeof 去取出类型</span><br><span class="hljs-keyword">type</span> <span class="hljs-title class_">StringType</span> = z.<span class="hljs-property">infer</span>&lt;<span class="hljs-keyword">typeof</span> <span class="hljs-title class_">StringType</span>&gt; <span class="hljs-comment">// string</span><br><br><span class="hljs-comment">// 可以使用 parse 去解析类型</span><br><span class="hljs-keyword">const</span> str : <span class="hljs-title class_">StringType</span> = <span class="hljs-title class_">StringType</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-string">&quot;hello&quot;</span>) <span class="hljs-comment">// &quot;hello&quot;</span><br><span class="hljs-keyword">const</span> strErr : <span class="hljs-title class_">StringType</span> = <span class="hljs-title class_">StringType</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-number">12</span>) <span class="hljs-comment">// error</span><br><br><span class="hljs-comment">// parse 会解析失败会抛出异常，更函数式的方式是使用 safeParse</span><br><span class="hljs-comment">// safeParse 会返回 &#123;success: true, data: T&#125; | &#123;success: false, error: ZodError&#125;</span><br><span class="hljs-keyword">const</span> maybeRes = <span class="hljs-title class_">StringType</span>.<span class="hljs-title function_">safeParse</span>(<span class="hljs-number">12</span>)<br><span class="hljs-keyword">if</span> (maybeRes.<span class="hljs-property">success</span>) &#123;<br>    <span class="hljs-keyword">const</span> result : <span class="hljs-title class_">StringType</span> = maybeRes.<span class="hljs-property">data</span><br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">const</span> error : <span class="hljs-title class_">ZodError</span>&lt;<span class="hljs-built_in">string</span>&gt; = maybeRes.<span class="hljs-property">error</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="组合类型"><a href="#组合类型" class="headerlink" title="组合类型"></a>组合类型</h1><p>仅有字面量是无法用在业务上的，各种业务模型需要简单类型的组合去描述。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">// 数组和 tuple 类型，使用函数调用的形式去传递类型参数</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">NumberArr</span> = z.<span class="hljs-title function_">array</span>(z.<span class="hljs-title function_">number</span>()) <span class="hljs-comment">// number[]</span><br><span class="hljs-comment">// 另一种方式</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">NumberArr1</span> = z.<span class="hljs-title function_">number</span>().<span class="hljs-title function_">array</span>()<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">StringNumberPair</span> = z.<span class="hljs-title function_">tuple</span>([z.<span class="hljs-title function_">string</span>(), z.<span class="hljs-title function_">number</span>()]) <span class="hljs-comment">// [string, number]</span><br><br><span class="hljs-comment">// 然后是 object，union 类型和 sum 类型，以及 record 的 schema</span><br><span class="hljs-comment">// type User = &#123;name: string, age: number&#125;</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">User</span> = z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">name</span>: z.<span class="hljs-title function_">string</span>(),<br>    <span class="hljs-attr">age</span>: z.<span class="hljs-title function_">number</span>()<br>&#125;)  <br><br><span class="hljs-comment">// object 默认只会接受存在于 schema 中的字段</span><br><span class="hljs-comment">// 比如，对类型 &#123;name: string&#125;，如果尝试 parse &#123;name: &#x27;hello&#x27;, age: 18&#125;，只会得到&#123;name: &#x27;hello&#x27;&#125;</span><br><span class="hljs-comment">// 使用 passthrough 去获得所有值，使用 strict 去严格限制 schema，无论多了值还是少了值均抛出异常</span><br><br><span class="hljs-comment">// union 类型和 sum 类型通过链式调用的 and，or 去表达，或者使用 z.intersection，z.union</span><br><span class="hljs-comment">// type UnionType = &#123;&#125; &amp; number</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">UnionType</span> = z.<span class="hljs-title function_">object</span>(&#123;&#125;).<span class="hljs-title function_">and</span>(z.<span class="hljs-title function_">number</span>())<br><br><span class="hljs-comment">// record 类型也是通过函数去传递类型参数</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">NumberRecord</span> = z.<span class="hljs-title function_">record</span>(z.<span class="hljs-title function_">number</span>(), z.<span class="hljs-title function_">string</span>()) <span class="hljs-comment">// &#123; [x: number]: string &#125;</span><br><br><span class="hljs-comment">// 字面量也可以定义，通过 z.literal</span><br><span class="hljs-comment">// type SumType = &#123;success: true, code: number&#125; | &#123;success: false, error: string&#125;</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">SumType</span> = z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">success</span>: z.<span class="hljs-title function_">literal</span>(<span class="hljs-literal">true</span>),<br>    <span class="hljs-attr">code</span>: z.<span class="hljs-title function_">number</span>()<br>&#125;).<span class="hljs-title function_">or</span>(z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">success</span>: z.<span class="hljs-title function_">literal</span>(<span class="hljs-literal">false</span>),<br>    <span class="hljs-attr">error</span>: z.<span class="hljs-title function_">string</span>()<br>&#125;))<br><br><span class="hljs-comment">// 使用 optional 来表达？，使用 nullable 表达 T | null</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">ABC</span> = z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">username</span>: z.<span class="hljs-title function_">string</span>(),<br>    <span class="hljs-attr">age</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">optional</span>(), <span class="hljs-comment">// or z.optional(z.string())</span><br>    <span class="hljs-attr">clazz</span>: z.<span class="hljs-title function_">string</span>().<span class="hljs-title function_">nullable</span>() <span class="hljs-comment">// or z.nullable(z.string())</span><br>&#125;)<br><span class="hljs-keyword">type</span> <span class="hljs-variable constant_">ABC</span> = z.<span class="hljs-property">infer</span>&lt;<span class="hljs-keyword">typeof</span> <span class="hljs-variable constant_">ABC</span>&gt;<br><br><span class="hljs-comment">// schema 定义可以互相引用</span><br><span class="hljs-comment">// 这里引用上面定义的 User</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">DB</span> = z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">name</span>: z.<span class="hljs-title function_">string</span>(),<br>    <span class="hljs-attr">users</span>: z.<span class="hljs-title function_">array</span>(<span class="hljs-title class_">User</span>) <br>&#125;)<br><span class="hljs-keyword">type</span> <span class="hljs-variable constant_">DB</span> = z.<span class="hljs-property">infer</span>&lt;<span class="hljs-keyword">typeof</span> <span class="hljs-variable constant_">DB</span>&gt; <br><span class="hljs-comment">/*</span><br><span class="hljs-comment">type DB = &#123;</span><br><span class="hljs-comment">    name: string;</span><br><span class="hljs-comment">    users: &#123;</span><br><span class="hljs-comment">        name: string;</span><br><span class="hljs-comment">        age: number;</span><br><span class="hljs-comment">    &#125;[];</span><br><span class="hljs-comment">&#125;</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-comment">// schema 定义可以用 shape 来互相继承</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Father</span> = z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">prop1</span>: z.<span class="hljs-title function_">string</span>(),<br>    <span class="hljs-attr">prop2</span>: z.<span class="hljs-title function_">number</span>()<br>&#125;)<br><span class="hljs-comment">// type Son0 = &#123; prop1: string, prop2: number, prop3: string &#125;</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Son0</span> = z.<span class="hljs-title function_">object</span>(&#123; <br>    ...<span class="hljs-title class_">Father</span>.<span class="hljs-property">shape</span>,<br>    <span class="hljs-attr">prop3</span>: z.<span class="hljs-title function_">string</span>()<br>&#125;)<br><br><span class="hljs-comment">// Zod 也提供了 extend 和 merge 用来进行继承，其中 extends 接受 object 对象（同 z.object 一致），而 merge 接受 object schema</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Son1</span> = <span class="hljs-title class_">Father</span>.<span class="hljs-title function_">extend</span>(&#123;<br>    <span class="hljs-attr">prop3</span>: z.<span class="hljs-title function_">string</span>()<br>&#125;)<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Son2</span> = <span class="hljs-title class_">Father</span>.<span class="hljs-title function_">merge</span>(z.<span class="hljs-title function_">object</span>(&#123;<br>    <span class="hljs-attr">prop3</span>: z.<span class="hljs-title function_">string</span>()<br>&#125;))<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="业务校验，自定义校验"><a href="#业务校验，自定义校验" class="headerlink" title="业务校验，自定义校验"></a>业务校验，自定义校验</h1><p>对于 string，number 等类型，Zod 提供了除类型之外的其它校验。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">// 下列代码可以对 json 进行校验</span><br><span class="hljs-keyword">const</span> literalSchema = z.<span class="hljs-title function_">union</span>([z.<span class="hljs-title function_">string</span>(), z.<span class="hljs-title function_">number</span>(), z.<span class="hljs-title function_">boolean</span>(), z.<span class="hljs-title function_">null</span>()]);<br><span class="hljs-keyword">type</span> <span class="hljs-title class_">Literal</span> = z.<span class="hljs-property">infer</span>&lt;<span class="hljs-keyword">typeof</span> literalSchema&gt;;<br><span class="hljs-keyword">type</span> <span class="hljs-title class_">Json</span> = <span class="hljs-title class_">Literal</span> | &#123; [<span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>]: <span class="hljs-title class_">Json</span> &#125; | <span class="hljs-title class_">Json</span>[];<br><span class="hljs-keyword">const</span> <span class="hljs-attr">jsonSchema</span>: z.<span class="hljs-property">ZodType</span>&lt;<span class="hljs-title class_">Json</span>&gt; = z.<span class="hljs-title function_">lazy</span>(<span class="hljs-function">() =&gt;</span><br>  z.<span class="hljs-title function_">union</span>([literalSchema, z.<span class="hljs-title function_">array</span>(jsonSchema), z.<span class="hljs-title function_">record</span>(jsonSchema)])<br>)<br><br><span class="hljs-comment">// TODO 自定义校验，业务类型转换（进行校验时常用的一些转换操作，比如字符串转 number 等）</span><br><span class="hljs-comment">// string, number, 数组等都提供了细节校验</span><br><span class="hljs-comment">// refine 函数允许自定义校验</span><br><span class="hljs-comment">// transform 函数允许类型转换</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="常用类型操作符，Promise"><a href="#常用类型操作符，Promise" class="headerlink" title="常用类型操作符，Promise"></a>常用类型操作符，Promise</h1><p>TODO</p>
+<h1 id="函数，泛型"><a href="#函数，泛型" class="headerlink" title="函数，泛型"></a>函数，泛型</h1><p>泛型类型接受类型参数变成实际类型，这本来是在编译期完成的，使用 Zod 时，这个操作通过函数定义和调用去完成。</p>
+<p>TODO</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Typescript/">Typescript</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10-08blogDevNote_1.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">博客项目开发笔记 1——技术选型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09-28LearnCSharp_1.html">
+                        <span class="hidden-mobile">学习 C# Part 1——基础类型，控制流，函数，集合类型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="之前上过数据库课程后已经太长时间没有再使用过 SQL 了……现在复习一波。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL 语句快速复习">
+<meta property="og:url" content="http://example.com/2020/12-21SQL%E5%BF%AB%E9%80%9F%E5%A4%8D%E4%B9%A0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="之前上过数据库课程后已经太长时间没有再使用过 SQL 了……现在复习一波。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-21T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.280Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>SQL 语句快速复习 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SQL 语句快速复习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-21 08:00" pubdate>
+        2020年12月21日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.2k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQL 语句快速复习</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<p>出于面试的需要，快速复习（虽然这么说，但我现在只会增删改查而已，复杂的查询早忘了，毕竟学过以后好久没再使用过）一下 SQL 的<strong>语法和</strong>。这里仅仅关注语法——数据库设计，调优等不是我现阶段（可能也包括将来）追求的目标，</p>
+<p>这里使用 mariaDB 进行学习，使用 vscode 和 SQLTools 插件。很据《SQL 必知必会》第四版学习，表和数据使用作者在其网站中提供的 <a target="_blank" rel="noopener" href="https://forta.com/wp-content/uploads/books/0672336073/TeachYourselfSQL_MySQL.zip">文件</a>。</p>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>数据库 (database) 使用表 (table) 来存储数据。<strong>模式</strong> (schema) 可以描述表的信息。表可以通过模式来 create，也可以直接给定各列来 create，这里可以联想类，对象和匿名实现类的关系。</p>
+<p>表通过行列来存储数据。表由列 (column) 组成，每一列都代表部分信息。每一列都有自己的数据类型。数据是按行存储的。每个记录 (record) 为一行 (row)。</p>
+<blockquote>
+<p>列也叫字段 (field)。</p>
+</blockquote>
+<p>每一行都有一列（或多列）来唯一地标识自己。比如学生的学号，记录用户操作的用户名，时间戳（只有用户名，只有时间戳都不能唯一地确定一个操作，因为同一时间戳可以有多个用户操作，同一个用户可以有多个时间戳的操作，而同一个用户在同一个时间戳内只能执行一个操作）。这个（几）列称为主键 (primary key)。主键并非是强制要求的，但是其应当有。</p>
+<p>主键满足以下要求——</p>
+<ul>
+<li>任何两个记录的主键不能重复。</li>
+<li>主键中每一列都不能为 NULL</li>
+<li>下面两个要求我测试了一下，可以啊……怪</li>
+<li>主键列的值不允许被更新</li>
+<li>主键值不能重用（被删除后，该主键无法赋给新行）</li>
+</ul>
+<p>SQL 是 Structured Query Language（结构化查询语言）的缩写。它负责与数据库（或许更准确的来说，是 DBMS，Database Management System 数据库管理系统）沟通。</p>
+<blockquote>
+<p>结构化的语言可以认为是用呈一定结构的自然语言来进行编程的语言，如 C#的 LINQ，Common Lisp 的 Loop 宏，其也都是一种结构化语言。</p>
+</blockquote>
+<h1 id="SELECT——检索数据"><a href="#SELECT——检索数据" class="headerlink" title="SELECT——检索数据"></a>SELECT——检索数据</h1><blockquote>
+<p>SQL 使用–进行单行注释，使用 C 风格的&#x2F;**&#x2F;进行多行注释。</p>
+</blockquote>
+<p><code>SELECT</code>语句从一个或多个表中检索信息。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-comment">-- 检索一列</span><br><span class="hljs-keyword">SELECT</span> prod_name <span class="hljs-keyword">FROM</span> Products; <span class="hljs-comment">-- 这将返回所有行的 prod_name。</span><br><br><span class="hljs-comment">-- 检索多列</span><br><span class="hljs-keyword">SELECT</span> prod_id, prod_name, prod_price <br><span class="hljs-keyword">FROM</span> Products;<br><span class="hljs-comment">-- 检索所有 （实际上查询了整个表）</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> Products;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="DISTINCT——保证检索值唯一"><a href="#DISTINCT——保证检索值唯一" class="headerlink" title="DISTINCT——保证检索值唯一"></a>DISTINCT——保证检索值唯一</h2><p><code>SELECT</code>可以使用<code>DISTINCT</code><strong>子句</strong>来约束，保证每一行都是唯一的（也就是说过滤掉完全重复的行）。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> vend_id <span class="hljs-keyword">FROM</span> Products;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">BRS01	</span><br><span class="hljs-comment">DLL01	</span><br><span class="hljs-comment">FNG01	</span><br><span class="hljs-comment">FNG01</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> vend_id <br><span class="hljs-keyword">FROM</span> Products;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">BRS01	</span><br><span class="hljs-comment">DLL01	</span><br><span class="hljs-comment">FNG01</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="LIMIT——限制结果数量"><a href="#LIMIT——限制结果数量" class="headerlink" title="LIMIT——限制结果数量"></a>LIMIT——限制结果数量</h2><p><code>SELECT</code>语句返回匹配的行——可能是所有，也可能是前 1000 行或其他数字。使用<code>LIMIT</code>子句可以限制最多返回多少行。<code>LIMIT</code>可以和<code>OFFSET</code>搭配使用，表示从某一行开始返回。<code>OFFSET</code>是<strong>零索引</strong>的。所以<code>LIMIT i</code>和<code>LIMIT i OFFSET 0</code>同义。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> prod_name<br><span class="hljs-keyword">FROM</span> Products<br>LIMIT <span class="hljs-number">5</span>; <span class="hljs-comment">-- 这是 MySQL 和 MariaDB 的语法，其它 SQL 语法不一样。</span><br><br><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> prod_name <span class="hljs-comment">-- 关键字可以联合使用</span><br><span class="hljs-keyword">FROM</span> Products<br>LIMIT <span class="hljs-number">5</span> <span class="hljs-keyword">OFFSET</span> <span class="hljs-number">5</span>;  <span class="hljs-comment">-- 从第 5 行开始检索。</span><br></code></pre></div></td></tr></table></figure>
+
+<h2 id="ORDER-BY——排序结果"><a href="#ORDER-BY——排序结果" class="headerlink" title="ORDER BY——排序结果"></a>ORDER BY——排序结果</h2><p>应该假定，<strong>如果不明确进行排序，则检索到的数据的顺序是无意义的</strong>。</p>
+<p><code>ORDER BY</code>子句让各记录根据其一个列或多个列的值来排序。使用<code>ASC</code>（升序排序，它是默认的）和<code>DESC</code>（降序）关键字来规定升序还是降序排序。要降序排序的每一列都需要明确给定<code>DESC</code>。</p>
+<p>需要注意的是，<code>ASC</code>&#x2F;<code>DESC</code>需要给在列名后面…就像副词的用法。</p>
+<blockquote>
+<p>DESC 是 DESCENDING 的缩写，ASC 是 ASCENDING 的缩写。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> prod_name<br><span class="hljs-keyword">FROM</span> Products <br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name; <span class="hljs-comment">-- 根据名字排序</span><br><br><span class="hljs-keyword">SELECT</span> prod_id, prod_price, prod_name<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_price, prod_name;<span class="hljs-comment">-- 先按 price 排序，如果 price 相等，按 name 排序。</span><br><br><span class="hljs-keyword">SELECT</span> prod_id, prod_price, prod_name<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> <span class="hljs-number">2</span>, <span class="hljs-number">3</span>; <span class="hljs-comment">-- 也可以根据列位置来排序，比如这里的 2 代表 price，3 代表 name。这样的缺点是如果列位置改变，数字也需要改变，而且如果排序的根据不在结果列里（比如我想根据 desc 进行排序，虽然我不要这个数据），则无法这样使用。</span><br><br><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> prod_id, prod_price, prod_name<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_price <span class="hljs-keyword">DESC</span>, prod_name, prod_desc <span class="hljs-keyword">DESC</span>; <span class="hljs-comment">-- 先根据 price 降序排列，如果 price 相等，再根据 name 升序排列，如果 name 相等，则根据 desc 降序排列。</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="WHERE——过滤数据"><a href="#WHERE——过滤数据" class="headerlink" title="WHERE——过滤数据"></a>WHERE——过滤数据</h1><p><code>WHERE</code>子句如此重要，以至于要给它一个 h1 标题 XD。</p>
+<p>检索所有行的情况是很少的，通常需要依据一定的需要提取表数据的一个子集。</p>
+<p>只检索所需数据，需要指定<strong>搜索条件</strong> (search criteria), 其也称为<strong>过滤条件</strong> (filter condition).<code>WHERE</code>就是提供这样功能的子句。</p>
+<p><code>WHERE</code>提供很多操作符，如<code>=</code>, <code>&lt;&gt;</code>(<code>!=</code>), <code>&lt;</code> ,<code>&lt;=</code> ,<code>&gt;</code>,<code> &gt;=</code>, <code>!&lt;</code>（不小于）, <code>!&gt;</code>（不大于）, <code>BETWEEN</code> （它接受<code>a AND b</code>这样的形式的第二个参数）, <code>IS NULL</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> prod_name, prod_price<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> prod_price <span class="hljs-operator">=</span> <span class="hljs-number">3.49</span> <br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-keyword">SELECT</span> prod_name, prod_price<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> prod_price <span class="hljs-keyword">BETWEEN</span> <span class="hljs-number">3</span> <span class="hljs-keyword">AND</span> <span class="hljs-number">5</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name <span class="hljs-keyword">DESC</span>;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>同时使用<code>ORDER BY</code>和<code>WHERE</code>时，<code>ORDER BY</code>应当放到<code>WHERE</code>后。</p>
+</blockquote>
+<h2 id="AND-amp-OR"><a href="#AND-amp-OR" class="headerlink" title="AND &amp; OR"></a>AND &amp; OR</h2><p>其还可用<code>OR</code>和<code>AND</code>来连接多个条件。<code>AND</code>子句优先级更高。可以使用括号来决定运算顺序。（事实上，除了加减乘除，其他任何包括不同优先级运算符的表达式都应该强制使用括号来规定运算顺序。）</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> prod_name, prod_price<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> prod_price <span class="hljs-operator">=</span> <span class="hljs-number">3.49</span> <br>  <span class="hljs-keyword">AND</span> prod_name <span class="hljs-operator">!=</span> &quot;ignored&quot;<br>  <span class="hljs-keyword">OR</span> prod_desc <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NULL</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name <span class="hljs-keyword">DESC</span>;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="IN——在……之中"><a href="#IN——在……之中" class="headerlink" title="IN——在……之中"></a>IN——在……之中</h2><p><code>IN</code>子句用途是枚举条件的可选范围。它接受一对原括号扩起来的，用逗号分割的一组合法值。它<strong>也可以包含其他 SELECT 语句</strong>，但是该 select 要求返回只有一列的表，比如<code>SELECT id from user;</code>。</p>
+<blockquote>
+<p>顺带一提，一行一列的表同字面量（如字符串，数字之类的东西）是一样的效果。比如这样一个没有实际意义且性能低下但可供演示的例子——<code>SELECT * FROM place WHERE place_name = (SELECT place_name FROM place WHERE place_name=&quot;北京&quot; LIMIT 1)</code>。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span>  prod_name, prod_price<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> vend_id <span class="hljs-keyword">IN</span> (&quot;DLL01&quot;, &quot;BRS01&quot;) <span class="hljs-comment">-- 等同于 vend_id = &quot;DLL01&quot; OR vend_id = &quot;BRS01&quot;</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name;<br></code></pre></div></td></tr></table></figure>
+
+<h2 id="NOT"><a href="#NOT" class="headerlink" title="NOT"></a>NOT</h2><p><code>NOT</code>顾名思义，对结果取非。注意其位置，它放在每一个条件前。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span>  prod_name, prod_price<br><span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> <span class="hljs-keyword">NOT</span> vend_id <span class="hljs-keyword">IN</span> (&quot;DLL01&quot;, &quot;BRS01&quot;)  <span class="hljs-comment">-- 有趣的是，这里的 NOT 也可以放到 IN 的前面</span><br><span class="hljs-keyword">AND</span> <span class="hljs-keyword">NOT</span> prod_name <span class="hljs-operator">=</span> &quot;King doll&quot;<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> prod_name;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h1><p>所谓通配符，就是根据值的一部分来进行匹配的特殊字符。通配符和字面值组合成为的搜索条件称为<strong>搜索模式</strong>（search pattern）。显然，通配符只能用来匹配字符串。</p>
+<h2 id="LIKE-操作符"><a href="#LIKE-操作符" class="headerlink" title="LIKE 操作符"></a>LIKE 操作符</h2><p>此书说技术上来说 LIKE 不是操作符……先放着。</p>
+<p><code>LIKE</code>是一个谓词（predicate……不得不联想到 Lisp 里的谓词）用来判断字符串<strong>是否匹配该搜索条件</strong>。一般说“用<code>LIKE</code>进行通配搜索”。</p>
+<h3 id="通配符-1"><a href="#通配符-1" class="headerlink" title="%通配符"></a>%通配符</h3><p><code>%</code>通配符用来匹配任何字符出现任意次数（就如同 regex 的。*吗？）。</p>
+<p>比如下面的搜索模式检查 name 是否以 Fish 开头。</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> prod_name <span class="hljs-keyword">FROM</span> Products<br><span class="hljs-keyword">WHERE</span> prod_name <span class="hljs-keyword">LIKE</span> &quot;Fish%&quot;;<br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>%可以匹配 0 个或任意多个字符，但是 NULL 不行，LIKE “%”不能匹配 NULL。</p>
+</blockquote>
+<blockquote>
+<p>一个需要注意的地方是，许多 DBMS 会用空格来填充未使用的地方，比如假设某列有 50 个字符，只用了 10 个字符，其后 40 个字符会被填充为空格，这有时候会对通配搜索产生影响。</p>
+</blockquote>
+<h3 id="通配符-2"><a href="#通配符-2" class="headerlink" title="_通配符"></a>_通配符</h3><p><code>_</code>通配符匹配且只匹配一个字符，Over。</p>
+<h3 id="通配符-3"><a href="#通配符-3" class="headerlink" title="[] 通配符"></a>[] 通配符</h3><p><code>[]</code>通配符用法就如 regex 中的<code>[]</code>。mariaDB 不支持集合通配符，所以 pass。</p>
+<hr>
+<blockquote>
+<p>时代变啦，本来是为找工作学习 SQL，现在已经找到了。但是还是得继续学习。争取将来忘记了啥语法之类的时候只看这篇文章就够了。 顺便，现在改用 Mysql……毕竟这玩意是最常用的（而且懒得装新的数据库了）</p>
+</blockquote>
+<h1 id="计算字段"><a href="#计算字段" class="headerlink" title="计算字段"></a>计算字段</h1><p>…</p>
+<blockquote>
+<p>最近专注毕设，毕业之前估计是不会再去主动学了。等工作时接触再继续吧。——2021.05.04</p>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/SQL/">SQL</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12-22%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B2%E2%80%94%E2%80%94%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">初涉并发编程 2——线程安全性</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12-20%E5%88%9D%E6%B6%89%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.html">
+                        <span class="hidden-mobile">初涉并发编程 1——基本概念</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

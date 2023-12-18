@@ -1,0 +1,442 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="为何重写 equals 方法就必须要重写 hashCode 方法？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 equals 和 hashCode 方法">
+<meta property="og:url" content="http://example.com/2020/12-06%E5%85%B3%E4%BA%8Eequals%E5%92%8ChashCode%E6%96%B9%E6%B3%95.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="为何重写 equals 方法就必须要重写 hashCode 方法？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-06T02:52:56.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.278Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 equals 和 hashCode 方法 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 equals 和 hashCode 方法">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-06 10:52" pubdate>
+        2020年12月6日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.2k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 equals 和 hashCode 方法</h1>
+            
+            <div class="markdown-body">
+              <!--Hello, Happy World-->
+
+<h1 id="为何重写-equals-就必须重写-hashCode"><a href="#为何重写-equals-就必须重写-hashCode" class="headerlink" title="为何重写 equals 就必须重写 hashCode"></a>为何重写 equals 就必须重写 hashCode</h1><p>有这样一条定则——<strong>如果重写了 equals 方法，就一定要重写 hashCode 方法</strong>。</p>
+<p>这是因为，对象的 hashCode 是同对象的值<strong>相关联</strong>的，如果两个对象相等，则两个对象的 hashCode 也应当相等。可是，Object 类的 hashCode 方法其返回值只与对象的地址相关联，因此，如果只重写 equals 方法，就会导致这样一种情况——两个 equal 的对象，其 hashCode 却是不相等的。这会导致在 HashSet，HashMap 之类的利用哈希表进行映射的数据结构出现问题。</p>
+<p>HashSet，HashMap 的哈希函数遵循这样的逻辑——如果两个对象拥有不同的哈希值，则它们是必定不同的，如果拥有相同的哈希值（这是<strong>哈希碰撞</strong>的情况，两个对象不相等，但其哈希值经过再次混淆后相同），则调用 equals 方法再判断是否确实为相等的对象。</p>
+<p>我们编写 hashCode，没有必要强求一个对象必然要得到独一无二的 hashCode，这是不可能的，尽量减少碰撞即可。</p>
+<blockquote>
+<p> 注：&#x3D;&#x3D;运算符比较的是两个变量的<strong>值</strong>，对于基本类型，则比较的是它们的值，对于引用类型，则比较的是它们存储的<strong>地址</strong>，因此，只有两个引用类型的变量（即使其类型不同也可以，比如一个子类的<strong>对象引用</strong>和一个父类的对象引用指向一个子类的对象）指向同一个地址（或者说，堆里的同一个<strong>对象实例</strong>）的时候&#x3D;&#x3D;才返回真。</p>
+</blockquote>
+<h2 id="从-HashSet-的源码入手"><a href="#从-HashSet-的源码入手" class="headerlink" title="从 HashSet 的源码入手"></a>从 HashSet 的源码入手</h2><p>当我们调用 HashSet 的 add 实例方法的时候，会发生什么？看看源码吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br> <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">add</span><span class="hljs-params">(E e)</span> &#123;<br>     <span class="hljs-comment">// 这里的 map 是个 HashMap&lt;E, Object&gt;类的实例，说明 HashSet 是通过 HashMap 实现的</span><br>     <span class="hljs-comment">// PRESENT 是一个 final static 的 Object 对象，这里显然只是用来置位的，没有实际作用</span><br>     <span class="hljs-keyword">return</span> map.put(e, PRESENT)==<span class="hljs-literal">null</span>; <br> &#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>再看看 HashMap 的 put 方法。HashMap 使用的是数组——链表结构，如果某个链表长度大于阀值（8）且数组长度大于 64，则该链表将被转换为红黑树结构，否则会将数组的长度乘 2。不过判断的流程还是一致的——首先将元素的 hashCode 使用杂凑函数进行处理，确定其插入位置，如果插入位置为空，则直接插入，（对于数组——链表）否则遍历该位置的所有元素，对每一个元素进行判断；首先比较哈希值是否相等，如果相等，则判断其是否是同一对象，判断其是否 equal，如果是则说明是重复的 key，对该 key 进行处理，如果到最后都未找到，则将其插入尾端。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> V <span class="hljs-title function_">put</span><span class="hljs-params">(K key, V value)</span> &#123;<br>    <span class="hljs-keyword">return</span> putVal(hash(key), key, value, <span class="hljs-literal">false</span>, <span class="hljs-literal">true</span>);<br>&#125;<br><span class="hljs-comment">// HashMap 中使用的哈希方法，它对对象的 hashCode 进行杂凑</span><br><span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-title function_">hash</span><span class="hljs-params">(Object key)</span> &#123;<br>    <span class="hljs-type">int</span> h;<br>    <span class="hljs-keyword">return</span> (key == <span class="hljs-literal">null</span>) ? <span class="hljs-number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="hljs-number">16</span>); <br>&#125;<br><br><span class="hljs-comment">// 这代码写出来是不是不想给人看的？？？</span><br><span class="hljs-keyword">final</span> V <span class="hljs-title function_">putVal</span><span class="hljs-params">(<span class="hljs-type">int</span> hash, K key, V value, <span class="hljs-type">boolean</span> onlyIfAbsent, <span class="hljs-type">boolean</span> evict)</span> &#123;<br>    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="hljs-type">int</span> n, i; <span class="hljs-comment">// 这里的 Node 是一个实现了 Entry 的类，其有链表结构</span><br>    <span class="hljs-comment">// table 是整个哈希表。它是数组——链表结构或是数组——红黑树结构</span><br>    <span class="hljs-keyword">if</span> ((tab = table) == <span class="hljs-literal">null</span> || (n = tab.length) == <span class="hljs-number">0</span>) <br>        n = (tab = resize()).length;<br>    <br>    <span class="hljs-comment">// 这个 if-else 是重点！</span><br>    <span class="hljs-comment">// 如果要插入的位置没有元素，则直接插入</span><br>    <span class="hljs-comment">// 这里需要注意的是，这个位置是对象的哈希对 n 取余的结果，所以存在这个位置的元素的哈希值并不一定是相等的</span><br>    <span class="hljs-keyword">if</span> ((p = tab[i = (n - <span class="hljs-number">1</span>) &amp; hash]) == <span class="hljs-literal">null</span>)   <span class="hljs-comment">// 在 n 等于 2 的幂次方的时候，(n-1)&amp;hash==hash&amp;n，并且前者效率更高，这也是为什么 HashMap 的容积使用 2 的幂次方</span><br>        tab[i] = newNode(hash, key, value, <span class="hljs-literal">null</span>);<br>    <span class="hljs-comment">// 如果有元素，则需要遍历该位置的所有元素</span><br>    <span class="hljs-keyword">else</span> &#123;<br>        Node&lt;K,V&gt; e; K k;<br>        <span class="hljs-comment">// 需要注意的是，||的优先级是更高的。</span><br>        <span class="hljs-comment">// 这里的 p 是碰撞位置的链表的第一个元素……至少最初是</span><br>        <span class="hljs-comment">// 它先看该元素的 hash 和链表中该位置的 hash 是否相等 （这里就能看到，如果没有重写 hashCode 方法，对于任意非重复插入的对象实例，这个 p.hash == hash 将始终为假，equals 方法将不被调用）</span><br>        <span class="hljs-comment">// 然后看 (k = p.key) == key，即这两个 key 是否指向同一个对象，如果不是，则调用 equals 方法比较</span><br>        <span class="hljs-comment">// 如果这个 if 检查成功，说明这两个对象真的是相同的，因此将 e 的值设为 p，等待下一步对其值进行更新并返回</span><br>        <span class="hljs-keyword">if</span> (p.hash == hash &amp;&amp;<br>            ((k = p.key) == key || (key != <span class="hljs-literal">null</span> &amp;&amp; key.equals(k))))<br>            e = p; <br>        <span class="hljs-comment">// 如果这个位置是一个 TreeNode，则说明使用的是红黑树结构</span><br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (p <span class="hljs-keyword">instanceof</span> TreeNode)<br>            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="hljs-built_in">this</span>, tab, hash, key, value);<br>        <span class="hljs-comment">// 遍历 p 位置所在链表，找到第一个与其哈希相同，且指向同一个对象或 equal 的节点，如果到最后还没有找到，则插入到尾端。无论如何，e 保存了最终的位置，无论是插入还是更新`。</span><br>        <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">binCount</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; ; ++binCount) &#123;<br>                <span class="hljs-keyword">if</span> ((e = p.next) == <span class="hljs-literal">null</span>) &#123; <br>                    p.next = newNode(hash, key, value, <span class="hljs-literal">null</span>);<br>                    <span class="hljs-keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="hljs-number">1</span>) <span class="hljs-comment">// -1 for 1st</span><br>                        treeifyBin(tab, hash);<br>                    <span class="hljs-keyword">break</span>;<br>                &#125;<br>                <span class="hljs-keyword">if</span> (e.hash == hash &amp;&amp;<br>                    ((k = e.key) == key || (key != <span class="hljs-literal">null</span> &amp;&amp; key.equals(k))))<br>                    <span class="hljs-keyword">break</span>;<br>                p = e;<br>            &#125;<br>        &#125;<br>        <br>        <span class="hljs-comment">// put 也要承担更改元素的作用</span><br>        <span class="hljs-keyword">if</span> (e != <span class="hljs-literal">null</span>) &#123; <span class="hljs-comment">// existing mapping for key</span><br>            <span class="hljs-type">V</span> <span class="hljs-variable">oldValue</span> <span class="hljs-operator">=</span> e.value;<br>            <span class="hljs-keyword">if</span> (!onlyIfAbsent || oldValue == <span class="hljs-literal">null</span>)<br>                e.value = value;<br>            afterNodeAccess(e);<br>            <span class="hljs-keyword">return</span> oldValue;<br>        &#125;<br>    &#125;<br>    ++modCount;<br>    <span class="hljs-keyword">if</span> (++size &gt; threshold)<br>        resize();<br>    afterNodeInsertion(evict);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>PS：HashSet 和 HashMap，IdentityHashMap 允许插入 null 或以 null 为 key。它的哈希将为 0。</p>
+<h1 id="PS：看看-IdentityHashMap"><a href="#PS：看看-IdentityHashMap" class="headerlink" title="PS：看看 IdentityHashMap"></a>PS：看看 IdentityHashMap</h1><p>IdentityHashMap 则是另一个极端。与 HashMap 不同，它只比较元素的内存地址（即 Object 的 hashCode 方法，或者说可以理解成&#x3D;&#x3D;运算符）来判断其是否是同一个 key，而不关心是否 equal。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">hash</span><span class="hljs-params">(Object x, <span class="hljs-type">int</span> length)</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">h</span> <span class="hljs-operator">=</span> System.identityHashCode(x); <span class="hljs-comment">// 这个 hashCode 调用其父类，即 Object 类的 hashCode 方法，而无论它是否重写 hashCode</span><br>    <span class="hljs-comment">// Multiply by -127, and left-shift to use least bit as part of hash</span><br>    <span class="hljs-keyword">return</span> ((h &lt;&lt; <span class="hljs-number">1</span>) - (h &lt;&lt; <span class="hljs-number">8</span>)) &amp; (length - <span class="hljs-number">1</span>);<br>&#125;<br><span class="hljs-comment">// 代码有点晦涩，只需要看到其中没有调用 equals 方法就够了……</span><br><span class="hljs-keyword">public</span> V <span class="hljs-title function_">put</span><span class="hljs-params">(K key, V value)</span> &#123;<br>    <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">k</span> <span class="hljs-operator">=</span> maskNull(key);<br><br>    retryAfterResize: <span class="hljs-keyword">for</span> (;;) &#123;<br>        <span class="hljs-keyword">final</span> Object[] tab = table;<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">len</span> <span class="hljs-operator">=</span> tab.length;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> hash(k, len);<br><br>        <span class="hljs-keyword">for</span> (Object item; (item = tab[i]) != <span class="hljs-literal">null</span>;<br>             i = nextKeyIndex(i, len)) &#123;<br>            <span class="hljs-keyword">if</span> (item == k) &#123;<br>                <span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br>                <span class="hljs-type">V</span> <span class="hljs-variable">oldValue</span> <span class="hljs-operator">=</span> (V) tab[i + <span class="hljs-number">1</span>];<br>                tab[i + <span class="hljs-number">1</span>] = value;<br>                <span class="hljs-keyword">return</span> oldValue;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> size + <span class="hljs-number">1</span>;<br>        <span class="hljs-comment">// Use optimized form of 3 * s.</span><br>        <span class="hljs-comment">// Next capacity is len, 2 * current capacity.</span><br>        <span class="hljs-keyword">if</span> (s + (s &lt;&lt; <span class="hljs-number">1</span>) &gt; len &amp;&amp; resize(len))<br>            <span class="hljs-keyword">continue</span> retryAfterResize;<br><br>        modCount++;<br>        tab[i] = k;<br>        tab[i + <span class="hljs-number">1</span>] = value;<br>        size = s;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12-07%E4%B8%80%E4%BA%9B%E7%BB%8F%E5%85%B8%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6Java%E5%AE%9E%E7%8E%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一些经典排序算法及其 Java 实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12-03%E5%85%B3%E4%BA%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%AD%E7%9A%84%E5%A0%86.html">
+                        <span class="hidden-mobile">关于数据结构中的堆（heap）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="国庆学了个爽，水一篇">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 haskell 的一些笔记">
+<meta property="og:url" content="http://example.com/2021/10-08%E5%85%B3%E4%BA%8Ehaskell%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="国庆学了个爽，水一篇">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-08T12:03:21.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.289Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 haskell 的一些笔记 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 haskell 的一些笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-08 20:03" pubdate>
+        2021年10月8日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      9.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 haskell 的一些笔记</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>  国庆学了个爽，把记录的一些东西贴一下。</p>
+</blockquote>
+<p>data 关键字定义新的 type，其形如这种形式——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Bool</span> = <span class="hljs-type">True</span> | <span class="hljs-type">False</span></span><br></code></pre></div></td></tr></table></figure>
+
+<p>这里的 Bool 即为类型，True 和 False 称为<code>Value Constructor</code>，<strong>其列出了该类型所有可能的值</strong>。</p>
+<p>就“列出所有可能的值”这一点来说，我们可以这样定义 Int——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Int</span> = -2147483648 | -2147483647 | ... | -1 | 0 | 1 | 2 | ... | 2147483647  </span><br></code></pre></div></td></tr></table></figure>
+
+<p>仅仅是一种比喻而已，实际并非如此。</p>
+<p>自己定义的类型则必须基于已有的六种基本类型。比如这里定义一个 Shape，那些 Float 代表这些形状各边的长度。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Shape</span> = <span class="hljs-type">Circle</span> <span class="hljs-type">Float</span> <span class="hljs-type">Float</span> <span class="hljs-type">Float</span> | <span class="hljs-type">Rectangle</span> <span class="hljs-type">Float</span> <span class="hljs-type">Float</span> <span class="hljs-type">Float</span> <span class="hljs-type">Float</span></span><br><span class="hljs-comment">&#123;-</span><br><span class="hljs-comment">&gt;&gt;&gt; :t Circle</span><br><span class="hljs-comment">Circle :: Float -&gt; Float -&gt; Float -&gt; Shape</span><br><span class="hljs-comment">&gt;&gt;&gt; :t Rectangle</span><br><span class="hljs-comment">Rectangle :: Float -&gt; Float -&gt; Float -&gt; Float -&gt; Shape</span><br><span class="hljs-comment">-&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<p><code>data Shape = Circle Float Float Float | Rectangle Float Float Float Float</code>，这段的意思应当理解为，定义了一个名为 Shape 的 type，其包含 Circle 和 Rectangle 两个 Value Constructor（同时，Circle 和 Rectangle 是 Shape 的值……我不懂为什么），其中 Circle 包含三个字段——xy 坐标，半径，Rectangle 包含四个字段——左上和右下点的坐标（喂，没有旋转嘛！），都为 Float 类型。</p>
+<p>可以看到，<code>Value Constructor</code>就像构造函数一样的存在。但是就语义来说，其应当被连带参数（字段）当作一个整体，即像<code>(Circle 1 2 3)</code>这样看待。这种情况实际上是因为——<strong>其文字形式表述和其定义形式是一致的</strong>。</p>
+<p>这么来说，对所有<code>(Circle a b c)</code>，其中 a，b，c 都为 Float，其都是 Shape，或者都属于 Shape 这个 type。<code>(Circle a b c)</code>之于 Shape，就像 True 之于 Bool——就像字面量，只不过 Shape 在三个方向或四个方向上能够很大地延展下去罢了（指能取很多值）。</p>
+<p>自定义的 type 也可以被模式匹配，下面展示了求形状的面积的函数——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">surface</span> :: <span class="hljs-type">Shape</span> -&gt; <span class="hljs-type">Float</span><br><span class="hljs-title">surface</span> (<span class="hljs-type">Circle</span> _ _ r) = pi * r ^ <span class="hljs-number">2</span><br><span class="hljs-title">surface</span> (<span class="hljs-type">Rectangle</span> x0 y0 x1 y1) = abs $ (x0 - x1) * (y0 - y1)<br></code></pre></div></td></tr></table></figure>
+
+<p>我们写不出<code>fn :: Circle -&gt; Float</code>这样的函数，因为 Circle 不是 Type，Shape 才是，正如我们不能写出<code>True -&gt; Int</code>的函数，不能写出<code>1 -&gt; Int</code>的函数。</p>
+<p>type 当然也是可以层层抽象的……而且 Haskell 会聪明地帮我们进行模式匹配（再多几层怎么办？用 where 吧……）</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Point</span> = <span class="hljs-type">Point</span> <span class="hljs-type">Float</span> <span class="hljs-type">Float</span> <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span><br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Shape</span> = <span class="hljs-type">Circle</span> <span class="hljs-type">Point</span> <span class="hljs-type">Float</span> | <span class="hljs-type">Rectangle</span> <span class="hljs-type">Point</span> <span class="hljs-type">Point</span> <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span><br><br><span class="hljs-title">surface</span> :: <span class="hljs-type">Shape</span> -&gt; <span class="hljs-type">Float</span><br><span class="hljs-title">surface</span> (<span class="hljs-type">Circle</span> (<span class="hljs-type">Point</span> _ _ )  r) = pi * r ^<span class="hljs-number">2</span><br><span class="hljs-title">surface</span> (<span class="hljs-type">Rectangle</span> (<span class="hljs-type">Point</span> x0 y0) (<span class="hljs-type">Point</span> x1 y1)) = abs $ (x0 - x1) * (y0 - y1)<br></code></pre></div></td></tr></table></figure>
+
+<p>考虑到 Value Constructor 也是函数，可以利用其定义一些其他函数用来生成 Shape……比如来一个在原点的圆！</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">centerCircle</span> = <span class="hljs-type">Circle</span> $ <span class="hljs-type">Point</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <br><span class="hljs-comment">&#123;-</span><br><span class="hljs-comment">&gt;&gt;&gt; centerCircle 5</span><br><span class="hljs-comment">Circle (Point 0.0 0.0) 5.0</span><br><span class="hljs-comment">-&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Person</span> = <span class="hljs-type">Person</span> &#123;</span><br><span class="hljs-class">    <span class="hljs-title">firstName</span> :: <span class="hljs-type">String</span>,</span><br><span class="hljs-class">    <span class="hljs-title">lastName</span> :: <span class="hljs-type">String</span>,</span><br><span class="hljs-class">    <span class="hljs-title">age</span> :: <span class="hljs-type">Int</span>,</span><br><span class="hljs-class">    <span class="hljs-title">height</span> :: <span class="hljs-type">Float</span>,</span><br><span class="hljs-class">    <span class="hljs-title">phoneNumber</span> :: <span class="hljs-type">String</span>,</span><br><span class="hljs-class">    <span class="hljs-title">flavor</span> :: <span class="hljs-type">String</span></span><br><span class="hljs-class">&#125; <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)</span><br></code></pre></div></td></tr></table></figure>
+
+<p>为字段命名，这种形式称为<code>record</code>，haskell 会为每一个字段生成“getter”。</p>
+<p>同时，构造 Person 时，可以使用被称为<code>Record Construction</code>的语法——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Person</span> &#123;firstName=<span class="hljs-string">&quot;rua&quot;</span>,lastName=<span class="hljs-string">&quot;www&quot;</span>,age=<span class="hljs-number">12</span>,height=<span class="hljs-number">170</span>,phoneNumber=<span class="hljs-string">&quot;1111111111&quot;</span>,flavor=<span class="hljs-string">&quot;wtf&quot;</span>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这种构造必须给定全部字段，有遗漏的会有 error。</p>
+<hr>
+<blockquote>
+<p>   We usually use type parameters when the type that’s contained inside the data type’s various value constructors isn’t really that important for the type to work.</p>
+</blockquote>
+<p>如上，当我们对 type 所包含的某个值的具体 type 不在意，即其的 type 对我们并不造成影响时，我们就用 type parameter。</p>
+<p>比如，Map 的 k 和 v 就是应该应用 type parameter 的时候。</p>
+<hr>
+<p><strong>Functor 代表越过容器对内容进行操作的能力，Applicative 代表合并两个容器内容的能力</strong>。</p>
+<hr>
+<p>Lisp 厨欢喜！</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">List</span> a = <span class="hljs-type">Empty</span> | <span class="hljs-type">Cons</span> a (<span class="hljs-type">List</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>, <span class="hljs-type">Ord</span>)</span><br><br><span class="hljs-title">car</span> :: <span class="hljs-type">List</span> a -&gt; a<br><span class="hljs-title">car</span> <span class="hljs-type">Empty</span> = error <span class="hljs-string">&quot;cao!&quot;</span><br><span class="hljs-title">car</span> (<span class="hljs-type">Cons</span> a _) = a<br><br><span class="hljs-title">cdr</span> :: <span class="hljs-type">List</span> a -&gt; <span class="hljs-type">List</span> a<br><span class="hljs-title">cdr</span> <span class="hljs-type">Empty</span> = <span class="hljs-type">Empty</span><br><span class="hljs-title">cdr</span> (<span class="hljs-type">Cons</span> _ a) = a<br></code></pre></div></td></tr></table></figure>
+
+<p>将 Cons 中置，我们就得到了：，而 Empty 就是 []——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">lst</span> = <span class="hljs-number">1</span> `<span class="hljs-type">Cons</span>` (<span class="hljs-number">2</span> `<span class="hljs-type">Cons</span>` (<span class="hljs-number">3</span> `<span class="hljs-type">Cons</span>` <span class="hljs-type">Empty</span>))<br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<p>可以定义中置运算符——必须为全符号且指定优先级——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-keyword">infixl</span> <span class="hljs-number">5</span> **** <span class="hljs-comment">--- 这个签名称为 fixity，这里的 infixl 表示中置左结合</span><br>(****) :: <span class="hljs-type">Num</span> a =&gt; a -&gt; a -&gt; a<br><span class="hljs-title">a</span> **** b = a * b * b * b<br></code></pre></div></td></tr></table></figure>
+
+<p>在定义 data 时可以<strong>使用中置运算符</strong>作为 Value Constuctor——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-keyword">infixr</span> <span class="hljs-number">5</span> :-:<br><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">List</span> a = <span class="hljs-type">Empty</span> | a :-: (<span class="hljs-type">List</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>, <span class="hljs-type">Ord</span>)</span><br><span class="hljs-comment">&#123;-</span><br><span class="hljs-comment">&gt;&gt;&gt; 3 :-: 4 :-: 5 :-: Empty</span><br><span class="hljs-comment">3 :-: (4 :-: (5 :-: Empty))</span><br><span class="hljs-comment">-&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这玩意着实有点 geek。</p>
+<hr>
+<p>模式匹配匹配的是什么？<strong>Value Constructor</strong>！这样的话，对数字，对 char 进行匹配就非常有趣了——丘奇数！</p>
+<p>对 List 进行模式匹配时，能够使用<code>(x:xs)</code>这种形式也是符合逻辑的——<code>:</code>就是一个值构造器！只不过是中缀函数的形式罢了！所以也可以这么使用——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">sum&#x27;</span> :: <span class="hljs-type">Num</span> p =&gt; [p] -&gt; p<br><span class="hljs-title">sum&#x27;</span> [] = <span class="hljs-number">0</span><br><span class="hljs-title">sum&#x27;</span> ((:) x xs) = x + sum&#x27; xs  <span class="hljs-comment">-- 就像 Cons 的使用法</span><br></code></pre></div></td></tr></table></figure>
+
+<p><code>[]</code>也同理——它也是值构造器。不得不感叹，Haskell 的设计太好了。</p>
+<hr>
+<p>将 type 作为 typeclass 的实例的时候，对于带类型参数的 type constructor，有一些东西需要注意。</p>
+<p>考虑<code>data Either a b = Left a | Right b</code>，它是一个 Functor 的实例。fmap 对其表现在于对 Left 则无作用，对 Right 则返回<code>Right $ f r</code>，其中 r 为<code>(Right r)</code>。因此 haskell 建议使用 Left 包装错误，使用 Right 包装值。</p>
+<p>这是 Either 对 Functor 的实现。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Either</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span><br>    fmap f (<span class="hljs-type">Right</span> r) = <span class="hljs-type">Right</span> $ f r<br>    fmap _ (<span class="hljs-type">Left</span> l) = <span class="hljs-type">Left</span> l<br></code></pre></div></td></tr></table></figure>
+
+<p>这里为什么使用·<code>EIther a</code>？考虑 fmap 的签名——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">fmap</span> :: <span class="hljs-type">Functor</span> f =&gt; (a -&gt; b) -&gt; f a -&gt; f b<br></code></pre></div></td></tr></table></figure>
+
+<p>这里的 f 是实现了 fmap 的 type，从签名中可以看到，f 应当是一个接受单参数的 type constructor。</p>
+<p>于是，Either a 就能够解释了——对 Either 进行偏调用，获取一个接受单参数的 type constructor——可以说 fmap 的函数签名可以这样表示——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">fmap</span> :: <span class="hljs-type">Functor</span> f =&gt; (a -&gt; b) -&gt; (<span class="hljs-type">Either</span> c) a -&gt; (<span class="hljs-type">Either</span> c) b<br></code></pre></div></td></tr></table></figure>
+
+<p>这里的 c 其具体类型是无关紧要的——对 fmap，它不可见。</p>
+<p>于是这就加上了一个限制——对实现 fmap 的 type，只有最右边的 type parameter 是可以在 fmap 中被改变的（从 a 到 b），而前面的 c 是改不了的，无论是它的 type 还是 value（type 不可变是因为这在函数签名中已经限定，value 不可变是因为该方法无法获取关于 c 的任何信息，任何操作）。比如，我们想用 Left 来存数据，想用 Right 来存错误，这就是不可行的——Left 没得变。真坏！</p>
+<hr>
+<p>然后是 kind 概念……</p>
+<p>如果说 type 是 value 的标签的话，kind 就是 type 的标签。type 标识一个 value 的集合，kind 标识一个 type 的集合。</p>
+<p>kind 的形式化表述很像 type 构造器的签名——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">-- &gt;&gt;&gt; :k Either</span><br><span class="hljs-type">Either</span> :: * -&gt; * -&gt; *<br><br><span class="hljs-comment">-- &gt;&gt;&gt; :k Either Int </span><br><span class="hljs-type">Either</span> <span class="hljs-type">Int</span> :: * -&gt; *<br><br><span class="hljs-comment">-- &gt;&gt;&gt; :k Either Int String</span><br><span class="hljs-type">Either</span> <span class="hljs-type">Int</span> <span class="hljs-type">String</span> :: *<br></code></pre></div></td></tr></table></figure>
+
+<p>*表示具体类型（just type， concrete type， star type），可以看到 Either 接受两个具体类型，返回一个具体类型。</p>
+<p>使用：t 来获取 value 的 type，使用：k 获取 type 的 kind。</p>
+<blockquote>
+<p>haskell 的错误提示里 type 是 data constructor</p>
+</blockquote>
+<p>关于 Functor 的例子，用 kind 的形式来说，Functor 接受一个<code>* -&gt; *</code>的 type，而 Either 是一个<code>* -&gt; * -&gt; *</code> 的 type，因此需要进行一个偏调用。</p>
+<blockquote>
+<p>一个问题——:k 对 typeclass 也有效吗？看这签名，好像是根据 kind 生成约定的样子。</p>
+</blockquote>
+<p>事情变得抽象了——type parameter 可以是具体类型，也可以是 type constructor（显然这两样是同质的，之后一概以 type 称呼，顶多分成具体 type 和抽象 type）</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Frank</span> a b = <span class="hljs-type">Frank</span> &#123;<span class="hljs-title">frankField</span> :: <span class="hljs-title">b</span> <span class="hljs-title">a</span>&#125; <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)</span><br></code></pre></div></td></tr></table></figure>
+
+<p>根据其 body，b 是一个<code>* -&gt; *</code>，a 是一个<code>*</code>，于是 Frank 是——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Frank</span> :: * -&gt; (* -&gt; *) -&gt; *<br></code></pre></div></td></tr></table></figure>
+
+<p>卧槽！</p>
+<p>请问这样奇怪的 type 哪个 typeclass 愿意收呢（恼</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Tohu</span> t <span class="hljs-keyword">where</span></span><br>    tofu :: j a -&gt; t a j<br></code></pre></div></td></tr></table></figure>
+
+<p>这里的 Tohu typeclass，其中的 j 就是<code>* -&gt; *</code>，t 的类型根据 t a j 能够推导出来——<code>* -&gt; (* -&gt; *) -&gt; *</code></p>
+<p>一个重点是去了解函数&#x2F;类型签名和函数体的关系——签名再怎么花哨也行，对函数体不会有影响。</p>
+<p>kind 能够形式化表述 type 的类型参数，type declaration 形式化表述 function 和 value 的参数。</p>
+<hr>
+<p>haskell 中的 Unit 使用 () 即空的 tuple 表示。</p>
+<hr>
+<p>return 将值包装成 Monad。这可以用在 IO Monad 里，<code>name &lt;- return xxx</code>来绑定值到……名字上，也可以用在其他 Monad 里，比如<code>return 1 :: Maybe Int</code>，能拿到一个<code>Just 1</code>。但是没必要。</p>
+<hr>
+<blockquote>
+<p>Don’t think of a function like <strong>putStrLn</strong> as a function that takes a string and prints it to the screen. Think of it as a function that takes a string and returns an I&#x2F;O action.</p>
+</blockquote>
+<p>不要把带副作用的函数看作接受参数并进行操作的“过程”，而是将这些函数看作接受参数，返回 IO action 的函数！这种看法是为了更好的组合操作，把代码&#x2F;过程当作数据来看待……</p>
+<hr>
+<p>随机数是有副作用的——对同一个获取随机数的函数，每次调用都是不同结果。</p>
+<p>但这只是表面上的——随机数是通过某种显式或隐式的状态生成的。</p>
+<p>haskell 允许通过一个整数（作为种子）来生成一个随机数生成器——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-comment">--- &gt;&gt;&gt; gen = mkStdGen 42</span><br><span class="hljs-type">StdGen</span> &#123;unStdGen = <span class="hljs-type">SMGen</span> <span class="hljs-number">9297814886316923340</span> <span class="hljs-number">13679457532755275413</span>&#125;<br><br><span class="hljs-comment">--- &gt;&gt;&gt; random gen :: (Integer, StdGen)</span><br>(<span class="hljs-number">1275548033995301424</span>,<span class="hljs-type">StdGen</span> &#123;unStdGen = <span class="hljs-type">SMGen</span> <span class="hljs-number">4530528345362647137</span> <span class="hljs-number">13679457532755275413</span>&#125;)<br><br><span class="hljs-comment">--- &gt;&gt;&gt; random gen :: (Integer, StdGen)</span><br>(<span class="hljs-number">1275548033995301424</span>,<span class="hljs-type">StdGen</span> &#123;unStdGen = <span class="hljs-type">SMGen</span> <span class="hljs-number">4530528345362647137</span> <span class="hljs-number">13679457532755275413</span>&#125;)<br><br><span class="hljs-comment">--- &gt;&gt;&gt; random gen :: (Integer, StdGen)</span><br>(<span class="hljs-number">1275548033995301424</span>,<span class="hljs-type">StdGen</span> &#123;unStdGen = <span class="hljs-type">SMGen</span> <span class="hljs-number">4530528345362647137</span> <span class="hljs-number">13679457532755275413</span>&#125;)<br><br><span class="hljs-comment">--- &gt;&gt;&gt; random gen :: (Double, StdGen)</span><br>(<span class="hljs-number">0.930852402521634</span>,<span class="hljs-type">StdGen</span> &#123;unStdGen = <span class="hljs-type">SMGen</span> <span class="hljs-number">4530528345362647137</span> <span class="hljs-number">13679457532755275413</span>&#125;)<br></code></pre></div></td></tr></table></figure>
+
+<p>可见，无论多少次，这玩意都返回同样结果，是纯函数。</p>
+<p>然后就是有趣的地方——haskell 不止返回了随机数的值，也返回了一个（或者说下一个）随机数生成器，这下一个的值也是一样的……</p>
+<p>于是，函数式的随机数解决方案来了！把生成随机数所需的状态作为参数传递嘛！太聪明了！这样的话只需要在生成最初的生成器的时候要求外界输入了！</p>
+<p>这也可以看作是一种妥协方案……当然也可以在 IO 里进行随机数的生成。</p>
+<p>同时，考虑到每次都要拿新的种子生成器很麻烦，可以整一个获取随机数列表的函数（haskell 有原生实现，randoms）——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">randoms</span> gen = value : randoms nextGen  <span class="hljs-comment">--- 没有边界条件，显然是个利用懒求值的无限流</span><br>    <span class="hljs-keyword">where</span> (value, nextGen) = random gen<br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<p>模式匹配匹配的是值的形式（也就是值构造器）而非值的内容（值本身），所以模式这个词非常符合。</p>
+<hr>
+<p>小小的感受——对那些只被模块内部使用的函数，且能够清晰规划出哪些情况将会被使用，那些情况将不会的情况下，使用 error 标识不可能的情况是合理的（当然，如果这个函数仅被使用过 1 次，考虑将其放到 where 子句中。</p>
+<hr>
+<p>函数有着自己的 type constructor——<code>(-&gt;)</code>。这是一个中缀的 Type Constructor。</p>
+<hr>
+<p>可以认为，通过 fmap 的偏调用，可以把一个 (a -&gt; b) 的函数转换成 (f a -&gt; f b) 的函数——稍微重新诠释一下 fmap 函数的签名即可——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">fmap</span> :: (a -&gt; b) -&gt; (f a -&gt; f b)<br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<p>自定义 type 要成为 Functor 的实例，有两条规则需要遵守，第一条是——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">fmap</span> id = id<br></code></pre></div></td></tr></table></figure>
+
+<p>比如，<code> fmap id (Just 1) == id (Just 1)</code></p>
+<p>第二条是——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">fmap</span> (f . g) = fmap f . fmap g<br></code></pre></div></td></tr></table></figure>
+
+<p>比如对 Maybe 的 Just 的推导如下——</p>
+<figure class="highlight llvm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs llvm">fmap f . fmap g $ Just <span class="hljs-keyword">x</span><br>    <span class="hljs-operator">=</span> fmap f $ Just (g <span class="hljs-keyword">x</span>)<br>    <span class="hljs-operator">=</span> Just (f (g <span class="hljs-keyword">x</span>))<br>fmap (f . g) $ Just <span class="hljs-keyword">x</span><br>    <span class="hljs-operator">=</span> Just ((f . g) <span class="hljs-keyword">x</span>)<br>    <span class="hljs-operator">=</span> Just (f (g <span class="hljs-keyword">x</span>))<br></code></pre></div></td></tr></table></figure>
+
+<p>一个不合理的 Functor 的实例 type 如下，其中 C 意为 Counter，该 type 试图保存至今为止被映射的次数——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">CMaybe</span> a = <span class="hljs-type">CNothing</span> | <span class="hljs-type">CJust</span> <span class="hljs-type">Int</span> a <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)  </span><br><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">CMaybe</span> <span class="hljs-keyword">where</span></span><br>    fmap _ <span class="hljs-type">CNothing</span> = <span class="hljs-type">CNothing</span><br>    fmap f (<span class="hljs-type">CJust</span> counter a) = <span class="hljs-type">CJust</span> (counter + <span class="hljs-number">1</span>) $ f a<br></code></pre></div></td></tr></table></figure>
+
+<p>这个实现不符合第一条规则——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-title">fmap</span> id (<span class="hljs-type">CJust</span> <span class="hljs-number">0</span> <span class="hljs-number">10</span>) == <span class="hljs-type">CJust</span> <span class="hljs-number">1</span> <span class="hljs-number">10</span><br><span class="hljs-title">id</span> (<span class="hljs-type">CJust</span> <span class="hljs-number">0</span> <span class="hljs-number">10</span>)      == <span class="hljs-type">CJust</span> <span class="hljs-number">0</span> <span class="hljs-number">10</span><br></code></pre></div></td></tr></table></figure>
+
+<blockquote>
+<p>If a type obeys the functor laws, we know that calling <code>fmap</code> on a value of that type will only map the function over it, <strong>nothing more</strong>.</p>
+</blockquote>
+<p>也可以理解为，Functor 是在一个特定的上下文中对值进行映射&#x2F;修改。这个上下文不止包括数据所对应的 value Constructor，还可以包括更多东西，比如对 IO，它包括整个世界。（这里的上下文 context 指的是计算上下文 computation context 吗？）</p>
+<hr>
+<hr>
+<p>Applicative 全称是 Applicative Functor，这意味着一个 type 如果是 Applicative，则它必然也是 Functor，这可见于 Applicative 的定义——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>) =&gt; <span class="hljs-type">Applicative</span> f <span class="hljs-keyword">where</span></span><br>    pure :: a -&gt; f a<br>    (&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b<br></code></pre></div></td></tr></table></figure>
+
+<p>pure 函数之所以名叫 pure，是因为该函数将其放入了一个特定的，最小化的，默认的上下文（也就是那个“box”，可以认为像 Maybe，Either 这样的 Functor 实际上是定义了一个盒子来保存一定的东西，这个盒子也就是一定的上下文）。默认，default，也叫 pure。</p>
+<blockquote>
+<p>  最小化体现在哪里？<code>pure 42 :: [Int]</code>会得到<code>[42]</code>。这显然不是真正最小的——那是<code>[]</code>，可是<code>[]</code>是无法储存值的，就如 Maybe 的 Nothing 一样，所以最小在这里指单例的列表。</p>
+</blockquote>
+<blockquote>
+<p>  A better way of thinking about <code>pure</code> would be  to say that it takes a value and puts it in some sort of default (or  pure) context—a minimal context that still yields that value.</p>
+</blockquote>
+<p><code>&lt;*&gt;</code>就是 Applicative 的“业务”函数，它的签名值得和 fmap 对比看——<code>fmap :: (a -&gt; b) -&gt; f a -&gt; f b</code>。</p>
+<p>查看 Monad 的定义，发现更加有趣的事实，感情 Monad 是 Functor 一步一步“增强”的结果。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Prelude</span>&gt; :i <span class="hljs-type">Monad</span><br><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Monad</span> :: (* -&gt; *) -&gt; <span class="hljs-type">Constraint</span></span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Applicative</span> m =&gt; <span class="hljs-type">Monad</span> m <span class="hljs-keyword">where</span></span><br>  (&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b<br>  (&gt;&gt;) :: m a -&gt; m b -&gt; m b<br>  return :: a -&gt; m a<br>  <span class="hljs-meta">&#123;-# MINIMAL (&gt;&gt;=) #-&#125;</span><br>      <span class="hljs-comment">-- Defined in ‘GHC.Base’</span><br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<p>把值放在 Functor 里容易，取出来却不容易。比如 IO Monad（当然，它也是 Functor），它持有的值是拿不出来的。<del>除非使用 unsafe 的方式</del>。 这是为了保证副作用不扩散。</p>
+<hr>
+<blockquote>
+<p>  Applicative functors and the applicative style of doing <code>pure f &lt;*&gt; x &lt;*&gt; y &lt;*&gt;</code> … allow us to take a function that expects parameters that aren’t  necessarily wrapped in functors and use that function to operate on  several values that are in functor contexts. </p>
+</blockquote>
+<p>pure 和&lt;*&gt;结合使用，能达到这样的效果——使原本用于一般的值的函数能够应用在 functor 的上下文中，比如下面展示了对 Maybe（Just）中包裹的元素进行操作。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Prelude</span>&gt; pure div &lt;*&gt; <span class="hljs-type">Just</span> <span class="hljs-number">5</span> &lt;*&gt; <span class="hljs-type">Just</span> <span class="hljs-number">2</span> <span class="hljs-comment">-- 对一般的值，是 div 5 2</span><br><span class="hljs-type">Just</span> <span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+
+<p>也可以认为<code>pure f &lt;*&gt; x</code>等价于<code>fmap f x</code>，于是对于<code>pure f &lt;*&gt; x &lt;*&gt; y &lt;*&gt; ...</code>，可以表示为<code>fmap f x &lt;*&gt; y &lt;*&gt; ...</code>。而 haskell 提供了<code>&lt;$&gt;</code>函数——<code>f &lt;$&gt; x = fmap f x</code>。</p>
+<p>于是对<code>pure div &lt;*&gt; Just 5 &lt;*&gt; Just 2</code>，可以将其表示为<code> fmap div (Just 5) &lt;*&gt; Just 2</code>  ，或者<code>div &lt;$&gt; Just 5 &lt;*&gt; Just 2 </code>，显然最后的形式是最合适，最易懂的，它就像普通的函数调用中间插入一些奇怪玩意。</p>
+<hr>
+<p>对 List，它的 Applicative 的定义是这样的——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> [] <span class="hljs-keyword">where</span></span>  <br>    pure x = [x]  <br>    fs &lt;*&gt; xs = [f x | f &lt;- fs, x &lt;- xs]  <br></code></pre></div></td></tr></table></figure>
+
+<p>List 的<code>&lt;*&gt;</code>的行为很奇怪，做了个“笛卡尔积”，如果认为<code>[1,2,3]</code>这种形式表示某个值的可能取值为 1，2，3，则该操作符表达了所有可能的结果——<code>[(+) 1,(+) 2, (+) 3]</code>和<code>[4,5,6]</code>这两个“非确定”的值组合得到的“非确定”的结果。使用<code>&lt;*&gt;</code>能在一定程度上替代 List 推导式。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-type">Prelude</span>&gt; (+) &lt;$&gt; [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>] &lt;*&gt; [<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>]<br>[<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>]<br></code></pre></div></td></tr></table></figure>
+
+<hr>
+<p>对 IO，它的 Applicative 的实现为——</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">IO</span> <span class="hljs-keyword">where</span></span>  <br>    pure = return  <br>    a &lt;*&gt; b = <span class="hljs-keyword">do</span> <span class="hljs-comment">-- &lt;*&gt; :: IO (a -&gt; b) -&gt; IO a -&gt; IO b</span><br>        f &lt;- a  <br>        x &lt;- b  <br>        return (f x)  <br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10-09%E5%85%B3%E4%BA%8Elambda%E6%BC%94%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于 lambda 演算</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/09-26%E5%85%B3%E4%BA%8Ehaskell%E7%9A%84dot%E5%92%8Cdollar%E8%BF%90%E7%AE%97%E7%AC%A6.html">
+                        <span class="hidden-mobile">关于 haskell 的.和$运算符</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

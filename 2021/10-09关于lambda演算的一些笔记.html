@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="随便写写，只做笔记，不是做教程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 lambda 演算">
+<meta property="og:url" content="http://example.com/2021/10-09%E5%85%B3%E4%BA%8Elambda%E6%BC%94%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="随便写写，只做笔记，不是做教程">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-10T09:05:15.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.289Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="FP">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>关于 lambda 演算 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于 lambda 演算">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-10 17:05" pubdate>
+        2021年10月10日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于 lambda 演算</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>  这书最终还是没看下去 w，太啰嗦了实在是。而且感觉关注的重点有些偏离实践。</p>
+</blockquote>
+<p>试图看《Haskell Programming From First Principles》，它居然从 lambda 演算作为起始点，令人感叹。因此进行一些学习。</p>
+<p>什么是函数？函数是输入的集合到输出的集合的映射。”<strong>Understanding functions in this way——as a mapping of a set of inputs to a set of outputs——is crucial to understanding functional programming.</strong>“</p>
+<p>演算（calculus）指某种计算或推理的方法。lambda 演算是一种（对特定事物进行）形式化（描述）的方法。比如，它可以对图灵机进行描述，从而能够做到同冯诺依曼姬一样图灵完备。命令式编程语言从冯诺依曼体系出发，函数式编程语言从 lambda 演算出发（当然，底层仍旧是冯诺依曼体系的，硬件基础决定必须如此）。</p>
+<p>就如四则运算有数字和运算符两种元素，lambda 演算有三个基本元素——expression，variable，abstraction。</p>
+<p>expression 是所有东西的父集。它可以是 variable 的名字，abstraction，或是它们的组合。最简单的 expression 是单个变量，比如<code>x</code>。</p>
+<p>variable <strong>没有特定的意义或值</strong> <del>（真正的值，即特定的 lambda 表达式的语义不能从 lambda 演算本身中找到，而要从外界找到）</del>，它只是一个名字——对函数的可能输入赋予的名字。</p>
+<p>abstraction 是函数。它包括函数头，函数体。它可以应用单个 argument——单个输入。在当前的语境下，大可把 abstraction 当作函数的同义词。</p>
+<p>abstraction 的一个实例如下——</p>
+<p><code>𝜆x.x</code></p>
+<p>其中𝜆后的 x 表示 variable（parameter）的名称，<code>.</code>后的东西为函数体。这个 abstraction 用数学语言大可以表述为<code>f(x) = x</code>，或者通过 haskell 表述——<code>(\x -&gt; x)</code>。</p>
+<blockquote>
+<p>  显然，lambda 演算中的 abstraction 是比数学中的函数更加抽象，一般化的——它的输入值是没有任何限定的，无论输入值是一个数字，字符串，或是另一个函数，它都能作为入参并进行替换。</p>
+</blockquote>
+<p>绑定（bind），当我们对函数应用一个参数的时候，函数体中的每一个 x 都会被替换成该参数。也可以说，x 绑定在该参数上了。参数的值为何，x 就会被替换为何值。被绑定的 x 变量称为约束变量。</p>
+<p>约束变量的名字是可以随意替换的，比如<code>𝜆x.x</code>，可以替换成<code>𝜆y.y</code>，<code>𝜆z.z</code>。这是显然的——x，y，z 只是名字，代号而已，它们会被具体的值替换，因此命名如何无关紧要。这种性质称为** alpha 等价**。</p>
+<p>这里的 abstraction <code>𝜆x.x</code>没有名字 ，因此它是一个匿名函数（anonymous function）。</p>
+<p>abstraction 之所以叫 abstraction，是因为它进行了一定的抽象——通过<strong>让名字代表具体的值</strong>来抽象出特定形式；在应用中<strong>以具体的值替换名字</strong>——从而让一定的形式能具有更加广泛的意义。如果离开了这种替换，形如<code>x + 1</code>这种形式的表达式是没有任何意义的，因为 x 只是一个奇怪的符号而已。</p>
+<p>这里的“应用”也有自己的语法——(M N)，其中 M 为应当为 abstraction，而 N 为一个任意 lambda 元素（项）。比如<code>(𝜆x.(x + 1) 2)</code>就是一个应用，2 将作为参数应用到该 abstraction，将 x 替换为 2，最终得到 (2 + 1) 这个表达式。这称为** Beta 化简**。显然这是将 abstraction 转换成表达式的基础。</p>
+<p>parameter 和 argument——定义的语境称作 parameter，应用的语境称为 argument。绑定的是 parameter，接受的是 argument。实践中这两个词通常可以混用，都冠以“参数”为名。但 argument 更倾向于表示传递给函数的<strong>值</strong>。</p>
+<blockquote>
+<p>  这里的 1，2，+应该考虑为某种标识符，或某种变量名，不考虑它的具体语义。</p>
+</blockquote>
+<p>对<code>𝜆x.x</code>，将其应用到入参<code>1</code>和<code>𝜆y.y</code>，能够得到<code>1</code>和<code>𝜆y.y</code>。下面列出了<code>(𝜆𝑦.𝑦)</code>求解过程，其中<code>[𝑥 ∶= (𝜆𝑦.𝑦)]</code>表示 x 将替换为<code>(𝜆𝑦.𝑦)</code>，或者说 x 和这个值绑定了。</p>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode"><span class="hljs-comment">(𝜆𝑥.𝑥)</span><span class="hljs-comment">(𝜆𝑦.𝑦)</span><br>[𝑥 ∶= <span class="hljs-comment">(𝜆𝑦.𝑦)</span>]<br>𝜆𝑦.𝑦<br></code></pre></div></td></tr></table></figure>
+
+<p>又比如对<code>(𝜆𝑥.𝑥)(𝜆𝑦.𝑦)𝑧</code>，能容易看出来其结果为 z。<code>(𝜆𝑥.𝑥)</code>显然为 identity 函数。容易得到 const 函数——<code>(𝜆x.𝜆y.x)</code>。</p>
+<p>变量绑定和替换就是 lambda 演算的核心规则。在 lambda 演算里，变量只是名字，函数只是一个等待替换输入参数并返回一个表达式的“模版”。对 lambda 表达式进行化简的过程称为解析（resolve）。解析将在无法再次进行 Beta 化简时停止，即找不到 abstraction，或者找不到参数。无法进行 Beta 化简的表达式称为<code>beta normal form</code>。这种形式是计算完全的表达式。</p>
+<p>但是并非所有表达式都能转化为 beta normal form，比如这个——<code>(𝜆x.xx)(𝜆x.xx)</code>，对其进行 Beta 化简会得到它本身，因而能够无限地化简下去。这种表达式是<code>diverge</code>发散的。很好奇这是否涉及到停机问题。</p>
+<p>同时出现在函数头和函数体的名字称为约束变量，而未出现在函数头却出现在函数体中的名字称为自由变量。编程中自由变量是常见的——引用的上层作用域或全局作用域的变量。</p>
+<p>函数是单参数的，就如 Haskell 的函数定义一样，但也同 haskell 一样允许使用“语法糖”——形如<code>𝜆xy.xy</code>的函数实质上是<code>𝜆x.(𝜆y.xy)</code>。顺便，这里的<code>xy</code>没有任何意义，只是两个名字放在一起罢了，具体语义没有被定义。可以认为类似数学上那种乘法表述，<code>f(x)=2x</code>。但若是 x 被应用到了另一个函数，这将成为一次函数的应用。</p>
+<figure class="highlight scss"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scss">𝜆xy<span class="hljs-selector-class">.xy</span> (𝜆z.a) <span class="hljs-number">1</span><br>(𝜆x(𝜆y.xy)) (𝜆z.a) <span class="hljs-number">1</span><br><span class="hljs-selector-attr">[x := (𝜆z.a)]</span><br>(𝜆y.(𝜆z.a)y) <span class="hljs-number">1</span><br><span class="hljs-selector-attr">[z := y]</span><br>(𝜆y.a) <span class="hljs-number">1</span><br><span class="hljs-selector-attr">[y := 1]</span><br><span class="hljs-selector-tag">a</span> <br></code></pre></div></td></tr></table></figure>
+
+<p>当然，对于多参数的应用，大可以直接一次性全部替换。只是这种替换对人脑友好，对计算机不友好罢了。</p>
+<p>lambda 演算中的计算（evaluation）就是化简。这对一个只有纯函数形式的“语言”来说是显然的。</p>
+<p><strong>组合子</strong>（Combinator）是没有自由变量的 lambda 项。它代表一类这样的 lambda——它只能对它的 argument 进行组合。</p>
+<p>lambda 表达式的计算顺序遵循<code>normal order</code>。”<strong>Normal order is a common evaluation strategy in lambda calculi. Normal order means evaluating (ie, applying or beta reducing) the leftmost outermost lambdas first, evaluating terms nested within after you’ve run out of arguments to apply</strong>.”</p>
+<p>就这样了。将来如果有必要再深化。lambda 演算比我想象的还要简单，看来是之前看的书，文章太过堆砌概念了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/FP/">FP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">左折叠和右折叠</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10-08%E5%85%B3%E4%BA%8Ehaskell%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0.html">
+                        <span class="hidden-mobile">关于 haskell 的一些笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

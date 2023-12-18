@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="三个月前做的笔记，后来学到了服务注册和发现，负载均衡模式就停下了。最近可能要捡起来也说不定。  对微服务的学习是至关重要的，这个论断是绝对正确的，单体应用已经难以承受当前的互联网时代的复杂度，且性能等因素也受摩尔定律的约束无法更多提升。无论是对当前还是遥远的将来（？），微服务对工程实践都将是有重大影响的。即使以后分布式技术继续发展，人们发现了什么比微服务更好的分布式架构，对微服务的理解也将会有巨">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务学习笔记 1——Prelude">
+<meta property="og:url" content="http://example.com/2022/03-27%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94Prelude.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="三个月前做的笔记，后来学到了服务注册和发现，负载均衡模式就停下了。最近可能要捡起来也说不定。  对微服务的学习是至关重要的，这个论断是绝对正确的，单体应用已经难以承受当前的互联网时代的复杂度，且性能等因素也受摩尔定律的约束无法更多提升。无论是对当前还是遥远的将来（？），微服务对工程实践都将是有重大影响的。即使以后分布式技术继续发展，人们发现了什么比微服务更好的分布式架构，对微服务的理解也将会有巨">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/oss/20220102131348.png">
+<meta property="article:published_time" content="2022-03-27T04:38:39.000Z">
+<meta property="article:modified_time" content="2023-11-12T03:44:40.297Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="微服务">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/oss/20220102131348.png">
+  
+  
+  <title>微服务学习笔记 1——Prelude - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="微服务学习笔记 1——Prelude">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-27 12:38" pubdate>
+        2022年3月27日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">微服务学习笔记 1——Prelude</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>三个月前做的笔记，后来学到了服务注册和发现，负载均衡模式就停下了。最近可能要捡起来也说不定。</p>
+</blockquote>
+<p>对微服务的学习是至关重要的，这个论断是绝对正确的，单体应用已经难以承受当前的互联网时代的复杂度，且性能等因素也受摩尔定律的约束无法更多提升。无论是对当前还是遥远的将来（？），微服务对工程实践都将是有重大影响的。即使以后分布式技术继续发展，人们发现了什么比微服务更好的分布式架构，对微服务的理解也将会有巨大帮助。</p>
+<span id="more"></span>
+
+<p>本来打算去看《微服务架构设计模式》这本书来进行学习，但进行一些学习后发现这本书实在不适合初学者——概念太多，实践&#x2F;示例太少，没有相应实践经验的人（That’s me！）难以消化。因此此书我认为应当在有一定经验的基础上再进行阅读，即使该书作者似乎并非以此为出发点。</p>
+<p>当前在看的书是《Spring Microservices in Action》第二版，粗略地翻了翻，感觉还不错，就以此来作为敲门砖了。这书正巧第二版最近刚出，还没有中文翻译，同时也能多学学英文。</p>
+<h1 id="Prelude"><a href="#Prelude" class="headerlink" title="Prelude"></a>Prelude</h1><p>一个有趣的事实是，这两本书都强调在微服务架构中的<strong>模式</strong>，即对微服务架构中面临的各种问题&#x2F;需求的形式化的描述和解决方案，在这之前我还未能理解为何在此处要特意使用模式来描述，而最近才意识到，将这些问题抽象为模式是在解决方案和特定技术&#x2F;中间件中增加了一道抽象层，从而避免解决方案耦合于特定的技术&#x2F;中间件，让架构真正成为架构，而非特定技术的堆砌。</p>
+<blockquote>
+<p>没有什么问题是不能通过增加一个抽象层解决的，如果不能，就再加一层。</p>
+</blockquote>
+<p>我们在进行架构设计等的时候，也应当从模式出发，而非从特定技术&#x2F;中间件出发。比如，就服务发现和路由——如何对服务进行注册，从而抽象服务的物理地址；如何让消费微服务的客户端能够定位和路由到相应微服务——这个来说，不应当从特定技术，如 Spring Gateway，Nacos，Eureka 等出发，而应当在更抽象即模式的层面上研究，问题和需求究竟是什么，怎样的设计是松散耦合的，可维护可配置的，<strong>这些技术&#x2F;中间件是如何应用这个模式的</strong>，有什么优点和缺点……这样既可以从特定技术中解放出来，也给予我们选择最合适的方案的可能性。</p>
+<h2 id="各种云计算模型（XaaS）"><a href="#各种云计算模型（XaaS）" class="headerlink" title="各种云计算模型（XaaS）"></a>各种云计算模型（XaaS）</h2><p>微服务必定和云脱不了关系，这里介绍了常见的云计算模型，即各种 XaaS（anything as a service）以及用户和服务提供商所需要负担的职责，即开发者使用该种云平台时需要关心的东西——</p>
+<p><img src="/images/oss/20220102131348.png"></p>
+<blockquote>
+<p>可以认为最底层的两个即”Networking, storage, and servers”和”Data center”为真正的硬件设施。</p>
+</blockquote>
+<ul>
+<li><p><em>Infrastructure as a Service (IaaS，基础设施即服务）</em> ——服务提供商负责提供一定基础设施，让用户能够访问诸如服务器，存储和网络等计算资源。在这个模型里，用户需要负责一切和基础设施以及应用的伸缩性相关的东西，IaaS 平台包括 AWS 的 EC2，Azure Virtual Machines，Google Compute Engine，和 Kubernetes。可以认为 IaaS 就相当于是租用了一个云服务器，需要自己管理操作系统之上的所有部分。</p>
+</li>
+<li><p><em>Container as a Service (CaaS，容器即服务）</em> ——基于容器的虚拟化的形式，用户可以把微服务部署在一个轻量的，可携带（绿色）的虚拟容器如 Docker 中。云服务提供商负责运行容器，以及提供所有关于构建，部署，监控和伸缩容器的工具。CaaS 相较于 IaaS，用户不需关心操作系统的细节，且治理工具由云服务提供商提供，因而维护和伸缩起来较 IaaS 更容易。CaaS 平台包括谷歌的 GKE，亚马逊的 ECS（阿里的云服务器也叫这个名字，但阿里的是 IaaS，funny）。这本书主要使用 CaaS，我也认为 CaaS 在复杂性和定制性之间取得了一个很好的平衡。</p>
+</li>
+<li><p><em>Platform as a Service (PaaS，平台即服务）</em> ——服务器提供商提供平台和环境来让用户专注于应用的开发，执行和维护。用户可以完全不用关心物理的基础设施。PaaS 的缺点在于这样部署的应用是和平台提供商耦合的，必须利用平台提供商提供的 API 或工具来交互计算资源，因而移植性欠佳。PaaS 平台包括 Google App Engine，Cloud Fondry，Heroku 和 AWS Elastic Beanstalk。</p>
+</li>
+<li><p><em>Function as a Service (FaaS，功能即服务）</em> ——也称为无服务器架构，用户只需关心服务的开发，其余任何东西都交给云服务商了，应用将运行在服务提供商提供的运行时引擎中。FaaS 平台包括 AWS（Lambda），Google Cloud Function 和 Azure functions，Cloudflare 的 worker 也是 FaaS（还免费呢，好玩）。</p>
+</li>
+<li><p><em>Software as a Service (SaaS，软件即服务）</em> ——用户使用一个特定的应用而不需要部署或维护。用户租了就用，其他什么都关心不了。这像是某种低代码之类的东西。</p>
+</li>
+</ul>
+<h2 id="微服务面临的问题"><a href="#微服务面临的问题" class="headerlink" title="微服务面临的问题"></a>微服务面临的问题</h2><p>在接触到具体的模式前，应当先知道开发微服务架构应用时会遇到什么问题——</p>
+<ol>
+<li><p><strong>服务粒度</strong>——如何正确分解业务领域到一堆微服务中，使其中每个都有合适的职责？职责的粒度若太粗，在不同业务问题领域上有重叠，就会让其难以维护和修改；若太细，则会增加应用整体的复杂度，让服务变成愚蠢的数据抽象层，除了对数据的访问外没有别的逻辑。（这话真难翻译！）</p>
+</li>
+<li><p><strong>通讯协议</strong>——服务和客户端&#x2F;服务间的通信同步还是异步？轻量级还是重量级？通用还是自定义？</p>
+</li>
+<li><p><strong>接口设计</strong>——调用服务的实际接口该如何设计？</p>
+</li>
+<li><p><strong>服务的配置管理</strong>——如何优雅和方便地管理微服务的配置，使不需要修改源代码就可以适应不同环境？</p>
+</li>
+<li><p><strong>服务间的事件处理</strong>——如何使用事件对微服务进行解耦，从而最小化服务间<strong>硬编码</strong>（直接调用？）的相互依赖？</p>
+</li>
+</ol>
+<p>也需要意识到，微服务不是银弹，它和单体架构相比，也只能说是另一种架构风格而已，有自己所适用之处，也有自己的缺点，带来自己的复杂度。</p>
+<blockquote>
+<p>The more distributed a system is, the more places it can fail.</p>
+</blockquote>
+<p>书中介绍道，微服务是无状态（stateless）的。为何要设计成无状态？为了能方便横向扩展，即增加一个微服务的实例数量时不会有任何影响。考虑一个简单情形——维护一个对接口访问量的计数器：如果该状态维护在每个实例（进程）的内存中， 统计完全的计数值就需要统计每一个实例中的值，徒增了复杂度，而这种复杂度完全可以通过 Redis 或数据库等来避免。</p>
+<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p>该书书名已经指明，其将以 Spring 作为出发点来介绍微服务。<strong>Spring Cloud 为微服务开发提供了完全的支持，对各种模式提供了相应的中间件的集成，且仅通过简单注解便可快速起步</strong>，因此非常适合进行学习。</p>
+<p>Spring Cloud 当然不是唯一选择，微服务使用轻量级的通讯协议，这使使用不同语言进行开发成为可能。我在网络上看到过。Net Core + Nacos + Spring Cloud 这样的组合。但 Spring 肯定是最优先的选择，毕竟 JVM 这边才是主流。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04-10%E4%B8%80%E4%B8%AA%E7%82%B9%E5%87%BB%E7%BF%BB%E8%AF%91%E6%96%87%E5%AD%97%E6%9F%A5%E7%9C%8B%E5%8E%9F%E6%96%87%E7%9A%84hexo%E6%A0%87%E7%AD%BE%E7%9A%84%E5%AE%9E%E7%8E%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一个点击翻译文字查看原文的 hexo 标签的实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03-24Scala%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2%E4%B9%8B%E4%B8%80%E7%AA%A5.html">
+                        <span class="hidden-mobile">Scala 隐式转换之一窥</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
