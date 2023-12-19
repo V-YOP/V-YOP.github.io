@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="为了巩固和确认当前成果，换一个语言去把词法分析、递归下降语法分析再做一遍，其中使用正则表达式去实现词法分析，实现一下解析四则运算表达式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 TS 使用递归下降法实现解析四则运算">
+<meta property="og:url" content="http://example.com/2023/12-29%E4%BD%BF%E7%94%A8TS%E4%BD%BF%E7%94%A8%E9%80%92%E5%BD%92%E4%B8%8B%E9%99%8D%E6%B3%95%E5%AE%9E%E7%8E%B0%E8%A7%A3%E6%9E%90%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="为了巩固和确认当前成果，换一个语言去把词法分析、递归下降语法分析再做一遍，其中使用正则表达式去实现词法分析，实现一下解析四则运算表达式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-19T06:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-19T06:15:59.355Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="编译原理">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>使用 TS 使用递归下降法实现解析四则运算 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="使用 TS 使用递归下降法实现解析四则运算">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-12-19 14:00" pubdate>
+        2023年12月19日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      13k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用 TS 使用递归下降法实现解析四则运算</h1>
+            
+            <div class="markdown-body">
+              <p>为了巩固和确认当前成果，换一个语言去把词法分析、递归下降语法分析再做一遍，其中使用正则表达式去实现词法分析，实现一下解析四则运算表达式。考虑到相关需求，使用 ts 去进行实现，理由如下：</p>
+<ol>
+<li>之前在 java 里写解析器是逐字符来的，这次想试试用正则，而 js 有正则字面量，写正则表达式比 java 舒服一些，特别是处理转义符的时候（虽然这里估计用不到很复杂的）</li>
+<li>ts 支持代数数据类型，用来对 Token 和 AST 建模很方便</li>
+<li>js 方便做AST的可视化……本来想做的，但发现直接展示的话没啥乐子，想做个步进又发现过于复杂了。先摆了，将来再说</li>
+</ol>
+<p>同时也期待这玩意能作为一个原型，打算等后面把 jlox 实现完后整个给它搬到浏览器上，如果我真的学的完的话。</p>
+<p>该四则运算语言中，支持<code>+</code>，<code>-</code>，<code>*</code>，<code>/</code>，<code>**</code>（乘方，没有这个就无聊了）和括号，优先级、结合性和 js 中的一致。为了让它更整蛊，字面量允许字符串和数字，其中<code>-</code>，<code>/</code>，<code>%</code>，<code>**</code> 等不允许左右两边出现字符串字面量（这个限制在计算的时候:P）。</p>
+<h1 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h1><p>词法分析需要定义词素，定义下面的 Token 类型（虽然这里会忽略空白，但为了后面能正确维护 Scanner 的状态，还是需要知道空白的数量以及其中包含多少个换行符的，所以另外定义了一个 BLANK token，但后续会直接扔掉）：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">type</span> <span class="hljs-title class_">TokenValue</span> = &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;NUMBER&#x27;</span>,<br>  <span class="hljs-attr">literal</span>: <span class="hljs-built_in">number</span><br>&#125; | &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;STRING&#x27;</span>,<br>  <span class="hljs-attr">literal</span>: <span class="hljs-built_in">string</span><br>&#125; | &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;PLUS&#x27;</span> | <span class="hljs-string">&#x27;MINUS&#x27;</span> | <span class="hljs-string">&#x27;SLASH&#x27;</span> | <span class="hljs-string">&#x27;STAR&#x27;</span> | <span class="hljs-string">&#x27;PERCENT&#x27;</span> | <span class="hljs-string">&#x27;LEFT_PAREN&#x27;</span> | <span class="hljs-string">&#x27;RIGHT_PAREN&#x27;</span> | <span class="hljs-string">&#x27;STAR_STAR&#x27;</span> | <span class="hljs-string">&#x27;BLANK&#x27;</span> | <span class="hljs-string">&#x27;EOF&#x27;</span><br>&#125;<br><span class="hljs-keyword">type</span> <span class="hljs-title class_">Token</span> = <span class="hljs-title class_">TokenValue</span> &amp; &#123;<br>  <span class="hljs-attr">lexeme</span>: <span class="hljs-built_in">string</span>, <span class="hljs-comment">// 原始的词素</span><br>  <span class="hljs-attr">line</span>: <span class="hljs-built_in">number</span> <span class="hljs-comment">// 行数</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后，需要为单字符的 token，双字符的 token，字符串字面量，数字字面量，还有空白，为它们分别定义正则表达式，然后把它们用<code>|</code>拼接到一起，并且给予 g flag——这让正则表达式能够包含状态，设置正则从字符串的特定位置去开始进行匹配。</p>
+<p>要注意最长匹配原则——如果<code>**</code>能匹配，就不要匹配成两个<code>*</code>，因此各 token 的顺序需要被正确处理——如果两个正则表达式有歧义，较长的要放前面。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">// 该正则的各位置对应 token 如下：</span><br><span class="hljs-comment">// 1: STAR_STAR</span><br><span class="hljs-comment">// 2: PLUS, MINUS, STAR, SLASH, PERCENT, LEFT_PAREN, RIGHT_PAREN</span><br><span class="hljs-comment">// 3: STRING</span><br><span class="hljs-comment">// 4: NUMBER</span><br><span class="hljs-comment">// 5: BLANK</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">REGEXP</span> = (<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">DOUBLE_TOKEN_REGEXP</span> = <span class="hljs-regexp">/(\*\*)/</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">SINGLE_TOKEN_REGEXP</span> = <span class="hljs-regexp">/(\+|\-|\*|\/|\%|\(|\))/</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">STRING_LITERAL_REGEXP</span> = <span class="hljs-regexp">/&quot;(.*?)(?&lt;!\\)&quot;/</span> <span class="hljs-comment">// (?&lt;!y)x 是负向否定预查，它会匹配这样的 x，它前面不是 y，这里是为了跳过、&quot;</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">NUMBER_LITERAL_REGEXP</span> = <span class="hljs-regexp">/(\d+(?:\.\d+)?)/</span> <span class="hljs-comment">// 支持 1 和 1.0 这样的形式 ，?: 表示忽略该分组</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">IGNORE_TOKEN_REGEXP</span> = <span class="hljs-regexp">/(\s+)/</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">ANOTHER_STRING_LITERAL_REGEXP</span> = <span class="hljs-regexp">/&quot;((?:[^&quot;\\]|\\.)*)&quot;/</span> <span class="hljs-comment">// GPT 给的另一个字符串字面量正则</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RegExp</span>([<br>    <span class="hljs-variable constant_">DOUBLE_TOKEN_REGEXP</span>,<br>    <span class="hljs-variable constant_">SINGLE_TOKEN_REGEXP</span>,<br>    <span class="hljs-variable constant_">STRING_LITERAL_REGEXP</span>,<br>    <span class="hljs-variable constant_">NUMBER_LITERAL_REGEXP</span>,<br>    <span class="hljs-variable constant_">IGNORE_TOKEN_REGEXP</span><br>  ].<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">regexp</span> =&gt;</span> regexp.<span class="hljs-property">source</span>).<span class="hljs-title function_">join</span>(<span class="hljs-string">&#x27;|&#x27;</span>), <span class="hljs-string">&#x27;g&#x27;</span>)<br>&#125;)()<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">tryMatch</span>(<span class="hljs-params">code: <span class="hljs-built_in">string</span>, startIndex: <span class="hljs-built_in">number</span>, line: <span class="hljs-built_in">number</span></span>): <span class="hljs-title class_">Token</span> &#123;<br>  <span class="hljs-comment">// lastIndex 是正则的开始匹配位置</span><br>  <span class="hljs-variable constant_">REGEXP</span>.<span class="hljs-property">lastIndex</span> = startIndex<br>  <span class="hljs-keyword">const</span> match = <span class="hljs-variable constant_">REGEXP</span>.<span class="hljs-title function_">exec</span>(code)<br>  <span class="hljs-comment">// 如果没有匹配到，或者并非从开始位置匹配到（这证明字符串开始位置有非法字符）</span><br>  <span class="hljs-keyword">if</span> (!match || match.<span class="hljs-property">index</span> != startIndex) &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`词法错误！行数：<span class="hljs-subst">$&#123;line&#125;</span>`</span>)<br>  &#125;<br>  <br>  <span class="hljs-keyword">if</span> (match[<span class="hljs-number">1</span>] != <span class="hljs-literal">undefined</span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;STAR_STAR&#x27;</span>, line, <span class="hljs-attr">lexeme</span>: match[<span class="hljs-number">1</span>] &#125;<br>  &#125;<br>  <span class="hljs-keyword">if</span> (match[<span class="hljs-number">2</span>] != <span class="hljs-literal">undefined</span>) &#123;<br>    <span class="hljs-keyword">const</span> map = &#123; <span class="hljs-string">&#x27;+&#x27;</span>: <span class="hljs-string">&#x27;PLUS&#x27;</span>, <span class="hljs-string">&#x27;-&#x27;</span>: <span class="hljs-string">&#x27;MINUS&#x27;</span>, <span class="hljs-string">&#x27;*&#x27;</span>: <span class="hljs-string">&#x27;STAR&#x27;</span>, <span class="hljs-string">&#x27;/&#x27;</span>: <span class="hljs-string">&#x27;SLASH&#x27;</span>, <span class="hljs-string">&#x27;%&#x27;</span>: <span class="hljs-string">&#x27;PERCENT&#x27;</span>, <span class="hljs-string">&#x27;(&#x27;</span>: <span class="hljs-string">&#x27;LEFT_PAREN&#x27;</span>, <span class="hljs-string">&#x27;)&#x27;</span>: <span class="hljs-string">&#x27;RIGHT_PAREN&#x27;</span> &#125; <span class="hljs-keyword">as</span> <span class="hljs-keyword">const</span><br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: map[match[<span class="hljs-number">2</span>] <span class="hljs-keyword">as</span> keyof <span class="hljs-keyword">typeof</span> map], <span class="hljs-attr">lexeme</span>: match[<span class="hljs-number">2</span>], line &#125;<br>  &#125;<br>  <span class="hljs-keyword">if</span> (match[<span class="hljs-number">3</span>] != <span class="hljs-literal">undefined</span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;STRING&#x27;</span>, <span class="hljs-attr">lexeme</span>: <span class="hljs-string">`&quot;<span class="hljs-subst">$&#123;match[<span class="hljs-number">3</span>]&#125;</span>&quot;`</span>, line, <span class="hljs-attr">literal</span>: match[<span class="hljs-number">3</span>]&#125;<br>  &#125;<br>  <span class="hljs-keyword">if</span> (match[<span class="hljs-number">4</span>] != <span class="hljs-literal">undefined</span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;NUMBER&#x27;</span>, <span class="hljs-attr">lexeme</span>: match[<span class="hljs-number">4</span>], line, <span class="hljs-attr">literal</span>: <span class="hljs-built_in">parseInt</span>(match[<span class="hljs-number">4</span>])&#125;<br>  &#125;<br>  <span class="hljs-keyword">if</span> (match[<span class="hljs-number">5</span>] != <span class="hljs-literal">undefined</span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BLANK&#x27;</span>, <span class="hljs-attr">lexeme</span>: match[<span class="hljs-number">5</span>], line &#125;<br>  &#125;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(match)<br>  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&quot;Impossible&quot;</span>)<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">readTokens</span>(<span class="hljs-params">code: <span class="hljs-built_in">string</span></span>): <span class="hljs-title class_">Token</span>[] &#123;<br>  <span class="hljs-comment">// 使用正则的话，只需要维护下一个词素的开始位置就行，因此这里把 start 直接给去掉了</span><br>  <span class="hljs-keyword">let</span> line = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">let</span> current = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">const</span> <span class="hljs-attr">res</span>: <span class="hljs-title class_">Token</span>[] = []<br><br>  <span class="hljs-keyword">while</span> (current &lt; code.<span class="hljs-property">length</span>) &#123;<br>    <span class="hljs-keyword">const</span> token = <span class="hljs-title function_">tryMatch</span>(code, current, line)<br>    <span class="hljs-keyword">if</span> (token.<span class="hljs-property">type</span> !== <span class="hljs-string">&#x27;BLANK&#x27;</span>)&#123;<br>      res.<span class="hljs-title function_">push</span>(token)<br>    &#125;<br>    <span class="hljs-keyword">const</span> lexeme = token.<span class="hljs-property">lexeme</span><br>    <span class="hljs-comment">// 维护 current 和 line</span><br>    current += lexeme.<span class="hljs-property">length</span> <br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> char <span class="hljs-keyword">of</span> lexeme) &#123;<br>      <span class="hljs-keyword">if</span> (char === <span class="hljs-string">&#x27;\n&#x27;</span>) line++<br>    &#125;<br>  &#125;<br>  res.<span class="hljs-title function_">push</span>(&#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;EOF&#x27;</span>, line, <span class="hljs-attr">lexeme</span>: <span class="hljs-string">&#x27;&#x27;</span> &#125;)<br>  <span class="hljs-keyword">return</span> res<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>逻辑比 java 还清晰些……主要是不需要同时维护两个指针，不需要在字符的粒度上去进行编码，缺点是无法给予清晰的报错。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">readTokens</span>(<span class="hljs-string">`  -1 + 2.3 </span><br><span class="hljs-string">2+2.3+&quot;123&quot;+3.4-1*2/3**4* *5%6</span><br><span class="hljs-string">7(1+2) &quot;11\\&quot;23\\&quot;44&quot;`</span>))<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">[</span><br><span class="hljs-comment">  &#123; type: &#x27;MINUS&#x27;, lexeme: &#x27;-&#x27;, line: 1 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;1&#x27;, line: 1, literal: 1 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;PLUS&#x27;, lexeme: &#x27;+&#x27;, line: 1 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;2.3&#x27;, line: 1, literal: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;2&#x27;, line: 2, literal: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;PLUS&#x27;, lexeme: &#x27;+&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;2.3&#x27;, line: 2, literal: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;PLUS&#x27;, lexeme: &#x27;+&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;STRING&#x27;, lexeme: &#x27;&quot;123&quot;&#x27;, line: 2, literal: &#x27;123&#x27; &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;PLUS&#x27;, lexeme: &#x27;+&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;3.4&#x27;, line: 2, literal: 3 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;MINUS&#x27;, lexeme: &#x27;-&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;1&#x27;, line: 2, literal: 1 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;STAR&#x27;, lexeme: &#x27;*&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;2&#x27;, line: 2, literal: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;SLASH&#x27;, lexeme: &#x27;/&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;3&#x27;, line: 2, literal: 3 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;STAR_STAR&#x27;, line: 2, lexeme: &#x27;**&#x27; &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;4&#x27;, line: 2, literal: 4 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;STAR&#x27;, lexeme: &#x27;*&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;5&#x27;, line: 2, literal: 5 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;PERCENT&#x27;, lexeme: &#x27;%&#x27;, line: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;6&#x27;, line: 2, literal: 6 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;7&#x27;, line: 3, literal: 7 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;LEFT_PAREN&#x27;, lexeme: &#x27;(&#x27;, line: 3 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;1&#x27;, line: 3, literal: 1 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;PLUS&#x27;, lexeme: &#x27;+&#x27;, line: 3 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;NUMBER&#x27;, lexeme: &#x27;2&#x27;, line: 3, literal: 2 &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;RIGHT_PAREN&#x27;, lexeme: &#x27;)&#x27;, line: 3 &#125;,</span><br><span class="hljs-comment">  &#123;</span><br><span class="hljs-comment">    type: &#x27;STRING&#x27;,</span><br><span class="hljs-comment">    lexeme: &#x27;&quot;11\\&quot;23\\&quot;44&quot;&#x27;,</span><br><span class="hljs-comment">    line: 3,</span><br><span class="hljs-comment">    literal: &#x27;11\\&quot;23\\&quot;44&#x27;</span><br><span class="hljs-comment">  &#125;,</span><br><span class="hljs-comment">  &#123; type: &#x27;EOF&#x27;, line: 3, lexeme: &#x27;&#x27; &#125;</span><br><span class="hljs-comment">]</span><br><span class="hljs-comment">*/</span><br></code></pre></div></td></tr></table></figure>
+
+<h1 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h1><p>然后是语法分析，首先确认这些运算符的优先级和结合性，下表优先级从低到高。</p>
+<table>
+<thead>
+<tr>
+<th align="center">运算符</th>
+<th align="center">结合性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>-</code> <code>+</code></td>
+<td align="center">左</td>
+</tr>
+<tr>
+<td align="center"><code>*</code> <code>/</code> <code>%</code></td>
+<td align="center">左</td>
+</tr>
+<tr>
+<td align="center">‘**’</td>
+<td align="center">右</td>
+</tr>
+<tr>
+<td align="center">unary <code>-</code> <code>+</code></td>
+<td align="center">右</td>
+</tr>
+</tbody></table>
+<p>根据优先级，定义相应 BNF，注意这里的乘方的规则 <code>Exponent -&gt; Unary (&quot;**&quot; Exponent)?</code>——乘方是右结合的，因此右方要允许其它乘方的出现且为它的右子树，这也体现在 parser 中。</p>
+<figure class="highlight bnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs BNF">Expr     -&gt; Term<br>Term     -&gt; Factor ((&quot;-&quot; | &quot;+&quot;) Factor)*<br>Factor   -&gt; Exponent ((&quot;*&quot; | &quot;/&quot; | &quot;%&quot;) Exponent)*<br>Exponent -&gt; Unary (&quot;**&quot; Exponent)?  # 注意这里！<br>Unary    -&gt; (&quot;+&quot; | &quot;-&quot;) Unary | Primary<br>Primary  -&gt; NUMBER | STRING | &quot;(&quot; Expr &quot;)&quot;<br></code></pre></div></td></tr></table></figure>
+
+<p>说到底递归下降法为啥是这样呢，该怎样建立它的心智模型呢……想不通啊想不通</p>
+<p>然后实现解析器，这里实际上只有三种类型了——一元操作，二元操作和字面量，这里没必要去表示括号，但还是给它带上。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">type</span> <span class="hljs-title class_">Expr</span> = &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;UNARY&#x27;</span>, <span class="hljs-attr">op</span>: <span class="hljs-title class_">Token</span>, <span class="hljs-attr">expr</span>: <span class="hljs-title class_">Expr</span><br>&#125; | &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BINARY&#x27;</span>, <span class="hljs-attr">left</span>: <span class="hljs-title class_">Expr</span>, <span class="hljs-attr">op</span>: <span class="hljs-title class_">Token</span>,  <span class="hljs-attr">right</span>: <span class="hljs-title class_">Expr</span><br>&#125; | &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;LITERAL&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span><br>&#125; | &#123;<br>  <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;GROUPING&#x27;</span>, <span class="hljs-attr">expr</span>: <span class="hljs-title class_">Expr</span><br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">parse</span>(<span class="hljs-params">tokens: Token[]</span>): <span class="hljs-title class_">Expr</span> &#123;<br>  <span class="hljs-comment">// 同样的，需要一个 current 状态</span><br>  <span class="hljs-comment">// 但和 Scanner 不同，因为递归下降中每个规则都要对应一个函数，没法很好地直接维护 current，因此需要定义一些原子的函数去读取 token 和获取 current</span><br>  <span class="hljs-keyword">let</span> current = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">isAtEnd</span> = (<span class="hljs-params"></span>) =&gt; current &gt;= tokens.<span class="hljs-property">length</span><br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">peek</span> = (<span class="hljs-params"></span>) =&gt; tokens[current]<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">advance</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-title function_">isAtEnd</span>() ? <span class="hljs-title function_">peek</span>() : tokens[current++]<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">previous</span> = (<span class="hljs-params"></span>) =&gt; tokens[current - <span class="hljs-number">1</span>]<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">match</span>(<span class="hljs-params">...tokenTypes: Token[<span class="hljs-string">&#x27;type&#x27;</span>][]</span>): <span class="hljs-built_in">boolean</span> &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isAtEnd</span>()) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>    <span class="hljs-keyword">const</span> current = <span class="hljs-title function_">peek</span>()<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> tokenType <span class="hljs-keyword">of</span> tokenTypes) &#123;<br>      <span class="hljs-keyword">if</span> (current.<span class="hljs-property">type</span> === tokenType) &#123;<br>        <span class="hljs-title function_">advance</span>()<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>      &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">error</span>(<span class="hljs-params">token: Token, msg: <span class="hljs-built_in">string</span></span>): <span class="hljs-title class_">Error</span> &#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`语法错误，#&#123;msg&#125;。行数：<span class="hljs-subst">$&#123;token.line&#125;</span>`</span>)<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">consume</span>(<span class="hljs-params">tokenType: Token[<span class="hljs-string">&#x27;type&#x27;</span>], msg: <span class="hljs-built_in">string</span></span>) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">match</span>(tokenType)) &#123;<br>      <span class="hljs-keyword">return</span><br>    &#125;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(<span class="hljs-title function_">peek</span>(), msg)<br>  &#125;<br><br>  <span class="hljs-comment">/*</span><br><span class="hljs-comment">Expr     -&gt; Term</span><br><span class="hljs-comment">Term     -&gt; Factor ((&quot;-&quot; | &quot;+&quot;) Factor)*</span><br><span class="hljs-comment">Factor   -&gt; Exponent ((&quot;*&quot; | &quot;/&quot; | &quot;%&quot;) Exponent)*</span><br><span class="hljs-comment">Exponent -&gt; Unary (&quot;**&quot; Exponent)?   # 右结合！</span><br><span class="hljs-comment">Unary    -&gt; (&quot;+&quot; | &quot;-&quot;) Unary | Primary</span><br><span class="hljs-comment">Primary  -&gt; NUMBER | STRING | &quot;(&quot; Expr &quot;)&quot;</span><br><span class="hljs-comment">  */</span><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">expr</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Expr</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">term</span>()<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">term</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Expr</span> &#123;<br>    <span class="hljs-keyword">let</span> left = <span class="hljs-title function_">factor</span>()<br>    <span class="hljs-keyword">while</span> (<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;MINUS&#x27;</span>, <span class="hljs-string">&#x27;PLUS&#x27;</span>)) &#123;<br>      <span class="hljs-keyword">const</span> op = <span class="hljs-title function_">previous</span>()<br>      <span class="hljs-keyword">const</span> right = <span class="hljs-title function_">factor</span>()<br>      left = &#123;<span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BINARY&#x27;</span>, op, left, right&#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> left;<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">factor</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Expr</span> &#123;<br>    <span class="hljs-keyword">let</span> left = <span class="hljs-title function_">exponent</span>()<br>    <span class="hljs-keyword">while</span> (<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;STAR&#x27;</span>, <span class="hljs-string">&#x27;SLASH&#x27;</span>, <span class="hljs-string">&#x27;PERCENT&#x27;</span>)) &#123;<br>      <span class="hljs-keyword">const</span> op = <span class="hljs-title function_">previous</span>()<br>      <span class="hljs-keyword">const</span> right = <span class="hljs-title function_">exponent</span>()<br>      left = &#123;<span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BINARY&#x27;</span>, op, left, right&#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> left;<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">exponent</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Expr</span> &#123;<br>    <span class="hljs-keyword">let</span> left = <span class="hljs-title function_">unary</span>()<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;STAR_STAR&#x27;</span>)) &#123;<br>      <span class="hljs-keyword">const</span> op = <span class="hljs-title function_">previous</span>()<br>      <span class="hljs-keyword">const</span> right = <span class="hljs-title function_">exponent</span>()<br>      <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;BINARY&#x27;</span>, left, op, right&#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> left<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">unary</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Expr</span> &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;MINUS&#x27;</span>, <span class="hljs-string">&#x27;PLUS&#x27;</span>)) &#123;<br>      <span class="hljs-keyword">const</span> op = <span class="hljs-title function_">previous</span>()<br>      <span class="hljs-keyword">const</span> expr = <span class="hljs-title function_">unary</span>()<br>      <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;UNARY&#x27;</span>, op, expr&#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">primary</span>()<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">primary</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">Expr</span> &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;LEFT_PAREN&#x27;</span>)) &#123;<br>      <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">expr</span>()<br>      <span class="hljs-title function_">consume</span>(<span class="hljs-string">&#x27;RIGHT_PAREN&#x27;</span>, <span class="hljs-string">&quot;Expect &#x27;)&#x27;&quot;</span>)<br>      <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;GROUPING&#x27;</span>, <span class="hljs-attr">expr</span>: res&#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;NUMBER&#x27;</span>, <span class="hljs-string">&#x27;STRING&#x27;</span>)) &#123;<br>      <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">previous</span>()<br>      <span class="hljs-keyword">if</span> (!(res.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;NUMBER&#x27;</span> || res.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;STRING&#x27;</span>)) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;Impossible&#x27;</span>)<br>      &#125;<br>      <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;LITERAL&#x27;</span>, <span class="hljs-attr">value</span>: res.<span class="hljs-property">literal</span>&#125;<br>    &#125;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(<span class="hljs-title function_">peek</span>(), <span class="hljs-string">&#x27;Expect expression&#x27;</span>)<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">expr</span>()<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="打印和执行"><a href="#打印和执行" class="headerlink" title="打印和执行"></a>打印和执行</h1><p>最难的部分已经结束了，现在只欠打印和计算了，而它们本身也没啥难度（和意思）。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">printAst</span>(<span class="hljs-params">expr: Expr</span>): <span class="hljs-built_in">string</span> &#123;<br>  <span class="hljs-keyword">if</span> (expr.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;LITERAL&#x27;</span>) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> expr.<span class="hljs-property">value</span> === <span class="hljs-string">&#x27;number&#x27;</span>) &#123;<br>      <span class="hljs-keyword">return</span> expr.<span class="hljs-property">value</span>.<span class="hljs-title function_">toString</span>()<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`&quot;<span class="hljs-subst">$&#123;expr.value&#125;</span>&quot;`</span><br>  &#125;<br>  <span class="hljs-keyword">if</span> (expr.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;BINARY&#x27;</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123;op, left, right&#125; = expr<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`(<span class="hljs-subst">$&#123;op.lexeme&#125;</span> <span class="hljs-subst">$&#123;printAst(left)&#125;</span> <span class="hljs-subst">$&#123;printAst(right)&#125;</span>)`</span><br>  &#125;<br>  <span class="hljs-keyword">if</span> (expr.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;GROUPING&#x27;</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">printAst</span>(expr.<span class="hljs-property">expr</span>)<br>  &#125;<br>  <span class="hljs-keyword">const</span> &#123;op, <span class="hljs-attr">expr</span>: e&#125; = expr<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`(<span class="hljs-subst">$&#123;op.lexeme&#125;</span> <span class="hljs-subst">$&#123;printAst(e)&#125;</span>)`</span><br>&#125;<br><br><span class="hljs-comment">// 计算，如果出现错误则返回Error</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">evaluate</span>(<span class="hljs-params">expr: Expr</span>): <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> | <span class="hljs-title class_">Error</span> &#123;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">error</span>(<span class="hljs-params">token: Token, msg: <span class="hljs-built_in">string</span></span>): <span class="hljs-title class_">Error</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`计算错误，<span class="hljs-subst">$&#123;msg&#125;</span>。行数：<span class="hljs-subst">$&#123;token.line&#125;</span>`</span>)<br>  &#125;<br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">go</span>(<span class="hljs-params">expr: Expr</span>): <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> &#123;<br>    <span class="hljs-keyword">if</span> (expr.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;LITERAL&#x27;</span>) &#123;<br>      <span class="hljs-keyword">return</span> expr.<span class="hljs-property">value</span><br>    &#125;<br>    <span class="hljs-keyword">if</span> (expr.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;GROUPING&#x27;</span>) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-title function_">go</span>(expr.<span class="hljs-property">expr</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> (expr.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;UNARY&#x27;</span>) &#123;<br>      <span class="hljs-keyword">const</span> &#123;op , <span class="hljs-attr">expr</span>: subExpr&#125; = expr<br>      <span class="hljs-keyword">const</span> res = <span class="hljs-title function_">go</span>(subExpr)<br>      <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;MINUS&#x27;</span>) &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> res === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>          <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">&quot;Unary &#x27;-&#x27; cannot apply to string&quot;</span>)<br>        &#125;<br>        <span class="hljs-keyword">return</span> -res;<br>      &#125;<br>      <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;PLUS&#x27;</span>) &#123;<br>        <span class="hljs-comment">// 对字符串会转成数字</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> res === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>          <span class="hljs-keyword">const</span> numRes = <span class="hljs-built_in">parseInt</span>(res)<br>          <span class="hljs-keyword">if</span> (<span class="hljs-built_in">isNaN</span>(numRes)) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">`string &quot;<span class="hljs-subst">$&#123;res&#125;</span>&quot; cannot cast to number`</span>)<br>          &#125;<br>          <span class="hljs-keyword">return</span> numRes<br>        &#125;<br>        <span class="hljs-keyword">return</span> res<br>      &#125;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&quot;Impossible&quot;</span>)<br>    &#125;<br>    <span class="hljs-keyword">const</span> &#123;op, left, right&#125; = expr<br>    <span class="hljs-keyword">const</span> l = <span class="hljs-title function_">go</span>(left)<br>    <span class="hljs-keyword">const</span> r = <span class="hljs-title function_">go</span>(right)<br>    <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;PLUS&#x27;</span>) &#123;<br>      <span class="hljs-comment">// 如果任一操作数是字符串，使用字符串操作</span><br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;string&#x27;</span> || <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>        <span class="hljs-keyword">return</span> l.<span class="hljs-title function_">toString</span>() + r.<span class="hljs-title function_">toString</span>()<br>      &#125;<br>      <span class="hljs-keyword">return</span> l + r<br>    &#125;<br>    <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;MINUS&#x27;</span>) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;string&#x27;</span> || <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">&quot;Binary &#x27;-&#x27; cannot apply to string&quot;</span>)<br>      &#125;<br>      <span class="hljs-keyword">return</span> l - r<br>    &#125;<br>    <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;STAR&#x27;</span>) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;string&#x27;</span> &amp;&amp; <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">&quot;Binary &#x27;*&#x27; cannot apply to string and string&quot;</span>)<br>      &#125;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;number&#x27;</span> &amp;&amp; <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;number&#x27;</span>) &#123;<br>        <span class="hljs-keyword">return</span> l * r<br>      &#125;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;number&#x27;</span>) &#123;<br>        <span class="hljs-keyword">return</span> r.<span class="hljs-title function_">toString</span>().<span class="hljs-title function_">repeat</span>(l)<br>      &#125; <br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;number&#x27;</span>) &#123;<br>        <span class="hljs-keyword">return</span> l.<span class="hljs-title function_">toString</span>().<span class="hljs-title function_">repeat</span>(r)<br>      &#125; <br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;impossible&#x27;</span>)<br>    &#125;<br>    <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;PERCENT&#x27;</span>) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;string&#x27;</span> || <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">&quot;Binary &#x27;%&#x27; cannot apply to string&quot;</span>)<br>      &#125;<br>      <span class="hljs-keyword">return</span> l % r<br>    &#125;<br>    <br>    <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;SLASH&#x27;</span>) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;string&#x27;</span> || <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">&quot;Binary &#x27;/&#x27; cannot apply to string&quot;</span>)<br>      &#125;<br>      <span class="hljs-keyword">return</span> l / r<br>    &#125;<br>    <span class="hljs-keyword">if</span> (op.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;STAR_STAR&#x27;</span>) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> l === <span class="hljs-string">&#x27;string&#x27;</span> || <span class="hljs-keyword">typeof</span> r === <span class="hljs-string">&#x27;string&#x27;</span>) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-title function_">error</span>(op, <span class="hljs-string">&quot;Binary &#x27;**&#x27; cannot apply to string&quot;</span>)<br>      &#125;<br>      <span class="hljs-keyword">return</span> l ** r<br>    &#125;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&#x27;impossible&#x27;</span>)<br>  &#125;<br>  <span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">go</span>(expr)<br>  &#125; <span class="hljs-keyword">catch</span> (e) &#123;<br>    <span class="hljs-keyword">return</span> e <span class="hljs-keyword">as</span> <span class="hljs-title class_">Error</span><br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> code = <span class="hljs-string">&#x27;+(&quot;111&quot; + &quot;222&quot;) * 2 ** 3&#x27;</span><br><span class="hljs-keyword">const</span> tokens = <span class="hljs-title function_">readTokens</span>(code)<br><span class="hljs-keyword">const</span> expr = <span class="hljs-title function_">parse</span>(tokens)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">printAst</span>(expr)) <span class="hljs-comment">// (* (+ (+ &quot;111&quot; &quot;222&quot;)) (** 2 3))</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(evaluate(expr)) <span class="hljs-comment">// 889776</span><br></code></pre></div></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12-18%E3%80%8ACrafting%20Interpreters%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%EF%BC%8C%E9%80%92%E5%BD%92%E4%B8%8B%E9%99%8D%E6%B3%95.html">
+                        <span class="hidden-mobile">《Crafting Interpreters》学习笔记 1——词法分析，递归下降法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
