@@ -1,0 +1,526 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Turing Complete！但也仅此而已">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Crafting Interpreters》学习笔记 2——状态，控制流，函数，语义分析">
+<meta property="og:url" content="http://example.com/2023/12-28%E3%80%8ACrafting-Interpreters%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E7%8A%B6%E6%80%81%EF%BC%8C%E6%8E%A7%E5%88%B6%E6%B5%81%EF%BC%8C%E5%87%BD%E6%95%B0%EF%BC%8C%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="Turing Complete！但也仅此而已">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-28T07:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-30T06:50:50.279Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="编译原理">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>《Crafting Interpreters》学习笔记 2——状态，控制流，函数，语义分析 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《Crafting Interpreters》学习笔记 2——状态，控制流，函数，语义分析">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-12-28 15:00" pubdate>
+        2023年12月28日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《Crafting Interpreters》学习笔记 2——状态，控制流，函数，语义分析</h1>
+            
+            <div class="markdown-body">
+              <p>对 AST，有各种各样的方式去料理它——编译到另一门高级语言，生成机器码，字节码……这里采取最直接的方式——直接执行它。</p>
+<p>当前的实现中只支持表达式，因此执行代码就是去计算表达式，并产生一个值。为此，对表达式中的每种元素，字面量，操作符等，都需要知晓如何去计算它和产生结果。</p>
+<hr>
+<p>该实现解释器了，该解释器直接遍历 AST 并产生一个结果，解释器仍旧是一个 Visitor，返回值是 Object，因为我们并不知道表达式具体会返回什么，是 Double 还是 String 还是 Boolean。</p>
+<p>注意字面量和值的区别——字面量是 lexer 和 parser 的领域，而值是 interpreter，运行时的领域。</p>
+<p>实现解释器当前是很简单的，语言中当前只有表达式，和四则运算一样简单，但有些东西需要注意：</p>
+<ol>
+<li>不应该暴露底层的实现细节，应当妥善处理任何运行时异常，避免抽象泄漏，并且保证其行为最终和后面的 clox 一致。</li>
+<li>始终关心 Java 和 Lox 的类型系统，变量生命周期之间的关系（虽然这玩意全让 JVM 操心去了，到 clox 后才对这玩意有完全的控制权）</li>
+</ol>
+<p>总之这一章其实没多少需要做笔记的地方，直接进下一章。</p>
+<h1 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h1><p>该让这玩意有点编程语言的样子了，为了让它真正能做点什么，不至于当一个计算器，命令式语言要能真正做什么需要引入什么东西？语句 Statement！先做什么后做什么。在大多数编程语言中，整个源代码是由一个个语句组成的。</p>
+<p>为此，需要在语法中引入语句的概念，这里先从简单的开始，引入一个 expression 语句（即计算该表达式并利用它的副作用，但目前什么额外的操作都不能做）和一个 print 语句（没错，语句而非库函数，因为定义函数是后面的事情，现在要马上能看到效果）：</p>
+<figure class="highlight bnf"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs BNF">program   -&gt; statement* EOF<br>statement -&gt; exprStmt<br>          |  printStmt<br>exprStmt  -&gt; expr &quot;;&quot;<br>printStmt -&gt; &quot;print&quot; expr &quot;;&quot;<br></code></pre></div></td></tr></table></figure>
+
+<p>注意 program 规则最后的 EOF，这是为了避免解析器遗漏某些 token 没处理，在之前的四则运算的玩意里如果写一个 <code>1 + 2 3 + 4</code>，它处理完<code>1 + 2</code>就停了。</p>
+<h1 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h1><p>这样就有点编程语言的样子了，但这里还欠缺一个要素——<strong>状态 State</strong>，离开了状态，那这些语句不过是一堆独立的个体，没有任何相互联系的地方。引入状态就是引入<strong>变量——绑定 binding 值到一个名字上</strong>。而这又引入一个问题——变量存在哪？这又引入一个概念——<strong>环境 Environment</strong>——关联变量和值的数据结构。</p>
+<p>这里为了简化，不考虑作用域问题，把什么词法作用域啊函数作用域啊先留到将来，只考虑全局变量，这样，Environment 的实现就非常显然了——直接上哈希表就行。</p>
+<p>为此，再次扩充变量定义语法（这里加个私货 VAL）：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs 1c">program        → declaration* EOF <br>declaration    → varDecl        <span class="hljs-meta"># 这里的 varDecl 其实不太合适定义出来一个新的规则，其实 declaration 的实现中就需要根据第一个 token 是否是 var 来做操作。.</span><br>               <span class="hljs-string">|  statement </span><br>statement      → exprStmt<br>               <span class="hljs-string">|  printStmt </span><br>varDecl        → <span class="hljs-string">&quot;var&quot;</span> IDENTIFIER ( <span class="hljs-string">&quot;=&quot;</span> expression )? <span class="hljs-string">&quot;;&quot;</span> <br>valDecl        -&gt; <span class="hljs-string">&quot;val&quot;</span> IDENTIFIER <span class="hljs-string">&quot;=&quot;</span> expression;<br></code></pre></div></td></tr></table></figure>
+
+<p>注意这里把语句做了一些分离，为了避免这样的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">if</span> (<span class="hljs-literal">true</span>) <br>    <span class="hljs-keyword">var</span> a = <span class="hljs-number">1</span>;<br></code></pre></div></td></tr></table></figure>
+
+<p>这玩意在 java，kotlin，js，scala 中均不合法，提示需要一个表达式。为了和该行为保持一致，只要在后来实现 if 的时候让它只接受 statement 而非 declaration 即可。</p>
+<p>以及，生成一个新的 AST 类 Stmt 表示语句，并定义其子类 Expression，Print，Var。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ruby">generate_ast <span class="hljs-string">&#x27;Stmt&#x27;</span>, <span class="hljs-string">%/</span><br><span class="hljs-string">  Expression : Expr expression</span><br><span class="hljs-string">  Print      : Expr expression</span><br><span class="hljs-string">  Var        : Token name, Expr initializer</span><br><span class="hljs-string">/</span><br></code></pre></div></td></tr></table></figure>
+
+<p>另外，关于上一节中的错误处理，declaration 显然很适合作为同步点，因此 synchronize 方法放到这里。</p>
+<p>实现这些之后，又抛出另一个问题——在引用变量时，如果该变量找不着怎么办？有三种操作：</p>
+<ol>
+<li>抛出编译期错误，这能实现当然是最好的，但会引入一些复杂度——比如编写两个共递归的函数，他们互相引用，这时如果要抛编译期错误就不允许函数这样定义了。这当然是能处理的，比如在处理出现在顶层的标识符时不把它们当作语句的序列，而是当它们是“同时”定义的，但实现这玩意对于这样一个 tree-walker 解释器来说不值得（就连 typescript 中，函数中引用的变量写在函数定义之后，调用该函数的代码之前（因此会抛运行时异常）这种情况也无法处理呢）</li>
+<li><strong>抛出运行时错误</strong>，许多脚本语言就是这样处理的，这里也这么处理</li>
+<li>返回一个默认值比如 nil，不严格的 perl 是这么操作的，不应该这样搞，不然有了拼写错误都发现不了</li>
+</ol>
+<p>这也是为啥这语言中不像 python，ruby 那样直接<code>a = 1</code>就定义变量了——要是有拼写错误就麻了，同时也避免像 python 那样引入智障的 global，nonlocal 关键字。</p>
+<h2 id="赋值表达式语法"><a href="#赋值表达式语法" class="headerlink" title="赋值表达式语法"></a>赋值表达式语法</h2><p>上面说的是变量定义语句<code>var variableName = initValue;</code>，这里得研究一下变量赋值表达式，它的形式形如<code>variableName = initValue</code>。</p>
+<p>这里有个非常有趣的点——在 js，c 的优先级表中，三目的优先级比赋值高，但 js 的行为和 c，java 的行为均不同，后两者的行为是符合其优先级的。js 的这个有点令人费解……不按 js 的来。</p>
+<p>相应语法规则如下，注意赋值运算符是右结合的（如果把 ternary 的 body 里的 ternary 改成 assignment 应该就是 js 那种效果）：</p>
+<figure class="highlight xl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xl"><span class="hljs-function"><span class="hljs-title">expression</span> -&gt;</span> assignment<br><span class="hljs-function"><span class="hljs-title">assignment</span> -&gt;</span> IDENTIFIER <span class="hljs-string">&quot;=&quot;</span> assignment <br>           |  ternary <br><span class="hljs-function"><span class="hljs-title">ternary</span>    -&gt;</span> equality (<span class="hljs-string">&quot;?&quot;</span> ternary <span class="hljs-string">&quot;:&quot;</span> ternary)?<br><span class="hljs-function"><span class="hljs-title">equality</span>   -&gt;</span> comparison ((<span class="hljs-string">&quot;==&quot;</span> | <span class="hljs-string">&quot;!=&quot;</span>) comparsion)*<br><span class="hljs-function"><span class="hljs-title">comparsion</span> -&gt;</span> term ((<span class="hljs-string">&quot;&gt;&quot;</span> | <span class="hljs-string">&quot;&gt;=&quot;</span> | <span class="hljs-string">&quot;&lt;&quot;</span> | <span class="hljs-string">&quot;&lt;=&quot;</span>) term)*<br><span class="hljs-function"><span class="hljs-title">term</span>       -&gt;</span> factor ((<span class="hljs-string">&quot;-&quot;</span> | <span class="hljs-string">&quot;+&quot;</span>) factor)*<br><span class="hljs-function"><span class="hljs-title">factor</span>     -&gt;</span> unary ((<span class="hljs-string">&quot;*&quot;</span> | <span class="hljs-string">&quot;/&quot;</span>) unary)*<br><span class="hljs-function"><span class="hljs-title">unary</span>      -&gt;</span> (<span class="hljs-string">&quot;!&quot;</span> | <span class="hljs-string">&quot;-&quot;</span>) unary | primary<br><span class="hljs-function"><span class="hljs-title">primary</span>    -&gt;</span> NUMBER | STRING | <span class="hljs-string">&quot;true&quot;</span> | <span class="hljs-string">&quot;false&quot;</span> | <span class="hljs-string">&quot;nil&quot;</span> <br>            | <span class="hljs-string">&quot;(&quot;</span> expression <span class="hljs-string">&quot;)&quot;</span> <br></code></pre></div></td></tr></table></figure>
+
+<p>虽然看上去轻松，但实现的时候还是有一些问题的，这关乎赋值语句本身的特性——左值和右值，在运行时，<strong>左值求的不是值，而是它对应的“地址”</strong>。如何保证等号左边是左值？这里的诀窍是退一步进两步——先放宽需求，这样去定义 assignment：</p>
+<figure class="highlight xl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xl"><span class="hljs-function"><span class="hljs-title">assignment</span> -&gt;</span> ternary (<span class="hljs-string">&quot;=&quot;</span> assignment)?<br></code></pre></div></td></tr></table></figure>
+
+<p>然后实际操作的时候，先获取一个 ternary，并检查下一个 token 是否是 EQUAL，若是就进入赋值表达式的逻辑，检查这里的 ternary 是否是 IDENTIFIER，如何检查呢？这里是个 Expr 啊？我们知道解析 IDENTIFIER 会解析成<code>Expr.Variable</code>，那就做个 instanceof 呗。<strong>这里实际上是一个把右值转换为左值的过程</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">private</span> Expr <span class="hljs-title function_">assignment</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">val</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> ternary();<br>    <span class="hljs-keyword">if</span> (match(EQUAL)) &#123;<br>        <span class="hljs-type">val</span> <span class="hljs-variable">equal</span> <span class="hljs-operator">=</span> previous();<br>        <span class="hljs-type">val</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> assignment();<br>        <span class="hljs-comment">// 后续可以进行更多处理，比如左边是 arr[i]，instance.field 等形式时</span><br>        <span class="hljs-comment">// 左值不能当成普通表达式看待，需要特别的处理逻辑，比如 (a) = 1，即使看上去没啥问题，我们也不应当认为它合法</span><br>        <span class="hljs-keyword">if</span> (res <span class="hljs-keyword">instanceof</span> Expr.Variable) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Expr</span>.Assign(((Expr.Variable) res).name, value);<br>        &#125;<br>        error(equal, <span class="hljs-string">&quot;Invalid assignment target&quot;</span>); <span class="hljs-comment">// 非法的左值</span><br>        <span class="hljs-comment">// 这里还是继续解析，这个错误不至于去进入 panic mode</span><br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里如果直接尝试匹配一个 IDENTIFIER，再尝试匹配一个 EQUAL 来走到赋值表达式的逻辑如何呢？其实应该也是能做到的，但后续不好扩展。</p>
+<p>在退一步时，可以退的更远，允许甚至不是表达式的东西出现在左边，只要保证退了后还能进就行，哈哈哈哈哈。</p>
+<h2 id="赋值表达式语义"><a href="#赋值表达式语义" class="headerlink" title="赋值表达式语义"></a>赋值表达式语义</h2><p>这个倒简单——若先前存在该变量定义，就继续赋值操作，不然就报错说 undefined 的变量。</p>
+<h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><p>作用域，即能看到映射到特定名字的特定实体的地方。词法作用域是一种特殊的作用域，即仅通过程序的源代码便能够看出作用域的开始和结束位置。大多数现代语言中，变量都是词法作用域的（不全是，ruby 和 python 的变量没有词法作用域，只有函数作用域）。</p>
+<p>而在 lox 中，方法，字段是动态作用域的——直到运行时，你才知道特定对象是否包含该方法、字段。</p>
+<p>要引入词法作用域，只使用哈希表来作存储是不够的——需要考虑作用域遮蔽的情况，即内层作用域的变量遮蔽外层作用域的同名变量，而离开内层作用域之后，外层作用域的同名变量变得又能访问到了。</p>
+<p>为此，Environment 需要是某种嵌套结构——在进入一个词法块的时候，创建一个新的 Environment，该 Environment 需要引用包围它的 Environment，定义变量时在该 Environment 中定义，查询时先查询该 Environment，再递归查询包围它的 Environment，如果不存在包围它的 Environment 再认为是 undefined 的变量。</p>
+<p>离开词法块的时候，设定当前 Environment 为包围它的 Environment 即可。这里并不需要整出来个树结构，实际上链表即可。</p>
+<p>另外，需要引入块：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs 1c">statement → exprStmt<br>          <span class="hljs-string">|  printStmt </span><br>          <span class="hljs-string">|  block</span><br>block     → <span class="hljs-string">&quot;&#123;&quot;</span> declaration* <span class="hljs-string">&quot;&#125;&quot;</span> ;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h1><p>后面只记一些最值得记的地方，感觉并不需要跟着书见到啥记啥，又不是学马哲，没必要啥东西都抓，整点实用主义。</p>
+<p>控制流最基本来说，只有两种类型：条件和循环。实现了这俩，那语言就图灵完备了。</p>
+<h2 id="if"><a href="#if" class="headerlink" title="if"></a>if</h2><p>if 的语法如下：</p>
+<figure class="highlight coq"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs coq">statement → exprStmt<br>          |  <span class="hljs-type">printStmt</span> <br>          |  <span class="hljs-type">block</span><br>          |  <span class="hljs-type">ifStmt</span><br>ifStmt    -&gt; <span class="hljs-string">&quot;if&quot;</span> <span class="hljs-string">&quot;(&quot;</span> expression <span class="hljs-string">&quot;)&quot;</span> statement (<span class="hljs-string">&quot;else&quot;</span> statement)?<br></code></pre></div></td></tr></table></figure>
+
+<p>处理 if 时，有个经典的问题：对下面的代码，else 对应的是哪个 if？</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-keyword">if</span> (first)<br>  <span class="hljs-keyword">if</span> (second) &#123;<span class="hljs-comment">/*...*/</span>&#125;<br><span class="hljs-keyword">else</span> &#123;<span class="hljs-comment">/*...*/</span>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>一些语言为了避免这个问题，直接为 else if 去提供新的关键字，这里直接走最自然的逻辑——让 else 匹配最近的 if，这正好和解析器的工作方式相吻合——在解析内层的 if 的时候，它会贪婪地把 else 子句马上消费掉。</p>
+<h2 id="条件表达式"><a href="#条件表达式" class="headerlink" title="条件表达式"></a>条件表达式</h2><p>条件表达式，注意 or 的优先级更低，就像一堵高墙把不同的 and 隔离开来。同时注意条件表达式计算时有短路操作，所以值得为条件表达式新增对应的语法树节点类型。</p>
+<h2 id="while，for"><a href="#while，for" class="headerlink" title="while，for"></a>while，for</h2><p>没啥好说的。关于 for，书中提了语法糖的概念，即不引入新的语法树节点，对于语法糖，手动去把它 desugar 成已有的语法树节点。</p>
+<p>考虑到实现 for 有点蛋疼，书中的 for 限制颇多，这里干脆不要 for 了。</p>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>最激动人心的时刻——函数。有了函数，就有了过程抽象的能力。</p>
+<p>函数调用的语法如下：</p>
+<figure class="highlight xl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xl"><span class="hljs-function"><span class="hljs-title">call</span>      -&gt;</span>  primary (<span class="hljs-string">&quot;(&quot;</span> arguments? <span class="hljs-string">&quot;)&quot;</span>)*<br><span class="hljs-function"><span class="hljs-title">arguments</span> -&gt;</span> expression (<span class="hljs-string">&quot;,&quot;</span> expression)*<br></code></pre></div></td></tr></table></figure>
+
+<p>注意函数调用是左结合，因此它的实现类似中缀操作符。</p>
+<p>函数定义的语法如下：</p>
+<figure class="highlight xl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xl"><span class="hljs-function"><span class="hljs-title">fnStmt</span> -&gt;</span> <span class="hljs-string">&quot;FUN&quot;</span> IDENTIFIER <span class="hljs-string">&quot;(&quot;</span> parameters? <span class="hljs-string">&quot;)&quot;</span> <span class="hljs-keyword">block</span><br><span class="hljs-function"><span class="hljs-title">parameters</span> -&gt;</span> IDENTIFIER (<span class="hljs-string">&quot;,&quot;</span> IDENTIFIER)*<br></code></pre></div></td></tr></table></figure>
+
+<p>注意这里的命名——argument 和 parameter。</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p>关于函数，实际上有两个作用域和它相关——函数定义时的作用域，函数调用时的作用域，前者用于创建闭包（这玩意好像本身就叫闭包？），后者……或许可以在像 scala 之类的语言中传递隐式参数之类的玩意？</p>
+<p>要实现闭包，只需要让函数记住函数定义时的作用域即可。</p>
+<h1 id="变量获取和绑定"><a href="#变量获取和绑定" class="headerlink" title="变量获取和绑定"></a>变量获取和绑定</h1><p>上面的作用域的实现是有问题的——函数创建时，保存函数当前的环境，在获取变量时，它跟随着作用域链一层层往上找，找到最近的该变量。问题是，<strong>环境是可变的</strong>，在变量定义后，如果在比原所捕获变量的作用域更深的作用域下再次定义同名变量，函数再次调用后找到的变量和函数想要找到的变量就不同了。这是不符合直觉的：</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js">val a = <span class="hljs-string">&quot;global&quot;</span>;<br>&#123;<br>  fun <span class="hljs-title function_">showA</span>(<span class="hljs-params"></span>) &#123;<br>    print a;<br>  &#125;<br><br>  <span class="hljs-title function_">showA</span>(); <span class="hljs-comment">// global</span><br>  val a = <span class="hljs-string">&quot;block&quot;</span>;<br>  <span class="hljs-title function_">showA</span>(); <span class="hljs-comment">// block</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这里的问题在于，在函数定义的该层环境中，又定义了同名变量 a，函数往外找变量 a 时，先找到了同层的这个 a，即使它是在函数定义后才定义的。词法作用域是<strong>静态语义</strong>，函数捕获的变量应当是比它先定义的，最深的变量。这里没有给变量 a 重新赋值，因此函数的输出结果不同绝对是哪里出现了问题。</p>
+<p>这里有两个概念——静态的作用域和动态的环境，需要保证它们正确地同步。大多数时候同步是得到保障的——进入新作用域时创建新环境，离开该作用域时丢掉环境。变量定义时，把变量绑定到环境上。</p>
+<p>错误来自于一个前提——我们假设块中的每一行语句都在同一个作用域中。根据该前提，这里使用单个环境去表达作用域。新增变量时，不是创建新作用域，而是把变量绑定在现有的这个作用域上，即不断地<strong>修改</strong>这个作用域。函数需要看到的，是函数定义时的作用域的一个不变的快照。</p>
+<p>要处理这个问题，最明显的方案是丢掉这个前提，每次新增一个变量，也要新创建一个 Environment，保证运行时的行为和静态语义完全一致，但要实现这个估计会很痛苦且低效。考虑到只有对函数才有这种情况，可以在定义函数时把整个作用域完全拷贝一次。</p>
+<p>但这里使用更直接的方案——进行语义分析，在函数定义时直接“烘培”函数中引用的外部变量。</p>
+<h2 id="语义分析"><a href="#语义分析" class="headerlink" title="语义分析"></a>语义分析</h2><p>resolve——遇到标识符时，找到相应的变量定义。每次遇到带变量的表达式就要进行这一过程。考虑到对静态作用域，每一个用到的变量，都能唯一地找到它的变量定义，没必要在运行时才去一层一层地去找，而是只找一次，找一次就固化它（我是说，烘培 lol）。</p>
+<p>为此，需要进行一次语义分析，在解析完 token 序列之后，真正执行代码之前；类型分析，优化通常在此时执行。一般来说，一切不依赖运行时状态的工作都可以在这里完成。</p>
+<p>这里，需要根据每个标识符去找到对应的变量定义，因此所有和变量（标识符）以及块相关的语句和表达式需要处理，其他的节点就直接继续遍历它的子节点：</p>
+<ol>
+<li>块</li>
+<li>函数定义</li>
+<li>变量定义</li>
+<li>变量引用和赋值表达式</li>
+</ol>
+<p>在进行语义分析时，<strong>遇到变量和函数的定义时，记录定义位置（以作用域为单位）；遇到引用变量和函数的地方时，检查当前以及定义位置之间差了多少层作用域，并让这个信息被解释器知晓</strong>。</p>
+<p>这里定义一个 Resolver 用来进行变量的获取，它要维护一个作用域栈，栈中元素为哈希表，保存当前作用域下定义的变量。该哈希表的类型为<code>Map&lt;String, Boolean&gt;</code>，key 为标识符名称，至于 value……要考虑一个边缘情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js">val a = <span class="hljs-number">1</span>;<br>&#123;<br>  val a = a;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这认为是不合法的，要报错<code>Cannot access &#39;a&#39; before initialization</code>。为了能区分这种情况，不能直接用集合去保存当前作用域，这里的 value 表示变量是否“准备完毕”，这里先把 a 先“声明”，处理完右值后，再把 a 去“定义”；在获取变量时，如果发现变量“声明”了但没“定义”就报错。（如果没有找到变量，就认为变量是在顶层作用域，因为顶层作用域是非常灵活的，这里不报错）</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 下面是这两个过程的伪代码描述</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">resolve</span>(<span class="hljs-params">node: ASTNode</span>):<br>    <span class="hljs-keyword">if</span> node <span class="hljs-keyword">is</span> VAR_STMT:<br>        declare node<br>        resolve node.initializer <br>        define node<br>    <span class="hljs-keyword">elif</span> node <span class="hljs-keyword">is</span> FUNCTION:<br>        declare_and_define node<br>        with_new_scope:<br>            declare_and_define params<br>            resolve <span class="hljs-keyword">for</span> node.body<br>    <span class="hljs-keyword">elif</span> node <span class="hljs-keyword">is</span> BLOCK:<br>        with_new_scope:<br>            resolve <span class="hljs-keyword">for</span> node.stmts<br>    <span class="hljs-keyword">elif</span> node <span class="hljs-keyword">is</span> VARIABLE:<br>        var_stmt, depth = find_define_location node<br>        <span class="hljs-keyword">assert</span> var_stmt <span class="hljs-keyword">is</span> defined<br>        interpreter.resolveLocal node, depth<br>    <span class="hljs-keyword">else</span>:<br>        resolve <span class="hljs-keyword">for</span> node.childrens<br></code></pre></div></td></tr></table></figure>
+
+<p>如何让解析器保存该信息？增加一个哈希表字段，映射相应 AST 节点（必将是<code>Variable</code>或<code>Assign</code>类型，即赋值和取值）到其和其定义位置的距离。使用<code>IdentityHashMap</code>以使能够利用到节点本身的唯一标识符——地址。</p>
+<p>之后，修改解释器对赋值和变量的处理，直接根据该哈希表去找到相应字段所在的 Environment，如果没找到，则默认是在全局作用域中。</p>
+<p>这一趟语义分析也可以干点其他的，比如，检查变量是否在同一个作用域被重复定义了，检查 return 时是否在函数内，检查 return 后是否还有不可到达的代码…</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12-19%E4%BD%BF%E7%94%A8TS%E4%BD%BF%E7%94%A8%E9%80%92%E5%BD%92%E4%B8%8B%E9%99%8D%E6%B3%95%E5%AE%9E%E7%8E%B0%E8%A7%A3%E6%9E%90%E5%9B%9B%E5%88%99%E8%BF%90%E7%AE%97.html">
+                        <span class="hidden-mobile">使用 TS 使用递归下降法实现解析四则运算</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
