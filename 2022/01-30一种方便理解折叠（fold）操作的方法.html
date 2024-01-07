@@ -18,15 +18,15 @@
   <meta name="author" content="友纪V-λOP">
   <meta name="keywords" content="">
   
-    <meta name="description" content="虽然之前对折叠操作进行过一些了解（见此），但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。">
+    <meta name="description" content="虽然之前对折叠操作进行过一些了解，但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一种方便理解折叠（fold）操作的方法">
 <meta property="og:url" content="http://example.com/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html">
 <meta property="og:site_name" content="友纪V-λOP">
-<meta property="og:description" content="虽然之前对折叠操作进行过一些了解（见此），但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。">
+<meta property="og:description" content="虽然之前对折叠操作进行过一些了解，但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-01-30T06:30:54.000Z">
-<meta property="article:modified_time" content="2023-11-12T03:44:40.292Z">
+<meta property="article:modified_time" content="2024-01-07T02:22:48.930Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta name="twitter:card" content="summary_large_image">
@@ -223,7 +223,7 @@
             <h1 style="display: none">一种方便理解折叠（fold）操作的方法</h1>
             
             <div class="markdown-body">
-              <p>虽然之前对折叠操作进行过一些了解<a href="/2021/10-15%E5%B7%A6%E6%8A%98%E5%8F%A0%E5%92%8C%E5%8F%B3%E6%8A%98%E5%8F%A0.html" title="左折叠和右折叠">（见此）</a>，但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。</p>
+              <p>虽然之前对折叠操作进行过一些了解，但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。</p>
 <span id="more"></span>
 
 <p>该方法似乎无法用来说明为何<code>foldr</code>能处理无穷列表。</p>
@@ -270,7 +270,7 @@
 
 <p>可以注意到，对于左折叠，结果的类型同折叠函数的第一个（左边的）参数相同，<strong>这个参数一般命名为 acc，意为累加</strong>；对于右折叠，结果的类型则同第二个相同了。折叠函数的参数顺序结合这里的表示方法是容易理解的。</p>
 <h2 id="js-中的折叠操作"><a href="#js-中的折叠操作" class="headerlink" title="js 中的折叠操作"></a>js 中的折叠操作</h2><p>js 中为数组（Array）提供了 reduce 和 reduceRight 方法，API 介绍可以看 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce">这里</a>，其中 reduce 代表左折叠，reduceRight 代表右折叠。</p>
-<p>同时，对这两个方法，初始值可以不给定，这时 js 会选择使用第一个或最后一个元素作为初始值。但是不给定初始值的折叠操作对于空数组会抛出异常，这在某些时候不是我们所期望的。<strong>而且如果不给定初始值，则返回值必须是该数组中的类型</strong>，<span class="heimu">但如果你想给其他程序员造成<em>惊喜</em>，也可以试着这么干！梗 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Principle_of_least_astonishment">见此</a></span>。</p>
+<p>同时，对这两个方法，初始值可以不给定，这时 js 会选择使用第一个或最后一个元素作为初始值。但是不给定初始值的折叠操作对于空数组会抛出异常，这在某些时候不是我们所期望的。<strong>而且如果不给定初始值，则返回值必须是该数组中的类型</strong>，除非你想给人造成一点惊喜。</p>
 <p>需注意的是，reduceRight 方法接受的折叠函数的参数里，acc 在前，x 在后，同 reduce 方法一致，这和上面编写的 foldr 不同。</p>
 <h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>上面的描述或许仍显抽象，唯一的方式是拿更多的例子来进行推导，在实践中出真知。下面的示例中一概使用 js 的 reduce 进行描述。</p>
 <h3 id="map-filter-flatMap"><a href="#map-filter-flatMap" class="headerlink" title="map, filter, flatMap"></a>map, filter, flatMap</h3><p>先来点开胃菜，通过 reduce 实现 map，filter，flatMap，这几个比较简单。</p>

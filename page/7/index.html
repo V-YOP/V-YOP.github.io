@@ -181,46 +181,6 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2022/02-10%E9%85%8D%E7%BD%AEdocker%E9%9B%86%E7%BE%A4%E4%BA%92%E7%9B%B8%E4%B9%8B%E9%97%B4%E7%9A%84ssh.html" target="_self">
-          配置 docker 集群互相之间的 ssh
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2022/02-10%E9%85%8D%E7%BD%AEdocker%E9%9B%86%E7%BE%A4%E4%BA%92%E7%9B%B8%E4%B9%8B%E9%97%B4%E7%9A%84ssh.html" target="_self">
-          
-          新！年！快！乐！从量变到质变的过程总是发生地很短暂。 最近搭建 hadoop 环境（感觉弄出来个还算好的集群，之后再加配置就轻松了！的时候碰上这样的需求——需要让 Docker 集群的不同容器之间能通过 ssh 互相访问，研究了几个晚上后终于是搞定了，相关配置虽然很简单，但是感觉仍旧是学到了一点东西，这里进行一些记录，
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-02-10 19:56" pubdate>
-              2022-02-10
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
         <a href="/2022/02-02%E5%9C%A8IDEA%E4%B8%AD%E5%B0%86%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0Docker%E4%B8%AD%E8%BF%90%E8%A1%8C.html" target="_self">
           在 IDEA 中将项目部署到 Docker 中运行
         </a>
@@ -229,7 +189,7 @@
       <p class="index-excerpt">
         <a href="/2022/02-02%E5%9C%A8IDEA%E4%B8%AD%E5%B0%86%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0Docker%E4%B8%AD%E8%BF%90%E8%A1%8C.html" target="_self">
           
-          此方法无法使用 debug，且启动起来可能会非常缓慢！应当在需要进行远程部署，测试等情况下进行使用。           这几天折腾 Docker 的网络问题弄得心力交瘁，最后发现好像在 Mac 上的确是找不到合适的，客户端无感知的解决方案。今天突然灵机一动，想到我干脆可以把项目作为容器部署到 Docker 里，然后把客户端（消费者）的端口映射到本机。
+          此方法无法使用 debug，且启动起来可能会非常缓慢！应当在需要进行远程部署，测试等情况下进行使用。 这几天折腾 Docker 的网络问题弄得心力交瘁，最后发现好像在 Mac 上的确是找不到合适的，客户端无感知的解决方案。今天突然灵机一动，想到我干脆可以把项目作为容器部署到 Docker 里，然后把客户端（消费者）的端口映射到本机。
         </a>
       </p>
 
@@ -269,7 +229,7 @@
       <p class="index-excerpt">
         <a href="/2022/02-01%E4%B8%80%E4%B8%AA%E5%9C%A8OSX%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%B8%8B%E9%80%9A%E8%BF%87IP%E8%AE%BF%E9%97%AEDocker%E5%AE%B9%E5%99%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.html" target="_self">
           
-          不建议使用这种方式，它实现起来不算方便，且实现后还需要配置终端的代理设置，在这里推荐我写（抄）的项目，虽然需要在本机安装额外的依赖，但是配置完后就基本无感知了！  如果是 VSCode或 JetBrain 家的 IDE，也可以将项目部署到 container 内。           MacOS（以及 Windows）上的 Docker 由于实现方式的原因，在网络配置上有许多限制，最
+          不建议使用这种方式，它实现起来不算方便，且实现后还需要配置终端的代理设置，在这里推荐我写（抄）的项目，虽然需要在本机安装额外的依赖，但是配置完后就基本无感知了！  如果是 VSCode 或 JetBrain 家的 IDE，也可以将项目部署到 container 内。 MacOS（以及 Windows）上的 Docker 由于实现方式的原因，在网络配置上有许多限制，最麻烦的地方是无法通过容器的 IP
         </a>
       </p>
 
@@ -309,7 +269,7 @@
       <p class="index-excerpt">
         <a href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html" target="_self">
           
-          虽然之前对折叠操作进行过一些了解（见此），但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。
+          虽然之前对折叠操作进行过一些了解，但是仍然对其不甚熟悉，没法立刻写出定义，最近突然发现一种能方便理解折叠操作的方法，这里对其进行一些记录，使用 js 来进行描述。
         </a>
       </p>
 
@@ -570,6 +530,46 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/GO/">GO</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.html" target="_self">
+          使用 Monad 的&gt;&gt;=实现&lt;$&gt;和&lt;*&gt;
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10-28%E4%BD%BF%E7%94%A8Monad%E5%AE%9A%E4%B9%89Functor%E5%92%8CApplicative%E7%9A%84%E8%BF%90%E7%AE%97.html" target="_self">
+          
+          惊为天人，惊为天人啊，没想到仅使用 Monad 的&gt;&gt;&#x3D;和return便可以实现&lt;$&gt;和&lt;*&gt;！下面描述一下我的心路历程。
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-29 22:56" pubdate>
+              2021-10-29
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/FP/">FP</a>
             
           </div>
         

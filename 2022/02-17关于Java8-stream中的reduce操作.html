@@ -26,7 +26,7 @@
 <meta property="og:description" content="在之前再次学习折叠操作的时候，我曾做了一些笔记，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner，可谓是“Java 特色 reduce 操作”（哈哈！">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-02-16T16:08:28.000Z">
-<meta property="article:modified_time" content="2023-11-12T03:44:40.293Z">
+<meta property="article:modified_time" content="2024-01-07T02:23:44.909Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="FP">
@@ -224,7 +224,7 @@
             <h1 style="display: none">关于 Java8 的 stream 中的 reduce 操作</h1>
             
             <div class="markdown-body">
-              <p>在之前再次学习折叠操作的时候，我曾做了一些<a href="/2022/01-30%E4%B8%80%E7%A7%8D%E6%96%B9%E4%BE%BF%E7%90%86%E8%A7%A3%E6%8A%98%E5%8F%A0%EF%BC%88fold%EF%BC%89%E6%93%8D%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95.html" title="一种方便理解折叠（fold）操作的方法">笔记</a>，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——<strong>为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner</strong>，可谓是“Java 特色 reduce 操作”（哈哈！）。</p>
+              <p>在之前再次学习折叠操作的时候，我曾做了一些笔记，并且使用 js 编写了一些示例。当时本打算同时也介绍一下 Java8 的 stream 中提供的 reduce 方法（以下简称 java8-reduce），但发现其行为和 js 中的相去甚远——<strong>为了高性能和并发支持，它的 reduce 方法是经过大量优化的，也引入了自己独有的所谓 Combiner</strong>，可谓是“Java 特色 reduce 操作”（哈哈！）。</p>
 <p>最近学习 Hadoop 的 MapReduce 的时候，它的 Combiner 让我又回想起 java8-reduce 中的 Combiner（虽然其行为完全不是一回事就是了，MapReduce 中的 Combiner 的目的是预先进行一次本地的聚集，减少网络传输成本；java8-reduce 的 Combiner 的目的是归并各部分 reduce 的结果，得到最终值），因此这里又回过头来学习一波。</p>
 <blockquote>
 <p>咳咳，学过 MR 的 Combiner 后回过头来一看，发现它的行为（至少是接口）确实和 java8-reduce 的非常像，它们都需要保证输入和输出的签名是相同的以进行反复的 Combine。</p>

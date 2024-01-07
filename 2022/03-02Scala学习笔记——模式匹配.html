@@ -26,7 +26,7 @@
 <meta property="og:description" content="Scala 确实很有趣，虽然它并非像 Haskell 那样优雅简洁，某些抽象，如代数数据类型，仍旧需要通过一些“模式”来实现，而它在 Haskell 中是能够非常优雅清晰地表述的，或许这是使用 OOP 对 FP 进行建模的必然结果吧？但了解它的抽象方式也是非常有趣的，相较于 Haskell 更为啰嗦这一点，也让我对一些之前学习 Haskell 时未曾理解的概念，如模式匹配的视图等有了更加深刻的理解">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-02T15:27:22.000Z">
-<meta property="article:modified_time" content="2023-11-12T03:44:40.294Z">
+<meta property="article:modified_time" content="2024-01-07T02:25:29.731Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="FP">
 <meta property="article:tag" content="Scala">
@@ -246,15 +246,8 @@
 <p>在 Scala 中，也容易有等价的实现——</p>
 <figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">second</span></span>[<span class="hljs-type">A</span>](lst : <span class="hljs-type">List</span>[<span class="hljs-type">A</span>]) : <span class="hljs-type">Option</span>[<span class="hljs-type">A</span>] = lst <span class="hljs-keyword">match</span> &#123;<br>  <span class="hljs-keyword">case</span> _ :: x :: _ =&gt; <span class="hljs-type">Some</span>(x)<br>  <span class="hljs-keyword">case</span> _ =&gt; <span class="hljs-type">None</span><br>&#125;<br></code></pre></div></td></tr></table></figure>
 
-
-    <details style="margin-bottom:15px; margin-top:15px">
-        <summary><span style="font-size: 1.225em; font-weight: bold;border-bottom: 1px solid #ccc;color: var(--link-color);outline: 0;text-decoration: none;overflow-wrap: break-word;word-wrap: break-word;cursor: pointer">关于 Scala 自定义操作符时的结合性问题</span></summary>
-        <blockquote><p>关于 Scala 自定义操作符时的结合性问题，（这里不考虑&#x3D;结尾的操作符）操作符默认为左结合，如果操作符的最右边是<code>:</code>，则右结合，如<code>1 +: 2 +: List()</code>，结合性为<code>1 +: (2 +: List())</code>。这里也可以认为，<code>:</code>符号贴近对象的先计算，可以通过 Seq 的<code>+:</code>，<code>:+</code>建立形象化的理解（想象一下我<del>抄袭</del>发明的&gt;&#x3D;&gt;符号，哈哈）——</p>
+<p>关于 Scala 自定义操作符时的结合性问题，（这里不考虑&#x3D;结尾的操作符）操作符默认为左结合，如果操作符的最右边是<code>:</code>，则右结合，如<code>1 +: 2 +: List()</code>，结合性为<code>1 +: (2 +: List())</code>。这里也可以认为，<code>:</code>符号贴近对象的先计算，可以通过 Seq 的<code>+:</code>，<code>:+</code>建立形象化的理解（想象一下我<del>抄袭</del>发明的&gt;&#x3D;&gt;符号，哈哈）——</p>
 <figure class="highlight scala"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs scala"><span class="hljs-number">1</span> +: <span class="hljs-number">2</span> +: <span class="hljs-number">3</span> +: <span class="hljs-type">Nil</span> <br><span class="hljs-type">List</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>) :+ <span class="hljs-number">4</span> :+ <span class="hljs-number">5</span><br></code></pre></div></td></tr></table></figure>
-</blockquote>
-        
-    </details>
-  
 
 <p><strong>如果说构造函数用于构造数据，则模式匹配则是用于解构数据</strong>。</p>
 <p>考虑这样一个数据类型——</p>
@@ -281,8 +274,7 @@
 <p><code>case _ : String =&gt; &quot;一个字符串&quot;</code>检查 obj 是否是字符串，如果是则匹配。</p>
 <p><code>case _ =&gt; &quot;不造啊&quot;</code>是一个恒真的 case，它匹配任何值。</p>
 <p>之前的例子<code>val ShouJyo(...) = ...</code>，其实等价于模式匹配语句，但只有一个 case。</p>
-<span class="heimu">Haskell 做得到嘛！（战术后仰）</span>
-
+<p>Haskell 做得到嘛！（战术后仰）</p>
 <h2 id="解构的原理——以-List-为例子"><a href="#解构的原理——以-List-为例子" class="headerlink" title="解构的原理——以 List 为例子"></a>解构的原理——以 List 为例子</h2><p>考虑模仿 Scala 自定义一个 List，通过其了解模式匹配的机制。</p>
 <p>使用 Haskell 的语法表述的话（符号用的 Idris 的），List 的定义为——</p>
 <figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">List</span> a = <span class="hljs-type">Nil</span> | a :: <span class="hljs-type">List</span> a</span><br></code></pre></div></td></tr></table></figure>
