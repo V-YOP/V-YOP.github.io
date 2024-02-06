@@ -1,0 +1,576 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="图灵完备！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机系统要素学习笔记 Part2——从汇编器到虚拟机">
+<meta property="og:url" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="图灵完备！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/project7_mapping.png">
+<meta property="og:image" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/image.png">
+<meta property="og:image" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/fffib.png">
+<meta property="article:published_time" content="2024-02-06T13:00:00.000Z">
+<meta property="article:modified_time" content="2024-02-06T13:42:55.063Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="计算机组成">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/project7_mapping.png">
+  
+  
+  <title>计算机系统要素学习笔记 Part2——从汇编器到虚拟机 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="计算机系统要素学习笔记 Part2——从汇编器到虚拟机">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-02-06 21:00" pubdate>
+        2024年2月6日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">计算机系统要素学习笔记 Part2——从汇编器到虚拟机</h1>
+            
+            <div class="markdown-body">
+              <p>这段时间学了点 Rust，做了两半篇笔记（然后上班各种写文档，头疼死），现在该回过头来继续了。</p>
+<p>第二部分，软件的部分，从 Assembler 到虚拟机，到高级语言的编译器，到操作系统（其实就是该高级语言的一堆标准库，我觉得实在称不上是操作系统），到俄罗斯方块。这里学习虚拟机的部分。</p>
+<h1 id="Assembler"><a href="#Assembler" class="headerlink" title="Assembler"></a>Assembler</h1><p>首先是汇编器……其实没什么好说的，注意忽略注释，忽略空行，不需要考虑代码尾随注释的情况，注意<code>LCL</code>，<code>ARG</code>等名字也需要注册。唯一的复杂点的部分是解析 C 指令，注意到有明确的标识符<code>=</code>和<code>;</code>可供使用，正则要写对。其它的更多的是体力活，特别是翻译 C 指令的时候。代码不贴了，用啥语言都一样。</p>
+<h1 id="虚拟机-Part-1"><a href="#虚拟机-Part-1" class="headerlink" title="虚拟机 Part 1"></a>虚拟机 Part 1</h1><p>后面的部分要在 Hack 机上实现一个类似 Java 的高级语言。实现其的方式同样类似 Java——<strong>先编译成一种中间代码，其被设计用来跑在虚拟机上；然后再将中间代码翻译到机器语言</strong>，但和 JVM 不同的是，JVM 是在运行时做的翻译工作，而这里是在编译时，在运行时这里的 VM 没有什么存在的实感。这让该虚拟机更多地像是一个心智模型而非运行时存在的实体。</p>
+<p>从高级语言到机器语言的翻译过程中，这里的虚拟机语言是一个中间的界面，把它想象成在一台抽象机器上执行的独立的语言是有必要的。这时，我们就能描述这样一台执行中间语言的虚拟机器，实际上描述它就是在描述这个中间语言，and vise versa。同时，描述它时不需要在 Hack 机或是 Jack 语言的上下文下——虽然中间语言的设计是需要考虑前后端的性质的。</p>
+<p>这个 2-tier 步骤的编译器有何优越？它允许不影响前端的情况下添加后端——只要实现虚拟机语言到对应机器语言的翻译部分即可，比如我可以对其它的架构去作为其后端，比如游戏《Turing Complete》中的 8 位计算机；它允许不影响后端的情况下添加前端——只要实现另一门语言到虚拟机语言的翻译部分即可，这允许我使用其它自制语言去作为前端。</p>
+<h2 id="Specification-Part-1"><a href="#Specification-Part-1" class="headerlink" title="Specification Part 1"></a>Specification Part 1</h2><p>首先离开前端后端，了解该 VM 的性质。该 V&lt;是一个栈式虚拟机，有四种指令——算术&#x2F;逻辑，访存，分支和函数定义&#x2F;调用（可见它是相当抽象的，相较于机器语言）。这里先只处理算术指令和访存指令。</p>
+<p>VM 有如下虚拟内存段，访问每个内存段中的值时，通过<code>segment index</code>去访问，如<code>argument 0</code>代表第一个参数，实际上到时候取它的行为也将是<code>argument[0]</code>（实际实现后端的时候，可能在不同函数调用中，argument 和 local 指向的是堆上不同的位置）：</p>
+<ul>
+<li>argument：代表函数参数</li>
+<li>local：代表函数本地参数</li>
+<li>static：全局变量</li>
+<li>constant：0 到 2^15-1 的常数</li>
+<li>this：下章再提</li>
+<li>that：下章再提</li>
+<li>pointer：长度始终为 2，<code>pointer[0]</code>指向 this（即在下面的实现中等于<code>THIS</code>） ，<code>pointer[1]</code>指向 that（即在下面的实现中等于<code>THAT</code>）</li>
+<li>temp：临时存储用（其实这个没必要写在 Spec 里不是？）</li>
+</ul>
+<p>指令（及其语法）有：</p>
+<ul>
+<li><code>push segment index</code>：把<code>segment[index]</code>push 到栈顶</li>
+<li><code>pop segment index</code>：pop 栈顶到<code>segment[index]</code></li>
+<li><code>add</code>：pop 栈顶数据 <code>y</code>，<code>x</code>，push <code>x + y</code>（y 是第一次 pop 出来的）</li>
+<li><code>sub</code>, <code>eq</code>，<code>gt</code>，<code>lt</code>，<code>and</code>，<code>or</code>：同 add</li>
+<li><code>neg</code>, <code>not</code>：pop 栈顶，push 计算后的值</li>
+</ul>
+<p>虚拟机中只有 16 位有符号整数一种数据类型，但规定布尔类型——false 为 0，true 为-1（即 FFFF）。</p>
+<p>注意 Specification 中没有规定栈顶指针 SP，没有规定栈的实现方式（比如是下增还是上增），没有规定堆，对实现来说其实还是有很多发挥空间的？</p>
+<h2 id="VM-Translator-x2F-Implementation-Part-1"><a href="#VM-Translator-x2F-Implementation-Part-1" class="headerlink" title="VM Translator&#x2F;Implementation Part 1"></a>VM Translator&#x2F;Implementation Part 1</h2><p>上面的东西全是虚拟的，不存在的玩意，要把它变成现实，需要实现它。这里实际上有两个对虚拟机的实现——Hack 机，VM 命令会翻译成 Hack 机器语言去执行；VM 模拟器，一个执行 VM 命令的软件，方便 debug。</p>
+<p>但要让虚拟机实际发挥作用，需要描述一个 VM 翻译器，把 VM 命令翻译成机器语言指令。这就是这章的工作。首先需要决定如何在目标机器上表示栈和虚拟内存 segment，然后需要把 VM 命令翻译成在目标机器上执行的低级指令的序列。</p>
+<!-- 虚拟机的实现，和虚拟机到机器语言的翻译器，这俩是密切相关的，就像之前 Hack 机的硬件实现和机器语言定义一样——硬件实现一套特定的指令集，指令集描述这套硬件。 -->
+
+<p>如何进行内存布局，以及如何确定每条虚拟机的指令对应的相应的机器指令。需要一个参考性质的东西，称为标准映射，去规定这样一个对应，既是方便和其它机器码（非 VM 生成的）交互，也是方便做测试。对每种架构都应当有对应的标准映射。</p>
+<p>但不用搞那么严肃。考虑 Hack 机。首先是如何表示栈和虚拟内存段，这里规定，RAM 中 0-15 的位置表达有特定意义的寄存器，16-255 存放静态变量（static 段），256-2047 为栈，2048 及以上直到屏幕和键盘为堆。</p>
+<table>
+<thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Index</th>
+<th align="left">Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">SP</td>
+<td align="left">R0</td>
+<td align="left">栈顶指针</td>
+</tr>
+<tr>
+<td align="left">LCL</td>
+<td align="left">R1</td>
+<td align="left">local 段的基址</td>
+</tr>
+<tr>
+<td align="left">ARG</td>
+<td align="left">R2</td>
+<td align="left">argument 段的基址</td>
+</tr>
+<tr>
+<td align="left">THIS</td>
+<td align="left">R3</td>
+<td align="left">this 段的基址</td>
+</tr>
+<tr>
+<td align="left">THAT</td>
+<td align="left">R4</td>
+<td align="left">that 段的基址</td>
+</tr>
+<tr>
+<td align="left">TEMP</td>
+<td align="left">R5-R12</td>
+<td align="left">temp 段</td>
+</tr>
+<tr>
+<td align="left">R13-R15</td>
+<td align="left">R13-R15</td>
+<td align="left">临时存储</td>
+</tr>
+</tbody></table>
+<p><strong>SP 指向栈顶元素的下一个位置</strong>（即栈为空时为 256），push 时执行<code>stack[SP]=X; SP++</code>，pop 时执行<code>SP--; X=stack[SP]</code>。</p>
+<p>temp 段和 R13-R15 有何区别？temp 段是从虚拟机角度出发的临时变量，它是虚拟机指令间的临时变量，R13-R15 是从单条虚拟机指令出发的，Hack 机指令间的临时变量。</p>
+<p>那么，local，argument，this，that 等内存段这些究竟放在哪？它们放在堆上——剩余 RAM 的任意位置。因此需要一个指针指向<strong>当前</strong>的这些段的基址。</p>
+<p>static 段是全局变量，任何地方均可见。但对每个全局变量，这里只有一个索引去确认它，<strong>如何避免命名空间污染</strong>？利用 Assembler 遇到未知的标签时所用的机制——使用<code>Foo.i</code>去作为<code>Foo.vm</code>下的<code>push/pop static i</code>所操作的 RAM 位置，Assembler 会自从从 16 开始去按照标签出现的顺序去做映射。比如<code>Foo.vm</code>中有两句：<code>pop static 5; pop static 2;</code>，这时候它们所操作的 RAM 位置可能是 16,17。这样对两个不同 vm 文件中的同一句<code>pop static 0</code>，它们操作的 RAM 就会不同。</p>
+<p>pointer 也是一个虚拟段，<code>pointer 0</code>操作<code>R3</code>，即<code>THIS</code>，<code>pointer 1</code>操作<code>R4</code>，即<code>THAT</code>，pointer 用于直接操作这两个地址上对应的值（没有指针跳转！）。</p>
+<p><img src="/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/project7_mapping.png" alt="alt text"></p>
+<p>注意实现翻译器时，需要处理命令后尾随注释的情况。这个翻译器居然也能够是 one-pass 的……谁能想到呢。</p>
+<h1 id="虚拟机-Part-2"><a href="#虚拟机-Part-2" class="headerlink" title="虚拟机 Part 2"></a>虚拟机 Part 2</h1><p>图灵完备之路！这章要实现分支指令和函数调用指令。大头要来喽（但其实比想象中还简单一些，真实践起来才发现栈式虚拟机操作起来是真的方便）！分支指令可能还稍微好说，但函数调用绝不是 trival 的事——保存和恢复上下文，参数传递，返回值，嵌套函数调用，递归，内存分配和回收……这显然会引入一个<strong>运行时模型</strong>——不是逐字逐句地去把虚拟机指令翻译成汇编语言（虽然确实如此），而是在此之外附加一些东西——如何启动程序执行，程序终止时做何操作，如何传参，执行函数时如何分配和回收内存……运行时模型也将在 Specification 中描述，其行为需要一些额外的汇编代码去实现。</p>
+<p>具体来说，一个函数（称为调用者 caller）调用另一个函数（称为被调用者 callee）时，需要做下面的工作：</p>
+<ol>
+<li>保存返回地址——callee 执行完毕后要返回的地方</li>
+<li>保存 caller 当前的内存资源（上下文）</li>
+<li>为 callee 分配内存资源</li>
+<li>让传递给 callee 的参数被 callee 可见</li>
+<li>开始执行 callee 代码</li>
+</ol>
+<p>当 callee 执行完成并返回一个值时，需要做下面的工作：</p>
+<ol>
+<li>让 callee 返回的值被 caller 可见</li>
+<li>回收 callee 的内存资源</li>
+<li>恢复原 caller 的内存资源</li>
+<li>从返回地址处继续执行 caller 的代码</li>
+</ol>
+<p>这一堆玩意怎么做到？考虑到函数调用是可以任意嵌套的，这里需要一个类似链表的结构去记录当前函数的调用者使后续能够返回，这实际上就是函数调用栈。对每次函数调用，都需要创建一个<strong>栈帧</strong>去保存它的相关信息，比如 local，argument，this，that 段地址，当前栈。</p>
+<p>如何表达栈帧？在这里，我们需要一个栈结构，从哪里来呢………………不是有个现成的吗？直接把这些玩意（的指针）都 push 上去，后续再 pop 嘛！返回地址也同样，把函数调用后的下一条指令加一个地址，也 push 到栈中。</p>
+<p>关于保存当前的“上下文”：</p>
+<ol>
+<li>local，argument，this，that：把指针 push 到栈上</li>
+<li>返回地址：同上</li>
+</ol>
+<p>关于“内存分配”：</p>
+<ol>
+<li>栈（即下图的 Working stack）：每个函数需要看到自己的栈，这是自动得到的，根据栈的线性和单方向性</li>
+<li>argument：直接从调用者的栈中“切片”，不做分配</li>
+<li>local：因为其长度已知，同样直接放到栈上</li>
+<li>this，that：？</li>
+</ol>
+<p><img src="/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/image.png" alt="alt text"></p>
+<p>所以这里的问题是，如何确定 argument 和 local 究竟有多长？采取最弱智的方式——直接在代码里标注。定义函数时语法为<code>function FN_NAME LOCAL_NUM</code>，其中<code>LOCAL_NUM</code>为本地变量的数量；调用函数时语法为<code>call FN_NAME ARGUMENT_NUM</code>，其中<code>ARGUMENT_NUM</code>为参数数量。顺便<code>return</code>用于从函数中返回。</p>
+<h2 id="Specification-Part-2"><a href="#Specification-Part-2" class="headerlink" title="Specification Part 2"></a>Specification Part 2</h2><p>其实也称不上 Specification 啦</p>
+<p>对 caller 来说：</p>
+<ol>
+<li>在调用前，必须把所有 argument 按顺序 push 进去</li>
+<li>调用 callee</li>
+<li>callee 返回后，之前 push 的 argument 消失不见，栈顶必为 callee 的返回值</li>
+<li>callee 返回后，所有内存段和调用 callee 之前保持一致（除了 temp，其具体值是未定义的，和 static，所有函数共享同一个 static）</li>
+</ol>
+<p>对 callee 来说：</p>
+<ol>
+<li>在执行之前，argument 段已被使用所有参数进行初始化</li>
+<li>local 段已分配且全为 0</li>
+<li>static 段为相应 vm 文件的 static 段（这个已实现），this，that，pointer 和 temp 段此时未定义</li>
+<li>工作栈为空</li>
+<li>返回前必须把返回值 push</li>
+</ol>
+<p>约定，必须有一个<code>Main.vm</code>，其中定义函数<code>main</code>，VM Translator 要生成一个函数<code>Sys.init</code>，其中正确进行初始化并调用<code>Main.main</code>，然后走一个无限循环。</p>
+<h2 id="Implementation-Part-2"><a href="#Implementation-Part-2" class="headerlink" title="Implementation Part 2"></a>Implementation Part 2</h2><p>在执行用户代码前，应初始化虚拟机，即设置<code>SP=256</code>。注意虚拟机的实现和 Specification 中均未提及“堆”……这个后面必定会涉及到的。</p>
+<p>翻译器需要获取翻译所有 vm 文件并拼接（link？）成单个 asm 文件，文件名使用目录名或文件名。</p>
+<p>关于翻译到 asm 后各种符号的命名：</p>
+<ol>
+<li>函数名：<code>Foo.vm</code>下的<code>bar</code>函数会翻译成<code>Foo.bar</code></li>
+<li>跳转标签：对<code>Foo.vm</code>下的<code>bar</code>函数中的标签<code>label</code>，翻译成<code>Foo.bar$label</code></li>
+<li>返回地址标签：对<code>Foo.vm</code>下的<code>bar</code>函数中的第<code>i</code>个 call，翻译成<code>Foo.bar$ret.i</code>，这里的 i 似乎是要求顺序的。</li>
+</ol>
+<p>这里很奇怪，一切 VM 语言示例里都写着<code>Main.main</code>，但按这么说如果它写在<code>main.vm</code>里的话，最后生成的 label 应该是<code>main.Main.main</code>……这里按它测试示例中的来——函数名前面带上 class 名，不管文件名了。不考虑重名问题——这是编译器关心的事。</p>
+<p>这里的工作就是另外再处理 6 种 VM 指令——<code>function</code>，<code>call</code>，<code>goto</code>，<code>if-goto</code>，<code>label</code>，<code>return</code>。注意上面的标签命名时要带上函数名，因此跑的时候需要注意当前所在的函数。</p>
+<p>需要注意的是，即使这里有类似高级语言函数定义的东西，函数之间其实还是顺序的，如果没有 <code>return</code> 就直接走到某个<code>function</code>命令，它还是会继续往下执行的，所以必须记得<code>return</code>，同时这意味着不需要显式地调用 <code>Sys.init</code>，把这个函数定义放到最前就行了，但加个 <code>call</code> 总是好文明。</p>
+<p>同时这里准备跑两遍——检查是否有哪个调用的函数是未定义的，避免拼写错误。</p>
+<p>这里主要问题是，当遇到<code>function</code>，<code>call</code>，<code>return</code>时，究竟具体该做什么？首先明确——它们其中任何一个都是能独立解释的，不需要知道其余的信息。即使需要，也仅仅是个 ID 而已——根据文件名和函数名在执行之前就确定的。</p>
+<ol>
+<li><code>function</code>，需要标注 <code>call</code> 跳转的入口，同时需要初始化 <code>local</code>——把 <code>local</code> 设为栈顶，然后执行 <code>i</code> 次 <code>push constant 0</code> 就行了</li>
+<li><code>call</code>，<code>call</code>需要初始化 <code>argument</code>，标注和保存返回地址，保存上下文</li>
+<li><code>return</code>，暂存返回值，恢复上下文，重设栈（剧透：直接设置 SP 为自己的 ARG 即可），跳转到返回地址并再 <code>push</code> 返回值</li>
+</ol>
+<p>实际写完发现其实这里东西其实不多…但若是哪里有小 bug，debug 起来要死人。<strong>一个想法是在每个虚拟机指令前插入一些 A 指令</strong>，值设为<code>30000 + 指令行数</code>，供后续遇到 bug 时可以使用模拟器的断点停在虚拟机指令的特定行。</p>
+<p><img src="/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/fffib.png" alt="alt text"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90/">计算机组成</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01-15%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part1%E2%80%94%E2%80%94%E4%BB%8ENAND%E5%88%B0CPU.html">
+                        <span class="hidden-mobile">计算机系统要素学习笔记 Part1——从 NAND 到 CPU</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
