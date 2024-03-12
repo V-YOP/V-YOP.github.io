@@ -25,8 +25,8 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="决定记录一下搭建和配置各种常用编程环境——包括 maven，jdk，node 等——和软件环境——包括 mysql，redis，kafka 等——的过程以方便在将来进行参考和查阅，其中能使用 docker 则使用 docker。该文档将持续维护。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-11-12T03:44:40.550Z">
-<meta property="article:modified_time" content="2023-11-12T03:44:40.550Z">
+<meta property="article:published_time" content="2024-02-04T03:45:59.039Z">
+<meta property="article:modified_time" content="2024-03-06T13:12:18.376Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="环境搭建">
 <meta name="twitter:card" content="summary_large_image">
@@ -178,8 +178,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2023-11-12 11:44" pubdate>
-        2023年11月12日 中午
+      <time datetime="2024-02-04 11:45" pubdate>
+        2024年2月4日 中午
       </time>
     </span>
   
@@ -232,9 +232,7 @@
 <p>比如，解压当前目录的一个压缩文件到当前目录的 test 文件夹（该文件夹需提前创建）：</p>
 <figure class="highlight crmsh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs crmsh">tar xvf <span class="hljs-keyword">node</span><span class="hljs-title">-v14</span>.<span class="hljs-number">19.2</span>-linux-arm64.tar.gz --<span class="hljs-attr">directory=</span>./test<br></code></pre></div></td></tr></table></figure>
 
-<blockquote>
 <p>tar.gz其实上是2个工具。tar是打包工具，把很多文件打包成一个文件，gz是压缩格式。</p>
-</blockquote>
 <p>对于 zip，使用 unzip 命令，模板如下：</p>
 <figure class="highlight css"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs css">unzip <span class="hljs-selector-attr">[要解压的文件]</span> -d <span class="hljs-selector-attr">[要解压到的文件夹]</span><br></code></pre></div></td></tr></table></figure>
 
@@ -262,10 +260,9 @@
 <li><p>Run command in a new container connecting it to a network:<br><code>docker run --network network image</code></p>
 </li>
 </ul>
+<p>TODO docker compose，以及如何从镜像中拷出来配置文件</p>
 <h1 id="编程环境"><a href="#编程环境" class="headerlink" title="编程环境"></a>编程环境</h1><p>对于编程环境，尽量从国内镜像站去下载以保证速度。</p>
-<blockquote>
 <p>小 tip: Windows 系统可以按 win 键，输入“env”或“path”并回车，能直接打开“编辑系统环境变量”窗口</p>
-</blockquote>
 <h2 id="JDK-8"><a href="#JDK-8" class="headerlink" title="JDK 8"></a>JDK 8</h2><p><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/">在这里</a> 下载对应架构和系统的 JDK 的压缩包并解压到特定位置，将其 <code>bin</code> 和 <code>jre\bin</code> 目录加入 PATH，并添加变量 JAVA_HOME，以其目录作为值即可。</p>
 <p>比如，将该压缩包解压至<code>E:\env</code>，此时目录结构为：</p>
 <figure class="highlight mipsasm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs mipsasm">E:\env\<span class="hljs-keyword">jdk8u332-b09</span><br><span class="hljs-keyword"></span>  ├─<span class="hljs-keyword">bin</span><br><span class="hljs-keyword"></span>  ├─include<br>  ├─<span class="hljs-keyword">jre</span><br><span class="hljs-keyword"></span>  ├─lib<br>  └─sample<br></code></pre></div></td></tr></table></figure>
@@ -274,9 +271,7 @@
 <figure class="highlight moonscript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs moonscript"><span class="hljs-name">E</span>:\env\jdk8u332-b09\bin<br><span class="hljs-name">E</span>:\env\jdk8u332-b09\jre\bin<br></code></pre></div></td></tr></table></figure>
 
 <p>添加 JAVA_HOME 变量，值为：<code>E:\env\jdk8u332-b09</code>。</p>
-<blockquote>
 <p>虽然很多资料说 JAVA_HOME 已经不需要设置了，但事实证明很多环境，如 maven 的一些插件，hadoop 等都是依赖这个变量的，仍旧有必要进行配置。</p>
-</blockquote>
 <h2 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h2><p>TODO</p>
 <h3 id="修改镜像源"><a href="#修改镜像源" class="headerlink" title="修改镜像源"></a>修改镜像源</h3><p>TODO</p>
 <h2 id="Sbt"><a href="#Sbt" class="headerlink" title="Sbt"></a>Sbt</h2><p>TODO</p>
@@ -344,9 +339,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/12-18%E3%80%8ACrafting%20Interpreters%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%EF%BC%8C%E9%80%92%E5%BD%92%E4%B8%8B%E9%99%8D%E6%B3%95.html">
+                      <a href="/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA.html">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">《Crafting Interpreters》学习笔记 1——词法分析，递归下降法</span>
+                        <span class="hidden-mobile">计算机系统要素学习笔记 Part2——从汇编器到虚拟机</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -354,8 +349,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/09-17Perl%E5%85%A5%E9%97%A8.html">
-                        <span class="hidden-mobile">Perl 入门</span>
+                      <a href="/2024/01-15%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part1%E2%80%94%E2%80%94%E4%BB%8ENAND%E5%88%B0CPU.html">
+                        <span class="hidden-mobile">计算机系统要素学习笔记 Part1——从 NAND 到 CPU</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
