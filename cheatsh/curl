@@ -1,0 +1,124 @@
+[48;5;8m[24m cheat.sheets:curl [24m[0m
+[38;5;246;03m# curl[39;00m
+[38;5;246;03m# Command-line tool for transferring data with URL syntax[39;00m
+
+[38;5;246;03m# Process a single GET request, and show its output on stdout.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://path.to.the/file[39m
+
+[38;5;246;03m# Download a file and specify a new filename.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://example.com/file.zip[39m[38;5;252m [39m[38;5;252m-o[39m[38;5;252m [39m[38;5;252mnew_file.zip[39m
+
+[38;5;246;03m# Download multiple files.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252mURLOfFirstFile[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252mURLOfSecondFile[39m
+
+[38;5;246;03m# Download all sequentially-numbered files (1-24).[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://example.com/pic[39m[38;5;252m[[39m[38;5;67m1[39m[38;5;252m-24[39m[38;5;252m][39m[38;5;252m.jpg[39m
+
+[38;5;246;03m# Download a file and follow redirects.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-L[39m[38;5;252m [39m[38;5;252mhttp://example.com/file[39m
+
+[38;5;246;03m# Download a file and pass HTTP Authentication.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-u[39m[38;5;252m [39m[38;5;252musername:password[39m[38;5;252m [39m[38;5;252mURL[39m
+
+[38;5;246;03m# Download a file with a Proxy.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-x[39m[38;5;252m [39m[38;5;252mproxysever.server.com:PORT[39m[38;5;252m [39m[38;5;252mhttp://addressiwantto.access[39m
+
+[38;5;246;03m# Download a file from FTP.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-u[39m[38;5;252m [39m[38;5;252musername:password[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252mftp://example.com/pub/file.zip[39m
+
+[38;5;246;03m# Get an FTP directory listing.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mftp://username:password@example.com[39m
+
+[38;5;246;03m# Resume a previously failed download.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-C[39m[38;5;252m [39m[38;5;252m-[39m[38;5;252m [39m[38;5;252m-o[39m[38;5;252m [39m[38;5;252mpartial_file.zip[39m[38;5;252m [39m[38;5;252mhttp://example.com/file.zip[39m
+
+[38;5;246;03m# Fetch only the HTTP headers from a response.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-I[39m[38;5;252m [39m[38;5;252mhttp://example.com[39m
+
+[38;5;246;03m# Fetch your external IP and network info as JSON.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://ifconfig.me/all/json[39m
+
+[38;5;246;03m# Limit the rate of a download.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--limit-rate[39m[38;5;252m [39m[38;5;252m1000B[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252mhttp://path.to.the/file[39m
+
+[38;5;246;03m# POST to a form.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-F[39m[38;5;252m [39m[38;5;214m"name=user"[39m[38;5;252m [39m[38;5;252m-F[39m[38;5;252m [39m[38;5;214m"password=test"[39m[38;5;252m [39m[38;5;252mhttp://example.com[39m
+
+[38;5;246;03m# POST JSON Data.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-H[39m[38;5;252m [39m[38;5;214m"Content-Type: application/json"[39m[38;5;252m [39m[38;5;252m-X[39m[38;5;252m [39m[38;5;252mPOST[39m[38;5;252m [39m[38;5;252m-d[39m[38;5;252m [39m[38;5;214m'{"user":"bob","pass":"123"}'[39m[38;5;252m [39m[38;5;252mhttp://example.com[39m
+
+[38;5;246;03m# POST data from the standard in / share data on sprunge.us.[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-F[39m[38;5;252m [39m[38;5;214m'sprunge=<-'[39m[38;5;252m [39m[38;5;252msprunge.us[39m
+
+[48;5;8m[24m cheat:curl [24m[0m
+[38;5;246;03m# To download a file:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m
+
+[38;5;246;03m# To download and rename a file:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m[38;5;252m [39m[38;5;252m-o[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252moutfile>[39m
+
+[38;5;246;03m# To download multiple files:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m
+
+[38;5;246;03m# To download all sequentially numbered files (1-24):[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://example.com/pic[39m[38;5;252m[[39m[38;5;67m1[39m[38;5;252m-24[39m[38;5;252m][39m[38;5;252m.jpg[39m
+
+[38;5;246;03m# To download a file and pass HTTP authentication:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-u[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252musername>:[39m[38;5;252m<[39m[38;5;252mpassword>[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m
+
+[38;5;246;03m# To download a file with a proxy:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-x[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252mproxy-host>:[39m[38;5;252m<[39m[38;5;252mport>[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m
+
+[38;5;246;03m# To download a file over FTP:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-u[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252musername>:[39m[38;5;252m<[39m[38;5;252mpassword>[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252mftp://example.com/pub/file.zip[39m
+
+[38;5;246;03m# To get an FTP directory listing:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mftp://username:password@example.com[39m
+
+[38;5;246;03m# To resume a previously failed download:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-C[39m[38;5;252m [39m[38;5;252m-[39m[38;5;252m [39m[38;5;252m-o[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252mpartial-file>[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m
+
+[38;5;246;03m# To fetch only the HTTP headers from a response:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-I[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252murl>[39m
+
+[38;5;246;03m# To fetch your external IP and network info as JSON:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://ifconfig.me/all.json[39m
+
+[38;5;246;03m# To limit the rate of a download:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--limit-rate[39m[38;5;252m [39m[38;5;252m1000B[39m[38;5;252m [39m[38;5;252m-O[39m[38;5;252m [39m[38;5;252m<[39m[38;5;252moutfile>[39m
+
+[38;5;246;03m# To get your global IP:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttpbin.org/ip[39m[38;5;252m [39m
+
+[38;5;246;03m# To get only the HTTP status code:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m-o[39m[38;5;252m [39m[38;5;252m/dev/null[39m[38;5;252m [39m[38;5;252m-w[39m[38;5;252m [39m[38;5;214m'%{http_code}\n'[39m[38;5;252m [39m[38;5;252m-s[39m[38;5;252m [39m[38;5;252m-I[39m[38;5;252m [39m[38;5;252mURL[39m
+
+[48;5;8m[24m tldr:curl [24m[0m
+[38;5;246;03m# curl[39;00m
+[38;5;246;03m# Transfers data from or to a server.[39;00m
+[38;5;246;03m# Supports most protocols, including HTTP, FTP, and POP3.[39;00m
+[38;5;246;03m# More information: <https://curl.se>.[39;00m
+
+[38;5;246;03m# Download the contents of a URL to a file:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252mhttp://example.com[39m[38;5;252m [39m[38;5;252m--output[39m[38;5;252m [39m[38;5;252mpath/to/file[39m
+
+[38;5;246;03m# Download a file, saving the output under the filename indicated by the URL:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--remote-name[39m[38;5;252m [39m[38;5;252mhttp://example.com/filename[39m
+
+[38;5;246;03m# Download a file, following location redirects, and automatically continuing (resuming) a previous file transfer and return an error on server error:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--fail[39m[38;5;252m [39m[38;5;252m--remote-name[39m[38;5;252m [39m[38;5;252m--location[39m[38;5;252m [39m[38;5;252m--continue-at[39m[38;5;252m [39m[38;5;252m-[39m[38;5;252m [39m[38;5;252mhttp://example.com/filename[39m
+
+[38;5;246;03m# Send form-encoded data (POST request of type `application/x-www-form-urlencoded`). Use `--data @file_name` or `--data @'-'` to read from STDIN:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--data[39m[38;5;252m [39m[38;5;214m'name=bob'[39m[38;5;252m [39m[38;5;252mhttp://example.com/form[39m
+
+[38;5;246;03m# Send a request with an extra header, using a custom HTTP method:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--header[39m[38;5;252m [39m[38;5;214m'X-My-Header: 123'[39m[38;5;252m [39m[38;5;252m--request[39m[38;5;252m [39m[38;5;252mPUT[39m[38;5;252m [39m[38;5;252mhttp://example.com[39m
+
+[38;5;246;03m# Send data in JSON format, specifying the appropriate content-type header:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--data[39m[38;5;252m [39m[38;5;214m'{"name":"bob"}'[39m[38;5;252m [39m[38;5;252m--header[39m[38;5;252m [39m[38;5;214m'Content-Type: application/json'[39m[38;5;252m [39m[38;5;252mhttp://example.com/users/1234[39m
+
+[38;5;246;03m# Pass a username and password for server authentication:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--user[39m[38;5;252m [39m[38;5;252mmyusername:mypassword[39m[38;5;252m [39m[38;5;252mhttp://example.com[39m
+
+[38;5;246;03m# Pass client certificate and key for a resource, skipping certificate validation:[39;00m
+[38;5;252mcurl[39m[38;5;252m [39m[38;5;252m--cert[39m[38;5;252m [39m[38;5;252mclient.pem[39m[38;5;252m [39m[38;5;252m--key[39m[38;5;252m [39m[38;5;252mkey.pem[39m[38;5;252m [39m[38;5;252m--insecure[39m[38;5;252m [39m[38;5;252mhttps://example.com[39m
