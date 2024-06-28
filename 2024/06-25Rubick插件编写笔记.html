@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="心有余而力不足">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rubick 插件学习笔记">
+<meta property="og:url" content="http://example.com/2024/06-25Rubick%E6%8F%92%E4%BB%B6%E7%BC%96%E5%86%99%E7%AC%94%E8%AE%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="心有余而力不足">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-25T08:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-28T07:55:05.502Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Electron">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Rubick 插件学习笔记 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Rubick 插件学习笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-06-25 16:00" pubdate>
+        2024年6月25日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Rubick 插件学习笔记</h1>
+            
+            <div class="markdown-body">
+              <p>本来有好多想实现的玩意儿，代码片段收藏，commander，定时任务，草图绘制工具，但热情消退了，懒了，均不想干。但考虑还是做个色彩识别游戏，后续搬到 rubick 上……也想做个图片收藏工具，去创建一个置顶的窗口，通过拖放图像以达到收藏的目的，这种方法我觉得通用性是最广的，但目前没啥兴趣做。</p>
+<hr>
+<p>这玩意好是好，但文档缺失，bug 不少，开发者是跑路了吗？但确实好用，玩法太多了，值得做点笔记，把它当作主力的生产力工具……</p>
+<p>描述一下插件的环境搭建和开发，一些文档中没写清楚的概念的使用，以及一些实际案例。这里仍旧使用我比较习惯的 vite + ts + react。</p>
+<p>这里假设插件是写给个人用的，不考虑打包和分发等因素，而是需要自己利用 npm 去安装依赖和编译，让 nodejs 自己去找依赖，但这可能需要调整 electron 等的版本，避免多版本的 electron 共存导致问题。<strong>如果要打包和分发的话，不止前端代码，预加载脚本和系统插件代码也考虑用打包工具如 webpack 处理一下来避免依赖问题</strong>。</p>
+<p>个人插件的项目地址见此 <a target="_blank" rel="noopener" href="https://github.com/V-YOP/rubick-ykihelper">https://github.com/V-YOP/rubick-ykihelper</a>，可以<strong>以其项目结构作为模板去进行开发</strong>；该项目中提供了 rubick 预先提供的 API 的 ts 定义，以及一些额外的自定义的功能及其定义，见<code>preload/preload.ts</code>和<code>/preload/rubick.ts</code>。</p>
+<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>Rubick 是 Electron 应用，以 npm 包的形式去导入插件。插件分为系统插件和 UI 插件（但一个插件可以同时为系统插件和 UI 插件，pluginType 需要设为 system，后面就这么操作）。系统插件随 rubick 启动，UI 插件在<strong>每次</strong>打开插件对应页面时启动。系统插件能做 Electron 主进程能做的一切事情，而 UI 插件主要是一个预加载脚本，活在 Electron 的渲染进程中。</p>
+<p>系统插件在 rubick 启动后被自动加载，系统插件需 eport 一个函数，该函数返回一个<code>() =&gt; &#123;onReady: (ctx) =&gt; void&#125;</code>，rubick 会自动调用这里的 onReady 函数。ctx 无关紧要——它都是 electron 中提供的 API，可以自己 import。</p>
+<p>注意系统插件逻辑中如果抛出异常会直接阻止 rubick 启动，此时必须通过任务管理器强制关闭 rubick，因此妥善处理异常是必须的。</p>
+<h2 id="添加外部依赖"><a href="#添加外部依赖" class="headerlink" title="添加外部依赖"></a>添加外部依赖</h2><p>系统插件代码和预加载脚本中均能够使用第三方的 npm 库，只要保证该库存在于文件祖先路径中的 node_modules 中即可。</p>
+<h1 id="package-json-x2F-features"><a href="#package-json-x2F-features" class="headerlink" title="package.json &#x2F; features"></a>package.json &#x2F; features</h1><p>features 有六种：text, over, img, regex, file, img, window。其中 file 和 window 没研究出来怎么用，得后面翻源代码。</p>
+<p>注意每次修改 features 后需要在<code>开发者</code>中刷新插件并重启。</p>
+<h2 id="text"><a href="#text" class="headerlink" title="text"></a>text</h2><p>最基本的是 text，仅在<code>Alt + R</code>中可用，根据输入模糊匹配去调出插件：</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;cmds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;test&quot;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<p><strong>text 没有 payload</strong>……这个类型应当改名叫 keyword。</p>
+<h2 id="over"><a href="#over" class="headerlink" title="over"></a>over</h2><p>over 支持<code>Alt+R</code>和超级面板，over 在任何输入和选择上都会显示在列表上，根据和你给定的 label 的距离决定排序（？）：</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;cmds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;over&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;label&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;test_over&quot;</span> <span class="hljs-comment">// 用户的输入越接近 &quot;test_over&quot; 的话该选项就会越靠前……似乎是这样，至少在输入框中似乎是这样</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br><br></code></pre></div></td></tr></table></figure>
+
+<p>over 的 payload 为输入框或选择的内容。</p>
+<h2 id="img"><a href="#img" class="headerlink" title="img"></a>img</h2><p>img 可以通过 Ctrl+V 将剪切板内图片贴到输入框，在文件管理器中框选文件似乎也能够识别，但疑似是有 bug：</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;cmds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;img&quot;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;label&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;test_img&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br>        <br></code></pre></div></td></tr></table></figure>
+
+<h2 id="regex"><a href="#regex" class="headerlink" title="regex"></a>regex</h2><p>regex 类似 over，但支持给定一个 js 语法的正则表达式，只有和当前输入框或选择匹配时才显示出来：</p>
+<figure class="highlight json"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;cmds&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;regex&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;label&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;test_regex&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;match&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/一个 js 风格的正则/im&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>regex 的 payload 为输入框或选择的内容。</p>
+<p><strong>遗憾的是，现在 regex 的代码有 bug，无法使用</strong>，见 <a target="_blank" rel="noopener" href="https://github.com/rubickCenter/rubick/pull/184">https://github.com/rubickCenter/rubick/pull/184</a>，已经是整整一年前的 issue 了，没人修吗？</p>
+<p><del>刚修，我提了 PR 后一瞬间就修了，虽然我的 PR 后来发现和它重复给 close 了，顺便得了个 5 分钟内撤回 PR 的成就，乐</del>。但至少<code>4.2.4</code>版本中该修复还未上线。</p>
+<h1 id="SubInput"><a href="#SubInput" class="headerlink" title="SubInput"></a>SubInput</h1><p>SubInput 为主窗口中的输入框，插件可以监听该输入框的改变，如 everything 等插件都利用了 SubInput 去作输入。进入 over 和 regex 等 feature 时 subInput 中的东西会在插件 ready 时传给插件。</p>
+<p>关于 subInput 的使用参照<code>src/useSubInput.ts</code>。</p>
+<h1 id="DB"><a href="#DB" class="headerlink" title="DB"></a>DB</h1><p>摸了，关于 DB 的使用，检查<code>/preload/rubick.ts</code>里的类型定义即能知晓，关于对单个键的使用，见<code>src/useDB.ts</code>，这里整了个花活儿，使它能做跨渲染进程的同步，即插件多开时也能做同步；但需要系统插件协作。</p>
+<h1 id="…"><a href="#…" class="headerlink" title="…"></a>…</h1><p>摸了</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Electron/">Electron</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06-28Prometheus%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Prometheus 学习笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03-20RuoYi-Cloud%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html">
+                        <span class="hidden-mobile">RuoYi-Cloud 后端笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
