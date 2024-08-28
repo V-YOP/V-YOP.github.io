@@ -1,0 +1,885 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="学习Python和一些常用第三方库，尝试以后使用Python去编写脚本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="作为脚本语言的Python">
+<meta property="og:url" content="http://example.com/2024/08-28%E4%BD%9C%E4%B8%BA%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E7%9A%84Python.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="学习Python和一些常用第三方库，尝试以后使用Python去编写脚本。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-28T06:00:00.000Z">
+<meta property="article:modified_time" content="2024-08-28T07:09:33.721Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>作为脚本语言的Python - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="作为脚本语言的Python">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-08-28 14:00" pubdate>
+        2024年8月28日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      20k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">作为脚本语言的Python</h1>
+            
+            <div class="markdown-body">
+              <p>学习Python和一些常用第三方库，尝试以后使用Python去编写脚本。学习过程中不断感叹python标准库的丰富……头疼的是做一件事通常会有多种方式，谁说python一种事只有一种做法的？？？</p>
+<h2 id="字符串格式化"><a href="#字符串格式化" class="headerlink" title="字符串格式化"></a>字符串格式化</h2><ul>
+<li><p>Python 提供了三种格式化方式——<code>%</code>，<code>str.format</code> 和 <code>f&quot;&#123;&#125;&quot;</code>。<code>%</code> 使用方式类似C的printf，形如<code>&quot;My name is %s, I&#39;m %d years old&quot; % (name, age)</code>（单个参数可以不用元组），这里不表。</p>
+</li>
+<li><p><code>str.format</code>和<code>f&quot;&#123;&#125;&quot;</code>则是更现代的方式，两者使用同样的语法去进行格式化，<strong>并允许被格式化的对象自己决定用来格式化的微语言和结果</strong>，两者区别在于，**<code>f&quot;&#123;&#125;&quot;</code> 直接把<code>&#123;&#125;</code>中的内容作为表达式，将计算后的结果去进行插值**，而<code>str.format</code>从传入参数中查找变量去插值：</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-built_in">print</span>(<span class="hljs-built_in">str</span>.<span class="hljs-built_in">format</span>(<span class="hljs-string">&quot;my name is &#123;0:&gt;10s&#125;, my age is &#123;age&#125;&quot;</span>.<span class="hljs-built_in">format</span>(<span class="hljs-string">&#x27;haruka&#x27;</span>, age=<span class="hljs-number">17</span>)))<br><br>name = <span class="hljs-string">&#x27;haruka&#x27;</span><br>age = <span class="hljs-number">17</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;my name is <span class="hljs-subst">&#123;name:&gt;10s&#125;</span>, my age is <span class="hljs-subst">&#123;age&#125;</span>&quot;</span>)<br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>因为<code>str.format</code>是从参数中查找的，所以既可以用参数下标索引，也可以用关键字索引，而<code>f&quot;&#123;&#125;&quot;</code>直接处理表达式，后面均使用<code>f&quot;&#123;&#125;&quot;</code>（因为它更美观且功能更强大，甚至支持嵌套的插值，只有在必须的情况下，比如需要重用模板，才使用<code>str.format</code>甚至<code>%</code>），并将之称为字符串格式化。</p>
+</li>
+<li><p>字符串格式化的插值格式形如<code>&#123; any_expr [=][:&lt;spec_lang&gt;]&#125;</code>，其中：</p>
+<ul>
+<li><p><code>str.format</code>在<code>:</code>前面只能是下标或参数名，不能有任何其他东西，而<code>f&quot;&#123;&#125;&quot;</code>则更花哨：</p>
+</li>
+<li><p>表达式前后能包含任意数量空白字符，其在插值时会被带过去</p>
+</li>
+<li><p>表达式后能包含一个<code>=</code>，其前后同样可以包含任意数量空白字符，当<code>=</code>存在时，整个表达式包括<code>=</code>会被<strong>原样</strong>打印，以方便debug，如：</p>
+<ul>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;  <span class="hljs-number">1</span> + <span class="hljs-number">1</span>   = &#125;</span>&quot;</span>) <span class="hljs-comment"># &#x27;  1 + 1   = 2&#x27;</span><br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>在<code>:</code> 右侧是一个可选的格式化语言，其整个字符串会被传递给要格式化的对象的<code>__format__</code>方法，因此<strong>任何类型都可以定制自己的格式化方法</strong>。参考 <code>__format__</code>：格式化时使用（正经人重写这个干什么）</p>
+</li>
+</ul>
+</li>
+<li><p>Python 格式化微语言</p>
+<ul>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br>some_float = <span class="hljs-number">1234.5678</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:f&#125;</span>&quot;</span>)  <span class="hljs-comment"># 默认6位小数，输出: 12345.678900</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:<span class="hljs-number">.2</span>f&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: 1234.57</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:<span class="hljs-number">10.2</span>f&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: &#x27;   1234.57&#x27;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:e&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: 1.234568e+03</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:<span class="hljs-number">.2</span>e&#125;</span>&quot;</span>)  <span class="hljs-comment"># 保留2位小数，输出: 1.23e+03</span><br><br>some_int = <span class="hljs-number">12348</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_int:d&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: 12348</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_int:x&#125;</span>&quot;</span>)  <span class="hljs-comment"># 小写十六进制，输出: 303c</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_int:X&#125;</span>&quot;</span>)  <span class="hljs-comment"># 大写十六进制，输出: 303C</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:%&#125;</span>&quot;</span>)  <span class="hljs-comment"># 默认6位小数，输出: 123456.780000%</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;some_float:<span class="hljs-number">.1</span>%&#125;</span>&quot;</span>)  <span class="hljs-comment"># 保留1位小数，输出: 123456.8%</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;<span class="hljs-number">1234567890</span>:,&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: 1,234,567,890</span><br><br>name = <span class="hljs-string">&quot;Alice&quot;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;name:&lt;<span class="hljs-number">10</span>&#125;</span>&quot;</span>)  <span class="hljs-comment"># 左对齐，输出: &#x27;Alice     &#x27;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;name:&gt;<span class="hljs-number">10</span>&#125;</span>&quot;</span>)  <span class="hljs-comment"># 右对齐，输出: &#x27;     Alice&#x27;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;name:^<span class="hljs-number">10</span>&#125;</span>&quot;</span>)  <span class="hljs-comment"># 居中对齐，输出: &#x27;  Alice   &#x27;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;name:_^<span class="hljs-number">10</span>&#125;</span>&quot;</span>)  <span class="hljs-comment"># 居中对齐，使用_去填充，输出: &#x27;__Alice___&#x27;</span><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;<span class="hljs-number">42</span>:<span class="hljs-number">0</span>&gt;<span class="hljs-number">10</span>&#125;</span>&quot;</span>)   <span class="hljs-comment"># 右对齐，使用0而非空格去填充，0000000042</span><br><br>now = datetime.now()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;now :%Y-%m-%d %H:%M:%S&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: &#x27;2024-08-26 12:34:56&#x27;</span><br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><ul>
+<li><p>注意——<code>str.split</code>只能按纯文本分割，要用正则分割得使用<code>re.split</code>。</p>
+</li>
+<li><p>直接贴上GPT给的示例，注意其中的<code>\b</code>是零宽断言，匹配单词边界：</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> re<br><br><span class="hljs-comment"># 示例文本</span><br>text = <span class="hljs-string">&quot;The quick brown fox jumps over the lazy dog.&quot;</span><br><br><span class="hljs-comment"># 1. 匹配：使用 re.search() 查找第一个匹配项</span><br><span class="hljs-keyword">match</span> = re.search(<span class="hljs-string">r&#x27;\b\w&#123;5&#125;\b&#x27;</span>, text)  <span class="hljs-comment"># 匹配五个字母的单词</span><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">match</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Match found: <span class="hljs-subst">&#123;<span class="hljs-keyword">match</span>.group()&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: Match found: quick</span><br><br><span class="hljs-comment"># 多个捕获组可以直接用groups全部拿到（注意groups不返回整个匹配字符串，即不包含group(0)）</span><br>FILE_NAME_REGEX = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&#x27;(.*?)_(.*?)_(.*?)_p(.*?)\.(png|jpg|jpeg)&#x27;</span>)<br><span class="hljs-comment"># fullmatch 检查是否整个匹配</span><br><span class="hljs-built_in">print</span>(FILE_NAME_REGEX.fullmatch(<span class="hljs-string">&#x27;Nnnn_真_100844395_p0.jpg&#x27;</span>).groups()) <span class="hljs-comment"># (&#x27;Nnnn&#x27;, &#x27;真&#x27;, &#x27;100844395&#x27;, &#x27;0&#x27;, &#x27;jpg&#x27;)</span><br>    <br><span class="hljs-comment"># 2. 流式查找匹配结果：使用 re.finditer()</span><br>pattern = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&#x27;\b\w&#123;5&#125;\b&#x27;</span>)  <span class="hljs-comment"># 匹配五个字母的单词</span><br><span class="hljs-keyword">for</span> <span class="hljs-keyword">match</span> <span class="hljs-keyword">in</span> pattern.finditer(text):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Match found: <span class="hljs-subst">&#123;<span class="hljs-keyword">match</span>.group()&#125;</span> at position <span class="hljs-subst">&#123;<span class="hljs-keyword">match</span>.start()&#125;</span>-<span class="hljs-subst">&#123;<span class="hljs-keyword">match</span>.end()&#125;</span>&quot;</span>)<br>    <br><span class="hljs-comment"># 输出:</span><br><span class="hljs-comment"># Match found: quick at position 4-9</span><br><span class="hljs-comment"># Match found: brown at position 10-15</span><br><span class="hljs-comment"># Match found: jumps at position 20-25</span><br>    <br><span class="hljs-comment"># 3. 查找：使用 re.findall() 查找所有匹配项</span><br>matches = re.findall(<span class="hljs-string">r&#x27;\b\w&#123;5&#125;\b&#x27;</span>, text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;All matches: <span class="hljs-subst">&#123;matches&#125;</span>&quot;</span>)  <span class="hljs-comment"># 输出: All matches: [&#x27;quick&#x27;, &#x27;brown&#x27;, &#x27;jumps&#x27;]</span><br><br><span class="hljs-comment"># 4. 替换：使用 re.sub() 进行简单替换</span><br><span class="hljs-comment"># 替换所有长度为4的单词为 &#x27;****&#x27;</span><br>pattern = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&#x27;\b\w&#123;4&#125;\b&#x27;</span>)<br>replaced_text = pattern.sub(<span class="hljs-string">&#x27;****&#x27;</span>, text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Regex replacement: <span class="hljs-subst">&#123;replaced_text&#125;</span>&quot;</span>)<br><span class="hljs-comment"># 输出: Regex replacement: The quick brown fox jumps **** the **** dog.</span><br><br><span class="hljs-comment"># 5. 替换：使用 re.sub()，替换时引用捕获组</span><br><span class="hljs-comment"># 给所有长度为4的单词前后添加 #</span><br>pattern = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&#x27;\b(\w&#123;4&#125;)\b&#x27;</span>)<br>replaced_text = pattern.sub(<span class="hljs-string">r&#x27;#\1#&#x27;</span>, text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Regex replacement: <span class="hljs-subst">&#123;replaced_text&#125;</span>&quot;</span>)<br><span class="hljs-comment"># 输出: Regex replacement: The quick brown fox jumps #over# the #lazy# dog.</span><br><br><br><span class="hljs-comment"># 6. 替换：使用 re.sub() ，使用函数进行替换</span><br><span class="hljs-comment"># 替换函数示例：将匹配到的单词转换为大写</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">replace_function</span>(<span class="hljs-params"><span class="hljs-keyword">match</span></span>):<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">match</span>.group().upper()<br><br>replaced_text = re.sub(<span class="hljs-string">r&#x27;\b\w&#123;5&#125;\b&#x27;</span>, replace_function, text)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Replaced text with function: <span class="hljs-subst">&#123;replaced_text&#125;</span>&quot;</span>)<br><span class="hljs-comment"># 输出: Replaced text with function: The QUICK BROWN fox JUMPS over the lazy dog.</span><br><br><br></code></pre></div></td></tr></table></figure></li>
+</ul>
+<h2 id="文件-x2F-路径操作"><a href="#文件-x2F-路径操作" class="headerlink" title="文件&#x2F;路径操作"></a>文件&#x2F;路径操作</h2><ul>
+<li><p>考虑进行文件&#x2F;路径操作时优先使用<code>pathlib</code>。</p>
+</li>
+<li><p>文件操作主要使用如下标准库和方法：</p>
+<ul>
+<li><p><code>os</code>：提供一切POSIX提供的玩意儿，在这里包括但不限于删除，重命名，创建&#x2F;读取文件夹，删除非空文件夹，修改工作目录等操作。</p>
+<ul>
+<li><p><code>getcwd/chdir</code>：获取&#x2F;设置工作目录</p>
+</li>
+<li><p><code>listdir</code>：列举文件夹内容</p>
+</li>
+<li><p><code>mkdir/makedirs</code>：创建文件夹，递归创建文件夹</p>
+</li>
+<li><p><code>remove/unlink</code>：删除文件</p>
+</li>
+<li><p><code>rmdir/removedirs</code>：删除空目录，递归删除空目录</p>
+</li>
+<li><p><code>rename</code>：重命名文件&#x2F;文件夹</p>
+</li>
+<li><p><code>stat</code>：获取文件&#x2F;文件夹状态（获取文件类型使用<code>os.path.isXXX</code>)</p>
+</li>
+<li><p><code>walk</code>：递归遍历文件夹，返回一个迭代器，迭代值为 <code>(当前目录，子目录，子文件)</code></p>
+</li>
+</ul>
+</li>
+<li><p><code>os.path</code>：路径操作，但也包含一些和<code>os</code>交叉的部分</p>
+<ul>
+<li><p><code>join</code>：路径拼接（同nodejs的join，不会主动转换成绝对路径）</p>
+</li>
+<li><p><code>abspath</code>：相对路径到绝对路径</p>
+</li>
+<li><p><code>expanduser</code>，把路径中的<code>~</code>转换为用户目录</p>
+</li>
+<li><p><code>isabs</code>：检查是否是绝对路径</p>
+</li>
+<li><p><code>basename</code>：获取路径中文件名部分</p>
+</li>
+<li><p><code>dirname</code>：获取路径中目录部分，即上级目录</p>
+</li>
+<li><p><code>exists</code>：文件是否存在</p>
+</li>
+<li><p><code>isfile/isdir/islink</code>：路径是文件&#x2F;目录&#x2F;链接，文件不存在时返回 False</p>
+</li>
+<li><p><code>getsize</code>：获取文件大小（字节）</p>
+</li>
+<li><p><code>split</code>：获取<code>(目录, 文件名)</code><strong>（注意这不是通常意义的split！）</strong></p>
+</li>
+<li><p><code>splitext</code>：获取<code>(其他部分, 扩展名（带dot）)</code></p>
+</li>
+</ul>
+</li>
+<li><p><code>pathlib.Path</code>：似乎是Python当前更推荐的，一个面向对象的路径操作库，似乎应当用来替代<code>os.path</code>，<strong>一个好玩的地方是<code>pathlib</code>允许用<code>/</code>去连接路径</strong>。功能极其强大，覆盖文件IO，路径操作乃至glob，<strong>考虑始终用它</strong>。</p>
+<ul>
+<li><p><code>open</code>：打开文件</p>
+</li>
+<li><p><code>glob</code>：本层<code>glob</code></p>
+</li>
+<li><p><code>rglob</code>：递归<code>glob</code></p>
+</li>
+<li><p><code>iterdir</code>：本层文件迭代器</p>
+</li>
+<li><p><code>is_xxx</code>：是 xxx</p>
+</li>
+<li><p><code>mkdir</code>：创建文件夹</p>
+</li>
+<li><p><code>parent</code>：父路径</p>
+</li>
+<li><p><code>parents</code>：祖先路径序列，最后一个路径是根路径</p>
+</li>
+<li><p><code>name</code>：整个文件名</p>
+</li>
+<li><p><code>stem</code>：除去最后一个扩展名的文件名，如<code>wtf.txt.gz</code>得到<code>wtf.txt</code></p>
+</li>
+<li><p><code>suffix</code>：最后一个扩展名，带dot（<code>.tar.gz</code>得到<code>.gz</code>）</p>
+</li>
+<li><p><code>suffixes</code>：所有扩展名</p>
+</li>
+<li><p><code>with_name</code>：替换整个文件名后的新路径</p>
+</li>
+<li><p><code>with_stem</code>：替换stem后的新路径</p>
+</li>
+<li><p><code>with_suffix</code>：替换最后一个扩展名后的新路径</p>
+</li>
+</ul>
+</li>
+<li><p><code>shutil</code>：提供文件批量拷贝，移动，删除操作；提供<code>which</code>操作，提供压缩&#x2F;解压缩操作（ zip和tar.gz 均支持，wtf在标准库里提供这个）</p>
+<ul>
+<li><p><code>copy/copytree</code>：复制文件，递归复制目录</p>
+</li>
+<li><p><code>move</code>：移动文件</p>
+</li>
+<li><p><code>rmtree</code>：递归删除目录</p>
+</li>
+</ul>
+</li>
+<li><p><code>tempfile</code>：创建临时文件、文件夹，考虑优先使用<code>TemporaryXXX</code>。</p>
+<ul>
+<li><p><code>NamedTemporaryFile/TemporaryFile</code>：临时文件对象，可使用上下文管理器，关闭后自动删除，但该行为可配置，以及可以指定存储路径</p>
+<ul>
+<li><code>NamedTemporaryFile</code>会保证文件有可见的文件名，这玩意儿在Win上行为和 <code>TemporaryFile</code> 是完全一样的，考虑始终使用<code>NamedTemporaryFile</code></li>
+</ul>
+</li>
+<li><p><code>TemporaryDirectory</code>：临时文件夹对象，可使用上下文管理器</p>
+</li>
+<li><p><code>mkstemp</code>：创建临时文件，返回文件描述符（似乎可以无视？）和路径</p>
+</li>
+<li><p><code>mkdtemp</code>：创建临时文件夹</p>
+</li>
+</ul>
+</li>
+<li><p><code>glob</code>：使用<code>glob</code>语法筛选、遍历目录树</p>
+<ul>
+<li><p><code>glob</code>：根据glob模式查找文件，注意<strong>默认是非递归的</strong>！</p>
+</li>
+<li><p><code>iglob</code>：同<code>glob</code>，但返回迭代器</p>
+<ul>
+<li><code>escape</code>：转义特殊字符，需要匹配字面量时使用，如文件中包含<code>[]</code>时</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>fnmatch</code>：文件名匹配库，看上去功能是glob的子集……？不表</p>
+</li>
+</ul>
+</li>
+<li><p>glob专用来匹配文件路径，它支持：</p>
+<ul>
+<li><p><code>*</code>：零个或多个任意字符，文件分隔符除外</p>
+</li>
+<li><p><code>**</code>：零个或多个<strong>路径</strong>（这使得 <code>**/abc</code> 能够匹配文件 <code>abc</code>）</p>
+</li>
+<li><p><code>?</code>：单个任意字符</p>
+</li>
+<li><p><code>[]</code>：同正则，匹配特定字符集</p>
+</li>
+</ul>
+</li>
+<li><p>此外，关于URL路径操作，使用<code>from urllib.parse import urlparse</code></p>
+</li>
+</ul>
+<h2 id="文件IO"><a href="#文件IO" class="headerlink" title="文件IO"></a>文件IO</h2><ul>
+<li><p><strong>注意！文件读写默认字符集用的是系统字符集，对中国地区的Windows，是GBK！记得指定utf-8</strong>。</p>
+</li>
+<li><p>文件读写主要涉及如下的标准库：</p>
+<ul>
+<li><p><code>io</code>：提供流处理功能，内置函数中的<code>open</code>，以及其返回值各种<code>XXXIOWrapper</code>均来自于此包；<code>open</code>可以同时处理文本文件和二进制文件的读写，只需要它了。</p>
+</li>
+<li><p><code>os</code>：提供更底层的，基于文件描述符的文件读写功能，没有利用上下文处理器</p>
+</li>
+<li><p><code>pathlib</code>：本身是路径操作库，但也提供了功能和内置<code>open</code>一样的方法用来打开文件</p>
+</li>
+</ul>
+</li>
+<li><p>仅仅是要完整读取文件内容的话，可以使用<code>pathlib</code>的<code>read_text</code>，如果要流式读取等，才使用<code>open</code>。</p>
+</li>
+</ul>
+<h2 id="时间、日期处理"><a href="#时间、日期处理" class="headerlink" title="时间、日期处理"></a>时间、日期处理</h2><ul>
+<li><p>注意要安装<code>tzdata</code>包，否则无法在win系统上使用时区！</p>
+</li>
+<li><p>Python的时间处理主要来自包<code>datetime</code>，其提供了下面的类以抽象各种时间概念：</p>
+<ul>
+<li><p><code>date/time/datetime</code>：日期，时间和日期+时间，精确到<strong>微秒</strong>， <strong>不可变</strong>，<strong>未给定时区参数时默认不包含时区信息（称为Naive的）</strong>。</p>
+</li>
+<li><p><code>timedelta</code>：时间差，同时也是偏移量，精确到微秒，可为负数，两个日期的距离即为时间差，日期可以应用上一个偏移量。</p>
+</li>
+</ul>
+</li>
+<li><p><code>date</code>和<code>time</code>包下同样提供了时间操作，但是很原始，这里不表。</p>
+</li>
+<li><p><code>datetime</code>可调用<code>astimezone</code>方法去不改变时间去修改时区（无参为系统本地时区），<strong>修改后仍为同一时间</strong>，如中国的8点改到<code>Etc/GMT0</code>会得到伦敦的0点；时区相关类在<code>zoneinfo</code>包下。倘若要从中国的8点得到伦敦的8点，可调用<code>replace</code>方法。</p>
+</li>
+<li><p>问题：</p>
+<ul>
+<li><p>时间格式化和解析</p>
+</li>
+<li><p>时间差计算，时间偏移</p>
+</li>
+<li><p>本小时开始，本日开始，本周开始……</p>
+</li>
+</ul>
+</li>
+<li><h3 id="格式化和解析"><a href="#格式化和解析" class="headerlink" title="格式化和解析"></a>格式化和解析</h3><ul>
+<li><p>格式化和解析分别使用<code>strftime</code>（没必要用它，直接用<code>f&quot;&#123;&#125;&quot;</code>就行了）和<code>strptime</code>。</p>
+</li>
+<li><p>Python（C标准库<code>strftime</code>，<code>strptime</code>）时间格式化占位符</p>
+<ul>
+<li><p><code>%Y</code>：四位数的年份（例如：1999, 2020）</p>
+</li>
+<li><p><code>%m</code>：月份（01-12）</p>
+</li>
+<li><p><code>%d</code>：月份中的一天（01-31）</p>
+</li>
+<li><p><code>%H</code>：小时（24小时制，00-23）</p>
+</li>
+<li><p><code>%M</code>：分钟（00-59）</p>
+</li>
+<li><p><code>%S</code>：秒（00-59）</p>
+</li>
+<li><p><code>%f</code>：微秒（000000-999999）</p>
+</li>
+<li><p><code>%y</code>：两位数年份</p>
+</li>
+<li><p><code>%I</code>：小时（12小时制，01-12）</p>
+</li>
+<li><p><code>%p</code>：AM 或 PM</p>
+</li>
+<li><p><code>%w</code>：星期几，0是星期天</p>
+</li>
+<li><p><code>%z</code>：UTC偏移</p>
+</li>
+<li><p><code>%Z</code>：时区名称（考虑到有歧义，尽量别用）</p>
+</li>
+<li><p><code>%j</code>：年中的第几天</p>
+</li>
+<li><p><code>%U/%W</code>：年中的第几周，分别以星期日和星期一作为每周第一天</p>
+</li>
+</ul>
+</li>
+<li><p>注意，对naive时间，它是没有时区信息的，格式化时<code>%z</code>和<code>%Z</code>会得到空。</p>
+</li>
+<li><p><strong>解析时间时，如果带上时区信息，得到的时间便包含时区信息</strong>，否则为naive时间。</p>
+</li>
+</ul>
+</li>
+<li><h3 id="时间差，偏移量"><a href="#时间差，偏移量" class="headerlink" title="时间差，偏移量"></a>时间差，偏移量</h3><ul>
+<li><p>两个时间相减便得到时间差，时间可以和时间差进行加减。</p>
+</li>
+<li><p>时间差（从用户的角度看）分为三段：天，天中的秒，秒中的微秒</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime, timedelta<br><br>a: datetime = datetime.now()<br>b: datetime = datetime.now() + timedelta(days=<span class="hljs-number">1</span>, minutes=<span class="hljs-number">60</span> * <span class="hljs-number">23</span>, seconds=<span class="hljs-number">40</span>, microseconds=<span class="hljs-number">50</span>)<br>delta: timedelta = b - a<br><br><span class="hljs-built_in">print</span>(timedelta.resolution) <span class="hljs-comment"># 0:00:00.000001，时间戳的精度</span><br><span class="hljs-built_in">print</span>(delta) <span class="hljs-comment"># 1 day, 23:00:40.000050</span><br><span class="hljs-built_in">print</span>(delta.days) <span class="hljs-comment"># 1，时间间隔中的天数</span><br><span class="hljs-built_in">print</span>(delta.seconds) <span class="hljs-comment"># 82840，时间间隔中的秒数，小于1天</span><br><span class="hljs-built_in">print</span>(delta.microseconds) <span class="hljs-comment"># 50，时间间隔中的微秒</span><br><span class="hljs-built_in">print</span>(delta.total_seconds()) <span class="hljs-comment"># 169240.00005，使用秒表示的整个时间间隔</span><br><br><span class="hljs-comment"># timedelta的构造器参数是可以溢出的</span><br>new_delta = timedelta(seconds=delta.total_seconds())<br><span class="hljs-built_in">print</span>(new_delta) <span class="hljs-comment"># 1 day, 23:00:40.000050</span><br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+<li><h3 id="trunc，以及本周开始时间"><a href="#trunc，以及本周开始时间" class="headerlink" title="trunc，以及本周开始时间"></a>trunc，以及本周开始时间</h3><ul>
+<li><p>遗憾的是，Python没有内置trunc（按某个时间粒度去截断时间，用来获取本小时，本日，本月等的开始时间）</p>
+</li>
+<li><p>这点小需求也没意义用第三方库，直接手动处理：</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><br>now = datetime.now()<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">trunc</span>(<span class="hljs-params">field: <span class="hljs-built_in">str</span>, date: datetime</span>) -&gt; datetime:<br>    EMPTY = <span class="hljs-built_in">dict</span>(year=<span class="hljs-number">1</span>, month=<span class="hljs-number">1</span>,day=<span class="hljs-number">1</span>,hour=<span class="hljs-number">0</span>,minute=<span class="hljs-number">0</span>,second=<span class="hljs-number">0</span>,microsecond=<span class="hljs-number">0</span>)<br>    keys = <span class="hljs-built_in">list</span>(EMPTY.keys())<br>    field_idx = keys.index(field)<br>    <span class="hljs-keyword">if</span> field_idx == <span class="hljs-built_in">len</span>(keys) - <span class="hljs-number">1</span>:<br>        <span class="hljs-keyword">return</span> date<br>    <br>    to_zero_fielts = keys[field_idx + <span class="hljs-number">1</span>:]<br>    <span class="hljs-keyword">return</span> date.replace(**&#123;field: EMPTY[field] <span class="hljs-keyword">for</span> field <span class="hljs-keyword">in</span> to_zero_fielts&#125;)<br><br><span class="hljs-built_in">print</span>(trunc(<span class="hljs-string">&#x27;day&#x27;</span>, now))<br><br><span class="hljs-comment"># 但本周开始时间就得用到timedelta了，得得到当前是星期几，然后减去相应时间</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">start_of_week</span>(<span class="hljs-params">date: datetime</span>) -&gt; datetime:<br>    start_of_day = trunc(<span class="hljs-string">&#x27;day&#x27;</span>, date)<br>    <span class="hljs-keyword">return</span> start_of_day - timedelta(days=start_of_day.weekday())<br><br><span class="hljs-built_in">print</span>(start_of_week(now))<br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="解析命令行参数"><a href="#解析命令行参数" class="headerlink" title="解析命令行参数"></a>解析命令行参数</h2><ul>
+<li><p>参考 <a target="_blank" rel="noopener" href="https://blog.csdn.net/craftsman2020/article/details/129237425%E3%80%82%E8%80%83%E8%99%91%E5%88%B0%E8%BF%99%E4%B8%AA%E7%94%A8%E7%9A%84%E4%B8%8D%E4%BC%9A%E5%BE%88%E5%A4%9A%EF%BC%8C%E7%94%A8%E7%9A%84%E6%97%B6%E5%80%99%E7%8E%B0%E6%9F%A5%E6%96%87%E6%A1%A3%E5%B0%B1%E6%98%AF%E4%BA%86%E3%80%82">https://blog.csdn.net/craftsman2020/article/details/129237425。考虑到这个用的不会很多，用的时候现查文档就是了。</a></p>
+</li>
+<li><p><code>sys.argv</code>列表第一个参数是脚本名称，剩余是命令行参数，但Python提供了内置库<code>argparse</code>去解析命令行参数。</p>
+</li>
+<li><p><code>argparse</code>功能强大，允许声明式地添加参数，选项，提供完善的帮助消息，以及通过字典形式去获取用户输入。</p>
+</li>
+<li><p>下面以一个转换工具来做示例，用户输入两个文件名，脚本把输入文件转换为输出文件，其中根据输出文件的扩展名判断输出文件类型，但也可以通过可选参数主动去传递：</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> argparse<br><br>parser = argparse.ArgumentParser(<br>    description=<span class="hljs-string">&quot;A comprehensive argparse example.&quot;</span>, <span class="hljs-comment"># 描述，在帮助命令中显示</span><br>    epilog=<span class="hljs-string">&quot;Example usage: script.py input.txt --log-level DEBUG&quot;</span> <span class="hljs-comment"># 例子，在帮助命令中显示</span><br>)<br><br><span class="hljs-comment"># 添加位置参数，这两个是必填的</span><br>parser.add_argument(<br>    <span class="hljs-string">&#x27;input_file&#x27;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;Path to input file&#x27;</span>,<br>)<br><br>parser.add_argument(<br>    <span class="hljs-string">&#x27;output_file&#x27;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;Path to output file&#x27;</span><br>)<br><br><span class="hljs-comment"># 添加无参选填参数</span><br>parser.add_argument(<br>    <span class="hljs-string">&#x27;-q&#x27;</span>, <span class="hljs-string">&#x27;--quiet&#x27;</span>,<br>    action=<span class="hljs-string">&#x27;store_true&#x27;</span>, <span class="hljs-comment"># 倘若用户给定，存储一个 True，否则存储一个 False</span><br>    <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;suppress all output&#x27;</span><br>)<br><br><span class="hljs-comment"># 添加有参选填参数</span><br>parser.add_argument(<br>    <span class="hljs-string">&#x27;--output-type&#x27;</span>, <span class="hljs-comment"># 这里会保存到 output_file 变量</span><br>    <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>,<br>    <span class="hljs-comment"># required=False,  # 这是默认行为</span><br>    <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;output type (would ignore output file extension if given)&#x27;</span><br>)<br><br><span class="hljs-comment"># 添加枚举参数</span><br>parser.add_argument(<br>    <span class="hljs-string">&#x27;--log-level&#x27;</span>, <span class="hljs-comment"># 这里会保存到 output_file 变量</span><br>    choices=[<span class="hljs-string">&#x27;INFO&#x27;</span>, <span class="hljs-string">&#x27;DEBUG&#x27;</span>],<br>    default=<span class="hljs-string">&#x27;INFO&#x27;</span>,<br>    <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;output type (would ignore output file extension if given)&#x27;</span><br>)<br><br><span class="hljs-comment"># 添加可反复给定参数</span><br>parser.add_argument(<br>    <span class="hljs-string">&#x27;--add-filter&#x27;</span>,<br>    <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>,<br>    action=<span class="hljs-string">&#x27;append&#x27;</span><br>)<br><br>args = parser.parse_args()<br><span class="hljs-built_in">print</span>(args, args.input_file)<br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>可选参数中的action有如下类型：</p>
+<ul>
+<li><p><code>store</code>：存储参数，多次出现取最后一个，默认行为</p>
+</li>
+<li><p><code>store_true</code>：存储一个true如果给定，否则存储一个False</p>
+</li>
+<li><p><code>store_const</code>：存储一个给定值，用户通过<code>const</code>参数传入该给定值</p>
+</li>
+<li><p><code>append</code>：参数存储为列表，每次给定后append</p>
+</li>
+<li><p><code>append_const</code>：参数存储为列表，用户通过<code>const</code>参数传入该给定值</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h2><ul>
+<li><p>系统调用使用<code>subprocess</code>包下的函数，Python在本进程中执行其他程序似乎有限制，所以建议使用子进程的形式。</p>
+</li>
+<li><p>这玩意儿酷炫之处在于它能自动处理不同命令行的转义，nodejs的标准库中即使使用数组传递命令，仍旧需要进行转义。</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> subprocess<br><br>result = subprocess.run([<span class="hljs-string">&#x27;magick&#x27;</span>, <span class="hljs-string">&#x27;identify&#x27;</span>, <span class="hljs-string">&#x27;-format&#x27;</span>,  <span class="hljs-string">&#x27;&#123;&quot;width&quot;:%w, &quot;height&quot;:%h&#125;&#x27;</span>, <span class="hljs-string">&#x27;some.png&#x27;</span>], text=<span class="hljs-literal">True</span>, capture_output=<span class="hljs-literal">True</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Return code:&#x27;</span>, result.returncode) <span class="hljs-comment"># 0</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Standard output:&#x27;</span>, result.stdout) <span class="hljs-comment"># &#123;&quot;width&quot;:700, &quot;height&quot;:411&#125;</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Standard error:&#x27;</span>, result.stderr) <span class="hljs-comment"># </span><br><br><span class="hljs-comment"># 如果只要标准输出，可以直接使用 check_output，其返回值如果不是0会抛出异常</span><br>result = subprocess.check_output([<span class="hljs-string">&#x27;magick&#x27;</span>, <span class="hljs-string">&#x27;identify&#x27;</span>, <span class="hljs-string">&#x27;-format&#x27;</span>,  <span class="hljs-string">&#x27;&#123;&quot;width&quot;:%w, &quot;height&quot;:%h&#125;&#x27;</span>, <span class="hljs-string">&#x27;D:/DESKTOP/F511298C3004B5F2260B10AA5A29F2D2.png&#x27;</span>], text=<span class="hljs-literal">True</span>)<br><span class="hljs-built_in">print</span>(result)<br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>注意：<code>subprocess.run</code>在返回值非0时不抛异常，除非给定<code>check=True</code>；<code>subprocess.check_output</code>则会抛出异常。</p>
+</li>
+</ul>
+<h2 id="Excel操作"><a href="#Excel操作" class="headerlink" title="Excel操作"></a>Excel操作</h2><ul>
+<li><p>关于Excel操作，我只需要进行简单读写就行了。使用<code>openpyxl</code>库。</p>
+</li>
+<li><p>openpyxl基本上和Excel一致，提供3个抽象——Workbook，Worksheet和Cell。</p>
+</li>
+<li><p>测试数据：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>年龄</th>
+<th>所属</th>
+<th>更新日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Haruka</td>
+<td>17</td>
+<td>765</td>
+<td>2020-12-31 00:00:00</td>
+</tr>
+<tr>
+<td>Chihaya</td>
+<td>17</td>
+<td>765</td>
+<td></td>
+</tr>
+<tr>
+<td>Miki</td>
+<td></td>
+<td>961</td>
+<td></td>
+</tr>
+<tr>
+<td>总和</td>
+<td>34（计算值）</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+</li>
+<li><h3 id="对格式规范的表，按行导出实体"><a href="#对格式规范的表，按行导出实体" class="headerlink" title="对格式规范的表，按行导出实体"></a>对格式规范的表，按行导出实体</h3><ul>
+<li><p>使用下标获取表头，使用迭代器获取剩下每一行即可。</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> openpyxl <span class="hljs-keyword">import</span> load_workbook<br><br>excel_path = <span class="hljs-string">r&#x27;D:\DESKTOP\TMP\a.xlsx&#x27;</span><br><br>wb = load_workbook(excel_path, data_only=<span class="hljs-literal">True</span>) <span class="hljs-comment"># data_only=True 使得公式格自动计算出结果</span><br><br><span class="hljs-comment"># 获取第一个sheet</span><br>ws = wb.active<br><br><span class="hljs-comment"># 表头，注意索引从1开始</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">tuple</span>(cell.value <span class="hljs-keyword">for</span> cell <span class="hljs-keyword">in</span> ws[<span class="hljs-number">1</span>]))<br><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> ws.iter_rows(<span class="hljs-number">2</span>, values_only=<span class="hljs-literal">True</span>):<br>    <span class="hljs-built_in">print</span>(row) <span class="hljs-comment"># 返回类型为 None, int, float, datetime</span><br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+<li><h3 id="对格式固定的表，能查询特定Cell的数据（如果是公式Cell，得到计算后的值）"><a href="#对格式固定的表，能查询特定Cell的数据（如果是公式Cell，得到计算后的值）" class="headerlink" title="对格式固定的表，能查询特定Cell的数据（如果是公式Cell，得到计算后的值）"></a>对格式固定的表，能查询特定Cell的数据（如果是公式Cell，得到计算后的值）</h3><ul>
+<li><p>同上，使用Cell地址直接访问Cell。</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> openpyxl <span class="hljs-keyword">import</span> load_workbook<br>excel_path = <span class="hljs-string">r&#x27;D:\DESKTOP\TMP\a.xlsx&#x27;</span><br>wb = load_workbook(excel_path, data_only=<span class="hljs-literal">True</span>)<br>ws = wb.active<br><span class="hljs-comment"># 同上</span><br><br><span class="hljs-built_in">print</span>(ws[<span class="hljs-string">&#x27;B5&#x27;</span>].value)<br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+<li><h3 id="能把实体集合转换成格式规范的Excel去导出"><a href="#能把实体集合转换成格式规范的Excel去导出" class="headerlink" title="能把实体集合转换成格式规范的Excel去导出"></a>能把实体集合转换成格式规范的Excel去导出</h3><ul>
+<li><p>假设实体是dataclass或NamedTuple定义的</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> openpyxl <span class="hljs-keyword">import</span> load_workbook<br><br><span class="hljs-keyword">from</span> dataclasses <span class="hljs-keyword">import</span> dataclass, fields, is_dataclass<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> NamedTuple<br><br><span class="hljs-keyword">import</span> openpyxl<br><br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">IdolDataClass</span>:<br>    name: <span class="hljs-built_in">str</span><br>    age: <span class="hljs-built_in">int</span><br>    cls: <span class="hljs-built_in">str</span><br><br><span class="hljs-meta">@dataclass</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">IdolNamedTuple</span>:<br>    name: <span class="hljs-built_in">str</span><br>    age: <span class="hljs-built_in">int</span><br>    cls: <span class="hljs-built_in">str</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_fields</span>(<span class="hljs-params">obj</span>) -&gt; <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]:<br>    <span class="hljs-keyword">if</span> is_dataclass(obj):<br>        <span class="hljs-keyword">return</span> [field.name <span class="hljs-keyword">for</span> field <span class="hljs-keyword">in</span> fields(obj)]<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span>(obj._fields)<br><br>idols = [<br>    IdolNamedTuple(<span class="hljs-string">&#x27;Haruka&#x27;</span>, <span class="hljs-number">17</span>, <span class="hljs-string">&#x27;765&#x27;</span>),<br>    IdolNamedTuple(<span class="hljs-string">&#x27;Chihaya&#x27;</span>, <span class="hljs-number">17</span>, <span class="hljs-string">&#x27;765&#x27;</span>),<br>    IdolNamedTuple(<span class="hljs-string">&#x27;Miki&#x27;</span>, <span class="hljs-number">14</span>, <span class="hljs-string">&#x27;961&#x27;</span>),<br>]<br><br>headers = get_fields(idols[<span class="hljs-number">0</span>])<br><br>wb = openpyxl.Workbook()<br>ws = wb.active<br><br><span class="hljs-comment"># append 表头（有必要的话可以做个映射到中文）</span><br>ws.append(headers)<br><br><span class="hljs-keyword">for</span> idol <span class="hljs-keyword">in</span> idols:<br>    ws.append([<span class="hljs-built_in">getattr</span>(idol, field) <span class="hljs-keyword">for</span> field <span class="hljs-keyword">in</span> headers])<br><br>wb.save(<span class="hljs-string">r&#x27;D:\DESKTOP\TMP\dest.xlsx&#x27;</span>)<br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="xml-x2F-html解析"><a href="#xml-x2F-html解析" class="headerlink" title="xml&#x2F;html解析"></a>xml&#x2F;html解析</h2><ul>
+<li><p>Python提供了内置库<code>http.parser</code>去解析html，但这里选择使用第三方库<code>beautifulsoup4</code>（简称bs），它能同时解析<code>html</code>和<code>xml</code>，同时使用<code>lxml</code>作为它的“后端”。</p>
+</li>
+<li><p>bs包装的html片段是有状态的，可以自由修改属性，内容，子元素等。</p>
+</li>
+<li> <figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">pip install beautifulsoup4 lxml <span class="hljs-comment"># lxml 作为bs4的“后端”，性能更高 </span><br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>直接上示例，包括查询，操作和导出html。</p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup, Tag<br><br>html_doc = <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">&lt;html&gt;</span><br><span class="hljs-string">&lt;head&gt;&lt;title&gt;Example Page&lt;/title&gt;&lt;/head&gt;</span><br><span class="hljs-string">&lt;body&gt;</span><br><span class="hljs-string">&lt;h1 id=&quot;main-heading&quot; class=&quot;header&quot; style=&quot;font-size: 100px&quot;&gt;Welcome to the Example Page&lt;/h1&gt;</span><br><span class="hljs-string">&lt;p class=&quot;description&quot;&gt;This is a sample page with &lt;a href=&quot;http://example.com&quot; class=&quot;link&quot;&gt;a link&lt;/a&gt;.&lt;/p&gt;</span><br><span class="hljs-string">&lt;p class=&quot;description&quot;&gt;Another paragraph.&lt;/p&gt;</span><br><span class="hljs-string">&lt;/body&gt;</span><br><span class="hljs-string">&lt;/html&gt;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-comment"># 构建bs4实例，这里也可以直接传一个文件对象</span><br>soup = BeautifulSoup(html_doc, <span class="hljs-string">&#x27;lxml&#x27;</span>)  <span class="hljs-comment"># 也可以使用 &#x27;lxml&#x27;</span><br><br><span class="hljs-comment"># 根据CSS选择器去查询元素</span><br><span class="hljs-built_in">print</span>(soup.select(<span class="hljs-string">&#x27;html &gt; body &gt; p&#x27;</span>))<br><span class="hljs-built_in">print</span>(soup.select(<span class="hljs-string">&#x27;.description&#x27;</span>))<br><br><span class="hljs-comment"># 根据tag，id和class去查询元素</span><br><span class="hljs-built_in">print</span>(soup.find(<span class="hljs-string">&#x27;body&#x27;</span>))<br><span class="hljs-built_in">print</span>(soup.find(<span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;main-heading&#x27;</span>))<br><span class="hljs-built_in">print</span>(soup.find_all(class_=<span class="hljs-string">&#x27;description&#x27;</span>))<br><br><span class="hljs-comment"># 获取元素的属性，文本内容</span><br><span class="hljs-built_in">print</span>(soup.find(<span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;main-heading&#x27;</span>)[<span class="hljs-string">&#x27;style&#x27;</span>]) <span class="hljs-comment"># 注意获取的 class 是数组</span><br><span class="hljs-built_in">print</span>(soup.find(<span class="hljs-built_in">id</span>=<span class="hljs-string">&#x27;main-heading&#x27;</span>).string) <span class="hljs-comment"># 该方法在有多个子元素时返回None！</span><br><span class="hljs-built_in">print</span>(soup.find_all(class_=<span class="hljs-string">&#x27;description&#x27;</span>)[<span class="hljs-number">0</span>].get_text()) <span class="hljs-comment"># 获取整个标签包括子元素的纯文本表示，可指定分隔符</span><br><br><span class="hljs-comment"># 获取子元素</span><br><span class="hljs-keyword">for</span> child <span class="hljs-keyword">in</span> soup.find(<span class="hljs-string">&#x27;body&#x27;</span>).children:<br>    <span class="hljs-comment"># child 可能是字符串！</span><br>    <span class="hljs-built_in">print</span>(child)<br><span class="hljs-comment"># 递归获取子元素</span><br><span class="hljs-keyword">for</span> child <span class="hljs-keyword">in</span> soup.find(<span class="hljs-string">&#x27;body&#x27;</span>).descendants:<br>    <span class="hljs-comment"># child 可能是字符串！</span><br>    <span class="hljs-built_in">print</span>(child)<br><br><span class="hljs-comment"># 修改元素属性，内容</span><br>last_p: Tag = soup.find_all(class_=<span class="hljs-string">&#x27;description&#x27;</span>)[-<span class="hljs-number">1</span>]<br>last_p[<span class="hljs-string">&#x27;style&#x27;</span>] = <span class="hljs-string">&#x27;color: white&#x27;</span> <span class="hljs-comment"># 设置属性</span><br>last_p.string = <span class="hljs-string">&#x27;替换整个内容！&#x27;</span> <span class="hljs-comment"># 替换子元素为文本内容</span><br><br><span class="hljs-comment"># 替换所有子元素</span><br>last_p.clear() <span class="hljs-comment"># 清空所有子元素，然后添加</span><br><br><span class="hljs-comment"># 创建，添加新元素</span><br>some_a = soup.new_tag(<span class="hljs-string">&#x27;a&#x27;</span>)<br>some_a[<span class="hljs-string">&#x27;href&#x27;</span>]=<span class="hljs-string">&#x27;https://baidu.com&#x27;</span><br>some_a.string = <span class="hljs-string">&#x27;一个link&#x27;</span><br><br>another_a = soup.new_tag(<span class="hljs-string">&#x27;a&#x27;</span>)<br>another_a[<span class="hljs-string">&#x27;href&#x27;</span>]=<span class="hljs-string">&#x27;https://google.com&#x27;</span><br>another_a.string = <span class="hljs-string">&#x27;又一个link&#x27;</span><br><br>last_p.append(some_a)<br>last_p.append(another_a)<br><br><span class="hljs-comment"># 导出元素为字符串</span><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">str</span>(last_p)) <span class="hljs-comment"># 直接转换成字符串</span><br><span class="hljs-built_in">print</span>(last_p.prettify()) <span class="hljs-comment"># 带着缩进</span><br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>CSS选择器示例，仅用这玩意儿去选择html元素就够啦！</p>
+<ul>
+<li> <figure class="highlight ruby"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ruby">*                            <span class="hljs-comment"># 全部元素</span><br>div                          <span class="hljs-comment"># 全部 div 元素</span><br>.some-<span class="hljs-keyword">class</span>                  <span class="hljs-comment"># 类名含有 some-class 的元素</span><br>.class1.class2               <span class="hljs-comment"># 类名含有 class1，class2 的元素</span><br>div.some-<span class="hljs-keyword">class</span>               <span class="hljs-comment"># div且类名含有 some-class 的元素</span><br>[attr]                       <span class="hljs-comment"># 含有attr属性的元素</span><br>[attr=<span class="hljs-string">&#x27;abc&#x27;</span>]                 <span class="hljs-comment"># attr 属性值为 &#x27;abc&#x27; 的元素</span><br>div.some-<span class="hljs-keyword">class</span>[attr=<span class="hljs-string">&#x27;abc&#x27;</span>]   <span class="hljs-comment"># div且类名含有some-class且attr为&#x27;abc&#x27;的元素</span><br><span class="hljs-comment">#someId                      # id为&#x27;someId&#x27;的元素</span><br><br><span class="hljs-comment"># 注意下面的XXX，YYY均可以为 *</span><br><span class="hljs-variable constant_">XXX</span> &gt; *                      <span class="hljs-comment"># 满足XXX选择器元素的直接子元素</span><br><span class="hljs-variable constant_">XXX</span> *                        <span class="hljs-comment"># 满足XXX选择器元素的递归子元素</span><br><span class="hljs-variable constant_">XXX</span> + <span class="hljs-variable constant_">YYY</span>                    <span class="hljs-comment"># 上一个元素为满足XXX选择器的元素，自己满足YYY选择器的元素</span><br><span class="hljs-variable constant_">XXX</span> ~ <span class="hljs-variable constant_">YYY</span>                    <span class="hljs-comment"># 之前的元素满足XXX选择器，自己满足YYY选择器的元素</span><br><span class="hljs-variable constant_">XXX</span>, <span class="hljs-variable constant_">YYY</span>                     <span class="hljs-comment"># 满足XXX选择器或YYY选择器的元素</span><br><span class="hljs-symbol">:not</span>(<span class="hljs-variable constant_">XXX</span>)                    <span class="hljs-comment"># 不满足XXX选择器的元素</span><br><br>html &gt; body &gt; a              <span class="hljs-comment"># html下的body下的所有p子元素</span><br>.content p                   <span class="hljs-comment"># class为content的元素递归下的所有p元素</span><br><br><span class="hljs-comment"># :开头的选择器是html自动标注的，称为伪类选择器</span><br>body <span class="hljs-symbol">:first-child</span>            <span class="hljs-comment"># body 子孙中每一个第一个子元素</span><br>body &gt; <span class="hljs-symbol">:first-child</span>          <span class="hljs-comment"># body 的第一个子元素</span><br>body &gt; <span class="hljs-symbol">p:</span>first-of-type       <span class="hljs-comment"># body 的第一个 p 子元素</span><br>body &gt; <span class="hljs-symbol">:last-child</span>           <span class="hljs-comment"># body 的最后一个子元素</span><br>body &gt; <span class="hljs-symbol">p:</span>last-of-type        <span class="hljs-comment"># body 的最后一个 p 子元素</span><br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="浏览器自动化"><a href="#浏览器自动化" class="headerlink" title="浏览器自动化"></a>浏览器自动化</h2><ul>
+<li><p>加入这一节主要目的是为了让写爬虫时在登陆难以处理时直接打开浏览器让用户手动登陆。因此只提供一个示例——打开网易云音乐登录界面、用户手动登陆、拿到cookie，关闭页面；另一个情况可能就得是操作被ban，要打开页面让用户手动验证自己是人类。</p>
+</li>
+<li><p>需要先<code>pip install selenium</code>，然后安装一个浏览器driver，可以直接装<a target="_blank" rel="noopener" href="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver">Edge的driver</a>，毕竟谁电脑里都有Edge，</p>
+</li>
+<li><p>实现大概是如此逻辑：</p>
+<ul>
+<li><p>首先定义判断是否登录逻辑，可以找一个需要登陆才能访问的接口去验证</p>
+</li>
+<li><p>打开浏览器，打开登录页面</p>
+</li>
+<li><p>主进程轮询是否登录或浏览器窗口关闭；当登录成功时，主动关闭浏览器并返回，当浏览器关闭时，抛出异常</p>
+</li>
+</ul>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Callable</span>, <span class="hljs-type">Dict</span><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> selenium <span class="hljs-keyword">import</span> webdriver<br><span class="hljs-keyword">from</span> selenium.webdriver.edge.options <span class="hljs-keyword">import</span> Options<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> urllib.parse <span class="hljs-keyword">import</span> urlparse<br><br>LOGIN_URL = <span class="hljs-string">&#x27;XXX&#x27;</span><br>CHECK_LOGIN_URL = <span class="hljs-string">&#x27;XXX&#x27;</span><br>NOT_LOGIN_TEXT = <span class="hljs-string">&#x27;XXX&#x27;</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">is_login</span>(<span class="hljs-params">cookie: <span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-built_in">str</span>]</span>):<br>    res = requests.get(CHECK_LOGIN_URL, cookies=cookie)<br>    <span class="hljs-keyword">return</span> NOT_LOGIN_TEXT <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> res.text<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">user_login</span>(<span class="hljs-params">check_login: <span class="hljs-type">Callable</span>[[<span class="hljs-type">Dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-built_in">str</span>]], <span class="hljs-built_in">bool</span>], login_url: <span class="hljs-built_in">str</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;用户手动登陆，返回cookie&quot;&quot;&quot;</span><br>    options = Options()<br>    options.add_argument(<span class="hljs-string">f&quot;--app=<span class="hljs-subst">&#123;login_url&#125;</span>&quot;</span>)  <span class="hljs-comment"># 只显示页面内容</span><br>    options.add_argument(<span class="hljs-string">&quot;--disable-blink-features=AutomationControlled&quot;</span>) <br>    options.add_argument(<span class="hljs-string">&quot;--ignore-certificate-errors&quot;</span>)  <br>    options.add_argument(<span class="hljs-string">&quot;--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0&quot;</span>) <br><br>    driver = webdriver.Edge(options=options)<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        time.sleep(<span class="hljs-number">0.5</span>)<br>        <span class="hljs-keyword">try</span>:<br>            cookie = driver.get_cookies()<br>        <span class="hljs-keyword">except</span>:<br>            <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">&quot;Window closed without login&quot;</span>)<br>        <br>        filtered_cookie = &#123;i[<span class="hljs-string">&#x27;name&#x27;</span>]:i[<span class="hljs-string">&#x27;value&#x27;</span>] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> cookie <span class="hljs-keyword">if</span> urlparse(login_url).netloc <span class="hljs-keyword">in</span> i[<span class="hljs-string">&#x27;domain&#x27;</span>]&#125;<br>        <span class="hljs-keyword">if</span> check_login(filtered_cookie):<br>            driver.quit()<br>            <span class="hljs-keyword">return</span> filtered_cookie<br>        <br><span class="hljs-built_in">print</span>(user_login(is_login, LOGIN_URL))<br></code></pre></div></td></tr></table></figure></li>
+</ul>
+<h2 id="数据可视化"><a href="#数据可视化" class="headerlink" title="数据可视化"></a>数据可视化</h2><ul>
+<li><p>用<code>matplotlib</code>，它的绘图功能似乎是类似MATLAB。</p>
+</li>
+<li><p><code>matplotlib</code> 本身包含下面的概念：</p>
+<ul>
+<li><p><code>Figure</code>：图表的顶层容器，<code>Figure</code>包含一个或多个<code>Axes</code>对象，一个<code>Figure</code>对应一个系统窗口；<code>add_subplot</code>方法可以添加<code>Axes</code>到<code>Figure</code>中</p>
+</li>
+<li><p><code>Axes</code>：Axes是通常意义上的图表，每个图表包含一个或多个数据series，并包含两个<code>Axis</code>对象，即坐标轴</p>
+</li>
+<li><p><code>Axis</code>：坐标轴对象，每个<code>Axes</code>包含两个坐标轴（3d绘图内置库没有直接提供）</p>
+</li>
+<li><p><code>Plot</code>：Plot并非是独立存在的类，它是<code>axes</code>的一系列方法，用于修改<code>axes</code>的状态，绘制数据点和线条，<code>Plot</code>包括plot（折线图），bar（柱状图，以及barh，水平柱状图），scatter（散点图），hist（直方图），pie（饼图）等</p>
+</li>
+<li><p><code>Artist</code>：所有可绘制对象的基类，用户可以自定义子类去实现它，绘制自定义图像（如3D图像）</p>
+</li>
+<li><p><code>Figure Canvas</code>和<code>Backend</code>：绘图后端，和GUI后端相关，配置此可以将所绘制图表集成到其他GUI框架中，如PyQt5。</p>
+</li>
+</ul>
+</li>
+<li><p><code>matplotlib</code>有两种调用方式——基于命令式和基于面向对象式的，<strong>前者假设只有一个figure，一个axes，然后把所有操作该figure和axes的函数都暴露在顶层</strong>。</p>
+</li>
+<li><p>命令式的示例：</p>
+<ul>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br><span class="hljs-comment"># 绘制折线图</span><br>plt.plot([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>], label=<span class="hljs-string">&#x27;Line Plot&#x27;</span>)<br><br><span class="hljs-comment"># 接着绘制散点图</span><br>plt.scatter([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">6</span>, <span class="hljs-number">5</span>, <span class="hljs-number">4</span>], color=<span class="hljs-string">&#x27;red&#x27;</span>, label=<span class="hljs-string">&#x27;Scatter Plot&#x27;</span>)<br><br><span class="hljs-comment"># 坐标轴标签</span><br>plt.xlabel(<span class="hljs-string">&#x27;x&#x27;</span>)<br>plt.ylabel(<span class="hljs-string">&#x27;y&#x27;</span>)<br><span class="hljs-comment"># 添加图例</span><br>plt.legend()<br><br><span class="hljs-comment"># 显示图形</span><br>plt.show()<br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>声明式的示例：</p>
+<ul>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt<br><br><span class="hljs-comment"># 创建一个 1x2 的子图布局，即axs会有两个axes</span><br><span class="hljs-comment"># 有多行时，使用二维矩阵去访问</span><br>fig, axs = plt.subplots(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br><br><span class="hljs-comment"># 在第一个子图中绘制折线图</span><br>axs[<span class="hljs-number">0</span>].plot([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>], label=<span class="hljs-string">&#x27;Line Plot&#x27;</span>)<br>axs[<span class="hljs-number">0</span>].legend()<br>axs[<span class="hljs-number">0</span>].set_title(<span class="hljs-string">&#x27;Line Plot&#x27;</span>)<br><br><span class="hljs-comment"># 在第二个子图中绘制散点图</span><br>axs[<span class="hljs-number">1</span>].scatter([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">6</span>, <span class="hljs-number">5</span>, <span class="hljs-number">4</span>], color=<span class="hljs-string">&#x27;red&#x27;</span>, label=<span class="hljs-string">&#x27;Scatter Plot&#x27;</span>)<br>axs[<span class="hljs-number">1</span>].legend()<br>axs[<span class="hljs-number">1</span>].set_title(<span class="hljs-string">&#x27;Scatter Plot&#x27;</span>)<br><br><span class="hljs-comment"># 显示图形</span><br>plt.show()<br></code></pre></div></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>关于axes的坐标，axes的坐标根据三个参数去确定——行数，列数，第几个图表，三个参数均从1开始；python用3位整数去表示坐标。不同的axes可以有不同的行数、列数，此时会出现重叠，所以一般都保持行数列数固定。</p>
+</li>
+</ul>
+<h2 id="数据库操作"><a href="#数据库操作" class="headerlink" title="数据库操作"></a>数据库操作</h2><ul>
+<li><p>Python有一个关系型数据库标准协议，DB-API，如MySQL，Oracle和SQLite（内置标准库）均遵循该协议。这里只去学习它。但注意到<strong>Pandas支持利用它去直接得到DataFrame</strong>，或许后面值得一学。</p>
+</li>
+<li><p>注意DB-API只是协议，它不对应任何具体的抽象类，只是一个规范。</p>
+</li>
+<li><p>同样，这里直接给示例，反正这玩意儿和直接执行sql本来也没啥区别。注意DB-API的关键概念是cursor游标，一切操作都必须用它去执行。</p>
+</li>
+<li><p><strong>注意写入操作后必须要提交事务！！！</strong></p>
+</li>
+<li> <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> mysql.connector <br><br><span class="hljs-comment"># 创建MySQL连接，sqlite连接则是指定文件名</span><br>conn = mysql.connector.connect(<br>    user = <span class="hljs-string">&#x27;root&#x27;</span>,<br>    password = <span class="hljs-string">&#x27;root&#x27;</span>,<br>    host = <span class="hljs-string">&#x27;172.1.1.1&#x27;</span>,<br>    port = <span class="hljs-number">3306</span>,<br>    database = <span class="hljs-string">&#x27;hello-world&#x27;</span>,<br>)<br><span class="hljs-comment"># 创建游标</span><br>cur = conn.cursor()<br><br><span class="hljs-comment"># 查询</span><br>cur.execute(<span class="hljs-string">&#x27;select * from abc&#x27;</span>)<br><span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> cur.fetchall():<br>    <span class="hljs-built_in">print</span>(row)<br><br><span class="hljs-comment"># 游标也可以执行 DDL</span><br>cur.execute(<span class="hljs-string">&#x27;create table wtf(a int, b int)&#x27;</span>)<br><br><span class="hljs-comment"># 写入时可能会创建事务，也可能不会，但总之自己提交事务准没错</span><br><span class="hljs-comment"># 如果没有提交事务，修改会自动回滚！！！</span><br>cur.execute(<span class="hljs-string">&#x27;insert into wtf values (1, 2)&#x27;</span>)<br><br><span class="hljs-comment"># 提交事务</span><br>conn.commit()<br></code></pre></div></td></tr></table></figure>
+</li>
+<li><p>关于MySQL类型到Python的映射：</p>
+<ul>
+<li><p>TINYINT, SMALLINT, MEDIUMINT, INT, INTEGER, BIGINT -&gt; <code>int</code></p>
+</li>
+<li><p>DOUBLE, FLOAT -&gt; <code>float</code></p>
+</li>
+<li><p>DECIMAL -&gt; <code>decimal.Decimal</code></p>
+</li>
+<li><p>DATE -&gt; <code>datetime.date</code></p>
+</li>
+<li><p>TIME -&gt; <code>datetime.time</code></p>
+</li>
+<li><p>DATETIME, TIMESTAMP -&gt; <code>datetime.datetime</code></p>
+</li>
+<li><p>CHAR, VARCHAR, TEXT…… -&gt; <code>str</code></p>
+</li>
+<li><p>XXXBLOB -&gt; <code>bytes</code></p>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08-25%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2SD%E5%92%8Cseamless_communication.html">
+                        <span class="hidden-mobile">本地部署 Stable Diffusion WebUI 和 Facebook 的 seamless_communication</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
