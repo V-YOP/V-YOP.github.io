@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="心有余而力不足">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Electron 学习笔记">
+<meta property="og:url" content="http://example.com/2024/06-10electron%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="心有余而力不足">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2024/06-10electron%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.webp">
+<meta property="article:published_time" content="2024-06-10T08:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-10T02:13:29.096Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Electron">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2024/06-10electron%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.webp">
+  
+  
+  <title>Electron 学习笔记 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Electron 学习笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-06-10 16:00" pubdate>
+        2024年6月10日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Electron 学习笔记</h1>
+            
+            <div class="markdown-body">
+              <p>（想）学习 Electron 有一些目的：</p>
+<ol>
+<li>把自己常用的一些操作 GUI 化，比如解析 excel，写书籍的爬虫之类的，打造一个个人的工具箱来提高生活质量</li>
+<li>用它来写 Krita 的插件的 GUI（得找一个延时最低的进程通信方式，还得看这 GUI 会不会导致失焦等问题）</li>
+<li>玩</li>
+</ol>
+<p>学习参考 <a target="_blank" rel="noopener" href="https://juejin.cn/book/7302990019642261567">https://juejin.cn/book/7302990019642261567</a>，先上手，看情况再深入。</p>
+<hr>
+<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p>ELectron 是基于前端技术的，跨平台桌面开发框架，其允许在浏览器窗口中执行系统 API 以及使用 Node API。</p>
+<p><strong>Electron 是多进程的</strong>，它有一个主进程 <code>Main Process</code> 和多个派生自主进程的渲染进程 <code>Renderer Process</code>。主进程就像浏览器本身，渲染进程就像一个个标签页。</p>
+<p><strong>主进程活在 nodejs 的运行时下</strong>，管理应用的生命周期，负责创建窗口和进行原生 API 调用（如右键菜单，系统通知，剪切板等）。<strong>一个窗口对应一个渲染进程</strong>。</p>
+<p><strong>渲染进程（主要）活在浏览器的运行时下</strong>，负责展示窗口或者网页。为了安全性考虑，渲染进程只能访问部分本地 API。</p>
+<p><img src="/2024/06-10electron%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/1.webp" alt="alt text"></p>
+<p>预加载脚本执行在渲染进程中，网页加载前，但能够使用 node API，渲染进程 API 和 DOM API，也能通过 IPC 和主进程通信。<strong>在预加载脚本中能够暴露任意方法（包括 nodejs 的）到 window 上使得渲染进程能够使用它</strong>。</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// main.js （即主线程）</span><br><span class="hljs-keyword">const</span> &#123; <span class="hljs-title class_">BrowserWindow</span> &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;electron&#x27;</span>)  <br><br><span class="hljs-comment">// 创建窗口</span><br><span class="hljs-keyword">const</span> win = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BrowserWindow</span>(&#123;  <br>  <span class="hljs-attr">webPreferences</span>: &#123;  <br>    <span class="hljs-attr">preload</span>: <span class="hljs-string">&#x27;preload.js&#x27;</span>   <span class="hljs-comment">// 指定预加载脚本</span><br>  &#125;  <br>&#125;)  <br><span class="hljs-comment">// ...</span><br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// preload.js</span><br><span class="hljs-keyword">const</span> &#123; contextBridge &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;electron&#x27;</span>)  <br><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>)<br><br>contextBridge.<span class="hljs-title function_">exposeInMainWorld</span>(<span class="hljs-string">&#x27;myAPI&#x27;</span>, &#123;  <br>  <span class="hljs-attr">exists</span>: fs.<span class="hljs-property">exists</span>  <br>&#125;)<br></code></pre></div></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// renderer.js （渲染进程）</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">window</span>.<span class="hljs-property">myAPI</span>) <span class="hljs-comment">// &#123; exists: function &#125; </span><br></code></pre></div></td></tr></table></figure>
+
+<p>通过 contextBridge 暴露的接口会有一定限制——预加载脚本和页面实际上不在同一个上下文中，而是通过 contextBridge 去代理去操作。调用 contextBridge 中的函数时，<strong>所有参数都会被复制一份再传递，返回值也会被复制，因此不可复制的信息会丢失</strong>。一个现象是<code>node-fetch</code>的返回值里将只有 size 和 timeout 字段，其他字段全都没了，因此处理响应体，header 等的逻辑得写在预加载脚本中。</p>
+<p>但如果需要 fetch 能够跨源，只需要给窗口添加请求处理回调，置空响应中跨域相关 header 即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">// 在主进程中，mainWindow 刚刚创建时执行</span><br>mainWindow.<span class="hljs-property">webContents</span>.<span class="hljs-property">session</span>.<span class="hljs-property">webRequest</span>.<span class="hljs-title function_">onHeadersReceived</span>(<span class="hljs-function">(<span class="hljs-params">details, callback</span>) =&gt;</span> &#123;<br>  <span class="hljs-title function_">callback</span>(&#123;<br>    <span class="hljs-attr">responseHeaders</span>: &#123;<br>      <span class="hljs-string">&#x27;Access-Control-Allow-Origin&#x27;</span>: [<span class="hljs-string">&#x27;*&#x27;</span>],<br>      ...details.<span class="hljs-property">responseHeaders</span><br>    &#125;<br>  &#125;)<br>&#125;)<br></code></pre></div></td></tr></table></figure>
+
+<p>注意 index.html 的 header 中需要替换原来的<code>Content-Security-Policy</code>（electrion-vite 创建的项目中自带的）为：</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">&quot;Content-Security-Policy&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;connect-src *; default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; img-src &#x27;self&#x27; data:&quot;</span> /&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>或者在预加载脚本中</p>
+<h1 id="IPC"><a href="#IPC" class="headerlink" title="IPC"></a>IPC</h1><p>关于 IPC，IPC 即进程间通信，其有各种形式，包括共享内存，管道，本地套接字，signal，消息队列等，主进程和渲染进程之间通过 IPC 进行通信。</p>
+<p>Electron 中有自己的 IPC 形式，其基于 EventEmitter，但因为需要跨进程通信，所以<strong>传输的参数会被序列化、反序列化</strong>，丢掉原型等信息，且函数，Promise 不能传递。</p>
+<p><strong>从渲染进程到主进程</strong>，需要使用 <code>ipcRenderer</code>的<code>send</code>, <code>invoke</code> 和 <code>sendSync</code>方法，主进程通过 <code>ipcMain</code>去接受消息并执行操作，以及回复（还能回复？？）。</p>
+<p>三种方法有下面区别：</p>
+<ol>
+<li><code>send</code>：只管发送，不等响应立即返回，无法看到主进程的回复，主进程通过<code>ipcMain.on</code>接收消息，其中通过<code>event.reply</code>（或者<code>event.sender.send</code>）去做回复，回复需要指定 channel，<strong>回复的 channel 需要被渲染进程监听</strong>，使用<code>ipcRenderer.on</code>。</li>
+<li><code>invoke</code>：Promise 风格，能够异步地返回主进程的回复，主进程通过<code>ipcMain.handle</code>去接受消息，通过 Promise 做回复。</li>
+<li><code>sendSync</code>：<strong>同步</strong>发送，主进程通过<code>ipcMain.on</code>接收消息，通过设置<code>event.returnValue</code>做回复。同步发送只在无计可施的情况下才应当使用。</li>
+</ol>
+<p><strong>只展示 invoke，因为它是 Electron 官方文档中建议的方式</strong>：</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// render.js</span><br><span class="hljs-keyword">import</span> &#123; ipcRenderer &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;electron&#x27;</span>;<br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">invokeMessageToMain</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> replyMessage = <span class="hljs-keyword">await</span> ipcRenderer.<span class="hljs-title function_">invoke</span>(<span class="hljs-string">&#x27;my_channel&#x27;</span>, <span class="hljs-string">&#x27;my_data&#x27;</span>);<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;replyMessage&#x27;</span>, replyMessage);<br>&#125;<br><br><span class="hljs-comment">// main.js</span><br><span class="hljs-keyword">import</span> &#123; ipcMain &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;electron&#x27;</span>;<br>ipcMain.<span class="hljs-title function_">handle</span>(<span class="hljs-string">&#x27;my_channel&#x27;</span>, <span class="hljs-keyword">async</span> (event, message) =&gt; &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`receive message from render: <span class="hljs-subst">$&#123;message&#125;</span>`</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;reply&#x27;</span>;<br>&#125;);<br><br></code></pre></div></td></tr></table></figure>
+
+<p><strong>从主进程到渲染进程</strong>，第一种方式是被动地等待渲染进程的消息，通过回复去通信。</p>
+<p>如果要主动地通知渲染进程，需要利用<code>webContents</code>，它是<code>BrowserWindow</code>的成员，因此使用它是极其方便的。渲染进程仍旧需要用<code>ipcRenderer.on</code>去监听消息。</p>
+<figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">// 主进程</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">BrowserWindow</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;electron&#x27;</span>;<br><br><span class="hljs-keyword">const</span> mainWindow = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BrowserWindow</span>();<br>mainWindow.<span class="hljs-title function_">loadFile</span>(<span class="hljs-string">&#x27;index.html&#x27;</span>);<br><span class="hljs-comment">// 在某个事件或条件下发送消息</span><br>mainWindow.<span class="hljs-property">webContents</span>.<span class="hljs-title function_">send</span>(<span class="hljs-string">&#x27;messageToRenderer&#x27;</span>, <span class="hljs-string">&#x27;Hello from Main!&#x27;</span>);<br></code></pre></div></td></tr></table></figure>
+
+<p><strong>渲染进程到渲染进程</strong>间可以使用<code>MessagePort</code>实现，它类似消息队列，但是是双工的，主进程创建 MessagePort 得到两个 port，并使用<code>webContents.postMessage</code>把 port 发送给两个渲染进程，然后两个渲染进程便可使用 port 去通信（这玩意能序列化？？）。</p>
+<p>感觉这样操作有点不合适……我仍旧倾向把整个应用程序的状态想象为一整个树状结构，渲染进程向渲染进程通信感觉就像树的兄弟节点去通信一样感觉对维护不利，但或许它本就不是一棵树吧。</p>
+<h1 id="上下文菜单，托盘"><a href="#上下文菜单，托盘" class="headerlink" title="上下文菜单，托盘"></a>上下文菜单，托盘</h1><p>TODO</p>
+<h1 id="用例：Dragger"><a href="#用例：Dragger" class="headerlink" title="用例：Dragger"></a>用例：Dragger</h1><p>创建一个始终置顶的空页面，显示一个<code>drag to here</code>，右下角一个<code>Setting</code>，左下角一个<code>History</code>：</p>
+<ol>
+<li>拖动文字、图片，文件等到其上时将之保存，或者在焦点在该页面上时按 Ctrl+V 时同样操作（需研究）</li>
+<li>每次保存时，<code>drag to here</code>文字替换为<code>saved &lt;图片|文字|文件&gt; at &lt;当前时间戳&gt;</code></li>
+<li>点击<code>Setting</code>和<code>History</code>均唤起新页面，前者就一个<code>clear</code>和<code>exit</code>，后者</li>
+</ol>
+<p>这玩意做出来是想考虑一个能快速保存内容的方案——使用拖动而非拷贝的话能避免无效的拷贝内容和轮询剪切板中大图片文件的开销，拖动也允许快速“集成”其他应用；考虑下面的使用场景：</p>
+<ol>
+<li>在设置中指定图片存储位置和存储文件名，使能够快速保存图片（通过用户配置的回调去实现）</li>
+<li>窗口多开，每个窗口指定“Collection”，拖动的内容均存入相应 Collection 中，供用户快速组织某一主题需要的内容</li>
+</ol>
+<p>TODO</p>
+<h1 id="Debug"><a href="#Debug" class="headerlink" title="Debug"></a>Debug</h1><p><a target="_blank" rel="noopener" href="https://www.electronjs.org/zh/docs/latest/tutorial/application-debugging">https://www.electronjs.org/zh/docs/latest/tutorial/application-debugging</a></p>
+<p>TODO 研究如何 debug 主进程和渲染进程。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Electron/">Electron</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06-25Rubick%E6%8F%92%E4%BB%B6%E7%BC%96%E5%86%99%E7%AC%94%E8%AE%B0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Rubick 插件学习笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03-20RuoYi-Cloud%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html">
+                        <span class="hidden-mobile">RuoYi-Cloud 后端笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
