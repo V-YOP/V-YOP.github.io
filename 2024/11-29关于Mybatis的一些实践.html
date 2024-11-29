@@ -18,20 +18,22 @@
   <meta name="author" content="友纪V-λOP">
   <meta name="keywords" content="">
   
-    <meta name="description" content="最近对嵌入式比较感兴趣，在学一些电路知识。在学习（还是玩？这是另一个声音）一切东西的时候，心底都有个混账声音在质问我，学这些究竟有什么用，你在逃避什么，我不知道如何反驳，只能说一句，去你妈的，如果急功近利，你屁都实现不了。  记录关于 Mybatis Plus 在复杂使用上的实践，以让生活变得更轻松。包括：  嵌套 Wrapper 查询方法的实际作用（文档语焉不详，网上没有找到仔细分析的文章），包">
+    <meta name="description" content="记录关于 Mybatis Plus 在复杂使用上的实践">
 <meta property="og:type" content="article">
-<meta property="og:title" content="友纪V-λOP">
+<meta property="og:title" content="关于 Mybatis 的一些实践">
 <meta property="og:url" content="http://example.com/2024/11-29%E5%85%B3%E4%BA%8EMybatis%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AE%9E%E8%B7%B5.html">
 <meta property="og:site_name" content="友纪V-λOP">
-<meta property="og:description" content="最近对嵌入式比较感兴趣，在学一些电路知识。在学习（还是玩？这是另一个声音）一切东西的时候，心底都有个混账声音在质问我，学这些究竟有什么用，你在逃避什么，我不知道如何反驳，只能说一句，去你妈的，如果急功近利，你屁都实现不了。  记录关于 Mybatis Plus 在复杂使用上的实践，以让生活变得更轻松。包括：  嵌套 Wrapper 查询方法的实际作用（文档语焉不详，网上没有找到仔细分析的文章），包">
+<meta property="og:description" content="记录关于 Mybatis Plus 在复杂使用上的实践">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-29T16:14:03.541Z">
-<meta property="article:modified_time" content="2024-11-29T16:14:10.380Z">
+<meta property="article:published_time" content="2024-11-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-29T16:38:37.041Z">
 <meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="后端">
 <meta name="twitter:card" content="summary_large_image">
   
   
-  <title>友纪V-λOP</title>
+  <title>关于 Mybatis 的一些实践 - 友纪V-λOP</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -167,7 +169,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="">
+            <span class="h2" id="subtitle" title="关于 Mybatis 的一些实践">
               
             </span>
 
@@ -177,7 +179,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2024-11-30 00:14" pubdate>
+      <time datetime="2024-11-30 00:00" pubdate>
         2024年11月30日 凌晨
       </time>
     </span>
@@ -188,7 +190,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      383 字
+      8.6k 字
     </span>
   
 
@@ -219,7 +221,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none"></h1>
+            <h1 style="display: none">关于 Mybatis 的一些实践</h1>
             
             <div class="markdown-body">
               <p>最近对嵌入式比较感兴趣，在学一些电路知识。在学习（还是玩？这是另一个声音）一切东西的时候，心底都有个混账声音在质问我，学这些究竟有什么用，你在逃避什么，我不知道如何反驳，只能说一句，去你妈的，如果急功近利，你屁都实现不了。</p>
@@ -231,33 +233,6 @@
 <li>自定义 SQL，以及多表查询 SQL（<strong>多 Wrapper 查询</strong>） 的 Mybatis Plus 解决方案，包括一对一，一对多（在“多”上有查询条件，但终究是去查“一”），以及查询其他字段</li>
 </ol>
 <p><strong>只研究 LabmdaWrapper</strong>，同时不研究 groupBy 等方法，认为此种情况下自定义 SQL 更加合适。</p>
-<!-- 
-
-# 测试环境搭建
-
-1. 进 https://start.aliyun.com/，选择 Spring 2，选择 Spring Web，H2，Mybatis 依赖，然后下载，用 IDEA 打开
-2. 修改 pom，替换 mybatis 的 starter 为：
-
-<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.baomidou<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.9<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
-
-<ol start="3">
-<li>修改 properties，调整 H2 使用内存表，以及配置日志打印 SQL：</li>
-</ol>
-<figure class="highlight properties"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs properties"><span class="hljs-attr">spring.datasource.url</span>=<span class="hljs-string">jdbc:h2:mem:test</span><br><span class="hljs-comment"># 开启 MyBatis-Plus 的 SQL 打印功能</span><br><span class="hljs-attr">mybatis-plus.configuration.log-impl</span>=<span class="hljs-string">org.apache.ibatis.logging.stdout.StdOutImpl</span><br></code></pre></div></td></tr></table></figure>
-
-<ol start="4">
-<li>配置 mybatis-plus 的日志，打印执行的 SQL</li>
-<li>在 resources 下新增<code>schema.sql</code>，添加测试数据：</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-comment">-- 创建学生表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> student<br>(<br>    student_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY AUTO_INCREMENT, <span class="hljs-comment">-- 学生 ID</span><br>    name       <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,          <span class="hljs-comment">-- 学生姓名</span><br>    age        <span class="hljs-type">INT</span>,                            <span class="hljs-comment">-- 学生年龄</span><br>    gender     <span class="hljs-type">CHAR</span>(<span class="hljs-number">1</span>)                         <span class="hljs-comment">-- 性别（M: 男，F: 女）</span><br>);<br><br><span class="hljs-comment">-- 创建课程表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> course<br>(<br>    course_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY AUTO_INCREMENT, <span class="hljs-comment">-- 课程 ID</span><br>    name      <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,          <span class="hljs-comment">-- 课程名称</span><br>    credits   <span class="hljs-type">INT</span>                             <span class="hljs-comment">-- 学分</span><br>);<br><br><span class="hljs-comment">-- 创建成绩表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> grade<br>(<br>    grade_id   <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY AUTO_INCREMENT, <span class="hljs-comment">-- 成绩 ID</span><br>    student_id <span class="hljs-type">INT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,                   <span class="hljs-comment">-- 学生 ID（引用 student 表）</span><br>    course_id  <span class="hljs-type">INT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,                   <span class="hljs-comment">-- 课程 ID（引用 course 表）</span><br>    score      <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">5</span>, <span class="hljs-number">2</span>),                  <span class="hljs-comment">-- 成绩</span><br>    <span class="hljs-keyword">FOREIGN</span> KEY (student_id) <span class="hljs-keyword">REFERENCES</span> student (student_id),<br>    <span class="hljs-keyword">FOREIGN</span> KEY (course_id) <span class="hljs-keyword">REFERENCES</span> course (course_id)<br>);<br><br><span class="hljs-comment">-- 插入测试数据到学生表</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> student (name, age, gender)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Alice&#x27;</span>, <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;F&#x27;</span>),<br>       (<span class="hljs-string">&#x27;Bob&#x27;</span>, <span class="hljs-number">22</span>, <span class="hljs-string">&#x27;M&#x27;</span>),<br>       (<span class="hljs-string">&#x27;Charlie&#x27;</span>, <span class="hljs-number">21</span>, <span class="hljs-string">&#x27;M&#x27;</span>);<br><br><span class="hljs-comment">-- 插入测试数据到课程表</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> course (name, credits)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Mathematics&#x27;</span>, <span class="hljs-number">3</span>),<br>       (<span class="hljs-string">&#x27;Physics&#x27;</span>, <span class="hljs-number">4</span>),<br>       (<span class="hljs-string">&#x27;Chemistry&#x27;</span>, <span class="hljs-number">2</span>);<br><br><span class="hljs-comment">-- 插入测试数据到成绩表</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> grade (student_id, course_id, score)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">85.5</span>), <span class="hljs-comment">-- Alice 的数学成绩</span><br>       (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">90.0</span>), <span class="hljs-comment">-- Alice 的物理成绩</span><br>       (<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">78.0</span>), <span class="hljs-comment">-- Bob 的数学成绩</span><br>       (<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">88.5</span>), <span class="hljs-comment">-- Bob 的化学成绩</span><br>       (<span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">92.0</span>); <span class="hljs-comment">-- Charlie 的物理成绩</span><br><br></code></pre></div></td></tr></table></figure>
-
-<ol start="6">
-<li>定义实体类和 Mapper</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BasicController</span> &#123;<br>    <span class="hljs-meta">@Data</span><br>    <span class="hljs-meta">@TableName(&quot;student&quot;)</span> <span class="hljs-comment">// 对应数据库表名</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span> &#123;<br>        <span class="hljs-meta">@TableId(value = &quot;student_id&quot;, type = IdType.AUTO)</span> <span class="hljs-comment">// 主键，自动递增</span><br>        <span class="hljs-keyword">private</span> Integer studentId;<br>        <span class="hljs-keyword">private</span> String name; <span class="hljs-comment">// 学生姓名</span><br>        <span class="hljs-keyword">private</span> Integer age; <span class="hljs-comment">// 学生年龄</span><br>        <span class="hljs-keyword">private</span> String gender; <span class="hljs-comment">// 性别（M: 男，F: 女）</span><br>    &#125;<br><br>    <span class="hljs-meta">@Data</span><br>    <span class="hljs-meta">@TableName(&quot;course&quot;)</span> <span class="hljs-comment">// 对应数据库表名</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Course</span> &#123;<br>        <span class="hljs-meta">@TableId(value = &quot;course_id&quot;, type = IdType.AUTO)</span> <span class="hljs-comment">// 主键，自动递增</span><br>        <span class="hljs-keyword">private</span> Integer courseId;<br>        <span class="hljs-keyword">private</span> String name; <span class="hljs-comment">// 课程名称</span><br>        <span class="hljs-keyword">private</span> Integer credits; <span class="hljs-comment">// 学分</span><br>    &#125;<br><br>    <span class="hljs-meta">@Data</span><br>    <span class="hljs-meta">@TableName(&quot;grade&quot;)</span> <span class="hljs-comment">// 对应数据库表名</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Grade</span> &#123;<br>        <span class="hljs-meta">@TableId(value = &quot;grade_id&quot;, type = IdType.AUTO)</span> <span class="hljs-comment">// 主键，自动递增</span><br>        <span class="hljs-keyword">private</span> Integer gradeId;<br>        <span class="hljs-keyword">private</span> Integer studentId; <span class="hljs-comment">// 学生 ID，关联 Student 表</span><br>        <span class="hljs-keyword">private</span> Integer courseId; <span class="hljs-comment">// 课程 ID，关联 Course 表</span><br>        <span class="hljs-keyword">private</span> Double score; <span class="hljs-comment">// 成绩</span><br>    &#125;<br><br>    <span class="hljs-meta">@Mapper</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">StudentMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;Student&gt; &#123; &#125;<br><br>    <span class="hljs-meta">@Mapper</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">CourseMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;Course&gt; &#123; &#125;<br><br>    <span class="hljs-meta">@Mapper</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">GradeMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;Grade&gt; &#123; &#125;<br><br>    <span class="hljs-meta">@Autowired</span><br>    StudentMapper studentMapper;<br><br>    <span class="hljs-meta">@Autowired</span><br>    CourseMapper courseMapper;<br><br>    <span class="hljs-meta">@Autowired</span><br>    GradeMapper gradeMapper;<br><br>    <span class="hljs-meta">@GetMapping(&quot;all&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">all</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> studentMapper.selectList(<span class="hljs-literal">null</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
-
-<p>这就是我们的 playground。</p>
-<p>–&gt;</p>
 <h1 id="连接词，以及嵌套-Wrapper"><a href="#连接词，以及嵌套-Wrapper" class="headerlink" title="连接词，以及嵌套 Wrapper"></a>连接词，以及嵌套 Wrapper</h1><p>连接词指 and 和 or。</p>
 <p>下面的每个方法都有带 condition 参数的版本，只有为 true 时该次调用才会真正生效，下面的描述都省略掉此种版本。</p>
 <p><code>and</code>，<code>or</code>，<code>func</code>和<code>nested</code>接受<code>Consumer&lt;Wrapper&gt;</code>去以“子句”的形式去定义 SQL 片段，使用子句可以定义任意复杂的 SQL，在很多时候比 XML 还灵活。</p>
@@ -319,6 +294,15 @@
             <div>
               <div class="post-metas mb-3">
                 
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%90%8E%E7%AB%AF/">后端</a>
+                    
+                  </div>
                 
               </div>
               
