@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最近对嵌入式比较感兴趣，在学一些电路知识。在学习（还是玩？这是另一个声音）一切东西的时候，心底都有个混账声音在质问我，学这些究竟有什么用，你在逃避什么，我不知道如何反驳，只能说一句，去你妈的，如果急功近利，你屁都实现不了。  记录关于 Mybatis Plus 在复杂使用上的实践，以让生活变得更轻松。包括：  嵌套 Wrapper 查询方法的实际作用（文档语焉不详，网上没有找到仔细分析的文章），包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="友纪V-λOP">
+<meta property="og:url" content="http://example.com/2024/11-29%E5%85%B3%E4%BA%8EMybatis%E7%9A%84%E4%B8%80%E4%BA%9B%E5%AE%9E%E8%B7%B5.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="最近对嵌入式比较感兴趣，在学一些电路知识。在学习（还是玩？这是另一个声音）一切东西的时候，心底都有个混账声音在质问我，学这些究竟有什么用，你在逃避什么，我不知道如何反驳，只能说一句，去你妈的，如果急功近利，你屁都实现不了。  记录关于 Mybatis Plus 在复杂使用上的实践，以让生活变得更轻松。包括：  嵌套 Wrapper 查询方法的实际作用（文档语焉不详，网上没有找到仔细分析的文章），包">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-29T16:14:03.541Z">
+<meta property="article:modified_time" content="2024-11-29T16:14:10.380Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-11-30 00:14" pubdate>
+        2024年11月30日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      383 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none"></h1>
+            
+            <div class="markdown-body">
+              <p>最近对嵌入式比较感兴趣，在学一些电路知识。在学习（还是玩？这是另一个声音）一切东西的时候，心底都有个混账声音在质问我，学这些究竟有什么用，你在逃避什么，我不知道如何反驳，只能说一句，去你妈的，如果急功近利，你屁都实现不了。</p>
+<hr>
+<p>记录关于 Mybatis Plus 在复杂使用上的实践，以让生活变得更轻松。包括：</p>
+<ol>
+<li><strong>嵌套 Wrapper</strong> 查询方法的实际作用（文档语焉不详，网上没有找到仔细分析的文章），包括 and，or，nested，func</li>
+<li>使用 Java 代码进行 <strong>SQL 片段抽象</strong>，以类型安全和防 SQL 的方式定义新的方法</li>
+<li>自定义 SQL，以及多表查询 SQL（<strong>多 Wrapper 查询</strong>） 的 Mybatis Plus 解决方案，包括一对一，一对多（在“多”上有查询条件，但终究是去查“一”），以及查询其他字段</li>
+</ol>
+<p><strong>只研究 LabmdaWrapper</strong>，同时不研究 groupBy 等方法，认为此种情况下自定义 SQL 更加合适。</p>
+<!-- 
+
+# 测试环境搭建
+
+1. 进 https://start.aliyun.com/，选择 Spring 2，选择 Spring Web，H2，Mybatis 依赖，然后下载，用 IDEA 打开
+2. 修改 pom，替换 mybatis 的 starter 为：
+
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.baomidou<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.9<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<ol start="3">
+<li>修改 properties，调整 H2 使用内存表，以及配置日志打印 SQL：</li>
+</ol>
+<figure class="highlight properties"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs properties"><span class="hljs-attr">spring.datasource.url</span>=<span class="hljs-string">jdbc:h2:mem:test</span><br><span class="hljs-comment"># 开启 MyBatis-Plus 的 SQL 打印功能</span><br><span class="hljs-attr">mybatis-plus.configuration.log-impl</span>=<span class="hljs-string">org.apache.ibatis.logging.stdout.StdOutImpl</span><br></code></pre></div></td></tr></table></figure>
+
+<ol start="4">
+<li>配置 mybatis-plus 的日志，打印执行的 SQL</li>
+<li>在 resources 下新增<code>schema.sql</code>，添加测试数据：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-comment">-- 创建学生表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> student<br>(<br>    student_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY AUTO_INCREMENT, <span class="hljs-comment">-- 学生 ID</span><br>    name       <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,          <span class="hljs-comment">-- 学生姓名</span><br>    age        <span class="hljs-type">INT</span>,                            <span class="hljs-comment">-- 学生年龄</span><br>    gender     <span class="hljs-type">CHAR</span>(<span class="hljs-number">1</span>)                         <span class="hljs-comment">-- 性别（M: 男，F: 女）</span><br>);<br><br><span class="hljs-comment">-- 创建课程表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> course<br>(<br>    course_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY AUTO_INCREMENT, <span class="hljs-comment">-- 课程 ID</span><br>    name      <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,          <span class="hljs-comment">-- 课程名称</span><br>    credits   <span class="hljs-type">INT</span>                             <span class="hljs-comment">-- 学分</span><br>);<br><br><span class="hljs-comment">-- 创建成绩表</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> grade<br>(<br>    grade_id   <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY</span> KEY AUTO_INCREMENT, <span class="hljs-comment">-- 成绩 ID</span><br>    student_id <span class="hljs-type">INT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,                   <span class="hljs-comment">-- 学生 ID（引用 student 表）</span><br>    course_id  <span class="hljs-type">INT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,                   <span class="hljs-comment">-- 课程 ID（引用 course 表）</span><br>    score      <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">5</span>, <span class="hljs-number">2</span>),                  <span class="hljs-comment">-- 成绩</span><br>    <span class="hljs-keyword">FOREIGN</span> KEY (student_id) <span class="hljs-keyword">REFERENCES</span> student (student_id),<br>    <span class="hljs-keyword">FOREIGN</span> KEY (course_id) <span class="hljs-keyword">REFERENCES</span> course (course_id)<br>);<br><br><span class="hljs-comment">-- 插入测试数据到学生表</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> student (name, age, gender)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Alice&#x27;</span>, <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;F&#x27;</span>),<br>       (<span class="hljs-string">&#x27;Bob&#x27;</span>, <span class="hljs-number">22</span>, <span class="hljs-string">&#x27;M&#x27;</span>),<br>       (<span class="hljs-string">&#x27;Charlie&#x27;</span>, <span class="hljs-number">21</span>, <span class="hljs-string">&#x27;M&#x27;</span>);<br><br><span class="hljs-comment">-- 插入测试数据到课程表</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> course (name, credits)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Mathematics&#x27;</span>, <span class="hljs-number">3</span>),<br>       (<span class="hljs-string">&#x27;Physics&#x27;</span>, <span class="hljs-number">4</span>),<br>       (<span class="hljs-string">&#x27;Chemistry&#x27;</span>, <span class="hljs-number">2</span>);<br><br><span class="hljs-comment">-- 插入测试数据到成绩表</span><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> grade (student_id, course_id, score)<br><span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">85.5</span>), <span class="hljs-comment">-- Alice 的数学成绩</span><br>       (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">90.0</span>), <span class="hljs-comment">-- Alice 的物理成绩</span><br>       (<span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">78.0</span>), <span class="hljs-comment">-- Bob 的数学成绩</span><br>       (<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">88.5</span>), <span class="hljs-comment">-- Bob 的化学成绩</span><br>       (<span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">92.0</span>); <span class="hljs-comment">-- Charlie 的物理成绩</span><br><br></code></pre></div></td></tr></table></figure>
+
+<ol start="6">
+<li>定义实体类和 Mapper</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BasicController</span> &#123;<br>    <span class="hljs-meta">@Data</span><br>    <span class="hljs-meta">@TableName(&quot;student&quot;)</span> <span class="hljs-comment">// 对应数据库表名</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span> &#123;<br>        <span class="hljs-meta">@TableId(value = &quot;student_id&quot;, type = IdType.AUTO)</span> <span class="hljs-comment">// 主键，自动递增</span><br>        <span class="hljs-keyword">private</span> Integer studentId;<br>        <span class="hljs-keyword">private</span> String name; <span class="hljs-comment">// 学生姓名</span><br>        <span class="hljs-keyword">private</span> Integer age; <span class="hljs-comment">// 学生年龄</span><br>        <span class="hljs-keyword">private</span> String gender; <span class="hljs-comment">// 性别（M: 男，F: 女）</span><br>    &#125;<br><br>    <span class="hljs-meta">@Data</span><br>    <span class="hljs-meta">@TableName(&quot;course&quot;)</span> <span class="hljs-comment">// 对应数据库表名</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Course</span> &#123;<br>        <span class="hljs-meta">@TableId(value = &quot;course_id&quot;, type = IdType.AUTO)</span> <span class="hljs-comment">// 主键，自动递增</span><br>        <span class="hljs-keyword">private</span> Integer courseId;<br>        <span class="hljs-keyword">private</span> String name; <span class="hljs-comment">// 课程名称</span><br>        <span class="hljs-keyword">private</span> Integer credits; <span class="hljs-comment">// 学分</span><br>    &#125;<br><br>    <span class="hljs-meta">@Data</span><br>    <span class="hljs-meta">@TableName(&quot;grade&quot;)</span> <span class="hljs-comment">// 对应数据库表名</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Grade</span> &#123;<br>        <span class="hljs-meta">@TableId(value = &quot;grade_id&quot;, type = IdType.AUTO)</span> <span class="hljs-comment">// 主键，自动递增</span><br>        <span class="hljs-keyword">private</span> Integer gradeId;<br>        <span class="hljs-keyword">private</span> Integer studentId; <span class="hljs-comment">// 学生 ID，关联 Student 表</span><br>        <span class="hljs-keyword">private</span> Integer courseId; <span class="hljs-comment">// 课程 ID，关联 Course 表</span><br>        <span class="hljs-keyword">private</span> Double score; <span class="hljs-comment">// 成绩</span><br>    &#125;<br><br>    <span class="hljs-meta">@Mapper</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">StudentMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;Student&gt; &#123; &#125;<br><br>    <span class="hljs-meta">@Mapper</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">CourseMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;Course&gt; &#123; &#125;<br><br>    <span class="hljs-meta">@Mapper</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">GradeMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;Grade&gt; &#123; &#125;<br><br>    <span class="hljs-meta">@Autowired</span><br>    StudentMapper studentMapper;<br><br>    <span class="hljs-meta">@Autowired</span><br>    CourseMapper courseMapper;<br><br>    <span class="hljs-meta">@Autowired</span><br>    GradeMapper gradeMapper;<br><br>    <span class="hljs-meta">@GetMapping(&quot;all&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">all</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> studentMapper.selectList(<span class="hljs-literal">null</span>);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>这就是我们的 playground。</p>
+<p>–&gt;</p>
+<h1 id="连接词，以及嵌套-Wrapper"><a href="#连接词，以及嵌套-Wrapper" class="headerlink" title="连接词，以及嵌套 Wrapper"></a>连接词，以及嵌套 Wrapper</h1><p>连接词指 and 和 or。</p>
+<p>下面的每个方法都有带 condition 参数的版本，只有为 true 时该次调用才会真正生效，下面的描述都省略掉此种版本。</p>
+<p><code>and</code>，<code>or</code>，<code>func</code>和<code>nested</code>接受<code>Consumer&lt;Wrapper&gt;</code>去以“子句”的形式去定义 SQL 片段，使用子句可以定义任意复杂的 SQL，在很多时候比 XML 还灵活。</p>
+<ul>
+<li><code>or()</code>：修改当前连接词，<strong>下一条</strong>语句拼接过来时，使用 or 而非 and 去连接（其后仍是 and）。<strong>MP 在拼接条件时，使用 and 是默认行为</strong></li>
+<li><code>or(Consumer&lt;Wrapper&gt; wrapper)</code>：构造 or 子句，即形如 <code>or (...)</code></li>
+<li><code>nested(Consumer&lt;Wrapper&gt; wrapper)</code>：构造一个子句，其中连接词<strong>取当前连接词</strong>，这就是说，<code>.or(x -&gt; &#123;...&#125;) === .or().nested(x -&gt; &#123;...&#125;)</code></li>
+<li><code>and(Consumer&lt;Wrapper&gt; wrapper)</code>：构造 and 子句，即形如<code>and (...)</code>；如果没有使用<code>or()</code>的话，<code>and</code>和<code>nested</code>功能是相同的</li>
+<li><code>func(Consumer&lt;Wrapper&gt; wrapper)</code>：<strong>不构造子句</strong>，子 Wrapper 就是自己，即形如 <code>...</code>（没有连接词，没有括号，<strong>扁平的</strong>）</li>
+</ul>
+<p><strong>最佳实践：</strong></p>
+<ol>
+<li>尽量不要使用<code>or()</code>（除非 SQL 极其简单），永远使用 or 和 and 子句，使用子句能让 SQL 结构更加清晰，其作用（无论是对程序员还是实际上）就像加括号一样。</li>
+<li>不要使用<code>func(wrapper)</code>，它的扁平结构意味着它中间如果使用了 or 可能会导致错误的结构，没有限制好它自己的抽象。</li>
+</ol>
+<h1 id="SQL-片段抽象"><a href="#SQL-片段抽象" class="headerlink" title="SQL 片段抽象"></a>SQL 片段抽象</h1><p>Mybatis Plus 使用 LambdaWrapper 时，最大的痛点之一就是无法进行 SQL 片段抽象（这同时也是 Mybatis 的痛点）。但我们<strong>能够利用<code>Consumer&lt;Wrapper&gt;</code>去进行扩展</strong>。</p>
+<p>SQL 片段抽象是很重要的，考虑一些常见的问题：</p>
+<ol>
+<li><strong>in 语句最大只允许 1000 个元素的查询</strong>，为此在之前使用 Mybatis 的时候，出现过一些非常恶心但又不得不反复拷贝的代码：</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;userIds!=null&quot;</span>&gt;</span><br>    and (user_id in<br>    <span class="hljs-comment">&lt;!-- 处理 in 的集合超过 1000 条时 Oracle 不支持的情况 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">trim</span> <span class="hljs-attr">suffixOverrides</span>=<span class="hljs-string">&quot; or user_id in ()&quot;</span>&gt;</span>	<span class="hljs-comment">&lt;!-- 表示删除最后一个条件 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;userIds&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;item&quot;</span> <span class="hljs-attr">index</span>=<span class="hljs-string">&quot;index&quot;</span> <span class="hljs-attr">open</span>=<span class="hljs-string">&quot;(&quot;</span> <span class="hljs-attr">close</span>=<span class="hljs-string">&quot;)&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;index != 0&quot;</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">choose</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">when</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;index % 1000 == 999&quot;</span>&gt;</span>) or user_id in (<span class="hljs-tag">&lt;/<span class="hljs-name">when</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">otherwise</span>&gt;</span>,<span class="hljs-tag">&lt;/<span class="hljs-name">otherwise</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">choose</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>            #&#123;item&#125;<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">trim</span>&gt;</span>)<br><span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<ol start="2">
+<li>经常有查询特定日期片段内的数据的需求，有时候要精确到天，有时候要精确到秒，每次遇到前者都要在 SQL 中对入参进行 trunc 操作，或者 JdbcType 类型用 DATE，十分繁琐</li>
+<li>无法使用 DBMS 特定的函数，如 INSTR，FIND_IN_SET</li>
+</ol>
+<p>解决方案有两类：</p>
+<ol>
+<li>定义工具函数进行抽象，这些工具函数接受 condition，查询列以及查询条件，然后返回<code>Consumer&lt;Wrapper&gt;</code>，<strong>用户使用时使用<code>nested</code>方法去引用这些工具类</strong>。这个方法实现简单，但是无法<strong>直接</strong>根据列的 getter 函数获取列名，所以无法直接对 SQL 函数进行抽象，但不是完全不可以。</li>
+<li>集成 LambdaQueryWrapper，去定义新的方法。这个可以说是万能的，但是侵入性比较高</li>
+</ol>
+<p>下面使用第一种方式，下面是一些示例，处理了上面的问题 1，2：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">WrapperUtil</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">WrapperUtil</span><span class="hljs-params">()</span> &#123;&#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 更好的 in，避免 in 集合限制 1000 条的问题，推荐使用 wrapper.and(condition, betterIn(...)) 的形式去调用，在 condition 中检查 list 非空</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> column 字段</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> list in 集合，按每 1000 条分割成 or in，若为空则会抛出异常抛出异常</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; Consumer&lt;LambdaQueryWrapper&lt;T&gt;&gt; <span class="hljs-title function_">betterIn</span><span class="hljs-params">(SFunction&lt;T, ?&gt; column, List&lt;?&gt; list)</span> &#123;<br>        <span class="hljs-keyword">return</span> wrapper -&gt; &#123;<br>            <span class="hljs-comment">// 断言需要放在里面，因为函数参数的求值不是懒惰的，即使 condition 为假，函数还是会被调用</span><br>            Assert.notEmpty(list, <span class="hljs-string">&quot;list cannot be empty&quot;</span>);<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; list.size(); i+=<span class="hljs-number">1000</span>) &#123;<br>                wrapper.or().in(column, list.subList(i, Math.min(list.size(), i + <span class="hljs-number">1000</span>)));<br>            &#125;<br>        &#125;;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取某日 00:00:00</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">static</span> Date <span class="hljs-title function_">getDayStart</span><span class="hljs-params">(Date date)</span> &#123;<br>        <span class="hljs-keyword">if</span> (date == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>        <span class="hljs-type">Calendar</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> Calendar.getInstance();<br>        instance.setTime(date);<br>        instance.set(Calendar.HOUR_OF_DAY, <span class="hljs-number">0</span>);<br>        instance.set(Calendar.MINUTE, <span class="hljs-number">0</span>);<br>        instance.set(Calendar.SECOND, <span class="hljs-number">0</span>);<br>        instance.set(Calendar.MILLISECOND, <span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">return</span> instance.getTime();<br>    &#125;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取某日 23:59:59</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">static</span> Date <span class="hljs-title function_">getDayEnd</span><span class="hljs-params">(Date date)</span> &#123;<br>        <span class="hljs-keyword">if</span> (date == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>        <span class="hljs-type">Calendar</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> Calendar.getInstance();<br>        instance.setTime(date);<br>        instance.set(Calendar.HOUR_OF_DAY, <span class="hljs-number">23</span>);<br>        instance.set(Calendar.MINUTE, <span class="hljs-number">59</span>);<br>        instance.set(Calendar.SECOND, <span class="hljs-number">59</span>);<br>        instance.set(Calendar.MILLISECOND, <span class="hljs-number">999</span>);<br>        <span class="hljs-keyword">return</span> instance.getTime();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取特定时段内的数据，如果 startDate 和 endDate 全为 null, 填充 1=1</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> column 字段</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> startDate 起始时间，获取数据会大于等于起始时间如果非 null</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> endDate  终止时间，获取数据会小于等于起始时间如果非 null</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; Consumer&lt;LambdaQueryWrapper&lt;T&gt;&gt; <span class="hljs-title function_">datetimeBetween</span><span class="hljs-params">(SFunction&lt;T, ?&gt; column, Date startDate, Date endDate)</span> &#123;<br>        <span class="hljs-keyword">return</span> wrapper -&gt; &#123;<br>            <span class="hljs-keyword">if</span> (startDate != <span class="hljs-literal">null</span> || endDate != <span class="hljs-literal">null</span>) &#123;<br>                wrapper.ge(startDate != <span class="hljs-literal">null</span>, column, startDate);<br>                wrapper.le(endDate != <span class="hljs-literal">null</span>, column, endDate);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-comment">// 如果全为 NULL，会出现这样的 sql &#x27;(... and )&#x27;，因此填充一个 1=1</span><br>                <span class="hljs-comment">// 这里也可以干脆报错，但感觉不太合适</span><br>                wrapper.apply(<span class="hljs-string">&quot;1=1&quot;</span>);<br>            &#125;<br>        &#125;;<br>    &#125;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取特定日期段内的数据</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> column 字段</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> startDate 起始时间，获取数据会大于等于起始时间 00:00:00 如果非 null</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> endDate  终止时间，获取数据会小于等于起始时间 23:59:59 如果非 null</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; Consumer&lt;LambdaQueryWrapper&lt;T&gt;&gt; <span class="hljs-title function_">dateBetween</span><span class="hljs-params">(SFunction&lt;T, ?&gt; column, Date startDate, Date endDate)</span> &#123;<br>        <span class="hljs-keyword">return</span> datetimeBetween(column, getDayStart(startDate), getDayEnd(endDate));<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>关于第 3 个问题，就需要玩一点真正的花活儿了——用反射拿到<code>AbstractLambdaWrapper#getColumnCache</code>方法，它接受列函数并返回一个包含实际列名的对象。<strong>这个方法是 protected 的</strong>，所以如果实现 LambdaQueryWrapper 的子类的话能够直接使用这个函数。</p>
+<p>下面同时使用<code>apply</code>方法去插入函数调用，该方法第一个参数是 SQL 片段，但它的其他参数是通过<code>#&#123;&#125;</code>的方式去注入的，所以不会有 SQL 注入风险。下面同时也演示了如何处理<strong>多 DBMS 兼容</strong>问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">volatile</span> <span class="hljs-type">Method</span> <span class="hljs-variable">getColumnCacheMethod</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span>&lt;T&gt; String <span class="hljs-title function_">getTableField</span><span class="hljs-params">(SFunction&lt;T, ?&gt; column, LambdaQueryWrapper&lt;?&gt; wrapper)</span> &#123;<br>    <span class="hljs-comment">// 双重检查锁</span><br>    <span class="hljs-keyword">if</span> (getColumnCacheMethod == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-keyword">synchronized</span> (lock) &#123;<br>            <span class="hljs-keyword">if</span> (getColumnCacheMethod == <span class="hljs-literal">null</span>) &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    <span class="hljs-comment">// com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper.getColumnCache</span><br>                    <span class="hljs-type">Method</span> <span class="hljs-variable">method</span> <span class="hljs-operator">=</span> AbstractLambdaWrapper.class.getDeclaredMethod(<span class="hljs-string">&quot;getColumnCache&quot;</span>, SFunction.class);<br>                    method.setAccessible(<span class="hljs-literal">true</span>);<br>                    getColumnCacheMethod = method;<br>                &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>                    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e);<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// TODO 使用 methodName 和 class 进行缓存以避免反复的反射调用</span><br><span class="hljs-comment">//        LambdaMeta meta = LambdaUtils.extract(column);</span><br><span class="hljs-comment">//        Class&lt;?&gt; clazz = meta.getInstantiatedClass();</span><br><span class="hljs-comment">//        String methodName = meta.getImplMethodName();</span><br>    <span class="hljs-type">ColumnCache</span> <span class="hljs-variable">invoke</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>    <span class="hljs-keyword">try</span> &#123;<br>        invoke = (ColumnCache) getColumnCacheMethod.invoke(wrapper, column);<br>    &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e);<br>    &#125;<br>    <span class="hljs-keyword">return</span> invoke.getColumn();<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * MySQL 的 FIND_IN_SET 操作，find_in_set(value, column) &gt; 0，兼容其他类型数据库（使用 INSTR(&#x27;,&#x27; || column || &#x27;,&#x27;, value) &gt; 0）</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> column 列，它的值是半角逗号分割的集合</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> value 值</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; Consumer&lt;LambdaQueryWrapper&lt;T&gt;&gt; <span class="hljs-title function_">findInSet</span><span class="hljs-params">(SFunction&lt;T, ?&gt; column, Serializable value)</span> &#123;<br>    <span class="hljs-keyword">if</span> (currentDB.equals(<span class="hljs-string">&quot;MySQL&quot;</span>)) &#123;<br>        <span class="hljs-keyword">return</span> wrapper -&gt; &#123;<br>            <span class="hljs-comment">// &#123;0&#125; 这种形式传入的入参不会有 SQL 注入问题</span><br>            wrapper.apply(String.format(<span class="hljs-string">&quot;FIND_IN_SET(&#123;0&#125;, %s) &gt; 0&quot;</span>, getTableField(column, wrapper)), value);<br>        &#125;;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">return</span> wrapper -&gt; &#123;<br>            wrapper.apply(String.format(<span class="hljs-string">&quot;INSTR(&#x27;,&#x27; || %s || &#x27;,&#x27;, &#123;0&#125;) &gt; 0&quot;</span>, getTableField(column, wrapper)), value);<br>        &#125;;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h1><p>很多时候需要自定义 SQL，如要连接查询，要查询表里没有的字段等，相关官方文档见 <a target="_blank" rel="noopener" href="https://baomidou.com/guides/wrapper/#%E4%BD%BF%E7%94%A8-wrapper-%E8%87%AA%E5%AE%9A%E4%B9%89-sql">https://baomidou.com/guides/wrapper/#使用-wrapper-自定义-sql</a>。</p>
+<p>简单来说的话，就是 wrapper 的<code>&lt;where&gt;</code>部分能够通过 <code>customSqlSegment</code> 参数给它取出来，注意<strong>该部分代码包括 where 关键字</strong>，不需要另外写 where。</p>
+<p>官方文档声称 Wrapper 的参数名必须为 ew，这是偏颇的，Wrapper 的参数名是可以定义的，而且也可以有多个 Wrapper 作为参数。</p>
+<p>自定义 SQL 的话，就无法使用 Wrapper 的 orderBy，select 功能了，但这是可以忍受的。</p>
+<p>关于重新定义 Wrapper 的参数名，Wrapper 提供了一个方法<code>withParamAlias</code>去修改；它有一些问题：</p>
+<ol>
+<li>必须和 SQL 方法上的参数名匹配，而<strong>这本不该由业务代码去关心</strong>（我采取的方法是把实际的 SQL 方法以__起头，表示不应该调用它，同时在 mapper 中定义同名的 default 方法，在其中对 Wrapper 进行此项处理）</li>
+<li>该方法只会修改顶层的 paramAlias，如果 Wrapper 使用了子句，则它会有嵌套的子 Wrapper</li>
+</ol>
+<p>为解决第二个问题，定义一个函数去递归地设置 Wrapper 的 paramAlias：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 递归地设置 Wrapper 的 paramAlias（默认为 ew），这可以用在某个 SQL 方法使用到多个 Wrapper 时。&lt;br /&gt;</span><br><span class="hljs-comment"> * 这里是“递归地”设置，因为使用嵌套的 Wrapper 的时候，setParamAlias 只会在最外层起效。&lt;br /&gt;</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> wrapper 查询 Wrapper</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> paramAlias paramAlias</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 查询 Wrapper</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; T <span class="hljs-title function_">withParamAlias</span><span class="hljs-params">(T wrapper, String paramAlias)</span> &#123;<br>    <span class="hljs-keyword">if</span> (!(wrapper <span class="hljs-keyword">instanceof</span> AbstractWrapper)) &#123;<br>        <span class="hljs-keyword">return</span> wrapper;<br>    &#125;<br>    AbstractWrapper&lt;?, ?, ?&gt; wrapper1 = (AbstractWrapper&lt;?, ?, ?&gt;) wrapper;<br>    <span class="hljs-keyword">try</span> &#123;<br>        wrapper1.setParamAlias(paramAlias);<br>    &#125; <span class="hljs-keyword">catch</span> (Exception ignored) &#123; &#125;<br>    <span class="hljs-type">MergeSegments</span> <span class="hljs-variable">expression</span> <span class="hljs-operator">=</span> wrapper1.getExpression();<br>    <span class="hljs-keyword">for</span> (ISqlSegment iSqlSegment : expression.getNormal()) &#123;<br>        withParamAlias(iSqlSegment, paramAlias);<br>    &#125;<br>    <span class="hljs-keyword">return</span> wrapper;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<p>然后关于多表查询，这里只讨论一种简单的情况，即<strong>我仍旧是查询某一张表的数据，但允许联其他表去查</strong>。</p>
+<p>要联其他表去查是容易的，问题是，<strong>如何避免重名字段</strong>？Wrapper 没提供任何方法去在查询字段前加上别名，为此，在 SQL 的设计上，我们就只能去<strong>控制 Wrapper 的作用域</strong>。下面直接给出一个示例 SQL，考虑有学生表，班级表，分数表，其中学生和班级，学生和分数是关联的），我要根据班级和成绩查学生的信息，同时对这些学生，我想查询学生的班级名称，查询学生的化学课的最高分，这时候我就直接 tmd：</p>
+<figure class="highlight sql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs SQL"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span><br>       , (<span class="hljs-keyword">select</span> class_name <span class="hljs-keyword">from</span> class <span class="hljs-keyword">where</span> class.id <span class="hljs-operator">=</span> st.class_id)<br>       , (<span class="hljs-keyword">select</span> <span class="hljs-built_in">max</span>(score) <span class="hljs-keyword">from</span> score <span class="hljs-keyword">where</span> score.id <span class="hljs-operator">=</span> st.id <span class="hljs-keyword">and</span> score.class_id <span class="hljs-operator">=</span> (<span class="hljs-keyword">select</span> class_id <span class="hljs-keyword">from</span> class <span class="hljs-keyword">where</span> class_name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;化学&#x27;</span> limit <span class="hljs-number">1</span>))<br><span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> student $&#123;studentWrapper.customSqlSegment&#125;) st<br><span class="hljs-operator">&lt;</span><span class="hljs-keyword">where</span><span class="hljs-operator">&gt;</span><br>    <span class="hljs-operator">&lt;</span>if test<span class="hljs-operator">=</span>&quot;!classWrapper.emptyOfWhere&quot;<span class="hljs-operator">&gt;</span><br>        <span class="hljs-keyword">and</span> class_id <span class="hljs-keyword">in</span> (<span class="hljs-keyword">select</span> id <span class="hljs-keyword">from</span> class $&#123;classWrapper.customSqlSegment&#125;)<br>    <span class="hljs-operator">&lt;</span><span class="hljs-operator">/</span>if<span class="hljs-operator">&gt;</span><br>    <span class="hljs-operator">&lt;</span>if test<span class="hljs-operator">=</span>&quot;!scoreWrapper.emptyOfWhere&quot;<span class="hljs-operator">&gt;</span><br>        <span class="hljs-keyword">and</span> id <span class="hljs-keyword">in</span> (<span class="hljs-keyword">select</span> id <span class="hljs-keyword">from</span> score $&#123;classWrapper.customSqlSegment&#125;)<br>    <span class="hljs-operator">&lt;</span><span class="hljs-operator">/</span>if<span class="hljs-operator">&gt;</span><br><span class="hljs-operator">&lt;</span><span class="hljs-operator">/</span><span class="hljs-keyword">where</span><span class="hljs-operator">&gt;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这种SQL简直就是在雷普DBMS，但是它能用:)。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/10-28%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E5%BC%A0%E7%85%A7%E7%89%87%E4%BD%BF%E7%94%A8%E4%BB%80%E4%B9%88%E7%84%A6%E8%B7%9D%E6%8B%8D%E6%91%84%E7%9A%84.html">
+                        <span class="hidden-mobile">【转载】如何判断一张照片使用什么焦距拍摄的（短、中、长焦）？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
