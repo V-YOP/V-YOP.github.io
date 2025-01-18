@@ -1,0 +1,548 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="感受到的东西，我们无法立刻理解它，只有理解了的东西，我们才能更好感受它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Godot 学习 02——第一个 2D 游戏">
+<meta property="og:url" content="http://example.com/2025/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="感受到的东西，我们无法立刻理解它，只有理解了的东西，我们才能更好感受它">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F/dodge_preview.webp">
+<meta property="og:image" content="http://example.com/2025/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F/image.png">
+<meta property="article:published_time" content="2025-01-18T09:00:00.000Z">
+<meta property="article:modified_time" content="2025-01-18T16:25:47.949Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Godot">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F/dodge_preview.webp">
+  
+  
+  <title>Godot 学习 02——第一个 2D 游戏 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Godot 学习 02——第一个 2D 游戏">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-01-18 17:00" pubdate>
+        2025年1月18日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.6k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Godot 学习 02——第一个 2D 游戏</h1>
+            
+            <div class="markdown-body">
+              <h1 id="关于命名规范"><a href="#关于命名规范" class="headerlink" title="关于命名规范"></a>关于命名规范</h1><p>首先确认一下命名规范，以后都按这个来：</p>
+<ul>
+<li>文件名，资源：snake_case，<code>character_body.gd</code>，<code>character_body.tscn</code>（script 和 scene 名字保持一致），<code>player_idle.png</code></li>
+<li>类名和 Node 名，枚举名：PascalCase，<code>class_name CharacterBody</code>, <code>Camera2D</code>, <code>enum ElementType</code></li>
+<li>函数，变量，信号：snake_case，<code>func load_level()</code>，<code>var forward_speed</code>, <code>signal health_incremented</code></li>
+<li>private，protected 函数，成员：_snake_case，<code>func _ready()</code></li>
+<li>常量：CONSTANT_CASE，<code>const MAX_SPEED = 200</code></li>
+<li>枚举成员名：CONSTANT_CASE，<code>&#123;WATER, FIRE&#125;</code></li>
+</ul>
+<p>Godot 像 Python 一样没有访问修饰符，甚至没有<code>__</code>开头时重设方法名的相关逻辑。<strong>约定<code>_</code>开头的字段、函数是“私有”的</strong>，但这仅是一种提醒。</p>
+<h1 id="关于-Godot-的协程"><a href="#关于-Godot-的协程" class="headerlink" title="关于 Godot 的协程"></a>关于 Godot 的协程</h1><p>之前对协程建立的心智模型有点问题，<strong>我以为嵌套的协程会自动 yield from，这个是错误的，还是需要手动 await</strong>。</p>
+<p>Godot 的协程其实更类似于 js 的 promise 而非 python 的协程或生成器，它有下面的特征：</p>
+<ol>
+<li>python 的协程必须使用 await，或者<code>asyncio.create_task</code>去调度，单独调用一个 async 函数得到的协程，是不会被调度的，<strong>而 js 和 godot 的 promise，协程只要创建了就会被调度，无论是否 await</strong></li>
+<li><strong>一个函数只要不在顶层使用 yield 和 await，它就不是协程</strong>，它如果调用了协程函数，则协程函数中遇到 await 和 yield 时，它就立刻会返回，<strong>然后这个协程转交给 Godot 去调度，它继续做自己的事情</strong></li>
+</ol>
+<p>官方的实例教程唬人——它直接在_run 函数里写<code>move_forward(100); turn_left(45)</code>这样，让我以为协程会自动 yield from，但实际上不行，必须在顶层加<code>await</code>，<strong>经过测试能够发现，在官方教程中，这些操作不是立刻执行，而是在底层维护一个任务队列，在_run 函数执行完毕后才真正开始执行</strong>，太坑人了！测试方法是在方法开头末尾打印，检查它们是同时打印的。</p>
+<p>下面的代码证明不在顶层 await 时，协程是遇到 await 就返回的：</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">task1</span><span class="hljs-params">()</span></span>:<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;task1 start&#x27;</span>)<br>	await get_tree().create_timer(<span class="hljs-number">1</span>).timeout<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;task1 done&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">task2</span><span class="hljs-params">()</span></span>:<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;task2 start&#x27;</span>)<br>	await get_tree().create_timer(<span class="hljs-number">1</span>).timeout<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;task2 done&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">ready</span><span class="hljs-params">()</span></span> -&gt; void:<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;ready start&#x27;</span>)<br>	task1()<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;call task1 done&#x27;</span>)<br>	task2()<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;call task2 done&#x27;</span>)<br>  <span class="hljs-string">&quot;&quot;</span><span class="hljs-string">&quot;</span><br><span class="hljs-string">  打印：</span><br><span class="hljs-string">  ready start</span><br><span class="hljs-string">  task1 start</span><br><span class="hljs-string">  call task1 done</span><br><span class="hljs-string">  task2 start</span><br><span class="hljs-string">  call task2 done</span><br><span class="hljs-string"></span><br><span class="hljs-string">  task1 done</span><br><span class="hljs-string">  task2 done</span><br><span class="hljs-string">  &quot;</span><span class="hljs-string">&quot;&quot;</span><br></code></pre></div></td></tr></table></figure>
+
+<p>这个设计其实比我最开始的想法还灵活——<strong>我可以随意地创建协程去做并行任务了</strong>。</p>
+<hr>
+<p><a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html">https://docs.godotengine.org/en/stable/getting_started/first_2d_game/index.html</a></p>
+<p>进一步的官方教程，一个控制主角躲避随机直线运动的敌人的游戏，小时候玩过类似的 flash 游戏，但是那个是用鼠标控制移动的，这个是通过键盘。</p>
+<p>这个因为是第一次从零开始做（还记得你第一次写编程项目是怎么个鸟样吗？这个可比编程项目复杂多了），所以亦步亦趋地来。</p>
+<p>不过先打个预防针，这个项目还是太过简单了，只过了一些最简单的部分，我比较关注的状态机啊动画啊啥的都没有，怎么说呢，正视问题吧。</p>
+<p><img src="/2025/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F/dodge_preview.webp" alt="alt text"></p>
+<p>先看最终效果，把它当成原型的话，这里显然有三个元素——Player，Mob（敌人），HUD，然后 Main 作为根节点，总共四个 Scene。</p>
+<p>就当我是在做实验，这里先猜测各个 Scene 负责的东西：</p>
+<ol>
+<li>Player 肯定负责显示、移动玩家</li>
+<li>Mob 肯定负责显示、移动敌人</li>
+<li>HUD 负责显示上方的 score 和中间的文字</li>
+</ol>
+<p>上面的描述基本是肯定的，但是有一堆问题：</p>
+<ol>
+<li>谁负责检查 Player 和 Mob 交互，检查碰撞？是 Main，还是 Player，还是 Mob？</li>
+<li>谁负责生成和销毁 Mob，是 Main 吗？还是另外给 Main 添加节点干这个？</li>
+<li>谁负责变更 HUD？是 Main 吗？</li>
+</ol>
+<p>我先猜测一下：</p>
+<ol>
+<li>Main 负责检查 Player 和 Mob 是否碰撞（这个感觉不一定，另一个可能性是 Godot 可能能够检查两两角色是否碰撞并 emit 特定信号，这时候 Player 和 Mob 都可以监听这个信号，然后去通知 Main 之类的）</li>
+<li>Main 负责定时生成 Mob（或者在旧的 Mob 销毁时生成新 Mob），Mob 自己销毁自己</li>
+<li>Mob 销毁时通知 Main 去变更 HUD，Main 检查碰撞时去变更 HUD</li>
+</ol>
+<p>其实我脑子里在想一个事情——我要如何判断什么时候用可重用的 Scene，什么时候用更具体的 Scene？要重用的 Scene，是要考虑仅在这个项目去重用，还是要考虑它在跨项目中重用？</p>
+<h1 id="Player"><a href="#Player" class="headerlink" title="Player"></a>Player</h1><p><strong>一般来说，一个 Scene 的根节点要反映这个对象期望有的功能，即这个对象是什么</strong>。在这里，为 Player 选个 <code>Area2D</code>，根据文档，**<code>Area2D</code> 是一个 2D 空间，能检测 <code>CollisionObject2D</code> 进入和离开自己<strong>。<code>Area2D</code> 使用一个或多个<code>CollisionShape2D</code>和<code>CollisionPolygon2D</code>子节点去定义自己的形状，</strong>这个形状就是所谓的 hitbox**。但这里肯定要先添加 Sprite 才能有形状用来参考。因为有动画，使用 <code>AnimatedSprite2D</code>，设置 SpriteFrame 资源去设置动画，动画似乎是可以分组的，一个 SpriteFrame 中可以有多个动画，它估计是可以使用代码切换或者使用编辑器去和状态机绑定之类的……？</p>
+<p>Collision 是<strong>碰撞</strong>的意思，这个词估计会很常用。</p>
+<p>使用的时候注意到 Godot 的界面和 Blender 一样，同一个快捷键在不同位置会有不同功能。</p>
+<p>增加了动画后就需要增加 hitbox 了，使用 CollisionShape2D，具体 Shape 使用 CapsuleShape2D。</p>
+<p>上面的疑问实际上已经解决了第一个了，虽然还没有开始编码：</p>
+<p>Player 使用 Area2D，Area2D 在内部检测和其它的可碰撞对象是否有接触，如果有则 emit 相应信号，显然使用 Player 的人如 Main 要监听这个信号。</p>
+<p>所以，感谢 Godot，<strong>Player 自己只用管好自己——它的脚本只需要关心自己的显示和动画即可</strong>，碰撞的问题，Area2D 和 Godot 底层想办法。</p>
+<p>Player 的<code>_process</code>有一些事情要做：</p>
+<ol>
+<li>检查玩家输入</li>
+<li>移动 Player</li>
+<li>展示合适动画</li>
+</ol>
+<p>这个展示动画是用 Node 做的，但也可以在代码中做——在<code>_ready</code>后创建协程去干动画就行了。协程正适合用来干这种并行的、跨帧的事情。但这里不干这事儿。</p>
+<h2 id="按键映射"><a href="#按键映射" class="headerlink" title="按键映射"></a>按键映射</h2><p>游戏中的按键映射，实际上就是把按键绑定到特定动作（名称）上，这个可以在项目设置的 Input Map 中配置，动作也可以随意创建新的，下面创建移动动作和绑定 wasd。当然只要不是粗制滥造，一般都会在游戏内提供按键绑定……unity 那种一个启动器来配置东西的现在好像也不多见了。</p>
+<p><img src="/2025/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F/image.png" alt="alt text"></p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">extends Area2D<br><br>@export <span class="hljs-keyword">var</span> speed := <span class="hljs-number">400</span><br>@onready <span class="hljs-keyword">var</span> screen_size := get_viewport_rect().size # 用于做 clamp<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">ready</span><span class="hljs-params">()</span></span> -&gt; void:<br>	pass<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">process</span><span class="hljs-params">(delta: float)</span></span> -&gt; void:<br>	# 计算速度<br>	<span class="hljs-keyword">var</span> velocity := Vector2.ZERO<br>	# 下面的写法让同时按住 WS 时不动<br>	<span class="hljs-keyword">if</span> Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;move_up&#x27;</span>):<br>		velocity.y -= <span class="hljs-number">1</span><br>	<span class="hljs-keyword">if</span> Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;move_down&#x27;</span>):<br>		velocity.y += <span class="hljs-number">1</span><br>	<span class="hljs-keyword">if</span> Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;move_left&#x27;</span>):<br>		velocity.x -= <span class="hljs-number">1</span><br>	<span class="hljs-keyword">if</span> Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;move_right&#x27;</span>):<br>		velocity.x += <span class="hljs-number">1</span><br>	velocity = velocity.normalized() * speed<br><br>	# 没有移动，就不动动画<br>	<span class="hljs-keyword">if</span> velocity.length() &lt;= <span class="hljs-number">0</span>: <br>		$AnimatedSprite2D.stop()<br>		<span class="hljs-keyword">return</span><br>	<span class="hljs-keyword">else</span>:<br>		$AnimatedSprite2D.play()<br><br>	# 更换动画，水平移动时用 walk 动画，垂直移动时使用 up 动画，并且朝下时使用水平翻转，斜向移动时走水平移动<br>	<span class="hljs-keyword">if</span> velocity.x != <span class="hljs-number">0</span>:<br>		$AnimatedSprite2D.animation = &amp;<span class="hljs-string">&#x27;walk&#x27;</span><br>		$AnimatedSprite2D.flip_v = <span class="hljs-literal">false</span><br>		$AnimatedSprite2D.flip_h = velocity.x &lt; <span class="hljs-number">0</span> # 动画是朝右的<br>	elif velocity.y != <span class="hljs-number">0</span>:<br>		$AnimatedSprite2D.animation = &amp;<span class="hljs-string">&#x27;up&#x27;</span><br>		$AnimatedSprite2D.flip_v = velocity.y &gt; <span class="hljs-number">0</span> # 动画是朝上的（y 轴负方向）<br>	<br>	position += velocity * delta<br>	# clamp 操作，保证位置还在屏幕内<br>	position = position.clamp(Vector2.ZERO, screen_size)<br></code></pre></div></td></tr></table></figure>
+
+<p>处理了移动后，通过在 ready 中调用 hide 让 Player 默认隐藏（或者在运行时增加 Player）。</p>
+<p>然后是关于碰撞，我们说，player 在检测到碰撞后自己就被击中了，从而做出一层抽象，这个抽象好做——定义一个信号 hit，在编辑器中绑定 Area2D 的<code>body_entered</code>信号（这里是自己绑定自己的信号，实际上在代码中做也行，反而更明显），然后在回调函数中 emit 这个 hit 信号。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">signal hit<br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">on_body_entered</span><span class="hljs-params">(body: Node2D)</span></span> -&gt; void:<br>	hide() # 被击中后，我就挂了，不显示了（这个逻辑在 Player 中写还是在 Main 中写其实都可以）<br>	hit.emit()<br>	$CollisionShape2D.set_deferred(&amp;<span class="hljs-string">&#x27;disabled&#x27;</span>, <span class="hljs-literal">true</span>) # 把形状 disable 掉，避免反复触发这个回调<br>	# 注意这里推迟了这个调用，因为物理计算时调用这个会出错<br></code></pre></div></td></tr></table></figure>
+
+<p>最后，提供一个方法供父节点去调用去重设 Player 的状态</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">start</span><span class="hljs-params">(pos: Vector2)</span></span>:<br>    position = pos<br>    $CollisionShape2D.disabled = <span class="hljs-literal">false</span><br>    show()<br></code></pre></div></td></tr></table></figure>
+
+<h1 id="Mob"><a href="#Mob" class="headerlink" title="Mob"></a>Mob</h1><p>Mob 使用<code>RigidBody2D</code>——通过物理模拟去运动的物体。</p>
+<p>Mob 增加 3 个子节点：</p>
+<ol>
+<li>AnimatedSprite2D：显然，动画，这里设置了动画的速度是 3FPS，这个是指每秒切换 3 帧，也就是说每帧 1&#x2F;3 秒</li>
+<li>ollisionShape2D：显然，检查碰撞</li>
+<li>VisibleOnScreenNotifier2D：进入 screen 时 emit 一个信号，这个用来在离开屏幕时销毁 mob。</li>
+</ol>
+<p>注意这里的<code>VisibleOnScreenNotifier2D</code>，这或许是 Godot 的某种设计哲学——<strong>使用组合去添加功能</strong>。</p>
+<p>Mob 要配置它的 CollisionObject2D 的 Collision 的 Mask 不包含 1，<strong>这让 Mob 之间不会碰撞</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">extends RigidBody2D<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">ready</span><span class="hljs-params">()</span></span>:<br>	# 随机选择 mob_type<br>	<span class="hljs-keyword">var</span> mob_types = $AnimatedSprite2D.sprite_frames.get_animation_names()<br>	$AnimatedSprite2D.play(mob_types[randi() % mob_types.size()])<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">on_visible_on_screen_notifier_2d_screen_exited</span><span class="hljs-params">()</span></span> -&gt; void:<br>	queue_free() # 将 Node 加到待释放的列表，在这一帧的最后释放；子 Node 都会释放<br>	# free() 这个则是马上释放<br></code></pre></div></td></tr></table></figure>
+
+<p>这时候 F6 会发现它直接掉下去了，物理模拟嘛。</p>
+<h1 id="Main"><a href="#Main" class="headerlink" title="Main"></a>Main</h1><p>上面的 Mob 其实还能再完善来着……怎么运动还没指定呢，难道要在 Main 中指定？至少提供一些“构造函数”做参数吧！？都一样其实。</p>
+<p>Main 有一堆子 Node，以及 Player：</p>
+<ol>
+<li>Timer，取名 MobTimer，控制 Mob 的 spawn</li>
+<li>Timer，取名 ScoreTimer：控制分数增加</li>
+<li>Timer，取名 StartTimer：控制游戏的开始（前的延时）</li>
+<li>Marker2D，取名 StartPosition：指示玩家的起始位置。</li>
+<li>Path2D，取名 MobPath：围绕整个 viewport，用来在屏幕边缘去生成 Mob<ol>
+<li>PathFollow2D，取名 MobSpawnLocation：“This node will automatically rotate and follow the path as it moves, so we can use it to select a random position and direction along the path.”</li>
+</ol>
+</li>
+</ol>
+<p>Marker 的作用就是指示一个可以被编辑器修改的位置。</p>
+<p>然后是 Main 的脚本，这里做一个很 meta 的事情——把 mob 的类（PackedScene）作为参数传进来以达到一种解耦——我不知道我实例化的究竟是什么东西，我只实例化。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">@export <span class="hljs-keyword">var</span> mob_scene: PackedScene<br></code></pre></div></td></tr></table></figure>
+
+<p>直奔主题——怎么 spawn Mob？肯定是在 MobTimer 的回调里做，但是究竟怎么操作呢？</p>
+<ol>
+<li>实例化一个 Mob</li>
+<li>从 MobSpawnLocation 中任选一个位置，找到此时的位置和方向，把方向顺时针旋转 90 度（从而让它朝 viewport 里），然后再增加一点参差</li>
+<li>再设置 Mob 的速度为线性速度，这个估计替代了原本的重力</li>
+<li>添加 Mob 作为子节点</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">on_mob_timer_timeout</span><span class="hljs-params">()</span></span> -&gt; void:<br>	<span class="hljs-keyword">var</span> mob: RigidBody2D = mob_scene.instantiate()<br><br>	# 设置 progress_ratio 就是从这个路径中选择一个点<br>	$ModPath/MobSpawnLocation.progress_ratio = randf()<br>	<span class="hljs-keyword">var</span> direction: float = $ModPath/MobSpawnLocation.rotation + PI / <span class="hljs-number">2</span><br>	mob.position = $ModPath/MobSpawnLocation.position<br><br>	# 为方向增加一个参差<br>	direction += randf_range(-PI/<span class="hljs-number">4</span>, PI/<span class="hljs-number">4</span>)<br>	mob.linear_velocity = Vector2.from_angle(direction) * randf_range(<span class="hljs-number">150.0</span>, <span class="hljs-number">250.0</span>)<br>	add_child(mob)<br></code></pre></div></td></tr></table></figure>
+
+<p>想不到就已经能玩了这样，哈哈哈。</p>
+<h1 id="HUD"><a href="#HUD" class="headerlink" title="HUD"></a>HUD</h1><p>HUD 即抬头显示器 heads-up display，它是遮罩在游戏界面最顶层的。</p>
+<p>该来点 UI 了。UI 使用 CanvasLayer，它不负责实际绘制，只保证自己的子节点绘制的东西不会被其它东西遮住。</p>
+<p>需要展示上方的分数，中间的信息，中下的开始按钮。信息使用 Label，按钮使用 Button。</p>
+<p>这里涉及到设置 Anchor，Size，Position，Font 等信息，这些信息来自类 <strong>Control</strong>。</p>
+<p>代码……就那样，没必要贴了。</p>
+<h1 id="group"><a href="#group" class="headerlink" title="group"></a>group</h1><p>现在有一个问题——游戏结束的时候，所有 Mob 还活着，这时候希望 Mob 都不显示。<strong>如何同时销毁所有 Mob</strong>？使用 Group，<strong>Group 就像打在 Node 上的标签，后续能够根据该标签获取所有相应 Node 或对这些 Node 做相同操作</strong>。</p>
+<p>Group 可以在运行时添加也可以在编辑器中添加；分组分为 Scene Group（仅在本 Scene 中可见）和 Global Group（全局可见）。问题在于，<strong>分组是通过字符串表示的，Scene Group 仅控制可见性，但没有作用域的区分，两个 Scene Group 同名的话会同时被操作到，显然妥善管理分组名是必要的</strong>。</p>
+<p>这里给 Mob 增加 group <code>mobs</code>，然后在游戏结束时执行<code>get_tree().call_group(&amp;&#39;mobs&#39;, &amp;&#39;queue_free&#39;)</code>即可。</p>
+<h1 id="善后"><a href="#善后" class="headerlink" title="善后"></a>善后</h1><p>ColorRect增加纯色背景，需要置于Main的第一个子元素保证它在Player和Mob之前绘制。</p>
+<p>TextureRect用于图像等背景。</p>
+<p>AudioStreamPlayer用于播放音频，这里用两个音频，一个播放BGM，一个播放死亡音乐。这玩意默认不是循环放的，可以配置成循环放。</p>
+<p>增加下面的代码在死亡时（这await太性感了）：</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">$BGM.stop()<br>$DeathMusic.play()<br>await $DeathMusic.finished<br>$BGM.play()<br></code></pre></div></td></tr></table></figure>
+
+<p>可以给开始游戏添加快捷键，比如Enter，这个在inspector中可以绑定。</p>
+<p>本来想总结点啥的，但发现没啥可总结的。</p>
+<p>这里发现，Node2D的transform属性处理的是变换矩阵，所以我<strong>可以拿godot去学线性代数</strong>，直接重设这个变换矩阵就行了，这个可交互性强一些，哈哈（但不知道箭头啥的怎么画目前）。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Godot/">Godot</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep.html">
+                        <span class="hidden-mobile">Godot 学习 01——Hello World</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
