@@ -25,11 +25,13 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="正视问题是解决问题的第一步">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/01-20Godot%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94GDScript%E6%B7%B1%E5%85%A5/image.png">
 <meta property="article:published_time" content="2025-01-20T09:00:00.000Z">
-<meta property="article:modified_time" content="2025-01-20T08:55:05.506Z">
+<meta property="article:modified_time" content="2025-01-23T05:36:49.134Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Godot">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/01-20Godot%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94GDScript%E6%B7%B1%E5%85%A5/image.png">
   
   
   <title>Godot 学习 03——GDScript 深入 - 友纪V-λOP</title>
@@ -189,7 +191,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      11k 字
+      13k 字
     </span>
   
 
@@ -301,8 +303,29 @@
 <td align="left"></td>
 <td align="left">初始化会推迟到_ready 执行时，<strong>使得允许获取使用子 Node 进行初始化</strong>；注意<code>@onready</code>和<code>@export</code>同时使用时，<strong>会导致 onready 的初始值覆盖掉编辑器中配置的</strong></td>
 </tr>
+<tr>
+<td align="left">tool</td>
+<td align="left"></td>
+<td align="left">标注整个脚本，让脚本在 Godot 编辑器中执行</td>
+</tr>
 </tbody></table>
 <p>export 相关的注解见<a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html#doc-gdscript-exports">https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html#doc-gdscript-exports</a>。</p>
+<h2 id="tool"><a href="#tool" class="headerlink" title="@tool"></a>@tool</h2><p><a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/tutorials/plugins/running_code_in_the_editor.html">https://docs.godotengine.org/en/stable/tutorials/plugins/running_code_in_the_editor.html</a></p>
+<p>Godot 编辑器本身也是一个 Godot 编写的应用，这时候看 tool 注解的描述可能会让人误以为脚本这时候是在 Godot 编辑器本身上执行，能够操作 Godot 编辑器中的内容，比如 FileSystem，Inspector 等面板，这是不正确的（但也不是错误，因为 EditorScript 确实能够操作这些内容）。我们知道，Godot 的 Scene Tree 实际上有两个——Remote，即运行时的，以及 Local，即落盘时的。普通的脚本显然是在 Remote 上执行，而** tool 标注的脚本会在 Local 上执行**。</p>
+<p>这也就是说，tool 标注的脚本，能够操作当前正在编辑的 scene，能做用户能做的任何事情，包括移动、旋转、缩放任意物体，添加新节点，<strong>以及能够在用户配置资源的时候得到信号，显示特定信息等</strong>，这个很有意义。</p>
+<p>tool 的使用有很多局限（和方便）：</p>
+<ol>
+<li>tool 脚本引用的脚本必须也是 tool 脚本，否则会认为引入一个空脚本</li>
+<li>继承 tool 脚本的脚本不是 tool</li>
+<li>非 tool 脚本引用 tool 脚本时，tool 将无效（但在编辑器中直接引用有tool脚本的scene时，有效）</li>
+</ol>
+<p>一个用例是，为 Resource 标注 tool，然后在它的字段的 setter 中进行通知，然后在使用它的 Node 中监听该通知，然后展示警告（遗憾的是，这个 Node 绑定的脚本也必须是 tool，这可能会让人觉得有点不舒服）。这里其实更想在 Resource 中就增加配置要求……但 Godot 不支持这个，只能让调用者来了。</p>
+<p>下面是一个示例，为配置项增加更丰富的限制：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># idol.gd</span><br><span class="hljs-meta">@tool</span><br>extends Resource<br><br>class_name Idol<br><br><span class="hljs-comment">## 小偶像的名字</span><br><span class="hljs-meta">@export var name: String = <span class="hljs-string">&#x27;&#x27;</span>:</span><br>	get(): <span class="hljs-keyword">return</span> name<br>	<span class="hljs-built_in">set</span>(value):<br>		<span class="hljs-keyword">if</span> value != name:<br>			name = value<br>			changed.emit()        <br><br><span class="hljs-comment">## 小偶像的年龄</span><br><span class="hljs-meta">@export var age: int:</span><br>	get(): <span class="hljs-keyword">return</span> age<br>	<span class="hljs-built_in">set</span>(value):<br>		<span class="hljs-keyword">if</span> value != age:<br>			age = value<br>			changed.emit()<br><br><br><span class="hljs-comment"># test_scene.gd</span><br><span class="hljs-meta">@tool</span><br>extends Sprite2D<br><br><span class="hljs-meta">@export var idol: Idol:</span><br>	<span class="hljs-built_in">set</span>(value):<br>		<span class="hljs-keyword">if</span> value == null:<br>			idol = null; <span class="hljs-keyword">return</span><br>		<span class="hljs-keyword">if</span> idol != null:<br>			idol.changed.disconnect(update_configuration_warnings)<br>		idol = value<br>		idol.changed.connect(update_configuration_warnings)<br><br><span class="hljs-comment"># 这个方法会被Godot调用以获取配置错误</span><br>func _get_configuration_warnings():<br>	var warnings = []<br><br>	<span class="hljs-keyword">if</span> idol.name == <span class="hljs-string">&quot;&quot;</span>:<br>		warnings.append(<span class="hljs-string">&quot;不能没有名字&quot;</span>)<br><br>	<span class="hljs-keyword">if</span> idol.age &lt;= <span class="hljs-number">0</span>:<br>		warnings.append(<span class="hljs-string">&quot;年龄不能小于0&quot;</span>)<br><br>	<span class="hljs-comment"># Returning an empty array means &quot;no warning&quot;.</span><br>	<span class="hljs-keyword">return</span> warnings<br><br></code></pre></div></td></tr></table></figure>
+
+<p><img src="/2025/01-20Godot%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94GDScript%E6%B7%B1%E5%85%A5/image.png" alt="alt text"></p>
+<p>但这玩意儿也是很蛋疼——我这个Node还想在运行时发光发热呢，难道要我在每个业务的地方都检查当前是不是编辑器环境，只是为了在这里能有个提示？</p>
+<p>实践见分晓吧，至少弹警告这个部分我觉着godot需要再想想。</p>
 <h1 id="Godot-类型"><a href="#Godot-类型" class="headerlink" title="Godot 类型"></a>Godot 类型</h1><p>Variant，没有显式指定类型的变量都是 Variant……然而显式指定了不也只是编译期的吗……</p>
 <p>Variant 几乎可以存储任何类型的数据，它和 Object 类似但设计目标不同——<strong>Variant 是为了性能优化和高效存储，尽量避免类型检查和转换的开销，同时也支持序列化</strong>，但这可以认为是某种……实现相关的东西，<strong>作为使用者，直接把 Variant 当成 Object 或 any 就行了，只要知道底层 Godot 会做比更换引用更多事情就好了</strong>。</p>
 <p>注意，<strong>Object 可以使用<code>[]</code>运算符访问属性</strong>，和 js 一样。如果需要访问不存在的属性，使用 Object 的<code>set</code>，<code>get</code>方法。</p>
@@ -371,7 +394,7 @@
 <p><strong>如果一个 Node 要当作 Scene 去使用，它不应当有有参构造器，会构造失败</strong>。</p>
 <p>此外，还有静态构造函数<code>_static_init</code>——在类加载时调用。</p>
 <p>然后是内部类……一样的，就这样了。</p>
-<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><p>属性可以有 getter，setter，可以省略任一，语法很奇葩，属性是“物理的”——Godot 真的会创建一个字段对应属性，而不是像 python 那样需要手动写字段和属性对应，但仍旧可以像 python 那样操作：</p>
+<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><p>属性可以有 getter，setter，可以省略任一（好像只是省略，不是只读只写），语法很奇葩，属性是“物理的”——Godot 真的会创建一个字段对应属性，而不是像 python 那样需要手动写字段和属性对应，但仍旧可以像 python 那样操作：</p>
 <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 属性即字段：</span><br>var physic_prop: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>:<br>	get: <br>		<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;get physic_prop&#x27;</span>)<br>		<span class="hljs-keyword">return</span> physic_prop<br>	<span class="hljs-built_in">set</span>(value):<br>		<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;set physic_prop&#x27;</span>)<br>		physic_prop = value<br><br>var milliseconds: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span><br><span class="hljs-comment"># 像 python 那样操作：</span><br>var seconds: <span class="hljs-built_in">int</span>:<br>	get:<br>		<span class="hljs-keyword">return</span> milliseconds / <span class="hljs-number">1000</span><br>	<span class="hljs-built_in">set</span>(value):<br>		milliseconds = value * <span class="hljs-number">1000</span><br><br><span class="hljs-comment"># 还有替代语法</span><br>var my_prop: <span class="hljs-built_in">int</span>: <span class="hljs-comment"># 可以不换行</span><br>	get = get_my_prop, <span class="hljs-built_in">set</span> = set_my_prop<br>func get_my_prop(): <br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;get my_prop&#x27;</span>)<br>	<span class="hljs-comment"># 这里是 ok 的，不会递归调用自己</span><br>	<span class="hljs-keyword">return</span> my_prop<br>func set_my_prop(value: <span class="hljs-built_in">int</span>):<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;set my_prop&#x27;</span>)<br>	my_prop = value<br></code></pre></div></td></tr></table></figure>
 
 <p>使用函数作为 getter、setter 的时候，Godot 知道这时候不走属性，不会重复调用。但 Godot 只会对 getter、setter 函数<strong>本身</strong>进行特殊处理，下面的代码则会造成永远的递归：</p>
@@ -392,6 +415,9 @@
 <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">extends Node2D<br><span class="hljs-comment">## 第一行是简略介绍</span><br><span class="hljs-comment">##</span><br><span class="hljs-comment">## 然后是对脚本的详细介绍，一大段一大段，支持的 tag 非常有限，</span><br><span class="hljs-comment">## 只有 tutorial，deprecated，experimental，tutorial 是什么鬼？？</span><br><span class="hljs-comment">## deprecated 和 experimental 在 vscode 插件中好像都不支持</span><br><span class="hljs-comment">## </span><br><span class="hljs-comment">## @tutorial: http://someTutorial.com</span><br><span class="hljs-comment">## @tutorial(title): http://someTutorial.com</span><br><span class="hljs-comment">## @deprecated: Use [AnotherClass] </span><br><span class="hljs-comment">## @experimental: unstable</span><br><br><span class="hljs-comment">## 某个 signal</span><br>signal my_signal<br><br><span class="hljs-comment">## 某个枚举</span><br>enum Direction &#123;<br>	<span class="hljs-comment">## 攻</span><br>	UP,<br>	DOWN, <span class="hljs-comment">## 受</span><br>&#125;<br><br><span class="hljs-comment">## 某个变量，export 的会直接在编辑器中作为 tooltip 显示 [br]</span><br><span class="hljs-comment">## 使用 BBCode 语法可以让注释为多行</span><br><span class="hljs-meta">@export</span><br>var my_var: <span class="hljs-built_in">int</span><br><br><span class="hljs-comment">## 某个函数，好像没法给参数做注释</span><br>func <span class="hljs-built_in">map</span>(arr: Array, fn: <span class="hljs-type">Callable</span>) -&gt; Array:<br>	<span class="hljs-keyword">return</span> []<br><br><span class="hljs-comment">## 内部类和脚本的语法一样</span><br><span class="hljs-comment">##</span><br><span class="hljs-comment">## 详细介绍……</span><br><span class="hljs-comment">## @tutorial: https://someTutorial.com</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SomeInnerClass</span>:<br>	<span class="hljs-keyword">pass</span><br></code></pre></div></td></tr></table></figure>
 
 <p>关于 BBCode 的用法，见<a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_documentation_comments.html">https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_documentation_comments.html</a>，可以显示的东西是很多的。</p>
+<h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><p>Godot 中没有异常处理，也不支持泛型。Godot 中提供了一个 Error 枚举可以用来表示特定错误，函数可以返回 Error 来表示它求值是否成功。</p>
+<p>但是，我如果想要这个函数返回一个值呢？哈哈，Godot 不支持泛型，也不支持元组，这导致无论是想走 Result Monad 的路子，还是想走 go 的路子，都不行。</p>
+<p>按需求来吧，这点也太坑了……</p>
 
             </div>
             <hr>
@@ -418,6 +444,12 @@
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2025/01-22Godot%E5%AD%A6%E4%B9%A004%E2%80%94%E2%80%94Viewport%E5%92%8CCollision.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Godot学习04——Viewport和Collision</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
