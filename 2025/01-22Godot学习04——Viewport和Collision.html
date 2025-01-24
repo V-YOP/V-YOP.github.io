@@ -18,23 +18,23 @@
   <meta name="author" content="友纪V-λOP">
   <meta name="keywords" content="">
   
-    <meta name="description" content="正视问题是解决问题的第一步">
+    <meta name="description" content="视图和碰撞，是 2D 游戏中的一个重要部分">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Godot学习04——Viewport和Collision">
+<meta property="og:title" content="Godot 学习 04——Viewport 和 Collision">
 <meta property="og:url" content="http://example.com/2025/01-22Godot%E5%AD%A6%E4%B9%A004%E2%80%94%E2%80%94Viewport%E5%92%8CCollision.html">
 <meta property="og:site_name" content="友纪V-λOP">
-<meta property="og:description" content="正视问题是解决问题的第一步">
+<meta property="og:description" content="视图和碰撞，是 2D 游戏中的一个重要部分">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2025/01-22Godot%E5%AD%A6%E4%B9%A004%E2%80%94%E2%80%94Viewport%E5%92%8CCollision/viewport_transforms3.webp">
 <meta property="article:published_time" content="2025-01-22T08:00:00.000Z">
-<meta property="article:modified_time" content="2025-01-24T01:08:38.503Z">
+<meta property="article:modified_time" content="2025-01-24T02:40:48.112Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Godot">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/2025/01-22Godot%E5%AD%A6%E4%B9%A004%E2%80%94%E2%80%94Viewport%E5%92%8CCollision/viewport_transforms3.webp">
   
   
-  <title>Godot学习04——Viewport和Collision - 友纪V-λOP</title>
+  <title>Godot 学习 04——Viewport 和 Collision - 友纪V-λOP</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -170,7 +170,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Godot学习04——Viewport和Collision">
+            <span class="h2" id="subtitle" title="Godot 学习 04——Viewport 和 Collision">
               
             </span>
 
@@ -222,7 +222,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Godot学习04——Viewport和Collision</h1>
+            <h1 style="display: none">Godot 学习 04——Viewport 和 Collision</h1>
             
             <div class="markdown-body">
               <p>关于视图，碰撞的二三事。这里学的内容不多……</p>
@@ -252,7 +252,7 @@ Godot 为 2D 游戏开发提供了：
 <p><strong>同一个层级中，则可以通过 z-index 控制顺序；但绘制层级是比 z-index 更优先的</strong>。</p>
 <h2 id="Camera"><a href="#Camera" class="headerlink" title="Camera"></a>Camera</h2><p><strong>Viewport 可以和一个 Camera 绑定，以方便进行镜头平移操作</strong>。CanvasLayer 不能和镜头绑定，没意义。镜头也不会改变 CanvasLayer 的显示。所以这里不要把镜头当作特别重要的东西，实际上镜头完全是可以不要的，始终使用 canvas_transform 也是可以的。</p>
 <p>2D 的镜头使用 Camera2D。它继承 Node2D，其中 position 属性可用，rotation 属性需要配置 Ignore Rotation 为 false（以支持滚转），Camera2D 自己有 offset 和 zoom 属性。显然 offset 可以很方便做动画——<strong>平常我一直用 position，然后角色被打了我把 offset 摇一摇</strong>。</p>
-<p>也有所谓的ParallaxBackground，一个Viewport要有一个ParallaxBackground，它会和Camera2D协同作用来提供视差背景。</p>
+<p>也有所谓的 ParallaxBackground，一个 Viewport 要有一个 ParallaxBackground，它会和 Camera2D 协同作用来提供视差背景。</p>
 <h2 id="各种变换"><a href="#各种变换" class="headerlink" title="各种变换"></a>各种变换</h2><p><a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/tutorials/2d/2d_transforms.html">https://docs.godotengine.org/en/stable/tutorials/2d/2d_transforms.html</a>。</p>
 <p>下面不考虑 Subviewport 和 Window 等玩意儿，因为文档没提，我现在也没能力自己去研究。</p>
 <p>首先我们知道，CanvasItem 是被绘制的对象，所以从它开始研究。CanvasItem 虽然是虚类，但是规定了方法 get_transform，因此认为是可以变换的，可以从它开始。</p>
@@ -277,7 +277,7 @@ Godot 为 2D 游戏开发提供了：
 </ol>
 <p>StaticBody2D 和 RigidBody2D 可以通过 PhysicsMaterial 定义相关物理属性，如摩擦力和弹力等。</p>
 <p>Godot 的物理处理的频率是固定的，默认配置是一秒 60 次，在物理 tick 中执行的代码称作 physic 处理，即<code>_physic_process</code>，它按固定频率执行，否则称为 idle 处理，即<code>_process</code>，它尽可能快（每一帧）地执行。</p>
-<p>RigidBody2D的诸多性质都是交给引擎计算的，如果直接设置它的属性，包括位置，线速度等，都可能会导致奇怪的情况；但它有一个回调<code>_integrate_forces()</code>，在其中修改它的属性是安全的。</p>
+<p>RigidBody2D 的诸多性质都是交给引擎计算的，如果直接设置它的属性，包括位置，线速度等，都可能会导致奇怪的情况；但它有一个回调<code>_integrate_forces()</code>，在其中修改它的属性是安全的。</p>
 <p>……更具体的在实践中学，这里只知道有几种类型即可。</p>
 <h2 id="Collision-Layer-Mask"><a href="#Collision-Layer-Mask" class="headerlink" title="Collision Layer, Mask"></a>Collision Layer, Mask</h2><p>有所谓的碰撞层和碰撞蒙版——<strong>碰撞体总是在特定碰撞层中，默认是层 1，碰撞体能通过蒙版配置要扫描哪些碰撞层上的碰撞体（不扫描的层就不会被它影响），默认是层 1</strong>。</p>
 <p>这就是说，<strong>一个碰撞体只能被它的蒙版的碰撞层上的碰撞体影响</strong>，注意这里<strong>只能配置它被谁影响，不能配置它影响谁</strong>。比如，物体 a 在层 1，物体 b 在层 2，如果 a 不配置 mask，b 配置 mask 为 1，则 a 会影响 b，而 b 不会影响 a；如果 a 配置 mask 为 2，b 配置 mask 为 1，则它们会互相影响。</p>
@@ -308,7 +308,7 @@ Godot 为 2D 游戏开发提供了：
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/01-24Godot%E5%AE%9E%E6%88%9801_1_FlappyBird.html">
+                      <a href="/2025/01-23Godot%E5%AE%9E%E6%88%9801_1_FlappyBird.html">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">Godot学习04——Viewport和Collision</span>
                         <span class="visible-mobile">上一篇</span>
