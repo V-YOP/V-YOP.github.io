@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://example.com/2025/01-29%E5%85%A5%E9%97%A8CSSGrid/image-1.png">
 <meta property="og:image" content="http://example.com/2025/01-29%E5%85%A5%E9%97%A8CSSGrid/abl60fsmjuys1kadh1ig.png">
 <meta property="article:published_time" content="2025-01-29T12:00:00.000Z">
-<meta property="article:modified_time" content="2025-01-29T11:54:45.752Z">
+<meta property="article:modified_time" content="2025-01-29T12:29:46.426Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="前端">
 <meta name="twitter:card" content="summary_large_image">
@@ -195,7 +195,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      5.9k 字
+      6.1k 字
     </span>
   
 
@@ -293,7 +293,7 @@
 <p>注意到元素 7 另起一行，它的行轨道未配置所以高度被限制为内容高度，而宽度被列轨道所限制。</p>
 <p>考虑一个更复杂的例子<code>grid-template-columns: 3rem 25% 1fr 2fr</code>，此时，<code>1fr = ((width of grid) - (3rem) - (25% width of grid)) / (1 + 2)</code>。能够注意到这里的灵活性，然而还能更夸张。</p>
 <p>关于 track 大小的配置还有更多运算符可用。比如<code>minmax()</code>，其允许接受一个最小值和一个最大值（其中可以有 auto，表示根据内容自动计算），去表示该轨道的最小值、最大值。如，<code>minmax(100px, auto)</code>表示最小值是 100px，然后可以按内容大小去增加；如<code>minmax(auto, 50%)</code>表示最小值是内容大小，但限制它无论如何不会超过 Grid 容器的 50%。</p>
-<p>关于这里的“内容大小”，容易知道它是可变的——同一段话它可以放很长只放一行，也可以多行但很窄，所以光一个 auto 是不太算数的。</p>
+<p>关于这里的“内容大小”，容易知道它是可变的——同一段话它可以放很长只放一行，也可以多行但很窄，所以光一个 auto 是不太算数的。实际上，这里可以是 auto，<strong>也可以是<code>min-content</code>，<code>max-content</code>等</strong>。</p>
 <p>然后是<code>repeat()</code>，它是一个简写，表示重复多少次，如<code>repeat(2, 100px)</code>等价于<code>100px 100px</code>。</p>
 <p>最后，<code>grid-template</code>是<code>grid-template-rows</code>和<code>grid-template-columns</code>的简写，语法是 <code>grid-template: &lt;&#39;grid-template-rows&#39;&gt; / &lt;&#39;grid-template-columns&#39;&gt;</code>。</p>
 <h1 id="gap"><a href="#gap" class="headerlink" title="gap"></a>gap</h1><p><code>gap</code>是<code>row-gap</code>，<code>column-gap</code>的简写，表示行 gap，列 gap，这个和 flex 一致，不表。</p>
@@ -344,8 +344,10 @@
 <li><code>place-items: &lt;&#39;align-items&#39;&gt; / &lt;&#39;justify-items&#39;&gt;</code></li>
 <li><code>place-self: &lt;&#39;align-self&#39;&gt; / &lt;&#39;justify-self&#39;&gt;</code></li>
 </ol>
-<p>就这样了，let’s have some fun <a target="_blank" rel="noopener" href="https://cssgridgarden.com/">https://cssgridgarden.com/</a>.</p>
 <p>更细节的可能可以参考这里 <a target="_blank" rel="noopener" href="https://css-tricks.com/snippets/css/complete-guide-grid/">https://css-tricks.com/snippets/css/complete-guide-grid/</a>。</p>
+<p>就这样了，let’s have some fun <a target="_blank" rel="noopener" href="https://cssgridgarden.com/">https://cssgridgarden.com/</a>.</p>
+<h1 id="何时使用-grid，何时使用-flex"><a href="#何时使用-grid，何时使用-flex" class="headerlink" title="何时使用 grid，何时使用 flex"></a>何时使用 grid，何时使用 flex</h1><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=41ZBkZUVApc">https://www.youtube.com/watch?v=41ZBkZUVApc</a></p>
+<p>呃原则是……二维布局，如整个页面，适合使用 grid，一维布局，如 header 上的按钮等，适合使用 flex；注意登陆表单、以及带按钮、文字的菜单，看上去是二维布局，但实际操作的时候还是一维布局，这时候使用 flex 是适合的</p>
 
             </div>
             <hr>
@@ -372,6 +374,12 @@
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2025/01-30FOV%E5%92%8C%E6%B6%88%E5%A4%B1%E7%82%B9.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">研究 FOV 和消失点</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
