@@ -38,7 +38,7 @@
 <meta property="og:image" content="http://example.com/2025/02-02%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E8%A7%86%E5%9C%88%EF%BC%8C%E4%B8%A4%E7%82%B9%E9%80%8F%E8%A7%86/image-8.png">
 <meta property="og:image" content="http://example.com/2025/02-02%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E8%A7%86%E5%9C%88%EF%BC%8C%E4%B8%A4%E7%82%B9%E9%80%8F%E8%A7%86/image-9.png">
 <meta property="article:published_time" content="2025-02-02T06:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-02T06:22:21.154Z">
+<meta property="article:modified_time" content="2025-02-02T15:00:45.666Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="透视">
 <meta name="twitter:card" content="summary_large_image">
@@ -202,7 +202,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      4.7k 字
+      5k 字
     </span>
   
 
@@ -286,6 +286,7 @@
 <li>这里的 90 度 FOV 圆，称作 90 度<strong>视圈</strong>，而 60 度 FOV 圆则称为 60 度视圈，认为 60 度视圈是<strong>正常视域范围</strong>。视圈的圆心叫<strong>心点</strong>，它通常是画面中心。</li>
 <li>90 度视圈左右的点称为<strong>距点</strong>，下方的点称为<strong>目点</strong>；心点和距点的距离（实际上是心点到目点的距离）称为<strong>视距</strong>。注意目点相对于 60 度 FOV 的距离——<strong>目点到心点的距离是 60 度视圈半径的 $\sqrt {3}$ 倍</strong>，约等于 1.7 倍，但<strong>实际操作的时候使用 2 倍也没问题（这时候实际上对应的是 53 度视圈）</strong></li>
 </ol>
+<p>这里说心点通常是画面中心，但也有不是的情况，<strong>比如绘制有俯仰角的建筑物时，这时候不想引入三点透视，仍然在两点透视的上下文上工作，这时候心点就必不是画面中心——心点此时在地平线上而非视平线上，或者也可以认为是对原始画面进行了裁切</strong>。</p>
 <p><strong>后面均以 60 度视圈为出发点</strong>，let’s practice。</p>
 <h1 id="得到其他-FOV-的视圈"><a href="#得到其他-FOV-的视圈" class="headerlink" title="得到其他 FOV 的视圈"></a>得到其他 FOV 的视圈</h1><p>要根据 60 度 FOV 得到其它 FOV，这是一个简单的平面几何问题：</p>
 <p><img src="/2025/02-02%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E8%A7%86%E5%9C%88%EF%BC%8C%E4%B8%A4%E7%82%B9%E9%80%8F%E8%A7%86/image-5.png" alt="alt text"></p>
@@ -312,6 +313,9 @@
 <p>最后，我想绘制一个旋转特定角度的立方体如何解决？容易发现，两个消失点距画面中心的距离的比例会决定立方体旋转的角度，实际上以前研究的时候得到过一个公式：</p>
 <p>一个立方体沿 Z 轴逆时针旋转时，设旋转角度为$\theta$，两个消失点距离<strong>画面中心线</strong>（垂直二分画面的线）为$x$和$y$，有$x:y&#x3D;tan^2\theta$</p>
 <p><img src="/2025/02-02%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E8%A7%86%E5%9C%88%EF%BC%8C%E4%B8%A4%E7%82%B9%E9%80%8F%E8%A7%86/image-9.png" alt="alt text"></p>
+<hr>
+<p>之前的学习中，我发现，一个消失点在这里时，另一个消失点可以在画面中心另一侧的<strong>任何地方</strong>。然而，<strong>在两点透视时，确定这两个消失点无法确定心点和目点，从而无法确定焦距，三点透视时则可以确定心点（三个消失点组成的三角形的垂心），从而能够确认距点到心点的距离，从而能够得到90度视圈</strong>。</p>
+<p>设距点距心点距离为d，物体左消失点距目点距离为x，右消失点距目点距离为y，有 $xy&#x3D;d^2$。</p>
 
             </div>
             <hr>
