@@ -1,0 +1,541 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="平行透视即一点透视，平视平放立方体，立方体有两对竖立面，有一对同画面平行时，即为平行透视，两对均不平行时，为余角透视">
+<meta property="og:type" content="article">
+<meta property="og:title" content="透视学习 03——平行透视，分割透视矩形">
+<meta property="og:url" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="平行透视即一点透视，平视平放立方体，立方体有两对竖立面，有一对同画面平行时，即为平行透视，两对均不平行时，为余角透视">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-1.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-2.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-4.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-3.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-7.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-8.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-9.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-10.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-5.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-11.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-12.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-13.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-14.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/902b04b6f5dac7b1a9b3a69f2a944639.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-15.png">
+<meta property="og:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-16.png">
+<meta property="article:published_time" content="2025-02-09T15:15:00.000Z">
+<meta property="article:modified_time" content="2025-02-09T15:21:25.668Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="透视">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image.png">
+  
+  
+  <title>透视学习 03——平行透视，分割透视矩形 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="透视学习 03——平行透视，分割透视矩形">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-02-09 23:15" pubdate>
+        2025年2月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">透视学习 03——平行透视，分割透视矩形</h1>
+            
+            <div class="markdown-body">
+              <p>不得不感叹，这书给人学爽了，有种看计算机书籍的感觉，系统，环环相扣，不断尝试建立心智模型。</p>
+<hr>
+<p>前面学习了原线变线，学习了如何在各种距离上绘制同样的原线，这里该处理立方体了。</p>
+<p>首先，为什么是立方体？因为一切复杂的形体，都可以看成是抽象几何体的组合，而一切抽象几何体，终究能够使用一个盒子给它包起来，即使用一个立方体去进行抽象，后续再对它进行切削，增补，得到实际形体。这一点，无论是宇宙飞船还是路灯甚至是人体，均如此。</p>
+<p><strong>平视平放的立方体</strong>（这是最典型的情况），它的透视状态只有两种——平行透视和余角透视。<strong>立方体有两对竖立面，有一对同画面平行时，即为平行透视，两对均不平行时，为余角透视。对矩形面同样如此——两对边线，有一对和画面平行时是平行透视，否则是余角透视。</strong></p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image.png" alt="alt text"></p>
+<p>后面随这书的术语，立方体改称<strong>方物</strong>。</p>
+<h1 id="平行透视"><a href="#平行透视" class="headerlink" title="平行透视"></a>平行透视</h1><p><strong>平行透视</strong>即我们说的一点透视，它是说一个方物或一个矩形平面只有一个灭点，<strong>这个灭点是且仅能是心点</strong>（如果不在心点，那说明必然不止一个消失点）。</p>
+<p>一点透视是比较常用的，能够方便引导观众视线。整个画面使用一点透视（和两点透视）布局时，通常会对画面进行<strong>裁剪</strong>，即只取视圈中的部分内容，反应到画面中，则是<strong>在不改变平视的视角的前提下，按需求调整视平线和心点的位置，从而在不引入三点透视的情况下得到俯视仰视的感觉</strong>。实际上，<strong>人平常看物体时中视线一般会比视平线低 10 度左右，因此把视平线往上安排一些是很自然的</strong>。下图是一些调整心点、视平线的示例。</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-1.png" alt="裁切画面的魔法"></p>
+<p>但这有前提——一般来说，心点和视平线不应当调整太过，比如放置到画面外，此时会感觉很别扭，需要引入两点透视（余角透视），如下图。</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-2.png" alt="alt text"></p>
+<h2 id="距点法定平行透视的深度"><a href="#距点法定平行透视的深度" class="headerlink" title="距点法定平行透视的深度"></a>距点法定平行透视的深度</h2><p>在之前研究的时候发现，不同焦距下，正方体往心点方向的线的深度是不一样的，当时我得出结论，一点透视无法确认深度的线条的长度；然而，<strong>通过距点，则可以得到平行透视的深度</strong>。因为规定了距点，我们就规定了焦距。</p>
+<p>使用距点法定平行透视的深度的要点在于，<strong>指向距点方向的线和画面呈 45 度角，利用这个 45 度，我们能够根据水平原线得到和它等长的直角平变线</strong>。比如下图对原线 AB 作图得到和它等长的直角平变线 AC，从而定出正方形底面。下图中同时还演示了如何二分变线。</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-4.png" alt="alt text"></p>
+<h2 id="分距点法"><a href="#分距点法" class="headerlink" title="分距点法"></a>分距点法</h2><p>分距点法使我们能够通过二分之一距点等点去定平行透视的深度，避免去找远在画面之外的距点。</p>
+<p>首先研究一个问题——<strong>考虑两个不平行的其他角度平变线，设它们和画面的夹角分别为 $\alpha, \beta$，这时候心点和它们对应的消失点的长度的比例是怎样的</strong>？这是一个平面几何问题，绘制下面的俯视图：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-3.png" alt="alt text"></p>
+<p>得到：</p>
+<p>$$<br>x:y &#x3D; \tan \beta : \tan \alpha<br>$$</p>
+<p>这个公式能做什么呢？考虑我们想做一个平行透视的正方形面 ABCD，先做出原线 AB，并标识出距点。下一步的正常方法是利用距点法求深度，但我们觉得<strong>距点太远了，我不想做和距点的连线</strong>，想干点别的，我们试着找到二分之一距点（线段心距的二分之一）玩玩？</p>
+<p>把二分之一距点命名为距’，距’和 ABCD 的一个直角平变线的交点定为 C’，我们的目标是在不连线 A 距的情况下找出 C：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-7.png" alt="alt text"></p>
+<p>根据上面的公式，我们知道：</p>
+<p>$$<br>心距’: 心距&#x3D;1:2&#x3D;\tan \angle BAC:\tan \angle BAC’ &#x3D; \frac{\frac{BC}{AB}}{\frac{BC’}{AB}}&#x3D;\frac{BC}{BC’}<br>$$</p>
+<p>因此，有：</p>
+<p>$$<br>BC’:BC&#x3D;2:1<br>$$</p>
+<p>我们又知道，$AB&#x3D;BC$，因此 $BC’&#x3D;2AB$，我们向左倍增 AB 得到点 A’，从而能够做出来正方形面 A’BC’D’：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-8.png" alt="alt text"></p>
+<p>注意这里的步骤——<strong>我们通过原线 AB 和二分之一距点得到了边长为 2AB 的正方形面</strong>，但这里我要的边长是 AB，怎么办呢？<strong>我不使用原线 AB，而是取原线 AB 的中点 P，这时候我们就能通过原线 AP 和二分之一距点得到边长为 2AP，即 AB 的正方形面</strong>。如下图：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-9.png" alt="alt text"></p>
+<p>将这个结论更广泛一些——<strong>我们通过原线 AB 的 $\frac{a}{b}$ 的点，以及 $\frac{b-a}{b}$ 距点，就能得到边长为 AB 的正方形面</strong>。后面把 n 分之一距点称为 1&#x2F;2 距，2&#x2F;3 距这样。如下面利用 AB 的 2&#x2F;3 和 1&#x2F;3 距去找到深度：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-10.png" alt="alt text"></p>
+<p>这个结论也可以直接在画面上使用三角形相似去得到，但这里没走这条路。</p>
+<p><strong>使用这种方法，就不需要再找距点了，用 1&#x2F;2 距就行；这时候设置视圈为 53 度的话会特别方便，因为此时二分距点正好在视圈上</strong>。</p>
+<h1 id="分割透视矩形"><a href="#分割透视矩形" class="headerlink" title="分割透视矩形"></a>分割透视矩形</h1><p>透视图的一个典型问题是<strong>均等或任意分割一个透视矩形，或者倍增一个透视矩形</strong>，欣喜的是，<strong>这种分割是容易的，而且不挑矩形面和画面的关系——两对原线、一对原线一对变线、或是两对变线组成的矩形面，均使用同样的作图法</strong>。只不过是直接把平面尺规作图转化为透视图上的尺规作图。区别在于，<strong>对于两对变线的矩形面，等分点需要使用平行变线分割画出，而一对原线一对变线的矩形面的原线上的等分点可以直接测得</strong>。</p>
+<p>下面均考察一对原线一对变线的情况，同样的操作同样可以迁移到两对变线的情况。</p>
+<p>求中点，中线，以及任意等分点，对称分割就不学了，以前学过。</p>
+<h2 id="网格分割"><a href="#网格分割" class="headerlink" title="网格分割"></a>网格分割</h2><p>网格分割允许同时找一个矩形面在水平和垂直两个方向上的分割。画师在两根原线上标注点来表示变线方向上的网格的数量和大小，依次连接这些点，然后找对角线和这些连线的焦点做原线即可：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-5.png" alt="alt text"></p>
+<p>这个证明是好证的，简单的三角形相似。注意到，<strong>我们在原线方向上做三等分点，得到的效果是把矩形在变线方向上进行三等分</strong>。</p>
+<p>然而实际上，<strong>上图中我们同时也可以得到二等分</strong>：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-11.png" alt="alt text"></p>
+<p>这也是通过相似证明的。这让我们能够非常方便地绘制 m 行 n 列的等距网格——如果行数大于列数，我们直接在原线上找 m 个等分点，然后取第 n 个等分点做对角线。而列数大于行数的时候，就需要分别做 m 等分点和 n 等分点了。</p>
+<p>下图绘制 5x3 网格（其实目测找五等分也挺难的，不如先作图得到四等分再作图得到五等分）：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-12.png" alt="alt text"></p>
+<p>然后是 3x5 网格：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-13.png" alt="alt text"></p>
+<p>更广泛地说，<strong>我们在原线方向上可以做任意的点去把矩形在变线方向上做划分；而在原线上做划分，只需要直接做测量即可</strong>。如下图在变线方向上做了不等距分割，绘制自然景物时这是很常见的。</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-14.png" alt="alt text"></p>
+<h2 id="平行变线分割"><a href="#平行变线分割" class="headerlink" title="平行变线分割"></a>平行变线分割</h2><p>这个以前也学过，还写过<a target="_blank" rel="noopener" href="https://v-yop.github.io/file/loomis_perspective.html">交互式的示例</a>，当时不懂如何证明，现在了解了原线变线，就能够说出个所以然了。</p>
+<p>可以说，上面的网格分割法利用了一对原线、一对变线的矩形面的性质；而这里的平行变线分割法则不受此限；<strong>平行变线分割法的关键在于从变线处生造出一条原线，然后构造该原线和一条变线所在的平面，利用该原线来进行分割</strong>。在这里，一旦引入了原线，问题就变成处理这个原线了，这时候问题变得和网格分割法类似。</p>
+<p>平行变线分割法利用一个规律——<strong>对任意平面，该平面上的一个原线在画面上总是平行于这个平面的灭线的</strong>。这意味着，我们只要找到一个平面的一根原线，我们就能够找到这个平面的灭线。</p>
+<p><strong>考虑变线 AB 和它的消失点，我们可以任意绘制直线 AP，然后规定 AP 为原线，这时候我们就构造了平面 ABP，同时也得到了它的灭线：</strong></p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/902b04b6f5dac7b1a9b3a69f2a944639.png" alt="alt text"></p>
+<p>AP 为原线，我们可以在 AP 上任意取一些点，然后过这些点做一些处在平面 ABP 上，同时互相平行的直线；我们知道，这些互相平行的直线会交于一个灭点。下图展示了四等分 AP 以及随意绘制的平行线；这里的“俯视图”是沿平面 ABP 的法线方向看的。</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-15.png" alt="alt text"></p>
+<p><strong>我们能注意到，我们在 AP 上做了四等分，然后做平行线；这里的平行线和 AC 的交点正好把 AC 也四等分了（通过三角形相似证得）</strong>。以及，这里的平行线的方向是任意选定的，<strong>我只要故意让平行线的方向平行于 BP</strong>，此时 C 和 B 点就重合了，我们就能够把 AB 给进行四等分。<strong>换成在透视图中的操作的话，就是我们延长 BP 找到它和灭线的交点作为灭点</strong>。</p>
+<p>这里做了一堆平行线，这些平行线是变线，因此该方法称为<strong>平行变线分割</strong>。</p>
+<p>书中的平行变线分割法可以说是狭义的，它始终在考虑视平线，没有考虑灭线不平行于视平线的情况（不知道书里后面会不会提到这个，但至少在这里没提到）。</p>
+<p><strong>进行平行变线分割法时，如何正确选择原线就非常重要</strong>，要选择一个适合作图的原线 AP；通常选择是水平原线或垂直原线，因为<strong>我们一般知道灭点在画面的水平位置或垂直位置</strong>，比如一点、二点透视时，灭点在视平线上。下面是一个两对变线的面的例子，AP 选用水平原线（也可让 AP 在画面上平行于 CD，这也很好做）：</p>
+<p><img src="/2025/02-09%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E5%B9%B3%E8%A1%8C%E9%80%8F%E8%A7%86%EF%BC%8C%E5%88%86%E5%89%B2%E9%80%8F%E8%A7%86%E7%9F%A9%E5%BD%A2/image-16.png" alt="alt text"></p>
+<p><strong>平行变线分割法的缺点在于它需要有一个辅助灭点，并需要做点和辅助灭点的连线，徒手绘图时这必定会引入误差</strong>，按理说只有对角线法引入的误差最小。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%8F%E8%A7%86/">透视</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/02-07%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E5%8E%9F%E7%BA%BF%E5%8F%98%E7%BA%BF%EF%BC%8C%E7%81%AD%E7%82%B9%E7%81%AD%E7%BA%BF%EF%BC%8C%E7%BC%A9%E5%B0%BA%E6%B3%95%EF%BC%8C%E8%A7%86%E9%AB%98%E6%B3%95.html">
+                        <span class="hidden-mobile">透视学习 02——原线变线，灭点灭线，缩尺法，视高法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
