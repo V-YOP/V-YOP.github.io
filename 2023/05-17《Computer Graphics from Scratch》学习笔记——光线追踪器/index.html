@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="想要在屏幕中展示 3d 图形，归根结底有两种方式：光栅化和光线追踪，这里跟随此书步调，从光线追踪技术开始计算机图形学的学习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Computer Graphics from Scratch》学习笔记——光线追踪器">
+<meta property="og:url" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/index.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="想要在屏幕中展示 3d 图形，归根结底有两种方式：光栅化和光线追踪，这里跟随此书步调，从光线追踪技术开始计算机图形学的学习。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/title.png">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/start.png">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/FOV_120.jpg">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/FOV_60.jpg">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/FOV_20.jpg">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/FOV_5.jpg">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/FOV_60_chair.jpg">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/FOV_20_chair.jpg">
+<meta property="og:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/light.jpg">
+<meta property="article:published_time" content="2023-05-17T09:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-14T08:21:51.635Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="CG">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/title.png">
+  
+  
+  <title>《Computer Graphics from Scratch》学习笔记——光线追踪器 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="《Computer Graphics from Scratch》学习笔记——光线追踪器">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-05-17 17:00" pubdate>
+        2023年5月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">《Computer Graphics from Scratch》学习笔记——光线追踪器</h1>
+            
+            <div class="markdown-body">
+              <p><img src="title.png" alt=""></p>
+<p>为了更好地绘画，为了能扩宽职业方向（技术美术），学点计算机图形学是很必要的。</p>
+<p>想要在屏幕中展示 3d 图形，归根结底有两种方式：光栅化和光线追踪，这里跟随此书步调，从光线追踪技术开始计算机图形学的学习。下面的描述中，均使用左手坐标系（大拇指指向自己，食指指向上方，此时大拇指，食指，中指分别为 x，y，z），并且镜头位置固定在<code>(0, 0, 0)</code>，且指向 z 轴正方向，上方为 y 轴正方向（关于任意位置和角度的镜头的算法，待学习光栅化时再学习）。</p>
+<h1 id="从-canvas-到-viewport"><a href="#从-canvas-到-viewport" class="headerlink" title="从 canvas 到 viewport"></a>从 canvas 到 viewport</h1><p>首先是 canvas 和 viewport 的概念，为什么同时需要 canvas 和 viewport 这两个抽象？因为 canvas 对应显示屏或应用的窗口，它的单位是像素，是离散的，viewport 是 3d 坐标系下的一个面（或许不是平面），它的单位是真实世界单位比如米，它是连续的，考虑到 viewport 和 canvas 的量纲的差别，他们的比例也可以有不同，viewport 甚至可以不是平面…将它们做区分是有理由的。</p>
+<p>算法的第一步是根据 canvas 的像素去找到 viewport 的对应位置（为什么不是从 viewport 开始？因为 viewport 是连续的，而且可能会有多个 viewport 上的点会对应到 canvas 上同一个像素，这时候如何确认这个像素使用哪个点？），考虑到当前的 canvas 和 viewport 均是矩形，做映射是容易的，下面是各变量及意义，及相关映射的方程：</p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-comment">// 常量：</span><br>d  <span class="hljs-comment">// 相机和 viewport 的距离</span><br>Vw <span class="hljs-comment">// viewport 的宽度（米）</span><br>Vh <span class="hljs-comment">// viewport 的高度（米）</span><br>Cw <span class="hljs-comment">// canvas 的宽度（像素）</span><br>Ch <span class="hljs-comment">// canvas 的高度（像素）</span><br><br><span class="hljs-comment">// 变量：</span><br>Cx <span class="hljs-comment">// canvas 像素的 x 轴坐标（原点为 canvas 中心）</span><br>Cy <span class="hljs-comment">// canvas 像素的 y 轴坐标（原点为 canvas 中心）</span><br><br><span class="hljs-comment">// 求出 viewport 上的点</span><br>Vx = Cx * Vw / Cw   <span class="hljs-comment">// 向 z 轴方向看，canvas 和 viewport 的 x 轴方向一致，y 轴相反，原点也一致，这里直接做缩放即可</span><br>Vy = - Cy * Vy / <span class="hljs-type">Cw</span><br><span class="hljs-variable">Vz</span> <span class="hljs-operator">=</span> d <span class="hljs-comment">// 规定如此</span><br></code></pre></div></td></tr></table></figure>
+<h1 id="直线的表示法"><a href="#直线的表示法" class="headerlink" title="直线的表示法"></a>直线的表示法</h1><p>直到绘制像素点之前，后面的步骤不再需要使用 canvas 了。第二步需要做相机到该位置的射线（这和实际光线的运动方式是相反的，但实现起来更容易），这需要对射线建模，假设相机位置为 O，viewport 上的点为 V，则从 O 到 V 的向量为 V-O，直线上任何一点 P 可以表示为：</p>
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel">P = O + <span class="hljs-built_in">t</span>(V - O) // 其中 <span class="hljs-built_in">t</span> 为自变量<br></code></pre></div></td></tr></table></figure>
+<p>在这里，V-O 的大小显然是可以任意放缩的，这里令 V-O=D，则有：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs mathematica"><span class="hljs-variable">P</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">O</span> <span class="hljs-operator">+</span> <span class="hljs-variable">tD</span> <span class="hljs-operator">//</span> <span class="hljs-built_in">D</span> 为 <span class="hljs-variable">V</span><span class="hljs-operator">-</span><span class="hljs-built_in">O</span> 方向上的矢量<br></code></pre></div></td></tr></table></figure>
+<h1 id="检查直线和球体相交"><a href="#检查直线和球体相交" class="headerlink" title="检查直线和球体相交"></a>检查直线和球体相交</h1><p>第三步是检查射线是否和球体相交，方法如下：</p>
+<p>假设球的球心为 C，半径为 r，则球上任意一点 P 满足：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">distance</span><span class="hljs-params">(C, P)</span></span> = r<br></code></pre></div></td></tr></table></figure>
+<p>即：</p>
+<figure class="highlight coq"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs coq">|<span class="hljs-type">P</span> - C| <span class="hljs-type">= r</span><br></code></pre></div></td></tr></table></figure>
+<p>即：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs mathematica"><span class="hljs-punctuation">(</span><span class="hljs-variable">P</span> <span class="hljs-operator">-</span> <span class="hljs-built_in">C</span><span class="hljs-operator">,</span> <span class="hljs-variable">P</span> <span class="hljs-operator">-</span> <span class="hljs-built_in">C</span><span class="hljs-punctuation">)</span> <span class="hljs-operator">=</span> <span class="hljs-variable">r</span><span class="hljs-operator">^</span><span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+<p>这里要求 P 也在射线上，带入 P = O + tD，同时令 O - C = CO：</p>
+<figure class="highlight fix"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs fix"><span class="hljs-attr">(CO + tD, CO + tD) </span>=<span class="hljs-string"> r^2</span><br></code></pre></div></td></tr></table></figure>
+<p>点乘满足分配律，即 (a + b, c) = ac + bc，应用此，得到：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode"><span class="hljs-comment">(CO + tD, CO)</span> + <span class="hljs-comment">(CO + tD, tD)</span> = r^<span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+<p>再次应用，得到：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode"><span class="hljs-comment">(CO, CO)</span> + <span class="hljs-comment">(tD, CO)</span> + <span class="hljs-comment">(CO, tD)</span> + <span class="hljs-comment">(tD, tD)</span> = r^<span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+<p>点乘满足交换律，即 (a, b) = (b, a)，且满足 (ta, b) = t(a, b) = (a, tb)，带入得到：</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">t</span>^<span class="hljs-number">2</span>(D, D) + <span class="hljs-number">2</span>t(D, CO) + (CO, CO) - r^<span class="hljs-number">2</span> = <span class="hljs-number">0</span><br></code></pre></div></td></tr></table></figure>
+<p>可以看到，这是一个一元二次方程，且 D，CO，r 均已知，可以据此求出结果方程：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode">令 <span class="hljs-comment">(D, D)</span> = a, <span class="hljs-number">2</span><span class="hljs-comment">(D, CO)</span> = b, <span class="hljs-comment">(CO, CO)</span> - r^<span class="hljs-number">2</span> = c，有：<br><br>t<span class="hljs-number">1</span>, t<span class="hljs-number">2</span> = <span class="hljs-comment">(-b ± sqrt(b^2 - 4ac)</span> / <span class="hljs-number">2</span>a)<br></code></pre></div></td></tr></table></figure>
+<p>能够意识到，只消允许 O 为任意点，可以求出任意射线和任意球体的交线。</p>
+<p>可以发现这里使用的完全是向量，没有将它解构成坐标。代码实现如下，这里返回 t 而非具体的交点，因为 t 可以用来判断点是在 viewport 前还是在 viewport 后：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><br><span class="hljs-comment">/**</span><br><span class="hljs-comment">   * 获取特定射线 O + t * direction 和任意球体的相交时的 t</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@param</span> O 射线的起点</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@param</span> direction 射线的方向向量，长度随意；但若 O + direction 在 viewport 上，通过 t 可以检查交点在 viewport 前面或者后面</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@param</span> C 球体的球心</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@param</span> r 球体的半径</span><br><span class="hljs-comment">   * <span class="hljs-doctag">@returns</span> t 的集合，大小可以为 0,1,2</span><br><span class="hljs-comment">   */</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getLineSphereIntersections</span>(<span class="hljs-params">O: Vector, direction: Vector, C: Vector, r: number</span>): number[] &#123;<br>  <span class="hljs-keyword">const</span> D = direction<br>  <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">CO</span> = O.<span class="hljs-title function_">plus</span>(C.<span class="hljs-property">reverse</span>)<br>  <span class="hljs-keyword">const</span> a = D.<span class="hljs-title function_">dotProduct</span>(D)<br>  <span class="hljs-keyword">const</span> b = <span class="hljs-number">2</span> * D.<span class="hljs-title function_">dotProduct</span>(<span class="hljs-variable constant_">CO</span>)<br>  <span class="hljs-keyword">const</span> c = <span class="hljs-variable constant_">CO</span>.<span class="hljs-title function_">dotProduct</span>(<span class="hljs-variable constant_">CO</span>) - r * r<br><br>  <span class="hljs-keyword">const</span> ts = evalQuad(a, b, c)<br>  <span class="hljs-keyword">if</span> (ts.<span class="hljs-property">length</span> &lt;= <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span> ts<br>  <span class="hljs-keyword">const</span> [t1, t2] = ts<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">getPoint</span>(<span class="hljs-params">t: number</span>): <span class="hljs-title class_">Vector</span> &#123;<br>    <span class="hljs-keyword">return</span> O.<span class="hljs-title function_">plus</span>(D.<span class="hljs-title function_">multiply</span>(t))<br>  &#125; <br>  <span class="hljs-keyword">return</span> [t1, t2]<br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+<h1 id="渲染"><a href="#渲染" class="headerlink" title="渲染"></a>渲染</h1><p>剩下的逻辑就简单了，做射线后，找到和每个球的交点，找到最近的且在 viewport 外的交点，找到对应的球，渲染它的颜色，总的实现使用伪代码表示就是：</p>
+<figure class="highlight elm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs elm"><span class="hljs-title">for</span> 像素 <span class="hljs-keyword">in</span> canvas 的每个像素：<br>    找到 view<span class="hljs-keyword">port</span> 上对应位置<br>    做相机到该位置的射线<br>    找到射线和所有物体交点<br>    相交物体 = 最近的交点的物体<br>    <span class="hljs-keyword">if</span> 相交物体 != null: <br>        打印物体固有色<br></code></pre></div></td></tr></table></figure>
+<p>最后的效果就像一张二维图片，因为这个世界没有光（更实际地说，是只有白色的泛光），因此物体只有固有色，没有立体感，下一步是定义光源的概念，对每一个位置，将物体的固有色乘以此处光源强度得到此处颜色。</p>
+<p><img src="start.png" alt="start"></p>
+<p>注意处在画面边缘的球体的畸变，这个非常有意思。</p>
+<h1 id="透视"><a href="#透视" class="headerlink" title="透视"></a>透视</h1><p>物体在画面中所占的大小，就是物体向镜头方向在 viewport 上的投影的大小。这种抽象可以自动地表达平放的六面体的一点，二点透视；三点透视需要能够修改镜头的俯仰角。</p>
+<p>首先是一点透视，六面体若有一个面平行于 viewport，则它是一点透视的，它的特性是如果这个六面体在平行于 viewport 的这个面上竖直方向移动，则水平方向的线的长度是固定的，竖直方向会有透视；水平方向移动则反之。这是很不符合直觉的，甚至如果是球体，则竖直移动时，竖直方向会变得更长，最后简直像纺锤形了，但可以通过平面作图证明这一点。</p>
+<p>二点透视发生在六面体没有面平行于 viewport，但有线平行于 viewport，后面不表了。</p>
+<p>四点，五点透视需要 viewport 非平面。</p>
+<h1 id="焦距，视场角"><a href="#焦距，视场角" class="headerlink" title="焦距，视场角"></a>焦距，视场角</h1><p>FOV，视场角，它是水平方向的视野范围，单位是度，可以使用 FOV 和 D（viewport 和镜头的距离）来计算 viewport 的长宽：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">FOV</span> = <span class="hljs-number">120</span><br><span class="hljs-keyword">const</span> D = <span class="hljs-number">10</span><br><br><span class="hljs-keyword">const</span> H = D / <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">cos</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-property">PI</span> * <span class="hljs-variable constant_">FOV</span> / <span class="hljs-number">2</span> / <span class="hljs-number">180</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Vw</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">sqrt</span>(H * H - D * D) * <span class="hljs-number">2</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Vh</span> = <span class="hljs-title class_">Vw</span> * <span class="hljs-title class_">Ch</span> / <span class="hljs-title class_">Cw</span><br></code></pre></div></td></tr></table></figure>
+<p>FOV 和镜头的焦距成反比，短焦镜头的 FOV 大，能看到更多内容，空间变形幅度大，长焦镜头 FOV 小，看到内容更少，空间会有种压缩感，近大远小不明显，下面是 FOV 不同时的例子：</p>
+<p><img src="FOV_120.jpg" alt="FOV=120"></p>
+<p><img src="FOV_60.jpg" alt="FOV=60"></p>
+<p><img src="FOV_20.jpg" alt="FOV=20"></p>
+<p><img src="FOV_5.jpg" alt="FOV=5"></p>
+<p>这点可以利用到画画中，只需要调整远离镜头的线的长度，便能够表现出不同的镜头感。</p>
+<p><img src="FOV_60_chair.jpg" alt="FOV=60"></p>
+<p><img src="FOV_20_chair.jpg" alt="FOV=20，注意该图的“地面”并非无限大的，所以椅子的上部会在“地平线”（视平线）之上，这实际上是不可能的"></p>
+<h1 id="光"><a href="#光" class="headerlink" title="光"></a>光</h1><p>可以简单定义三种光源：点光（如灯泡），直射光（如太阳，镭射灯），环境光（天光，暗面的反射光），为了简单起见，光均是白光，因此只需要一个维度 i：intensity 表示亮度（色光用 3 个维度 rgb）；不考虑大气透视。</p>
+<p>对场景中任意点为 P，光线到 P 点的向量 L（大小任意，因为没有大气透视），则对点光，光源为 Q，L = Q - P；对直射光，L 直接给定；反射光是光在其它物体上的反射所造成，为此，我们需要让每个物体都成为光源，这复杂过了头，对其的抽象则是所谓的环境光，它对每个点都施加同样的亮度，这又简化过了头（就像古早的 3d 游戏），但不是不能用。一个场景只能有一个环境光（不同环境光可以直接组合），可以有任意点光和直射光，任意点上的光量为所有光在该处光量的和（现实如此）。</p>
+<p>光打到物体后，物体的反射光打到眼睛里，我们才能看到物体；物体反射光的能力书中将它们分为 matte 和 shiny，这里把他们称为调子和高光。任何物体都一定会既有调子也有高光，无论是石膏还是金属，只不过高光的程度各有差异罢了。</p>
+<p>一般来说，对特定物体，光打到它后会均匀向各个方向反射，因此从各个角度看来，它的特定位置的亮度是一样的，不随人的视线方向为转移；这时候。特定位置的亮度就取决于光和物体表面的夹角了，垂直于光的部分亮度最高，夹角越小，单位面积就会接受越少的光，亮度就越小。</p>
+<p>假设单位光强度为 I，光打到的面积为 A，则此时的单位面积上的光强度为 kI/A；规定当 I 垂直于点所在平面的时候，kI/A=1，问题就变成，光和点的法线呈一个角度 a 的时候，此时的 kI/A 的值是什么？只从二维来看，把 A 当成线段的长度的话，在某角度 a 下，kI/A = cos(a)，假设平面的法向量为 N，光向量为 L，根据点乘规律 (N, L) = |N||L|cos(a)，就可以求得 cos(a) 了。对某个点，我们只需要计算面在该点上的法向量，然后对每一个光源获取它在该点处的光强度，将所有结果加和即可，即下面的公式：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gherkin">I = I 环境光 + I0<span class="hljs-symbol">*</span>(N, L0)/|<span class="hljs-string">N</span>||<span class="hljs-string">L0</span>|<span class="hljs-string"> + I1*(N, L1)/</span>|<span class="hljs-string">N</span>||<span class="hljs-string">L1</span>|<span class="hljs-string"> + ... + In*(N, Ln)/</span>|<span class="hljs-string">N</span>||<span class="hljs-string">Ln</span>|<br></code></pre></div></td></tr></table></figure>
+<p>上面当 (N, L0) 小于 0 的时候需要返回 0，此时为物体在光线的背部。</p>
+<p>我不懂微积分，不知道这种推导过程是否正确，但最后效果不错就好。</p>
+<p>需要注意的是，I 的上限是无限的，我们需要做好“曝光”，这里简单要求所有光源 intensity 的和极限为 1.0，然后对于某点的颜色，直接用总的 intensity 乘以球体的固有色 rgb 即可；这效果会非常土就是了……</p>
+<p><img src="light.jpg" alt="light"></p>
+<h1 id="阴影"><a href="#阴影" class="headerlink" title="阴影"></a>阴影</h1><p>上面的算法没有考虑阴影，但加入阴影也是简单的。只需要在计算某点来自特定光源的I的时候，检查该点和光源之间是否有其它物体存在即可。遍历物体时第一想法是把当前物体排除掉（不然会得到 t=0 的结果），这在只有球体的情况下还算可用，但无法处理复杂物体自己遮挡自己的情况（比如用手在眼睛上挡住太阳），考虑将出发点的位置从该点往外偏移一些，或者限制一下t的值。</p>
+<h1 id="高光"><a href="#高光" class="headerlink" title="高光"></a>高光</h1><p>少女祈祷中……</p>
+<h1 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h1><p>核心是递归操作——第一趟是做镜头到viewport上某点的射线，检查对所有物体的交点，第二趟就是从交点开始，按反射的方向去做射线，不断递归，直到什么物体都没打到，或者达到设计的反射次数的上限（一般3次就足够了）。</p>
+<p>少女祈祷中……</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/CG/">CG</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8/05-17%E3%80%8AComputer%20Graphics%20from%20Scratch%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%85%89%E7%BA%BF%E8%BF%BD%E8%B8%AA%E5%99%A8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《Computer Graphics from Scratch》学习笔记——光线追踪器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03-15%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%89%A7%E8%A1%8C%EF%BC%8C%E4%BF%9D%E6%8A%A4%E6%80%A7%E6%9A%82%E6%8C%82.html">
+                        <span class="hidden-mobile">多线程编程模式——单线程执行，保护性暂挂</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
