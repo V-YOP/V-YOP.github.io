@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="掌握了一些东西，但不知道究竟是否有这个必要…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ComfyUI 学习 02——SD 的原理">
+<meta property="og:url" content="http://example.com/2025/ComfyUI%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94SD%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="掌握了一些东西，但不知道究竟是否有这个必要…">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/ComfyUI%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94SD%E5%8E%9F%E7%90%86/export_fiu6a.png">
+<meta property="og:image" content="http://example.com/2025/ComfyUI%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94SD%E5%8E%9F%E7%90%86/image-1.png">
+<meta property="og:image" content="http://example.com/2025/ComfyUI%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94SD%E5%8E%9F%E7%90%86/image-2.png">
+<meta property="article:published_time" content="2025-02-15T09:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-15T09:22:00.601Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="AI 绘画">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/ComfyUI%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94SD%E5%8E%9F%E7%90%86/export_fiu6a.png">
+  
+  
+  <title>ComfyUI 学习 02——SD 的原理 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="ComfyUI 学习 02——SD 的原理">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-02-15 17:00" pubdate>
+        2025年2月15日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ComfyUI 学习 02——SD 的原理</h1>
+            
+            <div class="markdown-body">
+              <p>这里还是把基本流程以及 SD 的原理学习一下，因为 ComfyUI 里这个东西不再是黑箱了，必须得理解这些东西才能继续下去。</p>
+<h1 id="SD-的训练过程"><a href="#SD-的训练过程" class="headerlink" title="SD 的训练过程"></a>SD 的训练过程</h1><p>在一切开始之前，需要从使用者的角度理解 SD 的工作原理。这里从 SD 的训练步骤开始理解，因为我觉得这是比较有必要的，其中很多步骤和推理是共通的。</p>
+<p><img src="export_fiu6a.png" alt=""></p>
+<h2 id="1-得到图像和标签的潜空间表示"><a href="#1-得到图像和标签的潜空间表示" class="headerlink" title="1. 得到图像和标签的潜空间表示"></a>1. 得到图像和标签的潜空间表示</h2><p>在训练 SD 模型前，要准备数据集，<strong>数据集是指定大小的图像以及对该图像的文字描述（tag）</strong>，图像的一个典型尺寸是 512x512（SD1.5）。</p>
+<h3 id="VAE"><a href="#VAE" class="headerlink" title="VAE"></a>VAE</h3><p>首先，数据集中的图像会被转换为一个更小的<strong>潜在表示 Latent Representation</strong>，这个潜在表示包含了图像的<strong>语义信息</strong>，比如位置，轮廓，结构，颜色，纹理等，使得能够从潜在表示中重构出和原图像类似的图像。潜在表示可能是 32x32 或 64x64 等尺寸，远比原图像（如 512x512）紧凑，<strong>更容易进行处理</strong>。实际上，SD 利用的是这里的潜在表示去进行的训练。</p>
+<p>进行图像到潜在表示的转换工作的是 <strong>VAE（Variational Autoencoder，变分自编码器）</strong>，它也是基于深度学习的，但这里不研究它，这里只需要明确，<strong>VAE 和文本描述是无关的，VAE 只关心图像本身</strong>。图像到潜空间（潜在表示）的步骤称为<strong>编码 Encode</strong>，从潜在表示到图像的步骤称为<strong>解码 Decode</strong>，这些步骤中文本不会参与。</p>
+<p>那问题来了——<strong>为何 SD 模型能够更换 VAE 呢</strong>？既然 SD 模型是基于特定的 VAE 生成的潜在表示去进行训练的，为何我能够在推理时更换使用的 VAE？这是因为，这同样也证明，<strong>不同 VAE 生成的潜在表示之间是有一定的兼容性的</strong>，即它们的结构相同，且压缩原图像的语义信息的方式是一致的，只有细节上的不同，这也就是说，这个 VAE 编码的潜在表示，很可能可以被另一个 VAE 解码。</p>
+<h3 id="CLIP"><a href="#CLIP" class="headerlink" title="CLIP"></a>CLIP</h3><p>然后，数据集中的文本会被转换成一种潜在表示，这个向量并非是像文本嵌入那样，仅涵盖文字的语义信息，而是<strong>同时包含文字对应的实际物体的相关图像语义信息</strong>。文本是利用 <strong>CLIP 模型</strong>去进行转换的，CLIP 模型是<strong>双模态</strong>的——它把图像和文本映射到同一个潜空间中，从而让内容相似的文本和图像彼此靠近。把这个阶段称为 <strong>CLIP 文本编码</strong>。使用 CLIP 模型而非文本嵌入模型，是因为后者的潜空间不带图像语义信息，SD 难以去建立文本潜空间和图像潜空间的映射。</p>
+<p>CLIP 模型的双模态也让 CLIP 能支持图像-文本的零样本分类——给定图像和一系列标签，检查哪些标签匹配该图像，或者给定标签和一系列图像，检查哪些图像满足该标签；自然，以 CLIP 模型为基础来进行分类图像、文本也是可以的。</p>
+<p>那同样的问题，为何 SD 模型能够更换 CLIP 模型呢？答案和 VAE 也是一样的，不同 CLIP 模型的输出也是互相兼容的，标准化的。</p>
+<h3 id="ControlNet-为何接受-CLIP-作为输入"><a href="#ControlNet-为何接受-CLIP-作为输入" class="headerlink" title="ControlNet 为何接受 CLIP 作为输入"></a>ControlNet 为何接受 CLIP 作为输入</h3><p>一个有趣的事是，在 ComfyUI 中，ControlNet 接受的是 CONDITIONING 类型（如 CLIP 文本编码，或者其他 ControlNet 的输出），输出的也是 CONDITIONING 类型；要应用上 ControlNet，只需将 ControlNet 节点置于 CLIP 文本编码器和 K 采样器之间：</p>
+<p><img src="image-1.png" alt="alt text"></p>
+<p>这会给人一种感觉，好像就是 ControlNet 节点增强了正向、反向提示词，但这个理解是错误的，应该理解做，<strong>ComfyUI 中的 CONDITIONING 类型带有比单纯的提示词（或者说 CLIP 文本编码）更丰富的描述信息，这个描述信息甚至支持调整生成过程（比如 ControlNet 在何时开始作用，何时不再作用）；CLIP 文本编码器向这个 CONDITIONING 中添加文本描述，而 ControlNet 并未修改 CONDITIONING 中包含的提示词相关信息，而是在其中增加了自己的控制信息，该控制信息通过一个参考图像进行获得；这实际上也是说，ComfyUI 原生支持 ControlNet，而在 WebUI 中 ControlNet 必须要以插件的形式，修改原生成逻辑</strong>。</p>
+<h2 id="2-训练-UNet"><a href="#2-训练-UNet" class="headerlink" title="2. 训练 UNet"></a>2. 训练 UNet</h2><p>上面的步骤得到了文本描述和图像的潜在表示，接下来的训练的<strong>目的就是让 SD 模型掌握从文本描述到图像的映射的能力</strong>。这一步训练的实际上是所谓的 <strong>UNet 模型</strong>。</p>
+<p>当我们说到 SD 模型的时候，我们实际说的是这里的 UNet 模型，以及和它相兼容的 CLIP、VAE 模型。</p>
+<p>在每轮训练中：</p>
+<ol>
+<li>对每个图像的潜在表示，给它添加一个随机<strong>步数</strong>的噪声，这就像尝试<strong>污染</strong>这张图像。</li>
+<li>把污染后的潜在表示，当前污染的步数，图像对应的文本的潜在表示输入 UNet 模型</li>
+<li><strong>UNet 模型猜测出污染过程中添加的噪声</strong></li>
+<li>根据猜测的噪声和实际添加的噪声去更新 UNet 模型的权重（损失函数，反向传播）</li>
+</ol>
+<p>这里或许会带来混淆——UNet 模型究竟猜测的是这一步添加的噪声，还是这些步骤添加的噪声的总和？两种想法可以说是<strong>等价</strong>的——添加噪声的数学方法支持将某步添加的噪声和这些步骤添加的噪声互相转换。这里要做的就是接受这一点然后不要问太多以避免脑袋超载。</p>
+<p>在训练后，SD 能够理解不同程度的污染阶段下数据的特征，<strong>以及各种污染程度下文本特征和图像污染模式的关系</strong>。</p>
+<h3 id="从训练到推理"><a href="#从训练到推理" class="headerlink" title="从训练到推理"></a>从训练到推理</h3><p>从训练过程，我们能够<strong>反推推理过程</strong>——对训练后的 SD 模型，只需要给定一张完全噪声的图片的潜入表示，以及最大的污染步数和想要的文本描述的潜入表示，SD 就能够<strong>逐步地</strong>去除噪声，最后生成符合相应描述的图片的潜入表示，该潜入表示需要喂给 VAE 去解码才能得到结果图片。</p>
+<p>为何 SD 模型推理时是逐步地去除噪声而非一口气走完？这让生成过程更加可控，而且避免引入一些可能的精度等问题。但<strong>推理的逐步并不等于添加噪声的逐步，比如添加噪声一般是 1000 步，推理可能是 20 步</strong>。</p>
+<p>现在又要提出一个问题，ControlNet 是如何影响推理过程的？可以认为 <strong>ControlNet 为 UNet 模型新增加一层，按照参考图像调整原 UNet 预测的噪声</strong>，从而参与进图像生成的步骤中。</p>
+<p>一个可能有些超纲的地方是，ControlNet 模型训练时要拷贝 UNet 模型进行训练，但配置使得训练时只调整自己的权重；这样 ControlNet 就能够作为一个“附加层”置于 UNet 阶段之后（好像严格来说不是这样的，但就这么说吧……）。这要求 ControlNet 需要适配 UNet 模型的格式，这也是为什么 ControlNet 模型要限定使用的 SD 版本。</p>
+<p>这时候仍旧要再提出那个问题——ControlNet 既然是基于一个特定版本的 UNet 模型的，那我换成微调过的 SD 模型后还能用吗？实际上是能用的，只不过效果会有差异——再微调，又能改变多少权重呢？</p>
+<h3 id="采样器和调度器"><a href="#采样器和调度器" class="headerlink" title="采样器和调度器"></a>采样器和调度器</h3><p>接下来看看实际推理时的 K 采样器的诸参数，注意到这些参数都没有在上面的心智模型中出现，这里需要学习一下。</p>
+<p><img src="image-2.png" alt=""></p>
+<p>观察 K 采样器，注意到有所谓的采样器，调度器。</p>
+<p>首先是采样器，为何要引入采样器？因为 SD 模型的生成噪声的步数是很大的，可能是 1000 步，使用相同的步数进行降噪在性能上是无法忍受的，<strong>采样器引入的目的就是为了降低生成图像时的迭代步数，在速度和质量上得到权衡</strong>。使用采样器让我们能三步并作两步，使用 20 步等可以接受的步数进行生成。</p>
+<p>调度器和采样器则是协同使用的，调度器控制每一步噪声减少的方式，比如是均匀降低还是先降低快，后降低慢，这里不细究。</p>
+<p>显然采样器、调度器的不同会让我们最终得到不同的结果，实践时选择合适的参数是必要的。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/AI-%E7%BB%98%E7%94%BB/">AI 绘画</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/02-15%E5%8F%8D%E5%88%8D.html">
+                        <span class="hidden-mobile">反刍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

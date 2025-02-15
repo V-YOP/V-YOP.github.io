@@ -28,7 +28,7 @@
 <meta property="og:image" content="http://example.com/2025/02-14ComfyUI%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94SD%E5%9F%BA%E7%A1%80%EF%BC%8C%E9%83%A8%E7%BD%B2/simple_workflow.webp">
 <meta property="og:image" content="http://example.com/2025/02-14ComfyUI%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94SD%E5%9F%BA%E7%A1%80%EF%BC%8C%E9%83%A8%E7%BD%B2/image.png">
 <meta property="article:published_time" content="2025-02-14T03:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-14T08:21:51.868Z">
+<meta property="article:modified_time" content="2025-02-15T03:46:01.591Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="AI 绘画">
 <meta name="twitter:card" content="summary_large_image">
@@ -193,7 +193,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      3.3k 字
+      3.6k 字
     </span>
   
 
@@ -253,12 +253,14 @@
 <p>这里神奇的是，即使是模型的训练也可以使用工作流来表示。</p>
 <p>ComfyUI 的工作流相当于是一种<strong>可视化编程</strong>——<strong>每个节点可以认为是一个类的实例或有状态的函数，能够得到输入，也能够输出进行，能够在界面中调整它内部的状态</strong>；而节点之间的连接则是将不同节点的输入-输出相连接。这能够带给它按钮、菜单绝对带不来的功能优势。</p>
 <p>以及，这里的输入、输出是<strong>强类型</strong>的，类型不匹配会导致报错，这给 debug 带来了方便。</p>
-<p>但注意到这里其实也不能直接称为编程——没有结构化语句，没有循环，一个节点的逻辑执行完后，它的状态就不会再改变，不会再度执行了。要实现可编程能力，我们需要<strong>使用列表去模拟循环</strong>，对于多重循环，需要做出它们的笛卡尔积。实际上，ComfyUI 的很多节点的输入既支持标量也支持向量，如下面同时输出图像和反转图像。</p>
+<p>但注意到这里其实也不能直接称为编程——没有结构化语句，没有循环，一个节点的逻辑执行完后，它的状态就不会再改变，无法再度执行了。要实现可编程能力，我们需要<strong>使用列表去模拟循环</strong>，对于多重循环，需要做出它们的笛卡尔积。实际上，ComfyUI 的很多节点的输入既支持标量也支持向量，如下面同时输出图像和反转图像。</p>
 <p><img src="image.png" alt="alt text"></p>
 <p>这个示例同时也启示我们可以拿ComfyUI干生成图像以外的事，比如图像批处理等，不也挺有意思？</p>
 <p>利用这一特性，我们如何实现同时输出不同参数的结果呢？构造相应的列表，直接给它传过去。但这里的具体行为应该是取决于节点的，节点自己决定接不接受向量，以及接受向量时做什么处理。</p>
+<p>一个方便的点是，节点的属性是可以转化为输入的，反之亦然，同时节点的属性允许在运行时被改变，这允许诸如K采样器的节点每次执行后修改种子。</p>
 <p>使用 ComfyUI 主要就是编辑和使用工作流，工作流就是 ComfyUI 的项目或 scene。</p>
 <p>每次执行 ComfyUI 的工作流时，会把当前工作流的所有内容传给后端，<strong>后端把工作流内容称为 prompt</strong>（实际上后端就叫 PromptServer，为何取这个名字……），使用一个 id 去标识 prompt，这个 prompt 会进入一个队列，前端轮询等待执行完毕。前端配置批次数量为几，就会产生多少个 prompt。这里具体细节等研究自定义节点的时候再说。</p>
+<p>ComfyUI这种工作流系统相较于webUI，虽然会引入更多概念（比如CLIP模型，在WebUI中我完全没有意识到它的存在），学习成本更高，但让人对SD的工作原理更加了解，而非是像WebUI那种纯黑箱；以及ComfyUI的ControlNet等插件是通过自定义节点的形式去引入的，能够更加清晰地看到这些插件会对哪些部分有影响。更别提这种工作流也方便实现XYZ脚本比较，这个必须要重点研究，自己做的比较，比干巴巴的描述强多了，像深度学习这种炼丹的玩意儿，能做比较太重要了。</p>
 <h2 id="部署-ComfyUI"><a href="#部署-ComfyUI" class="headerlink" title="部署 ComfyUI"></a>部署 ComfyUI</h2><p>ComfyUI 部署很容易——它对 Windows 直接提供了一个<strong>自带 Python 环境和 torch 等依赖</strong>的压缩包，不需要任何配置，解压即用。</p>
 <p>下载直接在 Github 的 releases 上，<a target="_blank" rel="noopener" href="https://github.com/comfyanonymous/ComfyUI/releases">https://github.com/comfyanonymous/ComfyUI/releases</a>，如果慢可以用 <a target="_blank" rel="noopener" href="https://ghproxy.net/">https://ghproxy.net/</a> 加速。</p>
 <p>下载后解压，进入解压的目录，执行脚本<code>run_nvidia_gpu.bat</code>即可。可以使用 <code>./python_embeded/python.exe -s ComfyUI/main.py --help</code> 查看可用的参数。</p>
@@ -293,7 +295,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/02-14%E5%8F%8D%E5%88%8D.html">
+                      <a href="/2025/02-15%E5%8F%8D%E5%88%8D.html">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">反刍</span>
                         <span class="visible-mobile">上一篇</span>
