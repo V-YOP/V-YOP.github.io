@@ -38,7 +38,7 @@
 <meta property="og:image" content="http://example.com/2025/02-26%E9%80%8F%E8%A7%86%E5%A4%8D%E4%B9%A0%E2%80%94%E2%80%94%E7%BB%98%E5%88%B6%E4%BB%BB%E6%84%8F%E8%A7%92%E5%BA%A6%E4%B8%A4%E7%82%B9%E9%80%8F%E8%A7%86%E7%AB%8B%E6%96%B9%E4%BD%93/image-10.png">
 <meta property="og:image" content="http://example.com/2025/02-26%E9%80%8F%E8%A7%86%E5%A4%8D%E4%B9%A0%E2%80%94%E2%80%94%E7%BB%98%E5%88%B6%E4%BB%BB%E6%84%8F%E8%A7%92%E5%BA%A6%E4%B8%A4%E7%82%B9%E9%80%8F%E8%A7%86%E7%AB%8B%E6%96%B9%E4%BD%93/image-11.png">
 <meta property="article:published_time" content="2025-02-26T07:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-26T07:40:22.372Z">
+<meta property="article:modified_time" content="2025-03-03T01:33:26.259Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="透视">
 <meta name="twitter:card" content="summary_large_image">
@@ -254,11 +254,11 @@
 <p>TODO 遗憾的是，关于取巧办法，我目前还没什么头绪，<strong>等实际操作，有了一定经验的时候再做记录吧</strong>。这里的要点是，<strong>要明确，在哪些地方引入偏差是能够不很大地影响画面的效果的</strong>。</p>
 <p>实际上，在这里也更清晰地定义了一些之前没有明确给出的公式。</p>
 <h1 id="分解"><a href="#分解" class="headerlink" title="分解"></a>分解</h1><p>规定了视圈，就是规定了心点，距点，焦距。但很多时候并非是先定视圈再定画面的，而是先画草图再定视圈，如果有什么东西最先定的，那东西一般来说是视平线和心点。</p>
-<p><img src="image.png" alt="alt text"></p>
+<p><img src="image.png" alt=""></p>
 <p>定出了视圈，再定出离心点近的这个余点。</p>
 <h2 id="余点和度数的对应关系是？"><a href="#余点和度数的对应关系是？" class="headerlink" title="余点和度数的对应关系是？"></a>余点和度数的对应关系是？</h2><p>视平线上的任何灭点，<strong>所有引向该灭点的平变线，平行于目点向该点的方向</strong>。可以说，定出了灭点，就是定出了相应平变线到视中线的角度，反之亦然。</p>
 <p>那么，余点的位置和这个角度的对应关系是？这是一个平面几何问题，其中<strong>我们的一切比例，都以心距为基础</strong>：</p>
-<p><img src="image-1.png" alt="alt text"></p>
+<p><img src="image-1.png" alt=""></p>
 <p>上面定心距为 d，心余为 nd，对应的角度是 $\theta$，明显这里有：</p>
 <script type="math/tex; mode=display">
 \tan \theta = \frac{nd}{d} = n</script><p>即有：</p>
@@ -269,7 +269,7 @@
 \arctan \frac{1}{2} \approx 26.5 ^\circ</script><p><strong>这就是为什么我们把 1/2 距心为半径围成的圆称作 53 度视圈</strong>——$26.5^\circ \times 2=53^\circ$。</p>
 <h2 id="从一个余点定出另一个余点"><a href="#从一个余点定出另一个余点" class="headerlink" title="从一个余点定出另一个余点"></a>从一个余点定出另一个余点</h2><p>立方体的一条边指向该余点时，怎么得到另一条边指向的另一个余点？我们知道，这两条边垂直，也就是说，<strong>对一个余点，我们如何定出“和它垂直”的另一个余点？</strong></p>
 <p>仍旧复用上面的这张图：</p>
-<p><img src="image-2.png" alt="alt text"></p>
+<p><img src="image-2.png" alt=""></p>
 <p>令另一个余点到心点的距离为 xd，根据图中，我们知道：</p>
 <script type="math/tex; mode=display">
 \tan \theta = \frac{d}{xd} = \frac{1}{x}</script><p>我们已知 $\tan \theta = n$，因此这里得到：</p>
@@ -282,12 +282,12 @@ x = \frac{1}{n}</script><p>也就是说，当一个余点距心点的距离为 n
 <p>要画这个图，必须得得到 n 的大小（不然没法画），这里定 n 为 0.4，则两部分长度分别为 0.4 和 2.5，即 1：6.25，1 的部分在右。</p>
 <p>这个如何简化呢？我们可以先定出长的一段，然后不断二分找到短的那段的大小，然后将长的这一段延伸一下，比如随便画一个线段，然后对它进行六分，把这个线段延长稍小于 1/6 的长度。</p>
 <p>然后，连接心点到线段的分割点，连接线段的右端点到左余点，<strong>连接左端点和两个线的交点，这根线指向另一个余点</strong>。</p>
-<p><img src="image-3.png" alt="alt text"></p>
+<p><img src="image-3.png" alt=""></p>
 <p>我们得到了这根线，然后沿这两个点做垂直原线，我们知道，这两根垂直原线和视平线的交点组成的线段，也是一个指向该灭点的变线。我们等分这两根垂直原线，然后连接各对等分点，就能得到更多指向该灭点的平变线。这就是辅助线法，建立一个网格。</p>
-<p><img src="image-4.png" alt="alt text"></p>
+<p><img src="image-4.png" alt=""></p>
 <p>在这一步时，<strong>我们已经能画出旋转这个角度的立方体了</strong>，但正方体呢？还需要测点。</p>
 <h2 id="公式法定余点测点"><a href="#公式法定余点测点" class="headerlink" title="公式法定余点测点"></a>公式法定余点测点</h2><p>余点怎么定测点？我们知道是目余做圆弧找和视平线的交点。</p>
-<p><img src="image-5.png" alt="alt text"></p>
+<p><img src="image-5.png" alt=""></p>
 <p>定目心距离为 nd，测心为 xd，有：</p>
 <script type="math/tex; mode=display">
 n^2d^2 + d^2 = (nd+xd)^2</script><p>化简得到：</p>
@@ -302,28 +302,28 @@ $$
 -->
 <p>这个公式的优良之处在于它的值域总在 0-1 之间，这让它有实践意义。我们知道，<strong>对立方体，总是一个余点在 90 度视圈内，一个在外</strong>；如果要处理的余点太远，我们就先找到视圈内的余点，找到它的 n，再取这个 n 的倒数，丢给这个函数，bingo。</p>
 <p>这里绘制一下这个函数的图像：</p>
-<p><img src="image-6.png" alt="alt text"></p>
+<p><img src="image-6.png" alt=""></p>
 <p>这个图像看上去 n 从 0-1 时是线性的，但如果真的以线性看待这一段会引入无法忽视的误差，所以别管它了，直接使用这个公式，按计算器就按计算器吧！</p>
 <h2 id="绘制正方体"><a href="#绘制正方体" class="headerlink" title="绘制正方体"></a>绘制正方体</h2><p>上面已经把所有点都做出来了，剩下的工作就是去画垂直原线，开画就是了。</p>
-<p><img src="image-8.png" alt="alt text"></p>
+<p><img src="image-8.png" alt=""></p>
 <p><strong>并不有趣</strong>。注意到这里的测点——<strong>即使把心点当测点，这里又会引入多少误差呢？没多少！这还是 90 度视圈下接近边缘时的情况呢！</strong></p>
 <h1 id="检讨"><a href="#检讨" class="headerlink" title="检讨"></a>检讨</h1><h2 id="53-度视圈？"><a href="#53-度视圈？" class="headerlink" title="53 度视圈？"></a>53 度视圈？</h2><p>使用 53 度视圈其实也是分几种情况的——典型的话是对角线 53 度和最长或最短边 53 度……</p>
 <p>说到底，实际操作的时候这样太麻烦了，不如画“小稿”，把大的结构操作完后直接放大后再画细节。</p>
 <p>这里不想太多——<strong>我不关心是怎么个 53 度，我只关心定 1/2 距点的位置，实操的时候见招拆招</strong>。也就是说，这里和 90 度视圈的区别在于，90 度视圈定目点和距点，53 度视圈定 1/2 目和 1/2 距。</p>
 <p>现在我们定出来 1/2 距，1/2 目，以及一个余点。</p>
 <h3 id="余点和度数的对应关系？"><a href="#余点和度数的对应关系？" class="headerlink" title="余点和度数的对应关系？"></a>余点和度数的对应关系？</h3><p><strong>定 1/2 距心为 d</strong>（！后面的 d 全是 1/2 距心！），余心为 nd，则有：</p>
-<p><img src="image-7.png" alt="alt text"></p>
+<p><img src="image-7.png" alt=""></p>
 <script type="math/tex; mode=display">\begin{aligned}
 & \tan \theta = \frac{nd}{2d} \\
 & \theta = \arctan \frac{n}{2}
 \end{aligned}</script><p>这个其实不重要 w</p>
 <h3 id="从一个余点定出另一个余点-1"><a href="#从一个余点定出另一个余点-1" class="headerlink" title="从一个余点定出另一个余点"></a>从一个余点定出另一个余点</h3><p>还是一样的：</p>
-<p><img src="image-9.png" alt="alt text"></p>
+<p><img src="image-9.png" alt=""></p>
 <script type="math/tex; mode=display">\begin{aligned}
 & \tan \theta = \frac{n}{2} = \frac{2}{x} \\
 & x = \frac{4}{n}
 \end{aligned}</script><h3 id="辅助线法定远余点"><a href="#辅助线法定远余点" class="headerlink" title="辅助线法定远余点"></a>辅助线法定远余点</h3><p>这个就不操作了……只需要知道我们操作的时候要取 $n : \frac{4}{n}$ 的比例。</p>
-<h3 id="公式法定余点测点-1"><a href="#公式法定余点测点-1" class="headerlink" title="公式法定余点测点"></a>公式法定余点测点</h3><p><img src="image-10.png" alt="alt text"></p>
+<h3 id="公式法定余点测点-1"><a href="#公式法定余点测点-1" class="headerlink" title="公式法定余点测点"></a>公式法定余点测点</h3><p><img src="image-10.png" alt=""></p>
 <script type="math/tex; mode=display">\begin{aligned}
 & (nd+xd)^2=(nd)^2+(2d)^2 \\
 & x^2 + 2nx - 4 = 0 \\
@@ -345,7 +345,7 @@ x &= \sqrt{n^2 + 4} - n（53 度视圈）
 <h2 id="各种角度的余角透视"><a href="#各种角度的余角透视" class="headerlink" title="各种角度的余角透视"></a>各种角度的余角透视</h2><p>书中把不同角度的余角透视归纳成三类——<strong>微动，对等和一般</strong>（其实平行透视也可以算成一类）。</p>
 <p>但先定一下术语，方体旋转过程中，有的面会和画面更加平行，有的面会和画面更加垂直，和画面相对平行的面称为“正”，相对垂直的称为“侧”。显然，<strong>正面的余点离得远，正面看上去宽；侧面的余点离得近，侧面看上去窄</strong>。（当然，这里说的是通常情况，举一个极端例子，假设现在的视圈超级大，接近 180 度，一个放在很侧面的立方体，此时余点近的面反而更宽；但我们不考虑极端例子）</p>
 <p>假设方体从正对我们开始旋转，到另一个相邻侧面正对我们结束，即旋转 90 度。</p>
-<p><img src="image-11.png" alt="alt text"></p>
+<p><img src="image-11.png" alt=""></p>
 <h3 id="平行透视"><a href="#平行透视" class="headerlink" title="平行透视"></a>平行透视</h3><p>方体旋转开始时，是平行透视；此时正面平行于画面，侧面垂直于画面。<strong>此时正面没有余点，侧面的余点和心点重合</strong>。</p>
 <h3 id="微动状态"><a href="#微动状态" class="headerlink" title="微动状态"></a>微动状态</h3><p><strong>旋转刚开始和临近结束时称是微动状态</strong>。微动状态下，两个侧面的角度相差是很远的，<strong>经常是一个余点在画框之内（可以认为是小于等于 1/2 距心？），另一个在相反方向较远处</strong>。比如，<strong>一个余点在 53 度视圈内（小于 1/2 距心）时，另一个余点的距离必定会大于 2 倍的距心</strong>。</p>
 <p>微动状态下，两个侧面角度相差很远，所以<strong>透视压缩程度也悬殊，正面很宽，侧面很窄</strong>；<strong>可以说微动状态是最难画的</strong>，但同时也是看上去最有趣的（就像人的侧面像？）。</p>

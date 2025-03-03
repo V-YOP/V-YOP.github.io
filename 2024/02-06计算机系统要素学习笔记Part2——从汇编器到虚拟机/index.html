@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/image.png">
 <meta property="og:image" content="http://example.com/2024/02-06%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%A6%81%E7%B4%A0%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0Part2%E2%80%94%E2%80%94%E4%BB%8E%E6%B1%87%E7%BC%96%E5%99%A8%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA/fffib.png">
 <meta property="article:published_time" content="2024-02-06T13:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-14T08:21:51.638Z">
+<meta property="article:modified_time" content="2025-03-03T01:33:26.365Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="计算机组成">
 <meta name="twitter:card" content="summary_large_image">
@@ -314,7 +314,7 @@
 <p>那么，local，argument，this，that 等内存段这些究竟放在哪？它们放在堆上——剩余 RAM 的任意位置。因此需要一个指针指向<strong>当前</strong>的这些段的基址。</p>
 <p>static 段是全局变量，任何地方均可见。但对每个全局变量，这里只有一个索引去确认它，<strong>如何避免命名空间污染</strong>？利用 Assembler 遇到未知的标签时所用的机制——使用<code>Foo.i</code>去作为<code>Foo.vm</code>下的<code>push/pop static i</code>所操作的 RAM 位置，Assembler 会自从从 16 开始去按照标签出现的顺序去做映射。比如<code>Foo.vm</code>中有两句：<code>pop static 5; pop static 2;</code>，这时候它们所操作的 RAM 位置可能是 16,17。这样对两个不同 vm 文件中的同一句<code>pop static 0</code>，它们操作的 RAM 就会不同。</p>
 <p>pointer 也是一个虚拟段，<code>pointer 0</code>操作<code>R3</code>，即<code>THIS</code>，<code>pointer 1</code>操作<code>R4</code>，即<code>THAT</code>，pointer 用于直接操作这两个地址上对应的值（没有指针跳转！）。</p>
-<p><img src="project7_mapping.png" alt="alt text"></p>
+<p><img src="project7_mapping.png" alt=""></p>
 <p>注意实现翻译器时，需要处理命令后尾随注释的情况。这个翻译器居然也能够是 one-pass 的……谁能想到呢。</p>
 <h1 id="虚拟机-Part-2"><a href="#虚拟机-Part-2" class="headerlink" title="虚拟机 Part 2"></a>虚拟机 Part 2</h1><p>图灵完备之路！这章要实现分支指令和函数调用指令。大头要来喽（但其实比想象中还简单一些，真实践起来才发现栈式虚拟机操作起来是真的方便）！分支指令可能还稍微好说，但函数调用绝不是 trival 的事——保存和恢复上下文，参数传递，返回值，嵌套函数调用，递归，内存分配和回收……这显然会引入一个<strong>运行时模型</strong>——不是逐字逐句地去把虚拟机指令翻译成汇编语言（虽然确实如此），而是在此之外附加一些东西——如何启动程序执行，程序终止时做何操作，如何传参，执行函数时如何分配和回收内存……运行时模型也将在 Specification 中描述，其行为需要一些额外的汇编代码去实现。</p>
 <p>具体来说，一个函数（称为调用者 caller）调用另一个函数（称为被调用者 callee）时，需要做下面的工作：</p>
@@ -346,7 +346,7 @@
 <li>local：因为其长度已知，同样直接放到栈上</li>
 <li>this，that：？</li>
 </ol>
-<p><img src="image.png" alt="alt text"></p>
+<p><img src="image.png" alt=""></p>
 <p>所以这里的问题是，如何确定 argument 和 local 究竟有多长？采取最弱智的方式——直接在代码里标注。定义函数时语法为<code>function FN_NAME LOCAL_NUM</code>，其中<code>LOCAL_NUM</code>为本地变量的数量；调用函数时语法为<code>call FN_NAME ARGUMENT_NUM</code>，其中<code>ARGUMENT_NUM</code>为参数数量。顺便<code>return</code>用于从函数中返回。</p>
 <h2 id="Specification-Part-2"><a href="#Specification-Part-2" class="headerlink" title="Specification Part 2"></a>Specification Part 2</h2><p>其实也称不上 Specification 啦</p>
 <p>对 caller 来说：</p>
@@ -384,7 +384,7 @@
 <li><code>return</code>，暂存返回值，恢复上下文，重设栈（剧透：直接设置 SP 为自己的 ARG 即可），跳转到返回地址并再 <code>push</code> 返回值</li>
 </ol>
 <p>实际写完发现其实这里东西其实不多…但若是哪里有小 bug，debug 起来要死人。<strong>一个想法是在每个虚拟机指令前插入一些 A 指令</strong>，值设为<code>30000 + 指令行数</code>，供后续遇到 bug 时可以使用模拟器的断点停在虚拟机指令的特定行。</p>
-<p><img src="fffib.png" alt="alt text"></p>
+<p><img src="fffib.png" alt=""></p>
 
             </div>
             <hr>

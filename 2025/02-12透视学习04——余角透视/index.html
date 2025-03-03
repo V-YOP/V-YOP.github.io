@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://example.com/2025/02-12%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A004%E2%80%94%E2%80%94%E4%BD%99%E8%A7%92%E9%80%8F%E8%A7%86/image-7.png">
 <meta property="og:image" content="http://example.com/2025/02-12%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A004%E2%80%94%E2%80%94%E4%BD%99%E8%A7%92%E9%80%8F%E8%A7%86/image-8.png">
 <meta property="article:published_time" content="2025-02-12T09:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-14T08:23:06.250Z">
+<meta property="article:modified_time" content="2025-03-03T01:33:26.259Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="透视">
 <meta name="twitter:card" content="summary_large_image">
@@ -236,31 +236,31 @@
             <div class="markdown-body">
               <p>平行透视和余角透视是最常见的透视，把握它们时，不止要把握概念，还要在具体实践中反复磨练，后面要为这两种透视的各种实际问题写 cookbook，去真正把这里学到的东西给用起来。</p>
 <p>上回说到，考虑平视平放方物，该方物有两对竖立面；一对竖立面平行于画面时，为平行透视；两对竖立面和画面均不平行时，为余角透视。余角透视方物有三个透视方向，分别是垂直，向左余点和向右余点。</p>
-<p><img src="image.png" alt="alt text"></p>
+<p><img src="image.png" alt=""></p>
 <p>在之前的学习中，我们知道，余角透视的方物，无论它的旋转角度，它的两个余点和目点在画面上同在一个圆上：</p>
-<p><img src="image-1.png" alt="alt text"></p>
+<p><img src="image-1.png" alt=""></p>
 <p>TODO <strong>书里的例子似乎说明对角线比棱边更重要，研究研究</strong>。</p>
 <p>之前学习的时候研究过两个余点到心点的距离的关系，设一个余点距心点的距离为 x，另一个为 y，而心距长为 d，有：</p>
 <script type="math/tex; mode=display">
 xy=d^2</script><p>这个看上去没有实用价值，但其实是有的——当这个余点距心点的距离为 n 分之一心距时，另一个余点距心点的距离为 n 心距，也就是说，x=1/2 时 y=2，x=1/3 时 y=3，x=3/2 时 y=2/3，这个允许我们快速地做心算。</p>
 <h1 id="辅助线处理远余点"><a href="#辅助线处理远余点" class="headerlink" title="辅助线处理远余点"></a>辅助线处理远余点</h1><p>在绘制余角透视的时候，很多时候两个余点是一远一近的，怎么处理较远的那个余点？</p>
 <p>先明确我们要依赖的东西——<strong>利用三角形相似</strong>——已知两个余点和心点在同一条直线上；我任选一个点 P，然后做三角形左余点-P-右余点，然后延长左余点-P，右余点-P，再做一个平行于视平线的直线，从而包围出一个和三角形左余点-P-右余点相似的三角形：</p>
-<p><img src="image-3.png" alt="alt text"></p>
+<p><img src="image-3.png" alt=""></p>
 <p>那怎么利用这个方法呢？我们可以任意做一个和视平线平行的线，定它长度为 n，然后延长它 1/n 的长度；这时候我们就得到了这个相似三角形的底边，我们可以通过作图得到指向另一个灭点的线，下图的 n 为 2（即 1/2:2=1:4）：</p>
-<p><img src="image-4.png" alt="alt text"></p>
+<p><img src="image-4.png" alt=""></p>
 <p>这个方法让我们找到了一条向远余点的<strong>辅助线</strong>。但实际上我们也知道，<strong>视平线也是向余点的</strong>。通过这两条向余点的线，我们便可以对它们做垂直原线并进行等分，从而得到更多向该余点的辅助线：</p>
-<p><img src="image-2.png" alt="alt text"></p>
+<p><img src="image-2.png" alt=""></p>
 <p>实际操作的时候，我们可以借用画框底部的线条——它正好是和视平线平行的。</p>
-<p><img src="image-5.png" alt="alt text"></p>
+<p><img src="image-5.png" alt=""></p>
 <h1 id="测点法求深度"><a href="#测点法求深度" class="headerlink" title="测点法求深度"></a>测点法求深度</h1><p>可以参考这个 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/583577216/answer/2892837479">回答</a>。</p>
 <p>回想一下，平行透视时我们如何定深度的呢？我们构造一个 等腰直角三角形，让它其中一个直角边是原线，另一个直角边是变线，从而能够将这个变线的长度映射到原线上。在余角透视上，考虑用同样的思路——构造一个等腰三角形，其中一个边是水平原线，一个边是变线。</p>
 <p>现在的问题是，怎样求得这个水平原线的长度。对于测点法，我们<strong>回到俯视图的心智模型</strong>去思考。从现在的学习程度上来看，俯视图的心智模型其实就是目点翻转前从上往下看到的内容。</p>
 <p>考虑平变线 AB，消失点为 V，水平原线 AC，目点为 E：</p>
-<p><img src="image-6.png" alt="alt text"></p>
+<p><img src="image-6.png" alt=""></p>
 <p><strong>已知 VE 平行于 AB，又 AC 平行于画面</strong>，这时候我们的目的是做一个 AC 为腰的等腰三角形，怎么做呢？我直接在画面上取一个和 VE 相等的线即可！令 VM=VE，连接 EM，此时过 B 点做平行于 EM 的线，它和 AC 的交点即为所求。这里的 M 点即我们的<strong>测点</strong>。<strong>测点是等腰三角形底边的灭点，它允许我们把平变线的长度映射到水平原线上面</strong>。</p>
-<p><img src="image-7.png" alt="alt text"></p>
+<p><img src="image-7.png" alt=""></p>
 <p>上面的步骤反映到透视图上，就是：</p>
-<p><img src="image-8.png" alt="alt text"></p>
+<p><img src="image-8.png" alt=""></p>
 <h2 id="公式法算测点"><a href="#公式法算测点" class="headerlink" title="公式法算测点"></a>公式法算测点</h2><p>测点作图需要目点，这里想找一个能不要目点的方案。</p>
 <p>这里算一下余点在各位置时它的测点和心点的距离。设心目（心距）点距离为 d，设余点到心点距离为<code>x</code>，此时：</p>
 <script type="math/tex; mode=display">

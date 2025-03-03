@@ -28,7 +28,7 @@
 <meta property="og:image" content="http://example.com/2025/02-14ComfyUI%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94SD%E5%9F%BA%E7%A1%80%EF%BC%8C%E9%83%A8%E7%BD%B2/simple_workflow.webp">
 <meta property="og:image" content="http://example.com/2025/02-14ComfyUI%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94SD%E5%9F%BA%E7%A1%80%EF%BC%8C%E9%83%A8%E7%BD%B2/image.png">
 <meta property="article:published_time" content="2025-02-14T03:00:00.000Z">
-<meta property="article:modified_time" content="2025-02-15T15:23:58.011Z">
+<meta property="article:modified_time" content="2025-03-03T01:33:26.259Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="AI 绘画">
 <meta name="twitter:card" content="summary_large_image">
@@ -248,13 +248,13 @@
 <h2 id="Lora"><a href="#Lora" class="headerlink" title="Lora"></a>Lora</h2><p>Lora 必须依附在大模型上使用，做<strong>微调</strong>，来自于对<strong>特定风格</strong>图片的训练，体积小，但能提高对特定风格/主题图像的生成效果。Lora 也分为普通 Lora 和 SDXL Lora。我可能会很常用到 Lora，Lora 能够用来指定生成图像的风格，如水墨，水彩，黑白漫画等。</p>
 <h2 id="ControlNet"><a href="#ControlNet" class="headerlink" title="ControlNet"></a>ControlNet</h2><p>ControlNet 是一种技术（以插件的形式），允许用户提供更多的输入，如人体姿态图，线稿，深度图等，使得能更精确地<strong>约束</strong>和控制生成的图像，避免出现错误的人体结构，多几根手指等情况，同时保证<strong>创作一致性</strong>，比如生成同一个角色的多个角度的图像等。</p>
 <h1 id="ComfyUI-是什么"><a href="#ComfyUI-是什么" class="headerlink" title="ComfyUI 是什么"></a>ComfyUI 是什么</h1><p>ComfyUI 是一个<strong>创建和运行生成内容的工作流 Workflow</strong> 的环境。这里的工作流指的不是那种 BPMN 规范的工作流，而是一系列<strong>节点</strong>的集合，这些节点互相连接形成一个图，更具体的说，是<strong>有向无环图 DAG</strong>。下面是一个基础生图的工作流，注意到它的形式和 Blender 的渲染节点，几何节点很相近。</p>
-<p><img src="simple_workflow.webp" alt="alt text"></p>
+<p><img src="simple_workflow.webp" alt=""></p>
 <p>从 ComfyUI 看 WebUI，WebUI 实际上也可以认为是一个相对固定的工作流（CLIP，KSampler，Hires.fix 等一系列工作），用户能做的基本只有调整参数，无法做流程上的修改（并非不行，但那也是基于框架实现者的硬编码），比如 WebUI 无论如何都不能把反向提示词给它干掉，而 ComfyUI 则支持任意调整的能力，<strong>更别提 ComfyUI 支持自定义节点，这让它和其他应用程序如 Krita 的集成成为可能</strong>。</p>
 <p>这里神奇的是，即使是模型的训练也可以使用工作流来表示。</p>
 <p>ComfyUI 的工作流相当于是一种<strong>可视化编程</strong>——<strong>每个节点可以认为是一个类的实例或有状态的函数，能够得到输入，也能够输出进行，能够在界面中调整它内部的状态</strong>；而节点之间的连接则是将不同节点的输入-输出相连接。这能够带给它按钮、菜单绝对带不来的功能优势。</p>
 <p>以及，这里的输入、输出是<strong>强类型</strong>的，类型不匹配会导致报错，这给 debug 带来了方便。</p>
 <p>但注意到这里其实也不能直接称为编程——没有结构化语句，没有循环，一个节点的逻辑执行完后，它的状态就不会再改变，无法再度执行了。要实现可编程能力，我们需要<strong>使用列表去模拟循环</strong>，对于多重循环，需要做出它们的笛卡尔积。实际上，ComfyUI 的很多节点的输入既支持标量也支持向量，如下面同时输出图像和反转图像。</p>
-<p><img src="image.png" alt="alt text"></p>
+<p><img src="image.png" alt=""></p>
 <p>这个示例同时也启示我们可以拿 ComfyUI 干生成图像以外的事，比如图像批处理等，不也挺有意思？</p>
 <p>利用这一特性，我们如何实现同时输出不同参数的结果呢？构造相应的列表，直接给它传过去。但这里的具体行为应该是取决于节点的，节点自己决定接不接受向量，以及接受向量时做什么处理。</p>
 <p>一个方便的点是，节点的属性是可以转化为输入的，反之亦然，同时节点的属性允许在运行时被改变，这允许诸如 K 采样器的节点每次执行后修改种子。</p>

@@ -37,7 +37,7 @@
 <meta property="og:image" content="http://example.com/2025/03-03%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A005%E2%80%94%E2%80%94%E6%8E%A2%E7%B4%A2%E4%B8%89%E7%82%B9%E9%80%8F%E8%A7%86/image-9.png">
 <meta property="og:image" content="http://example.com/2025/03-03%E9%80%8F%E8%A7%86%E5%AD%A6%E4%B9%A005%E2%80%94%E2%80%94%E6%8E%A2%E7%B4%A2%E4%B8%89%E7%82%B9%E9%80%8F%E8%A7%86/image-8.png">
 <meta property="article:published_time" content="2025-03-03T01:30:00.000Z">
-<meta property="article:modified_time" content="2025-03-03T01:30:12.401Z">
+<meta property="article:modified_time" content="2025-03-03T01:33:28.338Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="透视">
 <meta name="twitter:card" content="summary_large_image">
@@ -242,13 +242,13 @@
 <p><img src="image.png" alt="两点透视图滚转 90 度镜头"></p>
 <p>处理这个伪三点透视的底面。尝试思考——<strong>我尝试沿着最近的这根水平原线将这个面向上旋（可以尝试想象最近的这根原线不动，远离的那根原线向上抬升），旋转的度数和旋转后的面的灭线的关系是</strong>？</p>
 <p>我们首先知道，旋转后的灭线，是平行于视平线的，因此这时候我们可以从<strong>侧面图</strong>着手去研究它，<strong>使用侧视图和之前使用俯视图是一样的效果——灭线被变成点了</strong>：</p>
-<p><img src="image-1.png" alt="alt text"></p>
+<p><img src="image-1.png" alt=""></p>
 <p>这个图熟悉不熟悉？和研究两点透视的余点是一样的：</p>
 <script type="math/tex; mode=display">\begin{aligned}
 & \tan \theta = \frac{nd}{d} = n \\
 & \theta = \arctan n
 \end{aligned}</script><p>实际的三维图如下：</p>
-<p><img src="image-2.png" alt="alt text"></p>
+<p><img src="image-2.png" alt=""></p>
 <p>但处理这个好像没有任何意义。<strong>我们忘掉这个问题，重新出发</strong>。</p>
 <h1 id="任意灭线通过一个余点找另一个余点"><a href="#任意灭线通过一个余点找另一个余点" class="headerlink" title="任意灭线通过一个余点找另一个余点"></a>任意灭线通过一个余点找另一个余点</h1><p>我们从另一个更加具体的问题出发——我们任意画一条线，并<strong>规定它是一个矩形面的灭线</strong>，我们已知这个矩形面的一个余点，能否求，以及如何求另一个余点？</p>
 <p>我们知道，灭线有 2x3 类——经心点的，不经心点的；以及垂直的，水平的，和其他的。</p>
@@ -257,40 +257,40 @@
 <p>经心点，任意的灭线呢？这时候我们考虑的既非侧视图也非俯视图，而是<strong>从目-灭线的这个平面的法线方向去看</strong>，我们同样能得到同样的结果。但实际上这时候我们得调整目点的位置了。</p>
 <p>另一种想法是，我们可以任意地滚转镜头到我们需要的角度——<strong>我们只需要滚转镜头直到这个灭线成为视平线，再使用视平线上的方法即可</strong>。</p>
 <p>题外话，经心点的任意的灭线，一个示例是正视平躺三棱柱，它的侧面，这时候是一对变线一对原线，且变线指向心点。</p>
-<p><img src="image-3.png" alt="alt text"></p>
+<p><img src="image-3.png" alt=""></p>
 <p>不正视这个平躺三棱柱，而是在水平方向上调整镜头的话，这时候就是不经心点的任意灭线了。如何仅通过思辩确认这一点？<strong>我们知道，这时候有两对变线，其中一对变线的灭点在视平线上且不是心点，另一对变线的灭点在天上，灭线必定为这两个灭点的连线，而且它必定不经心点</strong>。</p>
-<p><img src="image-4.png" alt="alt text"></p>
+<p><img src="image-4.png" alt=""></p>
 <p>这证明，经心点的灭线，处理它的方式我们已经都学会了，现在问题是不经心点的灭线。</p>
 <h2 id="不经心点的"><a href="#不经心点的" class="headerlink" title="不经心点的"></a>不经心点的</h2><p>能够意识到，我们之前的一切都是在处理经心点的情况，两点透视时处理的是方体的顶面底面。</p>
 <p>不经心点的灭线的话，知晓一个余点求另一个余点……欢迎来到立体几何的世界。直接画图吧。</p>
-<p><img src="image-5.png" alt="alt text"></p>
+<p><img src="image-5.png" alt=""></p>
 <p>这有点小抽象，但我们要研究平面<code>目-余 1-余 2</code>的话，就<strong>必须要在灭线上找到距点，实际上，这就是灭线和 90 度视圈的交点</strong>，并非困难。</p>
 <p>我们先令<code>目心</code>为 d，令<code>心 A</code>为 md，令 <code>余 1-A</code> 为 nd，<code>余 2-A</code>为 xd，则有：</p>
 <script type="math/tex; mode=display">\begin{aligned}
 \tan \theta & = \frac{\sqrt{m^2+1}d}{nd} = \frac{xd}{\sqrt{m^2+1}d} \\
 nx & = m^2 + 1
-\end{aligned}</script><p><img src="image-6.png" alt="alt text"></p>
+\end{aligned}</script><p><img src="image-6.png" alt=""></p>
 <p>容易看到，这时候两个 <code>余 A</code> 的关系式里包含了 m，这证明，两<code>余 A</code>之间的距离关系被灭线和视平线的角度所影响……</p>
 <p>虽然不敢相信但我有点害怕——<strong>不会每个不经心点的灭线都需要定一个辅助目点和辅助心点吧</strong>？？好像确实如此……要定一个新的目点，使得新的 d 为 $\sqrt{m^2+1}d$。书中有相应记载。实际上，这时候的<strong>辅助心点</strong>就是 A 点（或者说<strong>心点到灭线作垂线的交点</strong>），<strong>辅助目点</strong>就是沿 A 心做长度为 $\sqrt{m^2+1}d$ 的线段（也就是说<strong>沿这个垂线的反方向的方向</strong>）。但如果使用公式法的话，没必要做出辅助心点。 </p>
-<p><img src="image-7.png" alt="alt text"></p>
+<p><img src="image-7.png" alt=""></p>
 <p>目 1 点的目的是为了得到长度 $\sqrt{m^2+1}d$，这个长度再“迁移”得到目 2，即我们的辅助目点，经过这个辅助目点就能继续像两点透视那样做操作了，也可以直接利用这个公式得到新的反比法。</p>
 <h3 id="非水平的情况"><a href="#非水平的情况" class="headerlink" title="非水平的情况"></a>非水平的情况</h3><p>那非水平的情况呢？这个就不提了——<strong>总之滚转镜头嘛</strong>！</p>
 <!-- 细看这个公式，$nx = m^2+1$，m=0 即灭点为视平线的情况时，$nx=1$，这时候我们想到，**我们同时缩放 n 和 x，不就能回到视平线的情况吗？** -->
 <h1 id="任意灭线的测点法"><a href="#任意灭线的测点法" class="headerlink" title="任意灭线的测点法"></a>任意灭线的测点法</h1><p>已经知道任意灭线的测点法也是使用新的目点和心点做操作，这里要得出新的公式。</p>
 <p>还记得最初的测点法的证明吗？我们用的是<strong>俯视图</strong>的心智模型：</p>
-<p><img src="image-10.png" alt="alt text"></p>
+<p><img src="image-10.png" alt=""></p>
 <script type="math/tex; mode=display">\begin{aligned}
 (nd+xd)^2&=n^2d^2+d^2\\
 x &= \sqrt{n^2+1}-n
 \end{aligned}</script><p>但现在我们不用俯视图了——现在<code>心-灭线</code>平面已经不是水平的了，我们得从<code>心-灭线</code>平面的法线方向上去看，而这时我们能得到<strong>完全一样的图像</strong>（这实际上也证明，使用新的目点、心点，测点法的作图步骤是没有改变的），只不过参数有一些变化：</p>
-<p><img src="image-9.png" alt="alt text"></p>
+<p><img src="image-9.png" alt=""></p>
 <script type="math/tex; mode=display">\begin{aligned}
 (nd+xd)^2 &= n^2d^2+(m^2+1)d^2 \\
 x &= \sqrt{n^2 + m^2 + 1} - n
 \end{aligned}</script><h1 id="灭线找法线方向灭点"><a href="#灭线找法线方向灭点" class="headerlink" title="灭线找法线方向灭点"></a>灭线找法线方向灭点</h1><p>我们已经知道，共享一条灭线的所有平面是互相平行的，那么这些平面将共享同一条法线，法线一定也有自己的灭点，也就是说，一条灭线会对应法线方向上的一个灭点。</p>
 <p>这个灭点在哪里呢？我们实际上已经知道了——考虑两点透视，我们知道立方体左右两余点和心点的距离是呈<strong>反比</strong>的，我们把其中一个余点做垂线，从而得到这个侧面的灭线，此时<strong>另一个余点就是这条灭线对应的法向灭点</strong>。</p>
 <p>也就是说，要从一个灭线找法线方向上的灭点，只需要找灭线和心点的距离（实际上，是这个距离相对于心距的），然后求它的倒数，沿心点反方向做这个倒数的距离，就得到了法向灭点。注意到这里是一个 <strong>T 字形</strong>。</p>
-<p><img src="image-8.png" alt="alt text"></p>
+<p><img src="image-8.png" alt=""></p>
 <p>注意到——一个灭线和它的法向灭点，<strong>法向灭点向灭线作垂线必过心点</strong>。</p>
 <p>对于一个真三点透视的立方体的三个灭点，<strong>任意一个灭点都是另两个灭点组成的灭线的法向灭点</strong>，我们反复考察 3 个灭点的话，就会发现，<strong>心点是这三个灭点组成的三角形的垂心</strong>。但这并没啥意义。</p>
 <!-- 
