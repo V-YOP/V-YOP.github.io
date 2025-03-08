@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="系统学习一下一个新的博客框架，方便将来自己写主题作为我自己的电子名片。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hugo 学习 01——HelloWorld">
+<meta property="og:url" content="http://example.com/2025/03-08Hugo%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94HelloWorld/index.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="系统学习一下一个新的博客框架，方便将来自己写主题作为我自己的电子名片。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/03-08Hugo%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94HelloWorld/image.png">
+<meta property="og:image" content="http://example.com/2025/03-08Hugo%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94HelloWorld/image-1.png">
+<meta property="og:image" content="http://example.com/2025/03-08Hugo%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94HelloWorld/image-2.png">
+<meta property="article:published_time" content="2025-03-08T12:20:00.000Z">
+<meta property="article:modified_time" content="2025-03-08T12:25:02.676Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="前端">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/03-08Hugo%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94HelloWorld/image.png">
+  
+  
+  <title>Hugo 学习 01——HelloWorld - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Hugo 学习 01——HelloWorld">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-03-08 20:20" pubdate>
+        2025年3月8日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Hugo 学习 01——HelloWorld</h1>
+            
+            <div class="markdown-body">
+              <p>对这个 hexo（以及 npm 和 fluid）厌烦了，准备换个博客框架，目前是决定选择 hugo，因为它生态较大，有啥问题应该好查，虽然用的 go 我并不熟悉也不喜欢。</p>
+<p><del>我打算选择一个<strong>极简风格</strong>的——扁平，专注内容，必须带 TOC，可以带封面图。考虑这个 <a target="_blank" rel="noopener" href="https://texify3.michaelneuper.com/">https://texify3.michaelneuper.com/</a>。之前还想着让博客能更花哨让后面能当我的个人名片呢，但这个……<strong>分两个博客吧，专注内容和专注外表的</strong>。</del></p>
+<p>You guess what？<strong>我决定自己写一个主题，这就要求我必须熟悉 hugo 的基础和它的模板语言</strong>。所以迁移之路得往后面推迟，这篇笔记要改名做“Hugo 学习 01——基础”了。跟随《Build Websites with Hugo》。</p>
+<p>像这种 SSG，其实不只能够拿来写博客，拿来写相册也是可以的——<strong>这时候我不使用 markdown 的内容，而是把所有所需信息全都写在 front formatter 里面</strong>，然后在模板里引用这里的元信息，比如可能会这样写：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">title:</span> <span class="hljs-string">相册名称</span><br><span class="hljs-attr">gallery:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-string">image1.png</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">title:</span> <span class="hljs-string">名称</span><br>      <span class="hljs-attr">path:</span> <span class="hljs-string">image2.png</span><br><span class="hljs-attr">desc:</span> <span class="hljs-string">...</span><br></code></pre></div></td></tr></table></figure>
+<h1 id="Hugo-文件夹结构"><a href="#Hugo-文件夹结构" class="headerlink" title="Hugo 文件夹结构"></a>Hugo 文件夹结构</h1><p><a target="_blank" rel="noopener" href="https://gohugo.io/getting-started/directory-structure/">https://gohugo.io/getting-started/directory-structure/</a></p>
+<p>Hugo 是一个静态站点生成器 SSG，业务逻辑全在 hugo 自己里面，我们的博客文件夹里基本上全都是<strong>资源文件</strong>。</p>
+<p>hugo 博客文件夹下，有下面的文件夹：</p>
+<figure class="highlight clean"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs clean">my-site/<br>├<br>├ ### 模板：<br>├<br>├── archetypes/    # 文件模板，创建新文章时会从这个目录找模板创建<br>│   └── default.md <br>├── layouts/       # 网页模板（组件化的）<br>├── i18n/          # 国际化<br>├── themes/        # 主题，主题可以包括这里的所有内容，似乎是主题覆盖这顶层的内容<br>├<br>├ ### 资源：<br>├<br>├── assets/        # scss, ts, js 等会被 hugo 处理的资源<br>├── static/        # 图像等直接拷贝的依赖<br>├<br>├ ### 内容：<br>├<br>├── content/       # 文章（md 等标记语言）的位置<br>├── data/          # json, toml, yaml 等数据，可以在生成站点时使用<br>├<br>├ ### dist：<br>├<br>├── public/        # 生成的站点内容<br>├── resources/     # 缓存站点的内容（一般无意义？）<br>├<br>├ ### 配置：<br>├<br>├── config/     # 配置文件夹（用于更复杂的配置的时候）<br>└── hugo.toml   # 配置文件<br></code></pre></div></td></tr></table></figure>
+<p>注意，下面的 front formatter 是 toml 格式，<strong>我习惯的是 yaml 格式，要使用 yaml 格式，使用<code>---</code>去包围即可</strong>：</p>
+<figure class="highlight toml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs toml">+++<br><span class="hljs-attr">date</span> = <span class="hljs-string">&#x27;&#123;&#123; .Date &#125;&#125;&#x27;</span><br><span class="hljs-attr">draft</span> = <span class="hljs-literal">true</span><br><span class="hljs-attr">title</span> = <span class="hljs-string">&#x27;&#123;&#123; replace .File.ContentBaseName &quot;-&quot; &quot; &quot; | title &#125;&#125;&#x27;</span><br>+++<br></code></pre></div></td></tr></table></figure>
+<p>接下来我本来想细看看 Hugo 的整个执行过程的，但是，跟随书中的节奏，learn by practice，先实践了再去总结。我怀疑这书可能不会涉及 hugo modules，再看吧。</p>
+<h1 id="创建主页"><a href="#创建主页" class="headerlink" title="创建主页"></a>创建主页</h1><p>前面说到，所有 content 里的文章文件都会被解析，然后作为模板的变量在模板中进行使用。这是说，没有文章就没有任何东西生成吗？当然不是，我主页，个人介绍页之类的哪来的？</p>
+<p>这证明，layouts 文件夹中的模板是有一定<strong>规范</strong>的——主页的模板，404 页的模板，各个 category 和 tag 页的模板（对，标签这个功能是内置的），要明确哪些模板、结构是 hugo 提供的，而哪些是主题提供的。实际上，Hugo 有个 <a target="_blank" rel="noopener" href="https://gohugo.io/templates/lookup-order/#lookup-rules">Layouts Lookup Rules</a> 是处理如何从 layouts 中找合适的模板的。</p>
+<p>homepage 的模板位于 <code>layouts/index.html</code>，文档见 <a target="_blank" rel="noopener" href="https://gohugo.io/templates/home/">此</a>，homepage 对应的 markdown 文件为 <code>content/_index.md</code>。模板使用的是 Go 的<code>http/templates</code>模块实现的，一个 homepage 的示例为：</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>&#123;&#123; .Site.Title &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span> &#123;&#123; .Site.Title &#125;&#125; <span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>    &#123;&#123; .Date &#125;&#125;<br>    &#123;&#123; .Content &#125;&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<p>这里的 Content 从哪来？<strong>从这个模板将要对应的 markdown 来</strong>。</p>
+<p>注意到这些变量都以<code>.</code>开头，这个<code>.</code>指的是<strong>当前上下文</strong>，好像每个模板类型都有自己的上下文。Hugo 把整个站点的元信息塞到 Site 里。</p>
+<p>创建主页：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs markdown">---<br>title: 主页的标题<br><span class="hljs-section">update<span class="hljs-emphasis">_time: 2024-12-31 00:00:00</span></span><br><span class="hljs-emphasis"><span class="hljs-section">---</span></span><br><span class="hljs-emphasis"><span class="hljs-section"></span></span><br><span class="hljs-emphasis"><span class="hljs-section"><span class="hljs-strong">***Where there is a supression, there is a struggle.**</span>*</span></span><br></code></pre></div></td></tr></table></figure>
+<p>此时可以在模板中引用这里的 title 和 update_time，注意命名规范：</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span> &#123;&#123; .Title &#125;&#125; <span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 注意：页面的默认上下文是 Page，所以直接用。Draft 即可，不必。Page.Draft --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">code</span>&gt;</span>is draft: &#123;&#123; .Page.Draft &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">code</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">code</span>&gt;</span>is draft: &#123;&#123; .Draft &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">code</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 注意 Params 包含所有 front matter 的东西，只有部分属性会暴露在顶层 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">code</span>&gt;</span>update time: &#123;&#123; .Params.update_time &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">code</span>&gt;</span><br>    &#123;&#123; .Content &#125;&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<h1 id="创建其他单独页面"><a href="#创建其他单独页面" class="headerlink" title="创建其他单独页面"></a>创建其他单独页面</h1><p>仍旧先不谈文章，先考虑其他的单独页面，比如，about 页？</p>
+<p>要创建任意页面，需要创建对应的 markdown，下面是 about 页的 markdown，位于<code>content/about.md</code>：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs markdown">---<br>date: &#x27;2025-01-01T18:08:00+08:00&#x27;<br>draft: false<br><span class="hljs-section">title: &#x27;About&#x27;</span><br><span class="hljs-section">---</span><br><br>I&#x27;m Yuuki, 24 years old, love drinking black tea.<br></code></pre></div></td></tr></table></figure>
+<p><strong>所有（没有匹配到的类型的）单独页面，除了主页，都以<code>_default/single.html</code>作为模板</strong>。（实际操作时会按一个特定的顺序查找，这里不表）</p>
+<p>这里的“单独页面”指的是<strong>对应单个 md 的页面</strong>，如特定文章，而<code>list.html</code>就是对应多个 md 的页面，通常作为目录等。</p>
+<p>这里直接拷贝主页模板到该位置，然后尝试启动服务器，访问<code>localhost:1313/about</code>，就能看到 about 页了。</p>
+<h1 id="厘清-layouts-结构"><a href="#厘清-layouts-结构" class="headerlink" title="厘清 layouts 结构"></a>厘清 layouts 结构</h1><p>layouts 下面有如下文件：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs axapta">layouts<br>├ <span class="hljs-keyword">index</span>.html    <span class="hljs-meta"># 主页</span><br>├ <span class="hljs-number">404.</span>html      <span class="hljs-meta"># 404 页</span><br>├ _default/     <span class="hljs-meta"># 默认类型模板</span><br>├── baseof.html <span class="hljs-meta"># 基础模板</span><br>├── single.html <span class="hljs-meta"># 单文章页面</span><br>├── list.html   <span class="hljs-meta"># 列表页面，如分页、标签页</span><br>├ posts/        <span class="hljs-meta"># posts 类型模板</span><br>├── ... 同 _default<br>├ partials/     <span class="hljs-meta"># 可复用模板片段，即组件</span><br>└ shortcodes/   <span class="hljs-meta"># md 中可用的短代码</span><br></code></pre></div></td></tr></table></figure>
+<p>注意，这个 <code>posts</code>是用户可自定义的——用户可以任意定义更多<strong>类型</strong>，比如文章，相册等。<strong>Hugo 根据文章的位置和 Front Formatter 来判断对应的类型，比如<code>content/posts</code>下的 md 就是 posts 类型的，此外 Fromt Formatter 可以指定 <code>type: &quot;some_type&quot;</code> 这样的形式去配置文章对应的类型</strong>。如果无法匹配文章的类型，则类型为<code>_default</code>。</p>
+<p>注意到 Hugo 的一个命名规范——<code>content/_index.md</code>表示主页，<code>layouts/_default</code>表示默认类型模板，这种有<strong>特殊意义</strong>的文件都会前缀一个<code>_</code>。</p>
+<h1 id="创建主题"><a href="#创建主题" class="headerlink" title="创建主题"></a>创建主题</h1><p>在之前，都是直接把模板放到博客根目录下的 layouts 的，这并非最佳实践（那只是为了覆盖主题的模板）——应当创建一个<strong>主题</strong>，这样就能随便替换而且保持内容和模板分离了。</p>
+<p>主题的结构和根目录的结构是基本一致的——主题里甚至能有 content，很好玩。</p>
+<p>Hugo 有一个默认的主题生成器（虽然直接全部手写也行啦）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ hugo new theme basic<br></code></pre></div></td></tr></table></figure>
+<p>注意到生成的主题没有主页和 404 页（草！）——查看主页的 <a target="_blank" rel="noopener" href="https://gohugo.io/templates/lookup-order/#home-templates">lookup rule</a>，发现它会退而求其次使用<code>_default/home.html</code>作为主页。</p>
+<h1 id="关于-baseof"><a href="#关于-baseof" class="headerlink" title="关于 baseof"></a>关于 baseof</h1><p>检查结构，检查到<code>_default/home.html</code>的内容为：</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html">&#123;&#123; define &quot;main&quot; &#125;&#125;<br>  &#123;&#123; .Content &#125;&#125; <span class="hljs-comment">&lt;!-- 这里的 Content 仍旧对应的是 content/_index.md 的内容 --&gt;</span><br>  &#123;&#123; range site.RegularPages &#125;&#125;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;&#123;&#123; .RelPermalink &#125;&#125;&quot;</span>&gt;</span>&#123;&#123; .LinkTitle &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span><br>    &#123;&#123; .Summary &#125;&#125;<br>  &#123;&#123; end &#125;&#125;<br>&#123;&#123; end &#125;&#125;<br></code></pre></div></td></tr></table></figure>
+<p>它定义了一个什么东西，似乎是叫<strong>块</strong>，这里显然不是完全的结构，我们再检查<code>default/baseof.html</code>，因为文档中提到说这个是基础模板，其他模板都是<strong>继承</strong>（还是重写？）自它的：</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;&#123;&#123; site.Language.LanguageCode &#125;&#125;&quot;</span> <span class="hljs-attr">dir</span>=<span class="hljs-string">&quot;&#123;&#123; or site.Language.LanguageDirection `ltr` &#125;&#125;&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>  &#123;&#123; partial &quot;head.html&quot; . &#125;&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">header</span>&gt;</span><br>    &#123;&#123; partial &quot;header.html&quot; . &#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">main</span>&gt;</span><br>    &#123;&#123; block &quot;main&quot; . &#125;&#125;&#123;&#123; end &#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">main</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">footer</span>&gt;</span><br>    &#123;&#123; partial &quot;footer.html&quot; . &#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">footer</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<p>See？<strong>注意到，如果编辑<code>home.html</code>，让它包含这个 define 以外的内容的话，就只渲染<code>home.html</code>了</strong>。实际上，<strong>如果要使用<code>baseof.html</code>，则自己顶层只能有 define（连 html 注释都不能有）</strong>，这与其说是继承不如说是模板方法了。</p>
+<p>这里也注意到 block 的语法是 <code>&#123;&#123; block "main" . &#125;&#125;&#123;&#123; end &#125;&#125;</code>，中间看上去可以插值，但那是留给<strong>缺省内容</strong>的——即如果没有 define 相应块时填充什么东西。</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html">&#123;&#123; block &quot;main&quot; . &#125;&#125;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>没有正确 define main 就会看到这个<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>&#123;&#123; end &#125;&#125;<br></code></pre></div></td></tr></table></figure>
+<p>这个基础的主题实际上就是假设，<strong>整个博客的任何页面都是这个 baseof 里定义的结构</strong>——所有页面都必定有 header，content，footer，没有例外。对博客来说这是正常操作。</p>
+<p>注意到一个成熟主题的 layouts 和 <code>_default</code> 是一样的普通：</p>
+<p><img src="image.png" alt="layouts"></p>
+<p><img src="image-1.png" alt="layouts/_default/"></p>
+<p><code>_default</code> 中的<code>_markup</code>，是自定义 markdown 渲染内容用的，这个主题使用该功能将 mermaid 代码块渲染成 mermaid 图表。注意到它甚至不需要再在 front matter 里指定要使用 mermaid：</p>
+<p><img src="image-2.png" alt="render-codeblock-mermaid.html"></p>
+<hr>
+<p>好吧，这个周六的我已经看一天了，就这样了。周末的时间还是很宝贵的啊。这书可能后面没啥太大必要再看下去了，可以尝试完全在实践中操作了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep.html">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
