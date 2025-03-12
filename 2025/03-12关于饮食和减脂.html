@@ -26,7 +26,7 @@
 <meta property="og:description" content="研究着研究着，吃饭都不会了">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-03-12T14:50:00.000Z">
-<meta property="article:modified_time" content="2025-03-12T14:51:58.109Z">
+<meta property="article:modified_time" content="2025-03-12T14:54:56.821Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="减肥">
 <meta name="twitter:card" content="summary_large_image">
@@ -518,6 +518,48 @@ BMR（千卡） = 10 \times 体重 (kg) + 6.25 \times 身高 (cm) - 5 \times 年
 
 
 
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
 
 
 
