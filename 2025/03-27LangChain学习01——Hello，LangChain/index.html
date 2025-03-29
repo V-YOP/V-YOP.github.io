@@ -25,12 +25,14 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="要让 LLM 进入生活，dify 似乎并非最合适的选择">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/03-27LangChain%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94Hello%EF%BC%8CLangChain/image.png">
 <meta property="article:published_time" content="2025-03-27T01:10:00.000Z">
-<meta property="article:modified_time" content="2025-03-27T01:37:04.169Z">
+<meta property="article:modified_time" content="2025-03-28T21:56:44.962Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="AI">
 <meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/03-27LangChain%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94Hello%EF%BC%8CLangChain/image.png">
   
   
   <title>LangChain 学习 01——Hello，LangChain - 友纪V-λOP</title>
@@ -225,7 +227,8 @@
             <h1 style="display: none">LangChain 学习 01——Hello，LangChain</h1>
             
             <div class="markdown-body">
-              <p>LangChain 是一个 Python 框架（库？），<strong>用于开发大语言模型（LLM）驱动的应用程序</strong>。LangChain 允许大模型和外界进行交互，包括获取外部数据源数据，包括进行函数调用等。这些要是全都手写，那就太麻烦了，所以让它代劳是很好的。这里对它进行一下学习，看看能否把它应用到学习以及生活生产实践中。</p>
+              <p>虽然日期写着 3 月 27 号，但这篇笔记其实 3 月 10 号左右就在写了，这我要快速产出 02 的话会显得自己学太快了……虽然也没啥东西。</p>
+<p>LangChain 是一个 Python 框架（库？），<strong>用于开发大语言模型（LLM）驱动的应用程序</strong>。LangChain 允许大模型和外界进行交互，包括获取外部数据源数据，包括进行函数调用等。这些要是全都手写，那就太麻烦了，所以让它代劳是很好的。这里对它进行一下学习，看看能否把它应用到学习以及生活生产实践中。</p>
 <p>LangChain 家族包含四个成员：</p>
 <ol>
 <li>LangChain：就是上面说的 LangChain</li>
@@ -233,7 +236,14 @@
 <li>LangGraph：LangGraph 是 LangChain 的一个扩展，把步骤建模为图中的边和节点（dify？）</li>
 <li>LangFlow：LangChain 的一个 GUI，使用可视化的拖动的方式简化工作流的构建</li>
 </ol>
-<p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ldBsvhjEREc">这个视频</a> 似乎介绍了它们的关系以及如何选择。</p>
+<h1 id="LangXXXX-？"><a href="#LangXXXX-？" class="headerlink" title="LangXXXX ？"></a>LangXXXX ？</h1><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ldBsvhjEREc">这个视频</a> 似乎介绍了它们的关系以及如何选择，这里记录一下。</p>
+<p><img src="image.png" alt="LangChain"></p>
+<p>这张图很有意思——LangChain 的（多轮对话的）工作原理，用户和 Agent 交互，Agent 有 Memory，<strong>Agent 根据用户的查询选择是去查询外部数据（在这之后是 Agent 继续操作还是让大模型去操作？），还是让大模型去进行生成操作</strong>。</p>
+<p>LangChain 的 Chain 机制，让我们能把多个工作给串起来，但它究竟和 LangGraph 有啥区别？没讲，搞毛。</p>
+<p>然后是 LangGraph，LangGraph 专门用来管理 Agent 和工作流。</p>
+<p>……</p>
+<p>这个视频做的很弱智，不用看了，我都怀疑这个视频制作者自己有没有看完 LangChain 的教程。<strong>还是自己先把LangChain和LangGraph的教程全部自己过一下，然后自己做总结吧！</strong>。</p>
+<hr>
 <p>首先跟着 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/tutorials/">https://python.langchain.com/docs/tutorials/</a> 去看，得到一些感性经验，再看 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/concepts/">https://python.langchain.com/docs/concepts/</a> 去理解 langchain 的架构。</p>
 <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>langchain 是 LLM 的客户端，因此不需要 torch 啊 tenserflow 啊 numpy 之类的依赖，直接使用 pip 安装：</p>
 <figure class="highlight cmake"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs cmake">pip <span class="hljs-keyword">install</span> langchain<br></code></pre></div></td></tr></table></figure>
