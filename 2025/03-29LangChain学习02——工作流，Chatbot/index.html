@@ -25,12 +25,14 @@
 <meta property="og:site_name" content="友纪V-λOP">
 <meta property="og:description" content="peek 一下 LangGraph 的基础">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/03-29LangChain%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E5%B7%A5%E4%BD%9C%E6%B5%81%EF%BC%8CChatbot/image.png">
 <meta property="article:published_time" content="2025-03-29T05:20:00.000Z">
-<meta property="article:modified_time" content="2025-03-29T05:22:44.138Z">
+<meta property="article:modified_time" content="2025-03-29T21:43:50.832Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="AI">
 <meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025/03-29LangChain%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E5%B7%A5%E4%BD%9C%E6%B5%81%EF%BC%8CChatbot/image.png">
   
   
   <title>LangChain 学习 02——工作流，Chatbot - 友纪V-λOP</title>
@@ -191,7 +193,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      19k 字
+      20k 字
     </span>
   
 
@@ -315,7 +317,7 @@ input state &#123;&#39;some_list&#39;: [234, 123, 555]&#125;
 <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.messages <span class="hljs-keyword">import</span> SystemMessage, trim_messages, AIMessage<br><br>trimmer = trim_messages(<br>    max_tokens=<span class="hljs-number">65</span>,<br>    strategy=<span class="hljs-string">&quot;last&quot;</span>,<br>    token_counter=model,<br>    include_system=<span class="hljs-literal">True</span>,<br>    allow_partial=<span class="hljs-literal">False</span>,<br>    start_on=<span class="hljs-string">&quot;human&quot;</span>,<br>)<br><br>messages = [<br>    SystemMessage(content=<span class="hljs-string">&quot;you&#x27;re a good assistant&quot;</span>),<br>    HumanMessage(content=<span class="hljs-string">&quot;hi! I&#x27;m bob&quot;</span>),<br>    AIMessage(content=<span class="hljs-string">&quot;hi!&quot;</span>),<br>    HumanMessage(content=<span class="hljs-string">&quot;I like vanilla ice cream&quot;</span>),<br>    AIMessage(content=<span class="hljs-string">&quot;nice&quot;</span>),<br>    HumanMessage(content=<span class="hljs-string">&quot;whats 2 + 2&quot;</span>),<br>    AIMessage(content=<span class="hljs-string">&quot;4&quot;</span>),<br>    HumanMessage(content=<span class="hljs-string">&quot;thanks&quot;</span>),<br>    AIMessage(content=<span class="hljs-string">&quot;no problem!&quot;</span>),<br>    HumanMessage(content=<span class="hljs-string">&quot;having fun?&quot;</span>),<br>    AIMessage(content=<span class="hljs-string">&quot;yes!&quot;</span>),<br>]<br><br><span class="hljs-comment"># trimmer.invoke(messages) # 然而……我用的 deepseek 的实现似乎没有实现一些必须的算法导致这个会报错</span><br></code></pre></div></td></tr></table></figure>
 <h2 id="流式输出"><a href="#流式输出" class="headerlink" title="流式输出"></a>流式输出</h2><p>这里就真的是魔法了…………………………它怎么做到的，它怎么做到的？？</p>
 <p>stream 的默认 stream_mode 配置下，输出的会是同一条消息在每个步骤（node）下的响应；这里我们要的是流式输出，所以我们配置<code>stream_mode=&quot;messages&quot;</code>，这会使得会进行 token-by-token 的输出，注意到每次迭代会返回两个值——<strong>AI 的输出，以及是哪个步骤、节点输出的</strong>，后者在多节点的工作流中有意义。</p>
-<p>那么，<strong>工作流究竟是如何通知大模型要使用流式输出的？能够猜测，背后肯定有何全局变量或者线程局部变量被修改了，让大模型开始进行流式处理；而且 LangGraph 把这个操作封装的很好，我们无法进行观察</strong>。</p>
+<p>那么，<strong>工作流究竟是如何通知大模型要使用流式输出的？能够猜测，背后肯定有何全局变量或者线程局部变量被修改了，让大模型开始进行流式处理；而且 LangGraph 把这个操作封装的很好，我们无法进行观察</strong>。（这里的说法是错的，见下一篇笔记）</p>
 <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">new_id = <span class="hljs-built_in">object</span>()<br>i = <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> chunk, metadata <span class="hljs-keyword">in</span> app.stream(&#123;<span class="hljs-string">&#x27;messages&#x27;</span>: <span class="hljs-string">&#x27;你好&#x27;</span>&#125;, &#123;<span class="hljs-string">&#x27;thread_id&#x27;</span>: new_id&#125;, stream_mode=<span class="hljs-string">&quot;messages&quot;</span>):<br>    i += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">if</span> i &gt; <span class="hljs-number">5</span>:<br>        <span class="hljs-keyword">break</span> <span class="hljs-comment"># 让回复更短一些！</span><br>    <span class="hljs-built_in">print</span>(chunk) <span class="hljs-comment"># 此时 AI 返回的是 AIMessageChunk 而非 AIMessage</span><br><br>    <span class="hljs-comment"># 尝试在这里这么干，就会发现这时候仍旧不是流式</span><br>    <span class="hljs-comment"># print(app.invoke(&#123;&#x27;messages&#x27;: HumanMessage(&#x27;我是谁？&#x27;)&#125;, &#123;&#x27;thread_id&#x27;: object()&#125;))</span><br>    <br>    <span class="hljs-built_in">print</span>(metadata)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;---&#x27;</span>)<br></code></pre></div></td></tr></table></figure>
 <div class="hljs code-wrapper"><pre><code class="hljs">content=&#39;&#39; additional_kwargs=&#123;&#125; response_metadata=&#123;&#125; id=&#39;run-1d69bb9d-f58e-4765-a28f-73c96a9a7812&#39;
 &#123;&#39;langgraph_step&#39;: 1, &#39;langgraph_node&#39;: &#39;model&#39;, &#39;langgraph_triggers&#39;: (&#39;branch:to:model&#39;, &#39;start:model&#39;), &#39;langgraph_path&#39;: (&#39;__pregel_pull&#39;, &#39;model&#39;), &#39;langgraph_checkpoint_ns&#39;: &#39;model:f4a4c40f-ad74-c062-58df-99c93af1e3e2&#39;, &#39;checkpoint_ns&#39;: &#39;model:f4a4c40f-ad74-c062-58df-99c93af1e3e2&#39;, &#39;ls_provider&#39;: &#39;openai&#39;, &#39;ls_model_name&#39;: &#39;deepseek-chat&#39;, &#39;ls_model_type&#39;: &#39;chat&#39;, &#39;ls_temperature&#39;: None&#125;
@@ -367,6 +369,10 @@ Name: tavily_search_results_json
 ToolCalls: [&#123;&#39;name&#39;: &#39;tavily_search_results_json&#39;, &#39;args&#39;: &#123;&#39;query&#39;: &#39;今天三亚天气&#39;&#125;, &#39;id&#39;: &#39;call_0_5ae8224b-2439-4afa-9d6e-35ccebd89617&#39;, &#39;type&#39;: &#39;tool_call&#39;&#125;]
 </code></pre></div><p>实际上，<strong>这个功能来自 OpenAI 的 API 规范</strong>，兼容 OpenAI 的 API 的 AI 均能够使用此种方式。</p>
 <p>但同时也注意——这里没有真的调用这个工具，<strong>AI 只是试图去调用它</strong>，真正调用这个工具是我们的“客户端”的任务，<strong>客户端调用工具后，将工具调用结果（成功或者失败）也放到会话历史中</strong>。</p>
+<p>但根据我们目前学到的东西，无法自己实现<code>create_react_agent</code>……这个 agent 可能会对应这样一个图结构，但我不知道如何去定义它，如何去标识现在是否完成了执行。但是有方法看到这个图的结构：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> IPython.display <span class="hljs-keyword">import</span> Image, display<br><br>display(Image(agent_executor.get_graph().draw_mermaid_png()))<br></code></pre></div></td></tr></table></figure>
+<p><img src="image.png" alt="alt text"></p>
+<p>注意到，agent 连接到 tool 再连接回来，agent 同时也连接着 end，所以问题就是，<strong>何时是真正的 end？它是如何标识的</strong>？实际上我们知道它是如何标识的——当 agent 没有再调用工具而是开始返回内容的时候，但我不知道如何配置，这个就待后面实际去进行学习了，下一步是继续跟随它的教程去研究 RAG，RAG 是 Agent 的一种特定的应用场景，从 RAG 便能管中窥豹，看到工作流的更多的性质。</p>
 
             </div>
             <hr>
@@ -395,6 +401,12 @@ ToolCalls: [&#123;&#39;name&#39;: &#39;tavily_search_results_json&#39;, &#39;arg
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2025/03-30%E5%AD%A6%E4%B9%A0mermaid%E7%9A%84%E6%B5%81%E7%A8%8B%E5%9B%BE/index.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">学习 mermaid 的流程图</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
