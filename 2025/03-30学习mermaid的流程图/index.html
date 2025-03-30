@@ -26,7 +26,7 @@
 <meta property="og:description" content="mermaid 在要画流程图的时候很有用">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-03-29T21:46:00.000Z">
-<meta property="article:modified_time" content="2025-03-29T21:46:43.852Z">
+<meta property="article:modified_time" content="2025-03-29T23:41:31.080Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="mermaid">
 <meta name="twitter:card" content="summary_large_image">
@@ -190,7 +190,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.6k 字
+      1.9k 字
     </span>
   
 
@@ -250,7 +250,8 @@
     whatIf&#123;whatIf&#125;
 </code></pre>
 <p>这里不学太多形状……<strong>用到现查</strong>就是了。<a target="_blank" rel="noopener" href="https://mermaid.js.org/syntax/flowchart.html">https://mermaid.js.org/syntax/flowchart.html</a></p>
-<h2 id="path"><a href="#path" class="headerlink" title="path"></a>path</h2><pre><code class=" mermaid">flowchart TD
+<h2 id="path"><a href="#path" class="headerlink" title="path"></a>path</h2><figure class="highlight brainfuck"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs brainfuck"><span class="hljs-comment">flowchart TD</span><br>    <span class="hljs-comment">使用纯文本箭头</span><span class="hljs-literal">--</span>&gt;<span class="hljs-comment">互相连接 (</span><span class="hljs-title">[</span><span class="hljs-comment">互相连接起来</span><span class="hljs-title">]</span><span class="hljs-comment">)</span><span class="hljs-literal">---</span>&gt;<span class="hljs-comment">这样属于是同时定义元素和路径</span><br>    <span class="hljs-comment">使用纯文本箭头</span><span class="hljs-literal">--</span>&gt;<span class="hljs-comment">根据 ID 而非显示名称去重用元素</span><br>    <span class="hljs-comment">互相连接</span><span class="hljs-literal">--</span>&gt;<span class="hljs-comment">根据 ID 可以重用元素</span><br>    <span class="hljs-comment">根据 ID 可以重用元素</span> <span class="hljs-literal">-----</span>&gt; <span class="hljs-comment">箭头长度似乎可以调整</span><br>    <br>    <span class="hljs-comment">箭头样式</span> <span class="hljs-literal">---</span> <span class="hljs-comment">普通箭头</span> <span class="hljs-title">[</span><span class="hljs-comment">&quot;感觉</span><span class="hljs-literal">---</span><span class="hljs-comment">和</span><span class="hljs-literal">--</span>&gt;<span class="hljs-comment">是一样的&quot;</span><span class="hljs-title">]</span><br>    <span class="hljs-comment">箭头样式</span> <span class="hljs-literal">--</span>&gt; <span class="hljs-comment">普通箭头</span><br>    <br>    <span class="hljs-comment">箭头样式</span> <span class="hljs-literal">--</span><span class="hljs-comment">注释注释（注意前面两个横线，后面三个）</span><span class="hljs-literal">---</span> <span class="hljs-comment">注释箭头</span> <br>    <span class="hljs-comment">箭头样式</span> <span class="hljs-literal">---</span><span class="hljs-comment">|另一种注释方式|注释箭头</span><br><br>    <span class="hljs-comment">箭头样式</span> <span class="hljs-literal">-</span><span class="hljs-string">.</span><span class="hljs-literal">-</span><span class="hljs-comment">|以及注释|虚线 dot 箭头</span><br><br></code></pre></div></td></tr></table></figure>
+<pre><code class=" mermaid">flowchart TD
     使用纯文本箭头--&gt;互相连接 ([互相连接起来])---&gt;这样属于是同时定义元素和路径
     使用纯文本箭头--&gt;根据 ID 而非显示名称去重用元素
     互相连接--&gt;根据 ID 可以重用元素
