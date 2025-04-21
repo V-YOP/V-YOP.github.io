@@ -26,8 +26,8 @@
 <meta property="og:description" content="人最宝贵的东西是生命，生命属于人只有一次，人的一生应当这样度过：当他回首往事的时候，他不因虚度年华而悔恨，也不应碌碌无为而羞愧。在他临死的时候，他能够这样说：我的整个生命和全部精力，都献给了世界上最壮丽的事业——为人类的解放而斗争。人应当赶紧地、充分地生活，因为意外的疾病或悲惨的事故随时都可以突然结束他的生命。 未完的坑（草，记这些有啥用）：  《深度工作》读书笔记 《三个月打败斋">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/file/you_pig.jpg">
-<meta property="article:published_time" content="2025-04-19T09:06:53.835Z">
-<meta property="article:modified_time" content="2025-04-19T09:06:53.835Z">
+<meta property="article:published_time" content="2025-04-20T21:50:36.647Z">
+<meta property="article:modified_time" content="2025-04-20T21:50:36.647Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/file/you_pig.jpg">
@@ -217,51 +217,11 @@
 <li>透视学习</li>
 <li>《刻意练习》读书笔记</li>
 </ul>
-<div id="heatmap" style="width: 100%; height: 280px; margin-bottom: 1em"></div>
-
-<script>
-{
-    const myChart = echarts.init(document.getElementById('heatmap'));
-    const option = {
-    title: {
-        top: 30,
-        left: 'center',
-        text: '文章热力图'
-    },
-    tooltip: {},
-    visualMap: {
-        min: 0,
-        max: 3,
-        orient: 'horizontal',
-        left: 'center',
-        top: 65
-    },
-    calendar: {
-        top: 120,
-        left: 30,
-        right: 30,
-        cellSize: ['auto', 'auto'],
-        range: PUBLISH_DATA.year,
-        itemStyle: {
-        borderWidth: 0.5
-        },
-        yearLabel: { show: false }
-    },
-    series: {
-        type: 'heatmap',
-        coordinateSystem: 'calendar',
-        data: PUBLISH_DATA.datas
-    }
-    };
-
-    option && myChart.setOption(option);
-}
-</script>
-
 <script>
 const DATAS = [
     // 记白天的数据，顺序不用管
     // 日期，体重（kg），体脂率（%）
+    ['2025-04-21', 65.30, 21.1],
     ['2025-04-19', 65.85, 21.3],
     ['2025-04-18', 65.55, 21.2],
     ['2025-04-17', 65.75, 21.3],
@@ -305,20 +265,66 @@ const DATAS = [
 ]
 </script>
 
-<p>所有数据取白天数据。</p>
-<p>体重和体脂率应当持续走低（下面的数据均是 7 天移动平均数据）。</p>
+
+<div id="heatmap" style="width: 100%; height: 280px; margin-bottom: 1em"></div>
+
+<script>
+{
+    const myChart = echarts.init(document.getElementById('heatmap'));
+    const option = {
+    title: {
+        top: 30,
+        left: 'center',
+        text: '文章热力图'
+    },
+    tooltip: {},
+    visualMap: {
+        min: 0,
+        max: 3,
+        orient: 'horizontal',
+        left: 'center',
+        top: 65
+    },
+    calendar: {
+        top: 120,
+        left: 30,
+        right: 30,
+        cellSize: ['auto', 'auto'],
+        range: PUBLISH_DATA.year,
+        itemStyle: {
+        borderWidth: 0.5
+        },
+        yearLabel: { show: false }
+    },
+    series: {
+        type: 'heatmap',
+        coordinateSystem: 'calendar',
+        data: PUBLISH_DATA.datas
+    }
+    };
+
+    option && myChart.setOption(option);
+}
+</script>
+所有数据取白天数据。
+
+体重和体脂率应当持续走低（下面的数据均是 7 天移动平均数据）。
+
 <div style="display: flex; height: 400px; margin-bottom: 1em">
     <div id="体重变化" style="flex-basis: 0;flex-grow:1"></div>
     <div id="体脂率变化" style="flex-basis: 0;flex-grow:1"></div>
 </div>
 
-<p><strong>体重应当越来越接近去脂体重</strong>，但这张图做了调整，使得它们之间距离越远表示越接近。<strong>去脂体重应当升高或维持不变</strong>。</p>
+**体重应当越来越接近去脂体重**，但这张图做了调整，使得它们之间距离越远表示越接近。**去脂体重应当升高或维持不变**。
+
 <div id="体重-去脂体重变化" style="width: 100%; height: 400px; margin-bottom: 1em"></div>
 
-<p>每周减重应当在 0.5 - 1 kg 范围内，这里记的是每天的近七天的平均减重。</p>
+每周减重应当在 0.5 - 1 kg 范围内，这里记的是每天的近七天的平均减重。
+
 <div id="每周减重" style="width: 100%; height: 400px; margin-bottom: 1em"></div>
 
-<p>下面的则是原始体重，使用了线性插值补全缺失数据。</p>
+下面的则是原始体重，使用了线性插值补全缺失数据。
+
 <div id="原始体重" style="width: 100%; height: 400px; margin-bottom: 1em"></div>
 
 
