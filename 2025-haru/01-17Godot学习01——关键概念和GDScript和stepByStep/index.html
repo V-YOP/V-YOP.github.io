@@ -1,0 +1,520 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="扫帚不到，灰尘照例不会自己跑掉">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Godot 学习 01——Hello World">
+<meta property="og:url" content="http://example.com/2025-haru/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep/index.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="扫帚不到，灰尘照例不会自己跑掉">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025-haru/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep/instancing_diagram_shooter.webp">
+<meta property="og:image" content="http://example.com/2025-haru/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep/image.png">
+<meta property="og:image" content="http://example.com/2025-haru/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep/image-1.png">
+<meta property="article:published_time" content="2025-01-17T09:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-06T08:42:35.235Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Godot">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025-haru/01-17Godot%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E5%92%8CGDScript%E5%92%8CstepByStep/instancing_diagram_shooter.webp">
+  
+  
+  <title>Godot 学习 01——Hello World - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Godot 学习 01——Hello World">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-01-17 17:00" pubdate>
+        2025年1月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      8.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Godot 学习 01——Hello World</h1>
+            
+            <div class="markdown-body">
+              <p>这是一个新领域，按我当前的学习方法，笔记中必定会出现各种纰漏，这是没办法的，反正我又不是当老师，对吧？</p>
+<hr>
+<p>Godot 是一个全面的游戏引擎，包括代码编辑器、tileMap 编辑器，动画编辑器，shader 编辑器等。Godot 支持 GDScript，C#进行编程，支持和 vscode，vs 集成。</p>
+<p>Godot 可以做 2D，3D 游戏，也可以做应用程序，主要用在桌面和移动端，主机端游戏不要考虑 Godot。Godot 支持导入 Blender 场景，</p>
+<p>这里的学习是为了找找感觉，所以<strong>选择阻力相对更小的 2D 游戏开发</strong>，让生活更轻松一些。虽然做独立游戏上 steam，做 JRPG 的话，似乎是 3D 更方便一些，而 2D……做做横版、黄油……？</p>
+<blockquote>
+<p>“If you are new to game development or unfamiliar with Godot, we recommend starting with 2D games. This will allow you to become comfortable with both before tackling 3D games, which tend to be more complicated.”</p>
+</blockquote>
+<h1 id="Learn-GDScript-in-y-minutes"><a href="#Learn-GDScript-in-y-minutes" class="headerlink" title="Learn GDScript in y minutes"></a>Learn GDScript in y minutes</h1><p>事先提出一些问题：</p>
+<ol>
+<li>GD 脚本是如何同游戏世界交互的？</li>
+<li>GD 脚本的运行是同步的吗？有并发情况吗？</li>
+<li>GD 脚本运行过程中，调度权会被抢占用来做其他事情吗？（这关系到编程模型——是像异步编程还是像单片机那样）</li>
+</ol>
+<p>这里先剧透第三个问题——不会，但允许手动交出调度权——协程，<strong>Godot 支持协程，允许手动让出调度权，并等待 Godot 去恢复它的执行</strong>。</p>
+<p>观察 Godot 的 yield 的语法，<code>yield(get_tree(), &quot;idle_frame&quot;)</code>，容易发现，<strong>Godot 的协程让出调度权后，会等待特定实例的特定信号再去恢复调度</strong>，显然 Godot 负责调度协程，就像 python 的事件循环负责调度协程一样。<strong>这让 Godot 能够无痛地使用同步的方式编写跨帧的代码</strong>。</p>
+<p>Unity 也使用类似的方法，但没有 Godot 的语法这么轻便，需要使用 IEnumerator，Godot 的 C#则使用 async/await 风格。</p>
+<p>在研究 GDScript 之前要明确，GDScript 本质上更是一个领域特定语言——专门为游戏开发服务的，它类似于 python，但同样有许多不同需要注意。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gd"><br># GDScript（后面简称 GD），是一个类似 python 的语言，但每个 gd 文件中的代码就像 java 一样，是属于一个特定的类的，虽然写在顶层，这会导致顶层出现 extends Node 这样的语法，表示这个类继承自谁。<br># gd 的注释和“块注释”均和 python 一样<br><br>&quot;&quot;&quot;<br>多行注释 LMAO<br>&quot;&quot;&quot;<br><br># 函数定义，和 python 一样使用缩进代表代码块<br>func run():<br>    pass<br>    print(&#x27;hello, world&#x27;)<br>    return<br><br>func do_scale(scale_ratio: float):<br>    # 上面说到，这些函数、变量都是属于特定类的，因此这里会有一个 self<br>    self.scale.x *= scale_ratio<br>    # self 可以省略<br>    scale.y *= scale_ratio<br><br>const CONSTANT = 100 # 常量<br><br>static var wtf = 200 # 定义类变量（单例）<br>var hello = 100 # 定义实例变量<br><br>func fn():<br>    var hello = 1 # 函数本地变量<br><br># 注意，gd 没有 nonlocal，global 关键字，因为变量使用 var 定义，无此需要了，但 gd 同样允许作用域遮蔽<br><br># Godot 有一些“生命周期函数”，以单下划线起头，Godot 会在特定时机自动调用它，如 _process 每一帧都会调用<br><br>func _process(delta):<br>    print(delta) # delta 是上一帧完成的时间，单位是秒<br>    rotate(0.05 * delta) # 将运动和时间相关联的话，我们就让这个操作和时间关联，而非和帧关联，和帧关联几乎总是会有问题的——帧率越高跑得越快<br>    # 实际上—— 0.05 * delta 就表示每秒钟旋转 0.05 弧度——delta 是上一帧完成的时间，1/delta 就是帧数，0.05 除以帧数就是每一帧要旋转的弧度<br><br># _process 每帧都会调用，这频率可能高于所需，如物理计算的帧数可能会更低，这时候就不使用它使用其它的，后面再表<br><br>func move():<br>    position += Vector2(20, 20) # 二维向量，重载加法<br>    # 等价于 <br>    position.x += 20<br>    position.y += 20<br><br># for-loop<br>for i in range(100):<br>    pass<br># no for-else !!!<br># while-loop<br>while False:<br>    pass<br># no for-else !!!<br><br># gd 没有魔术方法，没有运算符重载！<br><br># 数组……<br>var arr = [1, 2, 3]<br>print(arr[0])<br>for i in arr:<br>    print(i)<br><br>var dict = &#123;<br>    &quot;a&quot;: 1, &quot;b&quot;: 2<br>&#125;<br><br>for key in dict: # or dict.keys()<br>    pass<br><br>var a: int = 1<br>var b := 1 # 等价于 var b: int = 1，Godot 猜测变量类型<br><br># 为何使用 := ？这让 Godot 拒绝更换变量的类型：<br><br>var x = 1<br>x = &#x27;hello&#x27; # ok<br><br>var c := 1<br>c = &#x27;hello&#x27; # error<br><br>var omg := 100 <br>omg = null # 坏消息——有 null，而且 null 是任意类型<br></code></pre></div></td></tr></table></figure>
+<p>上面的足够了，这和 python 基本一致，真正用的时候再去 feel 吧。</p>
+<h1 id="关键概念"><a href="#关键概念" class="headerlink" title="关键概念"></a>关键概念</h1><p>关于这一节里 Scene 和 Node 的关系，一言以蔽之，任何 Node 都可以是 Scene，Scene 是编辑的根节点，保存的原子，可以说 <strong>Scene 就是保存到硬盘的 Root Node</strong>。下面扯一堆很抽象的东西，不如直接从使用上来看。</p>
+<hr>
+<p>来自：<a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/getting_started/introduction/key_concepts_overview.html">https://docs.godotengine.org/en/stable/getting_started/introduction/key_concepts_overview.html</a>。</p>
+<p>下面的内容我觉得肯定有错误的地方，在实践中继续深化吧。</p>
+<p>Scene 是组织游戏的基础，是游戏的最小的<strong>封装单元</strong>，一个角色、一个武器、GUI 中的一个菜单，一个房子，一个关卡，乃至任何东西，都是 Scene。注意到，Godot 的 Scene 比 Unity 的 Scene 更广泛一些，所谓的 Prefab 在 Godot 中也是 Scene。</p>
+<p>Node 则是组织游戏的<strong>最小单元</strong>，Scene 本质上也是 Node，是由一个或多个 Node（或 Scene） <strong>组合</strong>（组合 vs 继承的那个组合）而成的。Scene 的特殊性在于 <strong>Scene 可以作为根节点</strong>，并按整体去进行操作。</p>
+<p>无法单独地实例化一个 Node（实际上是可以的，但一般来说没意义），而只能实例化一个 Scene（换句话说，<strong>Scene 是可实例化的最小单元</strong>），实例化 Scene 时它的所有 Node 跟着实例化，也就是说 <strong>Scene 管理着它包含的 Node 的生命周期</strong>。</p>
+<p><strong>我们通常都会谈论 Scene 而非 Node</strong>，因为 Scene 相对来说是贴近“业务”的，Node 则相对更“底层”。很难为 Scene 和 Node 的关系找到一个合适的比喻……</p>
+<p>Scene 是一个树结构，称作 Scene Tree，这个 tree 同时也包含所有 node，但我们通常谈论 Scene。</p>
+<p>注意——Scene Tree 有两个——Remote 和 Local，Remote 代表运行时的，Local 代表保存时的。</p>
+<p>容易想象，在每一帧中，Godot 都要遍历 Scene 树，把所有 Node 的逻辑都执行一次，并将结果反映到现实世界，比如对 3D 物体的绘制节点，Godot 就会把它们的信息缓存下来，在渲染阶段发送给图形处理库进行渲染；比如对动画节点，Godot 就会根据动画关键帧去计算动画属性并更新场景。</p>
+<p>从程序员的角度来看，<strong>可以把 Node 认为是一种数据</strong>（即使它是像动画、音频这样看起来是“可执行的”，如果要找到类似的概念的话，那就是矩阵——矩阵可以当作函数看待也可以当作数据看待），我们编辑它的时候，是编辑它的初始值，它的数据会在运行时改变，而决定如何使用节点是 Godot 自己的工作。</p>
+<p><strong>这里有两种心智模型——Node 是纯数据，Godot 负责解释这个数据；Node 是根据配置（数据）动态生成可执行代码的工具，Godot 负责执行它</strong>。前者适用于引擎的使用者（我），后者适用于引擎的开发者，关注引擎本身的实现细节，后者可能也更贴近实际。</p>
+<p>Signal 是不同的 Node 的一种通信手段，它是一种<strong>发布订阅模式，允许多个接受者</strong>，优势是松耦合，不需要事先知道发送者、接受者是谁。Signal 不是唯一的通信手段，但是它比较底层，可能会是最常用的。（官方文档说 Signal 是观察者模式，但观察者模式的话发送者知道所有的接受者啊）</p>
+<hr>
+<p><a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html#toc-learn-step-by-step">https://docs.godotengine.org/en/stable/getting_started/step_by_step/index.html#toc-learn-step-by-step</a></p>
+<p>回到 Node，Node 允许有子 Node，Node 可以继承自其它 Node（不能多继承，但有接口）。有子 Node 的 Node 就是 Scene</p>
+<p>在 Godot 中，继承和组合都被使用，继承被用于在父类基础上做扩展，而<strong>组合是更推荐的方式——Godot 甚至给获取子节点提供简写语法，Scene 实际上就是一种子 Node 的组合</strong>。Node 负责基础功能，Scene 则是一个复杂的，可以直接复用的实体。</p>
+<p>实际上，Scene 也是持久化的原子，Scene 可以保存到硬盘供重用，Node 则不能。这是一个很好玩的地方——关卡、敌人、地图，都是 Scene，Godot 对待它们没有什么区分，落盘也是一样的落。</p>
+<p>Scene 也是我们编辑的对象——编辑器中的标签页，它对应的是 Scene，比如这个窗口打开的是整个关卡 Scene，另一个窗口则看的是某个敌人的 Scene。Scene 之间是<strong>引用关系</strong>，这个 Scene 的修改会反映到引用它的 Scene 上（不全是，比如位置、缩放等信息的话可能不会反映，以及引用者能配置说自己要做本地化修改，这时候就不会反映）</p>
+<p>此外，Node 可以和 gd 脚本（也是落盘的原子）绑定，其中对 gd 脚本 extends 的基类有要求——脚本只能和 extends 的类及其子类的 Node 绑定。<strong>Node 和 gd 脚本也是引用关系</strong>。</p>
+<p>一个项目需要设置一个 main scene，但任意 scene 都能够单独运行。project-Project Settings-Run 能够设置 main scene。</p>
+<p>scene 保存的文件后缀为<code>tscn</code> text scene，我们将其称为 packed scenes。scene 可以任意地实例化，实例化后，它就能有自己的属性了，覆盖默认值。</p>
+<p>比如，在例子中的 Ball 有 RigidBody2D，用于物理模拟，我们能直接调整它的 Mass，然后对于 Physics Material，不能修改相应属性，但可以配置去创建一个 override，然后就能够修改了。这里很有意思——是否这是一种“<strong>浅拷贝</strong>”？嵌套的配置就不能修改（因为它是直接引用到 Scene 上的），这里需要处理。然而或许不需要这么思考……？PhysicsMaterial 是一个 resource，resource 需要 unique 才能修改。</p>
+<p>在思考游戏结构时，要通过 Scene 之间的关系去思考——用户（好吧，我是说，玩家，哈哈哈）能看到哪些元素？通过这种方式，我们便能够使用图像表达游戏结构。</p>
+<p><img src="instancing_diagram_shooter.webp" alt="箭头表示“属于”"></p>
+<h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello, World!"></a>Hello, World!</h1><p>在左上角打印 Hello, World，以及当前游戏进行的时间，作为开头吧。注意到两个生命周期函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">extends Node<br><br><span class="hljs-keyword">var</span> time_count := <span class="hljs-number">0.0</span><br><span class="hljs-keyword">var</span> label: Label<br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">ready</span><span class="hljs-params">()</span></span> -&gt; void:<br>    label = Label.<span class="hljs-built_in">new</span>()<br>    label.position = Vector2(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>) <br>    label.text = <span class="hljs-string">&#x27;Hello, World!&#x27;</span><br>    add_child(label)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">process</span><span class="hljs-params">(delta: float)</span></span> -&gt; void:<br>    time_count += delta<br>    label.text = <span class="hljs-string">&#x27;%.2f&#x27;</span> % time_count<br></code></pre></div></td></tr></table></figure>
+<p>有几个值得关注的地方：</p>
+<ol>
+<li>这里的 Label.new，内部是创建后调用了<code>_init</code>……怎么说呢，脑子里还是扔掉 Python 吧，不要拿来和 GD 做对比</li>
+<li>不同函数之间共享内容的话需要在顶层定义没有初始值的变量</li>
+<li>修改 Node 的参数后，它马上就会反映到画面上，不需要手动刷新</li>
+</ol>
+<p>下面是另一个示例，创建 Sprite2D（在以前做 gal 的时候见过这个术语，sprite，精灵，绘制的东西），显示 godot 的 logo，并绕一个位置进行旋转。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">extends Sprite2D<br><br><span class="hljs-keyword">var</span> angular_speed := <span class="hljs-number">45.0</span> / <span class="hljs-number">180.</span> * PI<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">process</span><span class="hljs-params">(delta: float)</span></span> -&gt; void:<br>    # 一眼或许会觉得这里好像得熟微积分，但其实只是增量而已，没有求面积<br>    rotation += angular_speed * delta<br>    <span class="hljs-keyword">var</span> velocity := Vector2.UP.rotated(rotation) * <span class="hljs-number">220</span><br>    position += velocity * delta<br><br></code></pre></div></td></tr></table></figure>
+<p>注意示例开头的<code>extends Sprite2D</code>，我们知道，脚本是绑定在 Node 上的，而非独立存在，那这里“继承自 Sprite2D”又该如何理解呢？实际上，<strong>一个脚本不止可以继承 Node，也可以继承另一个脚本</strong>。</p>
+<p>可以认为脚本是一种动态、<strong>可插拔</strong>的 mixin，用来<strong>增强</strong>、修改原 Node；脚本继承脚本则是去再度修改被修改过的 Node，即<strong>递归增强</strong>。而实际上，<strong>脚本自己也可以成为节点显示在 Godot 中供直接重用（这时候就不需要自己绑定脚本了），甚至能够在界面中配置相应参数</strong>。</p>
+<p>显然，extends 语句的存在会让脚本对支持的 Node 有要求，实际上，脚本只能绑定在继承的类的<strong>子类</strong>上，如继承 Node，就能绑定到所有 Node 的子类上如 Sprite2D，这是可以理解的——我只能用 Node 中的内容，而 Sprite2D 有 Node 中的所有内容。</p>
+<p>官方文档中解释，<code>extends Sprite2D</code>表示能够 “get access to all the properties and functions of the Sprite2D node, including classes it extends, like Node2D, CanvasItem, and Node.”，它不是拥有，是能够访问……行吧，怎么理解都行。</p>
+<p>最后悄悄提一句——没有 extends 时，会默认继承 RefCounted（而非 Object），这个类显然用于内存管理。</p>
+<p>Inspector 中，即查看和编辑 Node 的属性的窗口，命名是 <code>Title Case</code>，单词首字母大写，空格分割，而代码中命名则是下划线分割，这也是 gd 的变量、函数命名的规范，和 python 一致。</p>
+<h1 id="监听用户输入"><a href="#监听用户输入" class="headerlink" title="监听用户输入"></a>监听用户输入</h1><p>让游戏真正成为游戏的第一步——让用户能操作，而非看动画 w。</p>
+<p>要监听用户输入，有两种方式——重写相应的虚方法，如<code>_unhandled_input</code>等（有多个，有执行顺序等问题，后面再细学），也可以直接使用<code>Input</code>单例去检查。这里图简单使用后者。注意这里的奇怪的说法，action pressed（按下一个动作？？），这个奇妙的说法是否是<strong>解耦特定输入设备，甚至能自己做抽象</strong>？</p>
+<p>注意这里的<code>&amp;&#39;ui_init&#39;</code>，<code>&amp;</code>是 <strong>StringName</strong> 的简写法，<strong>StringName 取自全局的字符串池，以供字符串快速比较</strong>，同时避免重复创建相同字符串影响性能。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">extends Sprite2D<br><br><span class="hljs-keyword">var</span> angular_speed := <span class="hljs-number">150.</span> / <span class="hljs-number">180.</span> * PI<br><span class="hljs-keyword">var</span> forward_speed := <span class="hljs-number">200</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">process</span><span class="hljs-params">(delta: float)</span></span> -&gt; void:<br>    # 左右键旋转<br>    <span class="hljs-keyword">var</span> direction := <span class="hljs-number">0</span> <br>    # 注意 rotation 是顺时针旋转<br>    <span class="hljs-keyword">if</span> Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;ui_left&#x27;</span>):<br>        direction = <span class="hljs-number">-1</span><br>    elif Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;ui_right&#x27;</span>):<br>        direction = <span class="hljs-number">1</span> <br>    rotation += direction * angular_speed * delta<br><br>    # 同时前后键前后移动<br>    <span class="hljs-keyword">var</span> forward := <span class="hljs-number">0</span><br>    <span class="hljs-keyword">if</span> Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;ui_up&#x27;</span>):<br>        forward = <span class="hljs-number">1</span><br>    elif Input.is_action_pressed(&amp;<span class="hljs-string">&#x27;ui_down&#x27;</span>):<br>        forward = <span class="hljs-number">-1</span><br>    position += Vector2.UP.rotated(rotation) * forward * forward_speed * delta<br></code></pre></div></td></tr></table></figure>
+<p>旋转有顺时针逆时针的问题，笛卡儿坐标系中，默认是逆时针转动，<strong>Godot 中是顺时针转动</strong>。</p>
+<p>如何理解它呢？<strong>认为从 x 正方向到 y 正方向是角度增加 90 度的方向</strong>，此时，笛卡儿坐标系中是逆时针，Godot 做坐标系中是顺时针。</p>
+<h1 id="使用-signal"><a href="#使用-signal" class="headerlink" title="使用 signal"></a>使用 signal</h1><p>我们有个节点树，脚本绑在这个树的任意节点上，且能够直接访问子节点实例；那两个没有直接层级关系的节点怎么交互呢？比如敌人发射的子弹和主角和显示在左上角的生命值条，我该如何把它们互相交互？signal 是一个手段。</p>
+<p><strong>signal 是一等公民</strong>，即它可以像变量那样当成参数传递，它还有其他特性：</p>
+<ol>
+<li>Godot 直接提供语法去定义 signal，<code>signal button_pressed(value: int)</code></li>
+<li>信号既可以动态绑定，也<strong>可以直接在 Godot 编辑器中绑定并保存到场景文件</strong></li>
+<li>信号支持参数（但是补全不行，至少对信号的发送者来说是如此）</li>
+<li>可以使用 await 语法等待信号</li>
+</ol>
+<p>这么看来，<strong>信号有点像 Qt 的信号与槽机制</strong>，它既可以用在跨节点的通信上，也可以用在自己内部通信。</p>
+<p><strong>直接在编辑器中绑定的话，感觉这也是一种耦合</strong>，但在简单场景用它感觉也无可厚非。</p>
+<p>这里是一个例子用来停止 icon 的运动，如何停止呢？设置 process 状态为 False，这样 Godot 就不会调用它的<code>_process</code>了。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go"># MovableIcon.gd<br>extends Sprite2D<br><br><span class="hljs-keyword">var</span> angular_speed := <span class="hljs-number">150.</span> / <span class="hljs-number">180.</span> * PI<br><span class="hljs-keyword">var</span> forward_speed = <span class="hljs-number">200</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">process</span><span class="hljs-params">(delta: float)</span></span> -&gt; void:<br>    rotation += angular_speed * delta<br>    <span class="hljs-keyword">var</span> velocity = Vector2.UP.rotated(rotation) * forward_speed<br>    position += velocity * delta<br><br># 在编辑器中和按钮的 pressed signal 绑定<br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">on_button_pressed</span><span class="hljs-params">()</span></span> -&gt; void:<br>    set_process(not is_processing())<br></code></pre></div></td></tr></table></figure>
+<p>下面是一个手动 connect 的例子，在 icon 下面加一个 Timer，然后连接它的 timeout，奇异的是这里的语法和 qt 一模一样，故意的吧！？</p>
+<p>但是这里有一个更有趣的问题——我要昏厥了：</p>
+<p><img src="image.png" alt="alt text"></p>
+<p><img src="image-1.png" alt="alt text"></p>
+<p>注意到，在第一个 Scene 中，MovableIcon，我们在它下面挂了 Timer；而在第二个 Scene 中，它就是 MovableIcon，它下面却没有挂……</p>
+<p>这证明，<strong>Scene 在使用时会被当成原子的 Node，在定义时才会被进一步拆分</strong>……另外也发现，<strong>挂载到 Scene 的根节点的 Node 上的脚本也是资源</strong>——使用该 Scene 的人能够移除该脚本，也能替换或继承它重新换一个脚本。</p>
+<p>从昏厥中恢复过来，开写，注意timer可以是一次性也可以是可复用的，而且默认配置是需要手动在代码中start的。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">extends Sprite2D<br><br># onready注解推迟初始化到 ready 后<br>@onready <span class="hljs-keyword">var</span> timer : Timer = $Timer # 这个是get_node的简写法，等价于 get_node(<span class="hljs-string">&#x27;Timer&#x27;</span>)，没找到返回 null<br><span class="hljs-function"><span class="hljs-keyword">func</span> _<span class="hljs-title">ready</span><span class="hljs-params">()</span></span> -&gt; void:<br>    # timer will be null <span class="hljs-keyword">if</span> not found in direct chil d!!!<br>    timer.timeout.connect(toggle_visible)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">toggle_visible</span><span class="hljs-params">()</span></span>:<br>    visible = not visible<br></code></pre></div></td></tr></table></figure>
+<p>然后是最后一个例子，展示如何自定义signal并emit。signal总是用动词的过去式，被动。</p>
+<figure class="highlight go"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs go">signal health_decreased(value: <span class="hljs-type">int</span>, reason: String)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">take_damage</span><span class="hljs-params">(amount: <span class="hljs-type">int</span>)</span></span>:<br>    # ...<br>    health_decreased.emit(amount, <span class="hljs-string">&#x27;damaged&#x27;</span>)<br></code></pre></div></td></tr></table></figure>
+<p>Step By Step课程结束喽，然后是第一个2D游戏。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Godot/">Godot</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-haru/01-18Godot%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E4%B8%AA2D%E6%B8%B8%E6%88%8F/index.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Godot 学习 02——第一个 2D 游戏</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-haru/01-14Vue3%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94%E8%A1%A8%E5%8D%95%E7%BB%91%E5%AE%9A%EF%BC%8C%E7%BB%84%E4%BB%B6%E5%AE%9A%E4%B9%89%E5%92%8C%E4%BA%A4%E4%BA%92.html">
+                        <span class="hidden-mobile">Vue3 学习 03——表单绑定，组件定义和交互</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
