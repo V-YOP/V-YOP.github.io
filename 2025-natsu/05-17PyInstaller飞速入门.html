@@ -26,7 +26,7 @@
 <meta property="og:description" content="我来，我见，我征服">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-05-17T02:30:00.000Z">
-<meta property="article:modified_time" content="2025-05-17T02:51:08.942Z">
+<meta property="article:modified_time" content="2025-05-17T02:59:53.819Z">
 <meta property="article:author" content="友纪V-λOP">
 <meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary_large_image">
@@ -190,7 +190,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.6k 字
+      2.8k 字
     </span>
   
 
@@ -240,11 +240,12 @@
 <p><code>sys._MEIPASS</code>，该字段在执行打包后可执行文件时存在，表示依赖所处路径，这个路径对<code>--onedir</code>来说总是 exe 本路径下的<code>_internal</code>文件夹，对<code>--onefile</code>来说每次都会是一个新的临时文件夹。</p>
 <h2 id="关于-spec"><a href="#关于-spec" class="headerlink" title="关于 spec"></a>关于 spec</h2><p>每次执行 pyinstaller 时，都会根据当前配置去生成 spec 文件，该文件表示编译配置，后续不修改配置，重新编译时，只需要直接传入该 spec 文件给 pyinstaller 即可：</p>
 <figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">pyinstaller main.spec<br></code></pre></div></td></tr></table></figure>
-<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><h2 id="如何打包静态文件资源？"><a href="#如何打包静态文件资源？" class="headerlink" title="如何打包静态文件资源？"></a>如何打包静态文件资源？</h2><p>这里分为两部分——标识静态文件资源，以及访问静态文件资源。</p>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><h2 id="如何打包静态文件资源-Ver-1"><a href="#如何打包静态文件资源-Ver-1" class="headerlink" title="如何打包静态文件资源 Ver.1"></a>如何打包静态文件资源 Ver.1</h2><p>这里分为两部分——标识静态文件资源，以及访问静态文件资源。</p>
 <p>静态文件资源不会被识别出来，需要在编译时手动指定静态文件资源，同时指定它将要存放的位置，比如下面将项目中的<code>asset/some.json</code>资源文件放置到资源文件夹（即上面的<code>sys._MEIPASS</code>）下的<code>asset</code>目录下：</p>
 <figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">pyinstaller main.py --add-data <span class="hljs-string">&#x27;asset/some.json:asset&#x27;</span><br></code></pre></div></td></tr></table></figure>
 <p>然后访问，在代码中，不能使用相对路径去访问静态文件资源了，因为此时行为在直接执行和打包后执行时变得不同。需要定义一个函数去处理此差异：</p>
 <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">resolve_resource_path</span>(<span class="hljs-params">resource: <span class="hljs-built_in">str</span> | Path</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(sys, <span class="hljs-string">&#x27;_MEIPASS&#x27;</span>):<br>        <span class="hljs-comment"># 打包环境</span><br>        <span class="hljs-keyword">return</span> Path(sys._MEIPASS) / resource<br>    <span class="hljs-comment"># 开发环境，以当前 py 文件（或者其他锚点）作为起始</span><br>    <span class="hljs-comment"># 如果是实际项目的话，这里应该是项目根路径之类的</span><br>    <span class="hljs-keyword">return</span> Path(__file__).parent / resource<br></code></pre></div></td></tr></table></figure>
+<p>DeepSeek 警告说，<code>sys._MEIPASS</code> 是 pyinstaller 的实现细节，依赖它是不优雅的。pyinstaller 同样重写了<code>__file__</code>，顶层模块的<code>__file__</code>将为<code>_internal/xxx.pyc</code>，使用该<code>__file__</code>也能够去获取资源文件。</p>
 <h2 id="如何导入动态加载的模块？"><a href="#如何导入动态加载的模块？" class="headerlink" title="如何导入动态加载的模块？"></a>如何导入动态加载的模块？</h2><p>倘若我不加相关配置，下面的代码会报错：</p>
 <figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> importlib <span class="hljs-keyword">import</span> import_module<br>import_module(<span class="hljs-string">&#x27;requests&#x27;</span>)<br></code></pre></div></td></tr></table></figure>
 <p>因为 pyinstaller 没有识别到 requests 依赖。</p>
@@ -260,7 +261,7 @@
 <h2 id="如何更改使用的-python-的版本？"><a href="#如何更改使用的-python-的版本？" class="headerlink" title="如何更改使用的 python 的版本？"></a>如何更改使用的 python 的版本？</h2><p><strong>做不到</strong>，pyinstaller 只会使用安装 pyinstaller 时的那个 python 环境，要做到这个，只能使用指定版本的 python 创建虚拟环境然后再安装 pyinstaller，这样便能够安装该版本的 pyinstaller。</p>
 <p>或者，使用全局环境的话，使用指定版本的 python 的<code>-m</code>命令去执行 pyinstaller，如：</p>
 <figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">python3.10 -m PyInstaller ...<br></code></pre></div></td></tr></table></figure>
-<h2 id="如何跨平台打包？"><a href="#如何跨平台打包？" class="headerlink" title="如何跨平台打包？"></a>如何跨平台打包？</h2><p><strong>做不到</strong>，真想干建议上docker去进行编译。</p>
+<h2 id="如何跨平台打包？"><a href="#如何跨平台打包？" class="headerlink" title="如何跨平台打包？"></a>如何跨平台打包？</h2><p><strong>做不到</strong>，真想干建议上 docker 去进行编译。</p>
 
             </div>
             <hr>
