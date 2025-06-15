@@ -1,0 +1,548 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="友纪V-λOP">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="战斗！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jinja2 和 python-docx-template 光速入门">
+<meta property="og:url" content="http://example.com/2025-natsu/06-14-1jinja2%E5%92%8Cdocxtpl%E5%85%89%E9%80%9F%E5%85%A5%E9%97%A8.html">
+<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:description" content="战斗！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-14T02:48:00.000Z">
+<meta property="article:modified_time" content="2025-06-14T02:50:27.640Z">
+<meta property="article:author" content="友纪V-λOP">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>jinja2 和 python-docx-template 光速入门 - 友纪V-λOP</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>友纪V-λOP的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="jinja2 和 python-docx-template 光速入门">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-06-14 10:48" pubdate>
+        2025年6月14日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">jinja2 和 python-docx-template 光速入门</h1>
+            
+            <div class="markdown-body">
+              <p>有根据模板去渲染和打印 word 的需求，因此研究一个。本来是想用 HTML 渲染再打印的，但发现用 word 更方便。</p>
+<p><a target="_blank" rel="noopener" href="https://docxtpl.readthedocs.io/en/latest/">python-docx-template</a> 是 python 的一个 docx 模板引擎库，它依赖 <code>python-docx</code> 去读写 docx 文件内容，依赖<code>jinja2</code> 进行模板渲染。它就像 Java 中的<code>poi-tl</code>（恰巧我最后一个需求刚用到它）。</p>
+<p>这里也说了——它依赖 jinja2 模板引擎，所以需要学一下 jinja2 的语法。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">pip install docxtpl<br></code></pre></div></td></tr></table></figure>
+<h1 id="jinja2"><a href="#jinja2" class="headerlink" title="jinja2"></a>jinja2</h1><p>jinja2 是一个文本模板引擎，它一般上是用来生成 html 的，<strong>但并不和 html 绑定</strong>，因此它不像 vue 那样，模板语法也是合法 html，而是像 poi-tl 那样（原谅我没学过其他的模板引擎），模板和内容解耦。</p>
+<p>jinja2 这么使用（虽然我不会这么直接用它啦）：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> jinja2 <span class="hljs-keyword">import</span> Template<br>tpl = Template(<span class="hljs-string">&quot;&quot;&quot;Hello, &#123;&#123;name&#125;&#125;&quot;&quot;&quot;</span>)<br><span class="hljs-built_in">print</span>(tpl.render(&#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;Yuuki&#x27;</span>&#125;)) <span class="hljs-comment"># Hello, Yuuki</span><br></code></pre></div></td></tr></table></figure>
+<p>接下来，快速把所有玩意儿都过一遍！</p>
+<p>首先，有三种基础语法，是容易理解的：</p>
+<ul>
+<li><code>&#123;&#123; ... &#125;&#125;</code>：插值表达式</li>
+<li><code>&#123;% ... %&#125;</code>：控制结构</li>
+<li>``：注释</li>
+</ul>
+<h2 id="插值"><a href="#插值" class="headerlink" title="插值"></a>插值</h2><p>jinja2 支持插值任意合法 Python 表达式（有一定限制）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja2">&#123;&#123; name &#125;&#125;<br>&#123;&#123; user.name &#125;&#125;<br>&#123;&#123; user[&quot;name&quot;] &#125;&#125;<br>&#123;&#123; items[0] &#125;&#125;<br><br>&#123;&#123; first_name.strip() + &#x27; &#x27; + last_name.strip() &#125;&#125;<br></code></pre></div></td></tr></table></figure>
+<p>注意——<code>user.name</code>等价于<code>user[&#39;name&#39;]</code>，jinja 在这方面不关心索引访问和 getattr 访问（当然，肯定是按照一个优先级顺序去访问的），<strong>就像 js 一样</strong>，这个很方便——你传 dataclass 还是传 dict，一样的用。</p>
+<h3 id="测试器"><a href="#测试器" class="headerlink" title="测试器"></a>测试器</h3><p>上面说 jinja2 支持任意 python 表达式？不全是，比如这里提出一个示例——<strong>jinja2 不支持 python 的 is 操作符（实际上我们在实践中，is 完全是用来判 None 的，所以在模板引擎中这个行为基本无意义）</strong>。jinja2 重新定义 is——is 的右边是所谓的<strong>测试器</strong>，测试器是可以自己定义的，这里不表。示例见下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja2">&#123;&#123; name is string and &#x27;123&#x27; &#125;&#125; &#123;# 结果是 123 如果为真，否则渲染 False #&#125;<br></code></pre></div></td></tr></table></figure>
+<p>jinja2 的 is 同样有两种形式——is 和 is not。</p>
+<p>下面是常用测试器：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">name</th>
+<th style="text-align:left">desc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">none</td>
+<td style="text-align:left">is None</td>
+</tr>
+<tr>
+<td style="text-align:center">string</td>
+<td style="text-align:left">类型是 str</td>
+</tr>
+<tr>
+<td style="text-align:center">number</td>
+<td style="text-align:left">类型是 int 或 float</td>
+</tr>
+<tr>
+<td style="text-align:center">sequence</td>
+<td style="text-align:left">序列（非字符串）</td>
+</tr>
+<tr>
+<td style="text-align:center">sameas(value)</td>
+<td style="text-align:left">对应 python 的 is</td>
+</tr>
+<tr>
+<td style="text-align:center">equalto(value)</td>
+<td style="text-align:left">对应 ==，jinja2 有==，但如果配置不容忍 undefined，==遇上未定义会报错，这里不会</td>
+</tr>
+<tr>
+<td style="text-align:center">defined</td>
+<td style="text-align:left">是否已定义（变量是否存在）</td>
+</tr>
+<tr>
+<td style="text-align:center">…</td>
+<td style="text-align:left">就这些足够用啦，还需要咋样？</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><p>jinja2 支持所谓的 <strong>过滤器 Filter</strong>：<code>|</code> 是管道，就像 unix 的管道，这里的意思是为 name 使用 trim 过滤器，然后再使用 capitalize 过滤器。<strong>过滤器实际上是 python 中定义的函数</strong>，我们自己也可以定义过滤器，但这里不表。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja2">My name is &#123;&#123; name|trim|capitalize &#125;&#125; &#123;# 也可以认为对应 kt 代码： name.let(trim).let(capitalize) #&#125;<br></code></pre></div></td></tr></table></figure>
+<p>内置的过滤器有：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">name</th>
+<th style="text-align:left">desc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">default(value)</td>
+<td style="text-align:left">默认值，注意用法：<code>&#123;&#123; name \| default('Anonymous') &#125;&#125;</code>，它行为是一个柯里化函数</td>
+</tr>
+<tr>
+<td style="text-align:center">escape / safe</td>
+<td style="text-align:left">safe 表示<strong>不</strong>转义 html，默认似乎是不转义的（可配置），escape 表示转义</td>
+</tr>
+<tr>
+<td style="text-align:center">join(delimiter)</td>
+<td style="text-align:left">字面意思，用 delimiter join 一个集合</td>
+</tr>
+<tr>
+<td style="text-align:center">truncate(length)</td>
+<td style="text-align:left">把太长的字符串截断，尾部显示 <code>...</code></td>
+</tr>
+<tr>
+<td style="text-align:center">…</td>
+<td style="text-align:left">过火了，剩下的有需求看文档，<strong>本来就不该在模板中塞太多业务逻辑，仅供显示用</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="宏"><a href="#宏" class="headerlink" title="宏"></a>宏</h3><p>jinja2 支持 <strong>宏 Macros</strong>，宏就像函数，你给它参数，它给你结果。宏必须先定义后调用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja2">&#123;% macro input(name, type=&#x27;text&#x27;) -%&#125;<br>  &lt;input type=&quot;&#123;&#123; type &#125;&#125;&quot; name=&quot;&#123;&#123; name &#125;&#125;&quot;&gt;<br>&#123;%- endmacro %&#125;<br><br>&#123;&#123; input(&#x27;username&#x27;) &#125;&#125;<br></code></pre></div></td></tr></table></figure>
+<h2 id="控制结构"><a href="#控制结构" class="headerlink" title="控制结构"></a>控制结构</h2><p>对于一个模板引擎，只需要两种控制结构，if 和 for。</p>
+<h3 id="条件逻辑"><a href="#条件逻辑" class="headerlink" title="条件逻辑"></a>条件逻辑</h3><p>同 python 的，注意需要一个 endif 块表示结尾，for 也是如此。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja2">&#123;% if name is defined and name is string %&#125;<br>Hello, &#123;&#123; name &#125;&#125;<br>&#123;% elif guest %&#125;<br>Hello, Guest!<br>&#123;% else %&#125;<br>who the fk r u?<br>&#123;% endif %&#125;<br></code></pre></div></td></tr></table></figure>
+<h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><p>循环和 python 的区别在于，循环中有一个内置的 loop 变量，每轮循环时做更新：</p>
+<ul>
+<li>loop.index：下标，<strong>以 1 开头</strong></li>
+<li>loop.index0：下标，<strong>以 0 开头</strong></li>
+<li>loop.first, loop.last：<strong>是否是第一项，是否是最后一项</strong></li>
+<li>loop.revindex：<strong>剩余项数</strong>，为 <code>length - loop.index0</code></li>
+</ul>
+<figure class="highlight jinja"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja"><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">for</span></span> item <span class="hljs-keyword">in</span> items %&#125;</span><span class="language-xml"></span><br><span class="language-xml">  </span><span class="hljs-template-variable">&#123;&#123; loop.index &#125;&#125;</span><span class="language-xml">: </span><span class="hljs-template-variable">&#123;&#123; item &#125;&#125;</span><span class="language-xml"></span><br><span class="language-xml"></span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endfor</span></span> %&#125;</span><br></code></pre></div></td></tr></table></figure>
+<p>这里的 <code>item</code> 也是可以被解构的，但这里不表。</p>
+<h2 id="变量定义"><a href="#变量定义" class="headerlink" title="变量定义"></a>变量定义</h2><p>有两种变量定义——set 和 with，都是容易理解的：<strong>set 的作用域是整个模板，除非它定义在 macro 中，with 的作用域是 with 块内</strong>。注意 set 能使用 python 的解包语法，而 with 则更加……传统，但方便。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs jinja2">&#123;% set x, y = 1, 2 %&#125;<br>&#123;&#123; x &#125;&#125; &#123;&#123; y &#125;&#125;<br>&#123;% set x = x + 100 %&#125;<br>&#123;&#123; x &#125;&#125;<br><br>&#123;% with a = [1,2,3]|length, b = &#x27;hello&#x27; %&#125;<br>length of [1, 2, 3]: &#123;&#123; a &#125;&#125;<br>&#123;&#123; b &#125;&#125;<br>&#123;% endwith %&#125;<br></code></pre></div></td></tr></table></figure>
+<p>怎么说呢？jinja2 学完这些感觉就足够啦！回到 docxtpl。</p>
+<h1 id="docxtpl"><a href="#docxtpl" class="headerlink" title="docxtpl"></a>docxtpl</h1><p>先来个 HelloWorld：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> docxtpl <span class="hljs-keyword">import</span> DocxTemplate<br><br>doc = DocxTemplate(<span class="hljs-string">&quot;my_word_template.docx&quot;</span>)<br>context = &#123; <span class="hljs-string">&#x27;company_name&#x27;</span> : <span class="hljs-string">&quot;World company&quot;</span> &#125;<br>doc.render(context)<br>doc.save(<span class="hljs-string">&quot;generated_doc.docx&quot;</span>)<br></code></pre></div></td></tr></table></figure>
+<h2 id="一些扩展，一些坑"><a href="#一些扩展，一些坑" class="headerlink" title="一些扩展，一些坑"></a>一些扩展，一些坑</h2><p>docxtpl 对 jinja2 做了一些更严格的限制和扩展。</p>
+<p>关于限制：jinja2 的 tag 内容，必须处在同一个段落的同一个 run 中，即 <code>&#123;&#123; name &#125;&#125;</code> 这整个内容必须处在同一个 run 中，且不能换行。</p>
+<p><strong>run，指的是 word 中为同一个格式的内容的文字的集合</strong>，就像 html 和 markdown 中的各种标签。这是可以想见的——必须要“批处理”以减少重复和浪费。而像<code>&#123;&#123; name &#125;&#125;</code>这样的标签如果跨多个 run，docxtpl 就会迷糊——我究竟用前面的 run 还是后面的 run 呢？</p>
+<p>这里有一个重要的坑：像这样 `</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-natsu/06-14-2%E6%BB%B4%E7%AD%94%E6%B8%85%E5%8D%95%E6%8E%A5%E5%8F%A3%E4%BD%BF%E7%94%A8.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">滴答清单接口使用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-natsu/06-12%E5%BD%B7%E5%BE%A8.html">
+                        <span class="hidden-mobile">彷徨</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
