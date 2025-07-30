@@ -15,27 +15,27 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="友纪V-λOP">
+  <meta name="author" content="那尔">
   <meta name="keywords" content="">
   
     <meta name="description" content="半年没有学习设计模式了，这半年以来主要做的框架开发工作，也算是有一些实践经验（虽然远远不够），同时也是了解了很多函数式编程的概念，写的代码里状态越来越少，代码风格越来越声明式（好久没写过原生的 for 和 while 了 hhh），也开始觉得一些设计模式变得臃肿起来了。现在继续回来学习设计模式，顺便看看它们结合函数式编程中的概念会对样板代码有如何的简化。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="设计模式和函数式编程——策略模式">
 <meta property="og:url" content="http://example.com/2022/01-07%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%92%8C%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%E2%80%94%E2%80%94%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F.html">
-<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:site_name" content="那尔">
 <meta property="og:description" content="半年没有学习设计模式了，这半年以来主要做的框架开发工作，也算是有一些实践经验（虽然远远不够），同时也是了解了很多函数式编程的概念，写的代码里状态越来越少，代码风格越来越声明式（好久没写过原生的 for 和 while 了 hhh），也开始觉得一些设计模式变得臃肿起来了。现在继续回来学习设计模式，顺便看看它们结合函数式编程中的概念会对样板代码有如何的简化。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/oss/20210926020709.png">
 <meta property="article:published_time" content="2022-01-07T13:40:48.000Z">
 <meta property="article:modified_time" content="2023-11-12T03:44:40.291Z">
-<meta property="article:author" content="友纪V-λOP">
+<meta property="article:author" content="那尔">
 <meta property="article:tag" content="设计模式">
 <meta property="article:tag" content="FP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/images/oss/20210926020709.png">
   
   
-  <title>设计模式和函数式编程——策略模式 - 友纪V-λOP</title>
+  <title>设计模式和函数式编程——策略模式 - 那尔</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -78,7 +78,7 @@
   <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
 </head>
 
 
@@ -87,7 +87,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>友纪V-λOP的blog</strong>
+      <strong>那尔的blog</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"

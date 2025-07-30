@@ -15,27 +15,27 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="友纪V-λOP">
+  <meta name="author" content="那尔">
   <meta name="keywords" content="">
   
     <meta name="description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hello, MapReduce——Word Count">
 <meta property="og:url" content="http://example.com/2022/02-19MapReduce%E7%9A%84hello-world.html">
-<meta property="og:site_name" content="友纪V-λOP">
+<meta property="og:site_name" content="那尔">
 <meta property="og:description" content="感谢 Docker，对各种环境的反复试验和修改从而变得可行，折磨了三四天后，我总算弄出了一个好用的 docker…集群，它足够易自定义以方便我快速搭建 hadoop 的环境，让我能专心“业务”，从这些玩意上解放出来。  总之，在之前了解了 Hadoop 的 HDFS，学习了它的原理，终端的一些操作以及 JavaAPI（每个方法都受检，不愧是你！），现在到了真正解决问题的时候了——MapReduce">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
 <meta property="og:image" content="http://example.com/images/oss/20220218215040.png">
 <meta property="article:published_time" content="2022-02-19T01:17:33.000Z">
 <meta property="article:modified_time" content="2024-01-07T02:24:51.634Z">
-<meta property="article:author" content="友纪V-λOP">
+<meta property="article:author" content="那尔">
 <meta property="article:tag" content="MapReduce">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://gh-card.dev/repos/V-YOP/yuuki-hadoop.svg">
   
   
-  <title>Hello, MapReduce——Word Count - 友纪V-λOP</title>
+  <title>Hello, MapReduce——Word Count - 那尔</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -78,7 +78,7 @@
   <script  src="/js/color-schema.js" ></script>
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="友纪V-λOP" type="application/rss+xml">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
 </head>
 
 
@@ -87,7 +87,7 @@
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>友纪V-λOP的blog</strong>
+      <strong>那尔的blog</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
