@@ -18,12 +18,12 @@
   <meta name="author" content="那尔">
   <meta name="keywords" content="">
   
-    <meta name="description" content="在一个透视中的矩形上做宫格是常见需求，通常我们做宫格来帮助我们进行旋转（如Krenz的十六宫格旋转系统，当然它要求这个矩形是正方形，这是另外的课题），以及手动的贴图法——将一个二维形状贴到三维的表面上，或者做对称…… 平常是如何做宫格的？以十六宫格（最常见）举例，我们会打交叉，做平行线，得到四宫格，然后再对这四个宫格任取一个再做一次四宫格……但这里做平行线这一步，要求你拉透视线到消失点上，这就搞得">
+    <meta name="description" content="在一个透视中的矩形上做宫格是常见需求，如果能不拉透视线就直接做的话会很方便。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="在透视方形中直接做宫格的方法">
 <meta property="og:url" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="那尔">
-<meta property="og:description" content="在一个透视中的矩形上做宫格是常见需求，通常我们做宫格来帮助我们进行旋转（如Krenz的十六宫格旋转系统，当然它要求这个矩形是正方形，这是另外的课题），以及手动的贴图法——将一个二维形状贴到三维的表面上，或者做对称…… 平常是如何做宫格的？以十六宫格（最常见）举例，我们会打交叉，做平行线，得到四宫格，然后再对这四个宫格任取一个再做一次四宫格……但这里做平行线这一步，要求你拉透视线到消失点上，这就搞得">
+<meta property="og:description" content="在一个透视中的矩形上做宫格是常见需求，如果能不拉透视线就直接做的话会很方便。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/image.png">
 <meta property="og:image" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/image-1.png">
@@ -37,8 +37,9 @@
 <meta property="og:image" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/image-9.png">
 <meta property="og:image" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/image-10.png">
 <meta property="og:image" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/image-11.png">
+<meta property="og:image" content="http://example.com/2025-natsu2/09-15%E5%9C%A8%E9%80%8F%E8%A7%86%E6%96%B9%E5%BD%A2%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%81%9A%E5%AE%AB%E6%A0%BC%E7%9A%84%E6%96%B9%E6%B3%95/image-12.png">
 <meta property="article:published_time" content="2025-09-15T03:08:00.000Z">
-<meta property="article:modified_time" content="2025-09-15T03:11:20.106Z">
+<meta property="article:modified_time" content="2025-09-15T10:50:46.551Z">
 <meta property="article:author" content="那尔">
 <meta property="article:tag" content="绘画">
 <meta property="article:tag" content="透视">
@@ -204,7 +205,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.8k 字
+      1.9k 字
     </span>
   
 
@@ -285,6 +286,8 @@
 <p><img src="image-11.png" alt="Science!"></p>
 <p>看到这个俯视图，你可能会思考，我能不能让这个三角形是等腰三角形，让我直接把这条边的<strong>实际长度</strong>投影到原线上？确实是可以的，相应的方法称为<strong>测点法</strong>，但这里不表。</p>
 <p>鲁米斯的方法有一个前提——我做的辅助线，全是在地面上的，但这个前提，其实是不必要的，取消这个前提，就能够得出上面的结论了。</p>
+<p>当然，鲁米斯方法最酷的地方在于，你能轻易地把原线上的任意比例投影到变线上，这在绘制间隔的柱子等情况下极其方便。而且在这原线上的比例，你不需要画的完全精确——<strong>随便有点意思就行了，骗过眼睛是很容易的</strong>。</p>
+<p><img src="image-12.png" alt=""></p>
 
             </div>
             <hr>
