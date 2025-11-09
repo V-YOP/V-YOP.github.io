@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宫格辅助线生成器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .controls {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .preview {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .control-group h2 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            border-bottom: 1px solid #e1e8ed;
+            padding-bottom: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            color: #666;
+        }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+        }
+        
+        .color-picker input {
+            width: 50px;
+            height: 40px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .drop-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: #ecf0f1;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .drop-area:hover, .drop-area.dragover {
+            background-color: #d6eaf8;
+            border-color: #2980b9;
+        }
+        
+        .drop-area p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .grid-preview {
+            width: 100%;
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .info-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .info-box p {
+            margin-bottom: 8px;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background-color: #2c3e50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .global-drop-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(52, 152, 219, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .global-drop-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .drop-message {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="global-drop-overlay" id="globalDropOverlay">
+        <div class="drop-message">
+            <p>松开鼠标以上传图像</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>宫格辅助线生成器</h1>
+        <p class="description">拖放图像或Ctrl+V上传，生成自定义宫格辅助线</p>
+        
+        <div class="app-container">
+            <div class="controls">
+                <div class="control-group">
+                    <h2>图像设置</h2>
+                    
+                    <div class="form-group">
+                        <label for="imageUpload">上传图像</label>
+                        <div class="drop-area" id="dropArea">
+                            <p>拖放图像文件到这里，或点击上传，或Ctrl+V粘贴</p>
+                            <button class="btn" id="uploadBtn">选择图像文件</button>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        </div>
+                        <img id="imagePreview" class="image-preview" alt="上传的图像预览">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scale">缩放比例: <span id="scaleValue" class="value-display">1</span></label>
+                        <input type="range" id="scale" min="0.5" max="3" step="0.1" value="1">
+                        <div class="range-values">
+                            <span>0.5x</span>
+                            <span>1x</span>
+                            <span>1.5x</span>
+                            <span>2x</span>
+                            <span>2.5x</span>
+                            <span>3x</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h2>宫格设置</h2>
+                    
+                    <div class="form-group">
+                        <label for="horizontalGrids">横向格子数: <span id="horizontalGridsValue" class="value-display">4</span></label>
+                        <input type="range" id="horizontalGrids" min="2" max="20" value="4">
+                        <div class="range-values">
+                            <span>2</span>
+                            <span>5</span>
+                            <span>10</span>
+                            <span>15</span>
+                            <span>20</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="verticalGrids">纵向格子数: <span id="verticalGridsValue" class="value-display">4</span></label>
+                        <input type="range" id="verticalGrids" min="2" max="20" value="4">
+                        <div class="range-values">
+                            <span>2</span>
+                            <span>5</span>
+                            <span>10</span>
+                            <span>15</span>
+                            <span>20</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gridColor">宫格颜色</label>
+                        <div class="color-picker">
+                            <input type="color" id="gridColor" value="#ff0000">
+                            <span id="colorValue">红色 (#ff0000)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" id="generateBtn" disabled>生成宫格辅助线</button>
+                
+                <div class="info-box" id="infoBox">
+                    <p id="gridInfo">宫格信息将在这里显示</p>
+                    <p id="sizeInfo">尺寸信息将在这里显示</p>
+                </div>
+            </div>
+            
+            <div class="preview">
+                <div class="control-group">
+                    <h2>预览与下载</h2>
+                    <img id="gridPreview" class="grid-preview" alt="宫格辅助线预览">
+                    <button class="btn" id="downloadBtn" disabled>下载宫格图像</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM元素
+            const imageUpload = document.getElementById('imageUpload');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const dropArea = document.getElementById('dropArea');
+            const globalDropOverlay = document.getElementById('globalDropOverlay');
+            const imagePreview = document.getElementById('imagePreview');
+            const generateBtn = document.getElementById('generateBtn');
+            const gridPreview = document.getElementById('gridPreview');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const infoBox = document.getElementById('infoBox');
+            const gridInfo = document.getElementById('gridInfo');
+            const sizeInfo = document.getElementById('sizeInfo');
+            
+            // 配置元素
+            const scaleSlider = document.getElementById('scale');
+            const scaleValue = document.getElementById('scaleValue');
+            const horizontalGridsSlider = document.getElementById('horizontalGrids');
+            const horizontalGridsValue = document.getElementById('horizontalGridsValue');
+            const verticalGridsSlider = document.getElementById('verticalGrids');
+            const verticalGridsValue = document.getElementById('verticalGridsValue');
+            const gridColorPicker = document.getElementById('gridColor');
+            const colorValue = document.getElementById('colorValue');
+            
+            // 变量
+            let uploadedImage = null;
+            let gridCanvas = null;
+            
+            // 事件监听器
+            uploadBtn.addEventListener('click', () => imageUpload.click());
+            imageUpload.addEventListener('change', handleImageUpload);
+            
+            // 拖放事件 - 局部区域
+            dropArea.addEventListener('dragover', handleDragOver);
+            dropArea.addEventListener('drop', handleDrop);
+            
+            // 拖放事件 - 全局区域
+            document.addEventListener('dragover', handleGlobalDragOver);
+            document.addEventListener('dragleave', handleGlobalDragLeave);
+            document.addEventListener('drop', handleGlobalDrop);
+            
+            // Ctrl+V 粘贴事件
+            document.addEventListener('paste', handlePaste);
+            
+            // 生成和下载按钮
+            generateBtn.addEventListener('click', generateGrid);
+            downloadBtn.addEventListener('click', downloadGrid);
+            
+            // 滑块更新
+            scaleSlider.addEventListener('input', () => {
+                scaleValue.textContent = scaleSlider.value;
+            });
+            
+            horizontalGridsSlider.addEventListener('input', () => {
+                horizontalGridsValue.textContent = horizontalGridsSlider.value;
+            });
+            
+            verticalGridsSlider.addEventListener('input', () => {
+                verticalGridsValue.textContent = verticalGridsSlider.value;
+            });
+            
+            gridColorPicker.addEventListener('input', () => {
+                colorValue.textContent = gridColorPicker.value;
+            });
+            
+            // 处理图像上传
+            function handleImageUpload(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    processImageFile(file);
+                }
+            }
+            
+            // 处理拖放
+            function handleDragOver(e) {
+                e.preventDefault();
+                dropArea.classList.add('dragover');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                dropArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    processImageFile(files[0]);
+                }
+            }
+            
+            // 全局拖放处理
+            function handleGlobalDragOver(e) {
+                e.preventDefault();
+                if (e.dataTransfer.types.includes('Files')) {
+                    globalDropOverlay.classList.add('active');
+                }
+            }
+            
+            function handleGlobalDragLeave(e) {
+                if (!e.relatedTarget || e.relatedTarget.nodeName === 'HTML') {
+                    globalDropOverlay.classList.remove('active');
+                }
+            }
+            
+            function handleGlobalDrop(e) {
+                e.preventDefault();
+                globalDropOverlay.classList.remove('active');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    processImageFile(files[0]);
+                }
+            }
+            
+            // 处理粘贴事件
+            function handlePaste(e) {
+                const items = e.clipboardData?.items;
+                if (!items) return;
+                
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.startsWith('image/')) {
+                        const file = items[i].getAsFile();
+                        if (file) {
+                            processImageFile(file);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // 处理图像文件
+            function processImageFile(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage = new Image();
+                    uploadedImage.onload = function() {
+                        // 显示预览
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        
+                        // 启用生成按钮
+                        generateBtn.disabled = false;
+                        
+                        // 重置预览和下载
+                        gridPreview.style.display = 'none';
+                        downloadBtn.disabled = true;
+                        infoBox.style.display = 'none';
+                    };
+                    uploadedImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // 生成宫格辅助线
+            function generateGrid() {
+                if (!uploadedImage) return;
+                
+                const scale = parseFloat(scaleSlider.value);
+                const horizontalGrids = parseInt(horizontalGridsSlider.value);
+                const verticalGrids = parseInt(verticalGridsSlider.value);
+                const gridColor = gridColorPicker.value;
+                
+                // 计算缩放后的尺寸
+                const scaledWidth = Math.round(uploadedImage.width * scale);
+                const scaledHeight = Math.round(uploadedImage.height * scale);
+                
+                // 创建画布
+                if (!gridCanvas) {
+                    gridCanvas = document.createElement('canvas');
+                }
+                gridCanvas.width = scaledWidth;
+                gridCanvas.height = scaledHeight;
+                const ctx = gridCanvas.getContext('2d');
+                
+                // 清空画布（透明背景）
+                ctx.clearRect(0, 0, scaledWidth, scaledHeight);
+                
+                // 计算格子大小
+                const cellWidth = scaledWidth / horizontalGrids;
+                const cellHeight = scaledHeight / verticalGrids;
+                
+                // 绘制宫格线
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth = 1;
+                
+                // 绘制垂直线
+                for (let i = 0; i <= horizontalGrids; i++) {
+                    const x = i * cellWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, scaledHeight);
+                    ctx.stroke();
+                }
+                
+                // 绘制水平线
+                for (let i = 0; i <= verticalGrids; i++) {
+                    const y = i * cellHeight;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(scaledWidth, y);
+                    ctx.stroke();
+                }
+                
+                // 显示预览
+                gridPreview.src = gridCanvas.toDataURL('image/png');
+                gridPreview.style.display = 'block';
+                
+                // 启用下载按钮
+                downloadBtn.disabled = false;
+                
+                // 显示信息
+                gridInfo.textContent = `宫格布局: ${horizontalGrids} × ${verticalGrids} 个格子`;
+                sizeInfo.textContent = `图像尺寸: ${scaledWidth} × ${scaledHeight} 像素`;
+                infoBox.style.display = 'block';
+            }
+            
+            // 下载宫格图像
+            function downloadGrid() {
+                if (!gridCanvas) return;
+                
+                const link = document.createElement('a');
+                link.download = `grid-${Date.now()}.png`;
+                link.href = gridCanvas.toDataURL('image/png');
+                link.click();
+            }
+        });
+    </script>
+</body>
+</html>
