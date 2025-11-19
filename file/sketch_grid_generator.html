@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>速写底图生成器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .app-description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-section {
+            flex: 2;
+            min-width: 500px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .size-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .size-inputs > div {
+            flex: 1;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        .preview-container {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            background: #f9f9f9;
+        }
+        
+        #grid-canvas {
+            max-width: 100%;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .controls .btn {
+            flex: 1;
+        }
+        
+        .grid-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .input-section, .preview-section {
+                min-width: 100%;
+            }
+            
+            .size-inputs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>速写底图生成器</h1>
+            <p class="app-description">输入标题、行列数和单元格尺寸，快速生成用于速写的网格底图，可直接下载使用。</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="input-section">
+                <h2>参数设置</h2>
+                <div class="form-group">
+                    <label for="title">底图标题</label>
+                    <input type="text" id="title" placeholder="请输入标题" value="速写底图">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rows">行数</label>
+                    <input type="number" id="rows" min="1" max="50" value="5">
+                </div>
+                
+                <div class="form-group">
+                    <label for="columns">列数</label>
+                    <input type="number" id="columns" min="1" max="50" value="5">
+                </div>
+                
+                <div class="form-group">
+                    <label>单元格大小 (像素)</label>
+                    <div class="size-inputs">
+                        <div>
+                            <label for="cell-width">宽度</label>
+                            <input type="number" id="cell-width" min="10" max="200" value="50">
+                        </div>
+                        <div>
+                            <label for="cell-height">高度</label>
+                            <input type="number" id="cell-height" min="10" max="200" value="50">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="line-color">线条颜色</label>
+                    <input type="color" id="line-color" value="#cccccc">
+                </div>
+                
+                <div class="form-group">
+                    <label for="line-width">线条粗细</label>
+                    <input type="range" id="line-width" min="1" max="5" value="1">
+                    <span id="line-width-value">1px</span>
+                </div>
+                
+                <button id="generate-btn" class="btn">生成底图</button>
+            </section>
+            
+            <section class="preview-section">
+                <h2>预览</h2>
+                <div class="preview-container" id="preview">
+                    <canvas id="grid-canvas" width="600" height="600"></canvas>
+                </div>
+                
+                <div class="grid-info" id="grid-info">
+                    网格信息：5行 × 5列，单元格大小：50px × 50px，总尺寸：250px × 250px
+                </div>
+                
+                <div class="controls">
+                    <button id="download-btn" class="btn btn-secondary">下载底图</button>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>© 2023 速写底图生成器 | 为艺术创作提供便利</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const titleInput = document.getElementById('title');
+            const rowsInput = document.getElementById('rows');
+            const columnsInput = document.getElementById('columns');
+            const cellWidthInput = document.getElementById('cell-width');
+            const cellHeightInput = document.getElementById('cell-height');
+            const lineColorInput = document.getElementById('line-color');
+            const lineWidthInput = document.getElementById('line-width');
+            const lineWidthValue = document.getElementById('line-width-value');
+            const generateBtn = document.getElementById('generate-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const gridInfo = document.getElementById('grid-info');
+            const canvas = document.getElementById('grid-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 更新线条粗细显示
+            lineWidthInput.addEventListener('input', function() {
+                lineWidthValue.textContent = this.value + 'px';
+                generateGrid();
+            });
+            
+            // 初始生成网格
+            generateGrid();
+            
+            // 生成网格函数
+            function generateGrid() {
+                const title = titleInput.value || '速写底图';
+                const rows = parseInt(rowsInput.value) || 1;
+                const columns = parseInt(columnsInput.value) || 1;
+                const cellWidth = parseInt(cellWidthInput.value) || 50;
+                const cellHeight = parseInt(cellHeightInput.value) || 50;
+                const lineColor = lineColorInput.value;
+                const lineWidth = parseInt(lineWidthInput.value);
+                
+                // 计算画布大小
+                const canvasWidth = columns * cellWidth + 120; // 添加边距
+                const canvasHeight = rows * cellHeight + 120; // 添加边距
+                
+                // 设置画布尺寸
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                
+                // 清空画布
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                
+                // 设置背景
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                
+                // 绘制标题
+                ctx.font = 'bold 24px Arial';
+                ctx.fillStyle = '#333333';
+                ctx.textAlign = 'center';
+                ctx.fillText(title, canvasWidth / 2, 40);
+                
+                // 绘制网格信息
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#666666';
+                ctx.fillText(`${rows}行 × ${columns}列，单元格: ${cellWidth}px × ${cellHeight}px`, canvasWidth / 2, canvasHeight - 20);
+                
+                // 绘制网格
+                ctx.strokeStyle = lineColor;
+                ctx.lineWidth = lineWidth;
+                
+                // 计算网格起始位置（居中）
+                const gridStartX = (canvasWidth - columns * cellWidth) / 2;
+                const gridStartY = 60; // 标题下方
+                
+                // 绘制垂直线
+                for (let i = 0; i <= columns; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(gridStartX + i * cellWidth, gridStartY);
+                    ctx.lineTo(gridStartX + i * cellWidth, gridStartY + rows * cellHeight);
+                    ctx.stroke();
+                }
+                
+                // 绘制水平线
+                for (let i = 0; i <= rows; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(gridStartX, gridStartY + i * cellHeight);
+                    ctx.lineTo(gridStartX + columns * cellWidth, gridStartY + i * cellHeight);
+                    ctx.stroke();
+                }
+                
+                // 绘制行列编号
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#999999';
+                
+                // 行号
+                for (let i = 0; i < rows; i++) {
+                    ctx.fillText(i + 1, gridStartX - 15, gridStartY + i * cellHeight + cellHeight / 2);
+                }
+                
+                // 列号
+                for (let i = 0; i < columns; i++) {
+                    ctx.fillText(i + 1, gridStartX + i * cellWidth + cellWidth / 2, gridStartY - 10);
+                }
+                
+                // 更新网格信息
+                const totalWidth = columns * cellWidth;
+                const totalHeight = rows * cellHeight;
+                gridInfo.textContent = `网格信息：${rows}行 × ${columns}列，单元格大小：${cellWidth}px × ${cellHeight}px，总尺寸：${totalWidth}px × ${totalHeight}px`;
+            }
+            
+            // 下载功能
+            function downloadGrid() {
+                const link = document.createElement('a');
+                link.download = `${titleInput.value || '速写底图'}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+            
+            // 事件监听
+            generateBtn.addEventListener('click', generateGrid);
+            downloadBtn.addEventListener('click', downloadGrid);
+            
+            // 输入变化时实时更新网格
+            titleInput.addEventListener('input', generateGrid);
+            rowsInput.addEventListener('input', generateGrid);
+            columnsInput.addEventListener('input', generateGrid);
+            cellWidthInput.addEventListener('input', generateGrid);
+            cellHeightInput.addEventListener('input', generateGrid);
+            lineColorInput.addEventListener('input', generateGrid);
+        });
+    </script>
+</body>
+</html>
