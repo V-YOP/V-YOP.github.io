@@ -1,35 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>速写底图生成器</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tweakpane@4.0.1/dist/tweakpane.min.css">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
             min-height: 100vh;
+            padding: 20px;
+            color: #333;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
@@ -37,160 +41,120 @@
         h1 {
             color: #2c3e50;
             margin-bottom: 10px;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         
-        .app-description {
+        .subtitle {
             color: #7f8c8d;
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto;
+            font-size: 1.2rem;
         }
         
-        .main-content {
+        .content {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 20px;
         }
         
-        .input-section {
+        .controls {
             flex: 1;
             min-width: 300px;
-            background: white;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .preview-section {
+        .preview {
             flex: 2;
-            min-width: 500px;
-            background: white;
-            padding: 25px;
+            min-width: 400px;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
         
-        .form-group {
+        .canvas-container {
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: auto;
+            background-color: #f9f9f9;
             margin-bottom: 20px;
         }
         
-        label {
+        canvas {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
+            background-color: white;
         }
         
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-        
-        .size-inputs {
+        .actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
         
-        .size-inputs > div {
-            flex: 1;
-        }
-        
-        .btn {
-            background: linear-gradient(to right, #3498db, #2c3e50);
-            color: white;
+        button {
+            padding: 10px 20px;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
-        .btn:hover {
+        button:hover {
+            background: #2980b9;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
-        .btn-secondary {
-            background: linear-gradient(to right, #2ecc71, #27ae60);
+        button:active {
+            transform: translateY(0);
         }
         
-        .preview-container {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-            background: #f9f9f9;
+        .export-btn {
+            background: #2ecc71;
         }
         
-        #grid-canvas {
-            max-width: 100%;
-            border: 1px solid #eee;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .export-btn:hover {
+            background: #27ae60;
         }
         
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+        .reset-btn {
+            background: #e74c3c;
         }
         
-        .controls .btn {
-            flex: 1;
-        }
-        
-        .grid-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            color: #666;
+        .reset-btn:hover {
+            background: #c0392b;
         }
         
         footer {
             text-align: center;
-            margin-top: 40px;
+            padding: 20px;
             color: #7f8c8d;
             font-size: 0.9rem;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         @media (max-width: 768px) {
-            .main-content {
+            .content {
                 flex-direction: column;
             }
             
-            .input-section, .preview-section {
+            .controls, .preview {
                 min-width: 100%;
             }
             
-            .size-inputs {
-                flex-direction: column;
+            .canvas-container {
+                height: 400px;
             }
         }
     </style>
@@ -199,200 +163,174 @@
     <div class="container">
         <header>
             <h1>速写底图生成器</h1>
-            <p class="app-description">输入标题、行列数和单元格尺寸，快速生成用于速写的网格底图，可直接下载使用。</p>
+            <p class="subtitle">自定义网格参数，生成适合速写的底图</p>
         </header>
         
-        <div class="main-content">
-            <section class="input-section">
-                <h2>参数设置</h2>
-                <div class="form-group">
-                    <label for="title">底图标题</label>
-                    <input type="text" id="title" placeholder="请输入标题" value="速写底图">
-                </div>
-                
-                <div class="form-group">
-                    <label for="rows">行数</label>
-                    <input type="number" id="rows" min="1" max="50" value="5">
-                </div>
-                
-                <div class="form-group">
-                    <label for="columns">列数</label>
-                    <input type="number" id="columns" min="1" max="50" value="5">
-                </div>
-                
-                <div class="form-group">
-                    <label>单元格大小 (像素)</label>
-                    <div class="size-inputs">
-                        <div>
-                            <label for="cell-width">宽度</label>
-                            <input type="number" id="cell-width" min="10" max="200" value="50">
-                        </div>
-                        <div>
-                            <label for="cell-height">高度</label>
-                            <input type="number" id="cell-height" min="10" max="200" value="50">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="line-color">线条颜色</label>
-                    <input type="color" id="line-color" value="#cccccc">
-                </div>
-                
-                <div class="form-group">
-                    <label for="line-width">线条粗细</label>
-                    <input type="range" id="line-width" min="1" max="5" value="1">
-                    <span id="line-width-value">1px</span>
-                </div>
-                
-                <button id="generate-btn" class="btn">生成底图</button>
-            </section>
+        <div class="content">
+            <div class="controls">
+                <div id="pane-container"></div>
+            </div>
             
-            <section class="preview-section">
-                <h2>预览</h2>
-                <div class="preview-container" id="preview">
-                    <canvas id="grid-canvas" width="600" height="600"></canvas>
+            <div class="preview">
+                <div class="canvas-container">
+                    <canvas id="gridCanvas" style="width: 100%"></canvas>
                 </div>
                 
-                <div class="grid-info" id="grid-info">
-                    网格信息：5行 × 5列，单元格大小：50px × 50px，总尺寸：250px × 250px
+                <div class="actions">
+                    <button id="updateBtn">更新预览</button>
+                    <button id="exportBtn" class="export-btn">导出图片</button>
+                    <button id="resetBtn" class="reset-btn">重置参数</button>
                 </div>
-                
-                <div class="controls">
-                    <button id="download-btn" class="btn btn-secondary">下载底图</button>
-                </div>
-            </section>
+            </div>
         </div>
         
         <footer>
-            <p>© 2023 速写底图生成器 | 为艺术创作提供便利</p>
+            <p>© 2023 速写底图生成器 | 使用Canvas和Tweakpane构建</p>
         </footer>
     </div>
+        <script type="module">
+        import {Pane} from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
+        // ...
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const titleInput = document.getElementById('title');
-            const rowsInput = document.getElementById('rows');
-            const columnsInput = document.getElementById('columns');
-            const cellWidthInput = document.getElementById('cell-width');
-            const cellHeightInput = document.getElementById('cell-height');
-            const lineColorInput = document.getElementById('line-color');
-            const lineWidthInput = document.getElementById('line-width');
-            const lineWidthValue = document.getElementById('line-width-value');
-            const generateBtn = document.getElementById('generate-btn');
-            const downloadBtn = document.getElementById('download-btn');
-            const gridInfo = document.getElementById('grid-info');
-            const canvas = document.getElementById('grid-canvas');
-            const ctx = canvas.getContext('2d');
+        // 初始化参数
+        const params = {
+            title: '速写底图',
+            rows: 5,
+            columns: 5,
+            cellWidth: 400,
+            cellHeight: 400,
+            lineColor: '#3498db',
+            lineWidth: 1,
+            titleSize: 24,
+            titleColor: '#2c3e50',
+            backgroundColor: '#ffffff',
+            showNumbers: false
+        };
+
+        // 初始化Tweakpane
+        const pane = new Pane({
+            container: document.getElementById('pane-container')
+        });
+
+        // 添加参数控件
+        pane.addBinding(params, 'title');
+        pane.addBinding(params, 'rows', { min: 1, max: 20, step: 1 });
+        pane.addBinding(params, 'columns', { min: 1, max: 20, step: 1 });
+        pane.addBinding(params, 'cellWidth', { min: 100, max: 2000, step: 100 });
+        pane.addBinding(params, 'cellHeight', { min: 100, max: 2000, step: 100 });
+        pane.addBinding(params, 'lineColor');
+        pane.addBinding(params, 'lineWidth', { min: 0.5, max: 5, step: 0.5 });
+        pane.addBinding(params, 'titleSize', { min: 12, max: 48, step: 2 });
+        pane.addBinding(params, 'titleColor');
+        pane.addBinding(params, 'backgroundColor');
+        pane.addBinding(params, 'showNumbers');
+
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('gridCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 更新Canvas尺寸和绘制网格
+        function updateCanvas() {
+            // 计算Canvas尺寸
+            const canvasWidth = params.columns * params.cellWidth + 100;
+            const canvasHeight = params.rows * params.cellHeight + 100;
             
-            // 更新线条粗细显示
-            lineWidthInput.addEventListener('input', function() {
-                lineWidthValue.textContent = this.value + 'px';
-                generateGrid();
-            });
+            // 设置Canvas尺寸
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
             
-            // 初始生成网格
-            generateGrid();
+            // 绘制背景
+            ctx.fillStyle = params.backgroundColor;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
             
-            // 生成网格函数
-            function generateGrid() {
-                const title = titleInput.value || '速写底图';
-                const rows = parseInt(rowsInput.value) || 1;
-                const columns = parseInt(columnsInput.value) || 1;
-                const cellWidth = parseInt(cellWidthInput.value) || 50;
-                const cellHeight = parseInt(cellHeightInput.value) || 50;
-                const lineColor = lineColorInput.value;
-                const lineWidth = parseInt(lineWidthInput.value);
-                
-                // 计算画布大小
-                const canvasWidth = columns * cellWidth + 120; // 添加边距
-                const canvasHeight = rows * cellHeight + 120; // 添加边距
-                
-                // 设置画布尺寸
-                canvas.width = canvasWidth;
-                canvas.height = canvasHeight;
-                
-                // 清空画布
-                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-                
-                // 设置背景
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-                
-                // 绘制标题
-                ctx.font = 'bold 24px Arial';
-                ctx.fillStyle = '#333333';
-                ctx.textAlign = 'center';
-                ctx.fillText(title, canvasWidth / 2, 40);
-                
-                // 绘制网格信息
-                ctx.font = '14px Arial';
-                ctx.fillStyle = '#666666';
-                ctx.fillText(`${rows}行 × ${columns}列，单元格: ${cellWidth}px × ${cellHeight}px`, canvasWidth / 2, canvasHeight - 20);
-                
-                // 绘制网格
-                ctx.strokeStyle = lineColor;
-                ctx.lineWidth = lineWidth;
-                
-                // 计算网格起始位置（居中）
-                const gridStartX = (canvasWidth - columns * cellWidth) / 2;
-                const gridStartY = 60; // 标题下方
-                
-                // 绘制垂直线
-                for (let i = 0; i <= columns; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(gridStartX + i * cellWidth, gridStartY);
-                    ctx.lineTo(gridStartX + i * cellWidth, gridStartY + rows * cellHeight);
-                    ctx.stroke();
-                }
-                
-                // 绘制水平线
-                for (let i = 0; i <= rows; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(gridStartX, gridStartY + i * cellHeight);
-                    ctx.lineTo(gridStartX + columns * cellWidth, gridStartY + i * cellHeight);
-                    ctx.stroke();
-                }
-                
-                // 绘制行列编号
+            // 绘制标题
+            ctx.fillStyle = params.titleColor;
+            ctx.font = `bold ${params.titleSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(params.title, canvasWidth / 2, 40);
+            
+            // 绘制网格
+            ctx.strokeStyle = params.lineColor;
+            ctx.lineWidth = params.lineWidth;
+            
+            // 计算网格起始位置（居中显示）
+            const startX = 50;
+            const startY = 70;
+            
+            // 绘制垂直线
+            for (let i = 0; i <= params.columns; i++) {
+                const x = startX + i * params.cellWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, startY);
+                ctx.lineTo(x, startY + params.rows * params.cellHeight);
+                ctx.stroke();
+            }
+            
+            // 绘制水平线
+            for (let i = 0; i <= params.rows; i++) {
+                const y = startY + i * params.cellHeight;
+                ctx.beginPath();
+                ctx.moveTo(startX, y);
+                ctx.lineTo(startX + params.columns * params.cellWidth, y);
+                ctx.stroke();
+            }
+            
+            // 绘制单元格编号（可选）
+            if (params.showNumbers) {
+                ctx.fillStyle = '#7f8c8d';
                 ctx.font = '12px Arial';
-                ctx.fillStyle = '#999999';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
                 
-                // 行号
-                for (let i = 0; i < rows; i++) {
-                    ctx.fillText(i + 1, gridStartX - 15, gridStartY + i * cellHeight + cellHeight / 2);
+                for (let row = 0; row < params.rows; row++) {
+                    for (let col = 0; col < params.columns; col++) {
+                        const x = startX + col * params.cellWidth + params.cellWidth / 2;
+                        const y = startY + row * params.cellHeight + params.cellHeight / 2;
+                        ctx.fillText(`${row+1}-${col+1}`, x, y);
+                    }
                 }
-                
-                // 列号
-                for (let i = 0; i < columns; i++) {
-                    ctx.fillText(i + 1, gridStartX + i * cellWidth + cellWidth / 2, gridStartY - 10);
-                }
-                
-                // 更新网格信息
-                const totalWidth = columns * cellWidth;
-                const totalHeight = rows * cellHeight;
-                gridInfo.textContent = `网格信息：${rows}行 × ${columns}列，单元格大小：${cellWidth}px × ${cellHeight}px，总尺寸：${totalWidth}px × ${totalHeight}px`;
             }
+        }
+
+        // 初始化Canvas
+        updateCanvas();
+
+        // 更新按钮事件
+        document.getElementById('updateBtn').addEventListener('click', updateCanvas);
+
+        // 导出按钮事件
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.download = `${params.title}-${params.rows}x${params.columns}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // 重置按钮事件
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            // 重置参数
+            params.title = '速写底图';
+            params.rows = 5;
+            params.columns = 5;
+            params.cellWidth = 100;
+            params.cellHeight = 100;
+            params.lineColor = '#3498db';
+            params.lineWidth = 1;
+            params.titleSize = 24;
+            params.titleColor = '#2c3e50';
+            params.backgroundColor = '#ffffff';
+            params.showNumbers = true;
             
-            // 下载功能
-            function downloadGrid() {
-                const link = document.createElement('a');
-                link.download = `${titleInput.value || '速写底图'}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            }
+            // 刷新Tweakpane
+            pane.refresh();
             
-            // 事件监听
-            generateBtn.addEventListener('click', generateGrid);
-            downloadBtn.addEventListener('click', downloadGrid);
-            
-            // 输入变化时实时更新网格
-            titleInput.addEventListener('input', generateGrid);
-            rowsInput.addEventListener('input', generateGrid);
-            columnsInput.addEventListener('input', generateGrid);
-            cellWidthInput.addEventListener('input', generateGrid);
-            cellHeightInput.addEventListener('input', generateGrid);
-            lineColorInput.addEventListener('input', generateGrid);
+            // 更新Canvas
+            updateCanvas();
+        });
+
+        // 添加参数变化监听
+        pane.on('change', function() {
+            updateCanvas();
         });
     </script>
 </body>
