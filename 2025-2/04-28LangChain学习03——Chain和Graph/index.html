@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Break the Chain!">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 学习 03——Chain 和 Graph">
+<meta property="og:url" content="http://example.com/2025-2/04-28LangChain%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94Chain%E5%92%8CGraph/index.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="Break the Chain!">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025-2/04-28LangChain%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94Chain%E5%92%8CGraph/index_3_0.png">
+<meta property="article:published_time" content="2025-04-28T01:50:00.000Z">
+<meta property="article:modified_time" content="2025-04-28T01:59:06.445Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025-2/04-28LangChain%E5%AD%A6%E4%B9%A003%E2%80%94%E2%80%94Chain%E5%92%8CGraph/index_3_0.png">
+  
+  
+  <title>LangChain 学习 03——Chain 和 Graph - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="LangChain 学习 03——Chain 和 Graph">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-04-28 09:50" pubdate>
+        2025年4月28日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.1k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">LangChain 学习 03——Chain 和 Graph</h1>
+            
+            <div class="markdown-body">
+              <p>这篇实际上写于 3 月 31 日，但一直没贴出来……</p>
+<p>这里记一下 jupyter notebook 转 markdown 的命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">jupyter nbconvert --to markdown your_notebook.ipynb<br></code></pre></div></td></tr></table></figure>
+<h1 id="What-is-the-“Chain”"><a href="#What-is-the-“Chain”" class="headerlink" title="What is the “Chain”?"></a>What is the “Chain”?</h1><p>在一切开始之前，先解决一个问题——LangChain 的 Chain，它究竟是个什么东西？</p>
+<p>实际上，LangChain 抽象的 Runnable，是可以进行<strong>组合</strong>的，但就现象上来说，是把它们<strong>前后串联起来</strong>，把这个 Runnable 的输出作为下一个 Runnable 的输入。串联起来的一系列 Runnable，它本身仍旧是一个 Runnable。而且 Runnable 也能够和普通的函数去进行组合。</p>
+<p>下面使用两种方法实现 AI 翻译，来体现这种 Chain 的强大，<strong>注意到使用 Chain 能无痛地使用流式输出，但使用自定义函数参与这个 Chain 时，只有生成器函数能使用流式输出，对一般的函数，LangChain 会等到所有 Chunk 都收集完后把结果汇总再送给该函数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> Iterator<br><span class="hljs-keyword">from</span> langchain_deepseek <span class="hljs-keyword">import</span> ChatDeepSeek<br><span class="hljs-keyword">from</span> langchain_core.messages <span class="hljs-keyword">import</span> BaseMessage, BaseMessageChunk<br><span class="hljs-keyword">from</span> langchain_core.prompts <span class="hljs-keyword">import</span> ChatPromptTemplate<br><br>model = ChatDeepSeek(model = <span class="hljs-string">&#x27;deepseek-chat&#x27;</span>)<br>prompt_template = ChatPromptTemplate([<br>    (<span class="hljs-string">&#x27;system&#x27;</span>, <span class="hljs-string">&#x27;你是一个 AI 翻译助手，你负责把用户输入的内容从 &#123;input_lang&#125; 翻译成 &#123;output_lang&#125;&#x27;</span>),<br>    (<span class="hljs-string">&#x27;human&#x27;</span>, <span class="hljs-string">&#x27;&#123;text&#125;&#x27;</span>)<br>])<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">translate</span>(<span class="hljs-params">input_lang, output_lang, text</span>):<br>    prompt = prompt_template.invoke(&#123;<span class="hljs-string">&#x27;input_lang&#x27;</span>: input_lang, <span class="hljs-string">&#x27;output_lang&#x27;</span>: output_lang, <span class="hljs-string">&#x27;text&#x27;</span>: text&#125;)<br>    response = model.invoke(prompt)<br>    <span class="hljs-keyword">return</span> response.content<br>display(translate(<span class="hljs-string">&#x27;english&#x27;</span>, <span class="hljs-string">&#x27;chinese&#x27;</span>, <span class="hljs-string">&#x27;Hello, World!&#x27;</span>))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">extract_text</span>(<span class="hljs-params"><span class="hljs-built_in">iter</span>: Iterator[BaseMessage]</span>) -&gt; Iterator[<span class="hljs-built_in">str</span>]:<br>    <span class="hljs-comment"># 这里的 iter 是 Iterator[Input]</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">iter</span>:<br>        <span class="hljs-keyword">yield</span> i.content<br><br>another_translate =  (<br>    prompt_template <br>        | model <br>        | extract_text <span class="hljs-comment"># 注意这里必须使用一个生成器函数，如果使用一个 lambda x: x.content，将无法正确处理流式输出</span><br>)<br><br>display(another_translate.invoke(&#123;<span class="hljs-string">&#x27;input_lang&#x27;</span>: <span class="hljs-string">&#x27;english&#x27;</span>, <span class="hljs-string">&#x27;output_lang&#x27;</span>: <span class="hljs-string">&#x27;chinese&#x27;</span>, <span class="hljs-string">&#x27;text&#x27;</span>: <span class="hljs-string">&#x27;Hello, World!&#x27;</span>&#125;))<br><span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> another_translate.stream(&#123;<span class="hljs-string">&#x27;input_lang&#x27;</span>: <span class="hljs-string">&#x27;english&#x27;</span>, <span class="hljs-string">&#x27;output_lang&#x27;</span>: <span class="hljs-string">&#x27;chinese&#x27;</span>, <span class="hljs-string">&#x27;text&#x27;</span>: <span class="hljs-string">&#x27;Where there is a supression, there is a struggle. Break the Chain!&#x27;</span>&#125;):<br>    <span class="hljs-built_in">print</span>(chunk, end = <span class="hljs-string">&#x27; | &#x27;</span>)<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">&#39;你好，世界！&#39;
+
+&#39;你好，世界！&#39;
+
+ | 哪里有 | 压迫 | ， | 哪里 | 就有 | 反抗 | 。 | 打破 | 枷 | 锁 | ！ |  | 
+</code></pre></div><h1 id="Chain-vs-Graph"><a href="#Chain-vs-Graph" class="headerlink" title="Chain vs Graph"></a>Chain vs Graph</h1><p>这样简单的一个需求，显然使用 LangChain 是比较舒服的，倘若我们比较蛋疼，我们硬要用 LangGraph 写呢……？实际上也行，这里为了做比较，还是写一下 LangGraph 的实现……注意到 LangGraph 的图的定义带给我们的约束——<strong>我们必须把所有参数都存在一个共享状态里，而且必须放到顶层</strong>……<strong>而且工作流的输出的结果仍然是这个共享状态</strong>，因此我们必须手动从它的结果里去取出执行结果，总之，就非常傻：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langgraph.graph <span class="hljs-keyword">import</span> StateGraph, MessagesState, START<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> TypedDict, Annotated<br><span class="hljs-keyword">from</span> langgraph.types <span class="hljs-keyword">import</span> StreamWriter<br><span class="hljs-keyword">from</span> IPython.display <span class="hljs-keyword">import</span> Image<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">StateSchema</span>(<span class="hljs-title class_ inherited__">TypedDict</span>):<br>    <span class="hljs-comment"># promptTemplate 的入参</span><br>    input_lang: <span class="hljs-built_in">str</span><br>    output_lang: <span class="hljs-built_in">str</span><br>    text: <span class="hljs-built_in">str</span><br>    <span class="hljs-comment"># promptTemplate 的返回，model 的入参</span><br>    real_prompt: <span class="hljs-built_in">list</span>[BaseMessage]<br>    <span class="hljs-comment"># model 的返回，extractor 的入参</span><br>    response: BaseMessage<br>    <span class="hljs-comment"># extractor 的返回</span><br>    translation: <span class="hljs-built_in">str</span><br><br>graph = StateGraph(state_schema=StateSchema)<br><br>graph.add_edge(START, <span class="hljs-string">&#x27;prompt_template&#x27;</span>)<br>graph.add_edge(<span class="hljs-string">&#x27;prompt_template&#x27;</span>, <span class="hljs-string">&#x27;llm&#x27;</span>)<br>graph.add_edge(<span class="hljs-string">&#x27;llm&#x27;</span>, <span class="hljs-string">&#x27;extractor&#x27;</span>)<br>graph.set_finish_point(<span class="hljs-string">&#x27;extractor&#x27;</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">prompt_node</span>(<span class="hljs-params">state: StateSchema</span>):<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-string">&#x27;real_prompt&#x27;</span>: prompt_template.invoke(state) &#125;<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">model_node</span>(<span class="hljs-params">state: StateSchema</span>):<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-string">&#x27;response&#x27;</span>: model.invoke(state[<span class="hljs-string">&#x27;real_prompt&#x27;</span>]) &#125;<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">extractor_node</span>(<span class="hljs-params">state: StateSchema</span>):<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-string">&#x27;translation&#x27;</span>: state[<span class="hljs-string">&#x27;response&#x27;</span>].content &#125;<br><br>graph.add_node(<span class="hljs-string">&#x27;prompt_template&#x27;</span>, prompt_node)<br>graph.add_node(<span class="hljs-string">&#x27;llm&#x27;</span>, model_node)<br>graph.add_node(<span class="hljs-string">&#x27;extractor&#x27;</span>, extractor_node)<br><br>app = graph.<span class="hljs-built_in">compile</span>()<br>display(Image(app.get_graph().draw_mermaid_png()))<br><span class="hljs-comment"># stream_mode 可以传多个值，这样便能够同时显示 LLM 的 Chunk 和状态变迁</span><br><span class="hljs-comment"># 每个 stream_mode，对应的值（data）的类型都是 stream_mode 为相应值时的类型</span><br><span class="hljs-comment"># 如 stream_mode 为 messages 时，data 是一个二元组 (AIMessageChunk, metadata) ，metadata 表示是哪一步的 llm 的输出</span><br><span class="hljs-comment"># 如 stream_mode 为 values 时，data 就是图的状态</span><br><span class="hljs-keyword">for</span> stream_mode, data <span class="hljs-keyword">in</span> app.stream(&#123;<span class="hljs-string">&#x27;input_lang&#x27;</span>: <span class="hljs-string">&#x27;english&#x27;</span>, <span class="hljs-string">&#x27;output_lang&#x27;</span>: <span class="hljs-string">&#x27;chinese&#x27;</span>, <span class="hljs-string">&#x27;text&#x27;</span>: <span class="hljs-string">&#x27;Where there is a supression, there is a struggle. Break the Chain!&#x27;</span>&#125;, stream_mode=[<span class="hljs-string">&#x27;messages&#x27;</span>, <span class="hljs-string">&#x27;values&#x27;</span>]):<br>    <span class="hljs-keyword">if</span> stream_mode == <span class="hljs-string">&#x27;messages&#x27;</span>:<br>        <span class="hljs-comment"># LLM chunk</span><br>        <span class="hljs-built_in">print</span>(data[<span class="hljs-number">0</span>].content, end = <span class="hljs-string">&#x27; | &#x27;</span>)<br>    <span class="hljs-keyword">elif</span> <span class="hljs-string">&#x27;translation&#x27;</span> <span class="hljs-keyword">in</span> data:<br>        <span class="hljs-comment"># state</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\nresult:&#x27;</span>, data[<span class="hljs-string">&#x27;translation&#x27;</span>])<br></code></pre></div></td></tr></table></figure>
+<p><img src="index_3_0.png" alt="png"></p>
+<div class="hljs code-wrapper"><pre><code class="hljs"> | 哪里有 | 压迫 | ， | 哪里 | 就有 | 反抗 | 。 | 打破 | 枷 | 锁 | ！ |  | result: 哪里有压迫，哪里就有反抗。打破枷锁！
+
+
+The Kernel crashed while executing code in the current cell or a previous cell. 
+
+
+Please review the code in the cell(s) to identify a possible cause of the failure. 
+
+
+Click &lt;a href=&#39;https://aka.ms/vscodeJupyterKernelCrash&#39;&gt;here&lt;/a&gt; for more info. 
+
+
+View Jupyter &lt;a href=&#39;command:jupyter.viewOutput&#39;&gt;log&lt;/a&gt; for further details.
+</code></pre></div><p>而且这里使用 LangGraph 的话有个问题——<strong>流式输出是假的</strong>——<strong>LangGraph 的流式的原子是 Node</strong>。</p>
+<p>之前测试的时候，我以为 LangGraph 配置了什么全局变量或者线程局部变量，让 LangGraph 能够把 invoke 直接变成 stream，但这个想法其实是错误的——LangGraph 调用 AI 时，底层可能始终是使用的 stream，只是我们调用图的 stream 方法的时候，它把这些消息 yield 出来。</p>
+<p>也就是说，<strong>我之前以为每个消息的 Chunk 都会“走完整个图”，这是错误的，只有完整的消息会触发图的下一步动作（也就是说，这里没有任何魔法，不要想象背后有什么把 invoke 变成 stream 的神奇操作），只不过 LangGraph 能够把当前接受到的 Chunk yield 给你，让你方便给前端做显示罢了</strong>。</p>
+<p>总结——<strong>Chain 支持消息 Chunk 在链上传递，而 Graph 只支持“完整的状态”在图上传递</strong>。LangGraph 没有提供像 LangChain 的 Chain 那样使用生成器函数支持流式处理的操作。</p>
+<p>后面测试的时候发现，LangGraph 的节点虽然<strong>支持使用生成器</strong>，但那只意味着它会执行多次直到生成器返回，使用生成器其实等价于<strong>自旋</strong>。</p>
+<p><strong>LangGraph 的这个以 Node 为原子的特性，我们应当感到宽慰——这使得工作流的行为更加容易理解了</strong>。</p>
+<p>实际上，<strong>stream_mode 可以传多个值，这样便能够同时显示 LLM 的 Chunk 和状态变迁</strong>。上面的代码展示了这一点。</p>
+<p>不提了，继续学习。之前只学了一点最简单的工作流，但工作流还有诸如条件边等操作，值得学习。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/AI/">AI</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-2/05-01-1%E5%85%B3%E4%BA%8E%E4%BA%94%E4%B8%80%E7%9A%84%E8%AE%A1%E5%88%92%EF%BC%8C%E4%BB%A5%E5%8F%8A%E6%9C%80%E8%BF%91%E5%9C%A8%E8%84%91%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%9A%84%E5%AD%A6%E4%B9%A0.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于五一的计划，以及最近在脑科学上的学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-2/04-27%E5%A4%96%E6%98%9F%E4%BA%BA%E5%A7%86%E5%A7%86%E7%AC%94%E8%AE%B01%E2%80%94%E2%80%94%E5%BE%AE%E6%B3%A2%E7%82%89%EF%BC%8C%E5%86%B0%E7%AE%B1%EF%BC%8C%E5%90%B8%E5%B0%98%E5%99%A8/index.html">
+                        <span class="hidden-mobile">外星人姆姆笔记1——微波炉，冰箱，吸尘器</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

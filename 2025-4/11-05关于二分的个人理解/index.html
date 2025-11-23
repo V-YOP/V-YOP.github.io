@@ -1,0 +1,463 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="先好看，再正确">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于二分的个人理解">
+<meta property="og:url" content="http://example.com/2025-4/11-05%E5%85%B3%E4%BA%8E%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/index.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="先好看，再正确">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025-4/11-05%E5%85%B3%E4%BA%8E%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/image.png">
+<meta property="og:image" content="http://example.com/2025-4/11-05%E5%85%B3%E4%BA%8E%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/image-1.png">
+<meta property="og:image" content="http://example.com/2025-4/11-05%E5%85%B3%E4%BA%8E%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/image-2.png">
+<meta property="article:published_time" content="2025-11-05T11:50:00.000Z">
+<meta property="article:modified_time" content="2025-11-08T02:19:48.260Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="绘画">
+<meta property="article:tag" content="心理建设">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025-4/11-05%E5%85%B3%E4%BA%8E%E4%BA%8C%E5%88%86%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/image.png">
+  
+  
+  <title>关于二分的个人理解 - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="关于二分的个人理解">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-11-05 19:50" pubdate>
+        2025年11月5日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">关于二分的个人理解</h1>
+            
+            <div class="markdown-body">
+              <p>我自己得出的理解和老师的理解不一致（真的不一致吗？是否有可能是表达上的不同？）……但我仍旧保留我自己的意见，待实践证明吧。</p>
+<p>助教无数次强调，二分是“先正确，再好看”，强调先理解物体的结构，它和光线的交互，先把大关系处理好，让它正确，然后再在细节上做设计，让它好看。这同时也是我之前的认知。</p>
+<p>但我现在认为，“先正确，再好看”，这个描述的应该是<strong>作画流程</strong>上来的——先依据物体的概括的大的空间结构做大关系，做正确，再依据细节的小的空间结构，和脑子里的构成知识、经验做细节，做好看。</p>
+<p>而就我自己的体验上来说，<strong>画画是一个迭代的，探索的，螺旋上升的过程</strong>（这话我将无数次重复），关于正确和好看这两个阶段的区分，我认为它是不恰当的（至少应当强调它是作画流程而非是我心里的空间结构迭代的过程）——不能把正确和好看完全割裂开来，不能把正确和好看当成完全原子的东西——不能在求正确阶段就只顾正确，求好看阶段就只顾好看：求正确的时候，不也在求好看吗？求好看的时候，不也在求正确吗？实际上在做这个大关系的时候，同样是求了好看的，在设计小的细节求好看的时候，同样也在抓正确。</p>
+<p>这是一个分形啊！你中有我，我中有你。只不过确实在画面前期会追求正确（不然无法帮助我在脑子里建立空间结构），而后期正确性已经大致敲定下来，只剩修修补补了，这时候就更追求好看（因为这时候本就不会再大改了，不会太破坏正确）。</p>
+<p>正确-好看两阶段，是以作画流程为区分的，我认为<strong>单就重要性来说，是“先好看，再正确”</strong>。实际上，我认为在上面的“先正确，再好看”中的每一次迭代中，指导的思想其实仍旧是“先好看，再正确”。<strong>它主要体现在，我在做大形的时候，不止是正确性，我心里就已经在琢磨这个大形是不是好看了</strong>。</p>
+<p>实际上，我得出了这样的观点——<strong>二分（乃至上色，乃至整个画画，但我不继续深入这个）是基于空间结构的设计</strong>。它<strong>首先</strong>是设计，它和所画物体的空间结构不是一个先后顺序的关系，而是一个主次的关系，而且是设计为主，正确（空间结构）为次。空间结构只不过是我的参考信息，我主要在做的是做形状，只是这形状正巧能够体现空间结构出来。</p>
+<p><strong>既然承认二分（乃至更多东西）是设计，那么许多地方就能够开窍，脱离偏见了</strong>。比如，我以前会犯一个错，就是硬揪着某张图的光影不放，说这个图的光影，不同物件上反映的光源是不一致的，比如这个打光不可能出现这样的明暗交界线……特别是对那些诸如立绘那样无场景的插画我总会吐槽。</p>
+<p>而既然承认画画是设计，我就不能拿它不符合现实来做批判了。事实上，只要通过这个设计，我仍旧能看出空间感来，而且它设计的仍旧好看，那它本身就是正确！</p>
+<p>我又想到一个例子，以前看过一个厚涂课程，老师说很多插画的打光实际上是一种圆形的打光，就是从画面上某个点、范围处最亮，然后越远离它周围就越来越暗。这明显是也是不符合现实的光线的（更像是平面上的操作），但它观感就是好，就是能看的很有立体感栩栩如生。（然后我又记得这个老师还塞了自己的一堆政治上的私货……哈哈哈，总之吸收知识）</p>
+<p>我认为，只要受光面和背光面两者比例处理的好（要么大半是光，要么大半是暗，均等的话似乎一般不好看），明暗交界线足够清晰易懂，同时它们都做出了有趣的形状，这张图就会好看，就会立体，以素描的角度去追究它的光线是否合理是错误的出发点。</p>
+<p>这里我记的比较远，我期待后面的课程打我耳刮子。</p>
+<hr>
+<p>其实，“先好看，再正确”，对这里的好看，<strong>实际上不是只要足够正确，甚至比现实还正确，就会好看吗</strong>？“比现实还正确”，此之谓“高于现实”，此之谓“典型”。</p>
+<h1 id="写到最后"><a href="#写到最后" class="headerlink" title="写到最后"></a>写到最后</h1><p>他妈的，以前在学素描的时候我也在吐槽素描书，水粉书上，为何成图和参考画的在细节上完全不一样，然后还完全对此不做解释。</p>
+<p>承认画画的一切都是设计，这让我变得“胆大包天”，让我更敢去做创造了。但我同样也要提醒自己——做设计的目的是为了更好地骗过观众的眼睛（而非是随心所欲地乱涂乱画），为此，去做二分、素描这样的基础练习是必要的，让我对物体的空间结构建立更好的理解，带来更多经验，并熟悉相应的技法，它们会让我更加自信，更加敢去骗去编（实际上我才画不到10张二分就得到这么多感悟，下周的课程我可能会得到更多，或者至少，更深入），以及我也要去做大量 master study，学习其他画师是怎样去骗的，站在巨人的肩膀上。</p>
+<p>所以，<strong>其实基础练习有两层目的——表面上是让我对所画的物体更加熟悉，深层上是让我更加自信，更敢去编造，欺骗，加入我个人的品味</strong>。这里得强调——这自信是来自于坚实的理解，而非空中楼阁。</p>
+<p>这里专门区分这两层目的，专门做这个强调，是因为自信确实可能是来自后者的——我参加人体课的时候老师说一些画师虽然画的自信，但他的自信并非来自于对所画物体的理解，结果画的有灵性结果看着没内涵，只是唬人罢了。</p>
+<p>但，现实是无限复杂的，我是不可能完全把握我所画的东西的。再考虑另一个问题，我之前注意到艺用人体是真实人体的概括，而且我们自己做原创的时候，我们脑子里的人体肯定也是不完全的，充满错误和模糊之处的。这时候的自信就可以说是：<strong>我知道我对这里理解不完全，但我知道我这么处理能够骗过观众</strong>。这句必须强调，因为我发现我之前好像忘记了提及这一点，忘记提及真理的相对性和绝对性了。</p>
+<h1 id="一些例子"><a href="#一些例子" class="headerlink" title="一些例子"></a>一些例子</h1><p>这里贴两张图证明二分不需要符合现实，来自《Bang Dream》中的一张卡面和《潜行者：普里皮亚季的召唤》的封面。</p>
+<p><img src="image.png" alt=""></p>
+<p>关于这张卡面，注意到脸上的阴影似乎是在模仿伦勃朗光，在右侧颧骨上做出来一个三角形的形状，但没有去提示眉骨，鼻子的隆起（看起来很平，但作者也不想体现它们啦）。而要造成脸部的光，就应当有一个来自画面右上的光，但头发的光，根据暗部判断，明显来自于右下方；考虑西装部分，注意到手和小臂下方有明显阴影，手臂在西装上留下（最）大片的投影，这证明有一个顶光，但打了顶光，怎么两个小臂的底部没有大阴影？因为这里如果做了阴影就无法和身体<strong>区分</strong>开了。重新观察双臂，又会感觉其实是从镜头方向向人物打的光，但如果又这么想，那这光为何没有照亮袖子内侧呢？这里已经弄出来一堆光了，真要全部考虑进去的话肯定会把画面整的一团乱，所以这二分明显是经过特意的设计的。</p>
+<p>但我相信，作者心里仍旧是有光源的——按理来说这个光源应该影响最大的范围，我猜测这个主光源就是镜头方向的光源（这使得人物身上大部分都是亮面），作者应该是从这个光源出发（但其实这一步也没有完全按照现实走！），在不断迭代中添加细小的形状去强调特定的东西，让画面更有趣，区分不同结构……但这自由必定有一个前提，就是不要让小形状破坏大形状，让局部破坏整体。</p>
+<p>根据上面的论述，应当认为——对上色，就像不要把物体的空间结构当作框架，同样也不要把“光源”当作框架，当作现实世界或者 3D 建模软件中的光源（虽然我们仍旧需要学习各种光源的性质以去模仿它或者造成特定目的），光源同样应当为设计服务，我并不需要为造成画面上的每一个形状的光源都做出解释，说这个是顶光，那个是平行光。（不过这是废话，当我在说光影的时候，我就在说光了，但这里也值得提一嘴）</p>
+<p><img src="image-1.png" alt=""></p>
+<p>这一张总之衣服和头的光影是不一致的，不解释了。</p>
+<p>而且这两张图，实际上都用了我提到的那个圆形打光的思路——两张图都能发现是脸部最亮，然后越远离脸部则越暗。虽然这个效果应该是最后才做的，作为特效，但它也可佐证我的观点。</p>
+<p>另一个好玩儿的例证是，《生化危机 4 重制版》的某段 CG 里，几乎每一个镜头都有自己的打光，结果从自由视角来看，比蹦迪舞厅还乱，但观众只看镜头，仍旧感觉舒服。CG 师不使用场景的光源而是为了每个镜头的特定的效果去安排特定的灯光，这同样是出于设计而非出于现实。见这个 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ry4meaEvi/">视频</a> 47 秒左右。</p>
+<p>认为二分是一种设计确实让我开了窍，又看到一张 <a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/137152830">图</a>，它的人物基本上完全在阴影中，只有边缘有一些背光，但在这大片的阴影区中，作者仍旧做了某种二分，区分出了更亮和更暗的部分，在底部看似有一个暖光，但角色胸部下的阴影和这个暖光并不匹配（所以这个暖光大概是为了强调肤色，做一个冷暖对比？）。从现实出发这样的打光不可能造成这样的阴影，但作者就这么干了，因为这是设计。</p>
+<p><img src="image-2.png" alt=""></p>
+<p>对这种暗部的继续的二分，我在之前将它们解释为闭塞阴影，这在有些时候是说得通的，但很多时候也说不通；或许仍旧<strong>必须承认做形状是做设计才能真正跳脱出这思维惯性，即硬要找真实世界中的物理原理去做解释</strong>。实际上，现实中的闭塞阴影通常是边缘极软的，像雾气一样的阴影，但在插画中表示二分则可能会做的很几何化，很硬边……</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BB%98%E7%94%BB/">绘画</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%BF%83%E7%90%86%E5%BB%BA%E8%AE%BE/">心理建设</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-4/11-08%E5%AF%B9%E5%8F%8D%E6%98%A0%E5%92%8C%E5%BB%BA%E6%9E%84%E7%9A%84%E6%80%9D%E8%80%83.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">对反映和建构的思考</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-4/11-05Krenz%E8%89%B2%E5%BD%A9L1%E4%BD%9C%E4%B8%9A%E7%AC%94%E8%AE%B0/index.html">
+                        <span class="hidden-mobile">Krenz色彩 L1 作业笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

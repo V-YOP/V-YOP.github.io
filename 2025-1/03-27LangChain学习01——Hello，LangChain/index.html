@@ -1,0 +1,542 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="要让 LLM 进入生活，dify 似乎并非最合适的选择">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LangChain 学习 01——Hello，LangChain">
+<meta property="og:url" content="http://example.com/2025-1/03-27LangChain%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94Hello%EF%BC%8CLangChain/index.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="要让 LLM 进入生活，dify 似乎并非最合适的选择">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025-1/03-27LangChain%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94Hello%EF%BC%8CLangChain/image.png">
+<meta property="article:published_time" content="2025-03-27T01:10:00.000Z">
+<meta property="article:modified_time" content="2025-03-28T21:56:44.962Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025-1/03-27LangChain%E5%AD%A6%E4%B9%A001%E2%80%94%E2%80%94Hello%EF%BC%8CLangChain/image.png">
+  
+  
+  <title>LangChain 学习 01——Hello，LangChain - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="LangChain 学习 01——Hello，LangChain">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-03-27 09:10" pubdate>
+        2025年3月27日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      16k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">LangChain 学习 01——Hello，LangChain</h1>
+            
+            <div class="markdown-body">
+              <p>虽然日期写着 3 月 27 号，但这篇笔记其实 3 月 10 号左右就在写了，这我要快速产出 02 的话会显得自己学太快了……虽然也没啥东西。</p>
+<p>LangChain 是一个 Python 框架（库？），<strong>用于开发大语言模型（LLM）驱动的应用程序</strong>。LangChain 允许大模型和外界进行交互，包括获取外部数据源数据，包括进行函数调用等。这些要是全都手写，那就太麻烦了，所以让它代劳是很好的。这里对它进行一下学习，看看能否把它应用到学习以及生活生产实践中。</p>
+<p>LangChain 家族包含四个成员：</p>
+<ol>
+<li>LangChain：就是上面说的 LangChain</li>
+<li>LangSmith：测试、评估、监控大语言模型，用于保证模型的质量和性能</li>
+<li>LangGraph：LangGraph 是 LangChain 的一个扩展，把步骤建模为图中的边和节点（dify？）</li>
+<li>LangFlow：LangChain 的一个 GUI，使用可视化的拖动的方式简化工作流的构建</li>
+</ol>
+<h1 id="LangXXXX-？"><a href="#LangXXXX-？" class="headerlink" title="LangXXXX ？"></a>LangXXXX ？</h1><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ldBsvhjEREc">这个视频</a> 似乎介绍了它们的关系以及如何选择，这里记录一下。</p>
+<p><img src="image.png" alt="LangChain"></p>
+<p>这张图很有意思——LangChain 的（多轮对话的）工作原理，用户和 Agent 交互，Agent 有 Memory，<strong>Agent 根据用户的查询选择是去查询外部数据（在这之后是 Agent 继续操作还是让大模型去操作？），还是让大模型去进行生成操作</strong>。</p>
+<p>LangChain 的 Chain 机制，让我们能把多个工作给串起来，但它究竟和 LangGraph 有啥区别？没讲，搞毛。</p>
+<p>然后是 LangGraph，LangGraph 专门用来管理 Agent 和工作流。</p>
+<p>……</p>
+<p>这个视频做的很弱智，不用看了，我都怀疑这个视频制作者自己有没有看完 LangChain 的教程。<strong>还是自己先把LangChain和LangGraph的教程全部自己过一下，然后自己做总结吧！</strong>。</p>
+<hr>
+<p>首先跟着 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/tutorials/">https://python.langchain.com/docs/tutorials/</a> 去看，得到一些感性经验，再看 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/concepts/">https://python.langchain.com/docs/concepts/</a> 去理解 langchain 的架构。</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>langchain 是 LLM 的客户端，因此不需要 torch 啊 tenserflow 啊 numpy 之类的依赖，直接使用 pip 安装：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs cmake">pip <span class="hljs-keyword">install</span> langchain<br></code></pre></div></td></tr></table></figure>
+<p>具体信息参照 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/how_to/installation/">https://python.langchain.com/docs/how_to/installation/</a>，它还介绍了其他相关包的安装，包括 langgrpah 等，注意到 langchain 有自己的 CLI，而且有一个 RESTFul API 框架支持直接暴露 LangChain 的 Runnable 和 Chain。</p>
+<p>要使用 deepseek 的话，需要安装 deepseek 扩展（？），然后在环境变量中配置 deepseek 的 API KEY，这个应该是第三方提供的集成：</p>
+<p>参照 <a target="_blank" rel="noopener" href="https://python.langchain.com/api_reference/deepseek/chat_models/langchain_deepseek.chat_models.ChatDeepSeek.html">https://python.langchain.com/api_reference/deepseek/chat_models/langchain_deepseek.chat_models.ChatDeepSeek.html</a>。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs routeros">pip install langchain-deepseek<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">DEEPSEEK_API_KEY</span>=<span class="hljs-string">&quot;your-api-key&quot;</span><br></code></pre></div></td></tr></table></figure>
+<p>然后，实际使用时要从这个扩展去创建 model，后面的使用方式应该和官方是一样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_deepseek <span class="hljs-keyword">import</span> ChatDeepSeek<br><span class="hljs-keyword">from</span> langchain_core.messages <span class="hljs-keyword">import</span> HumanMessage, SystemMessage, AIMessage<br><br><span class="hljs-comment"># 这个 model 虽然来自扩展，但它的类型和 from langchain.chat_models import init_chat_model 中的 init_chat_model 返回的类型是一样的（准确的说，是它的子类）</span><br>model = ChatDeepSeek(<br>    model=<span class="hljs-string">&quot;deepseek-chat&quot;</span>, <span class="hljs-comment"># deepseek-reasoner 是 R1，deepseek-chat 是 V3</span><br>    <span class="hljs-comment"># 在这里其实也能设置 API KEY</span><br>)<br>messages = [<br>    SystemMessage(<span class="hljs-string">&quot;&quot;</span>),<br>    HumanMessage(<span class="hljs-string">&quot;在同一行中给我“你好，世界”的中文，英文，日语，法语，世界语，西班牙语&quot;</span>),<br>]<br>msg = model.invoke(messages)<br><span class="hljs-comment"># display(msg.additional_kwargs[&#x27;reasoning_content&#x27;]) # deepseek-reasoner 特有</span><br>display(msg.text())<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">&#39;你好，世界！Hello, World! こんにちは、世界！Bonjour, le monde! Saluton, mondo! ¡Hola, mundo!&#39;
+</code></pre></div><h1 id="Hello-LangChain"><a href="#Hello-LangChain" class="headerlink" title="Hello, LangChain"></a>Hello, LangChain</h1><p>首先从示例开始，直接和官方的示例一一对应。注意到这些简单示例就已经足够夸张了。这篇文章是用 jupyter 来着的，所以后面就不每次都创建 model 了。</p>
+<h2 id="简单对话"><a href="#简单对话" class="headerlink" title="简单对话"></a>简单对话</h2><p>简单对话，上面实际上已经显示了它的一般形式了。我们可以任意构造对话历史。invoke 的传参方式有多种：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">model.invoke(<span class="hljs-string">&#x27;beep&#x27;</span>) <span class="hljs-comment"># 直接用字符串调，等价人类发言 &#x27;beep&#x27;</span><br><br>model.invoke([<br>    (<span class="hljs-string">&#x27;system&#x27;</span>, <span class="hljs-string">&#x27;YOU ARE A ROBOT&#x27;</span>), <br>    (<span class="hljs-string">&#x27;human&#x27;</span>, <span class="hljs-string">&#x27;beep&#x27;</span>), <br>    (<span class="hljs-string">&#x27;ai&#x27;</span>, <span class="hljs-string">&#x27;boop&#x27;</span>), <br>    (<span class="hljs-string">&#x27;human&#x27;</span>, <span class="hljs-string">&#x27;beep&#x27;</span>)<br>]) <span class="hljs-comment"># 用元组表示系统指令，以及人类和 AI 的发言</span><br><br>model.invoke([<br>    SystemMessage(<span class="hljs-string">&#x27;YOU ARE A ROBOT&#x27;</span>), <br>    HumanMessage(<span class="hljs-string">&#x27;beep&#x27;</span>),<br>    AIMessage(<span class="hljs-string">&#x27;boop&#x27;</span>),<br>    HumanMessage(<span class="hljs-string">&#x27;beep&#x27;</span>)<br>])<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">AIMessage(content=&#39;beep boop! 🤖 How can I assist you today? 😊&#39;, additional_kwargs=&#123;&#39;refusal&#39;: None&#125;, response_metadata=&#123;&#39;token_usage&#39;: &#123;&#39;completion_tokens&#39;: 16, &#39;prompt_tokens&#39;: 17, &#39;total_tokens&#39;: 33, &#39;completion_tokens_details&#39;: None, &#39;prompt_tokens_details&#39;: &#123;&#39;audio_tokens&#39;: None, &#39;cached_tokens&#39;: 0&#125;, &#39;prompt_cache_hit_tokens&#39;: 0, &#39;prompt_cache_miss_tokens&#39;: 17&#125;, &#39;model_name&#39;: &#39;deepseek-chat&#39;, &#39;system_fingerprint&#39;: &#39;fp_3a5770e1b4_prod0225&#39;, &#39;finish_reason&#39;: &#39;stop&#39;, &#39;logprobs&#39;: None&#125;, id=&#39;run-ef066c59-e02d-45fa-b7cc-a89dec00b8aa-0&#39;, usage_metadata=&#123;&#39;input_tokens&#39;: 17, &#39;output_tokens&#39;: 16, &#39;total_tokens&#39;: 33, &#39;input_token_details&#39;: &#123;&#39;cache_read&#39;: 0&#125;, &#39;output_token_details&#39;: &#123;&#125;&#125;)
+</code></pre></div><p>AI 说不得要用<strong>流式输出</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">for</span> token <span class="hljs-keyword">in</span> model.stream(<span class="hljs-string">&#x27;使用一行给我 `你好，世界` 的中文，英文，日语，世界语，法语，西班牙语，逗号分隔&#x27;</span>):<br>    <span class="hljs-built_in">print</span>(token.content, end = <span class="hljs-string">&#x27; || &#x27;</span>)<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs"> || 你好 || ， || 世界 || , ||  Hello || , ||  World || , ||   || こ || ん || に || ち || は || 、 || 世界 || , ||  Sal || ut || on || , ||  mondo || , ||  Bon || jour || , ||  le ||  monde || , ||  H || ola || , ||  mundo ||  || 
+</code></pre></div><p>此外，有<code>ainvoke</code>和<code>astream</code>方法，它们是<strong>异步</strong>的。</p>
+<p><strong>这里的 model，自己是没有记忆的功能的</strong>，要引入记忆功能，要么自己手搓一个，要么<strong>去使用 LangGraph Memory</strong>。</p>
+<h3 id="Prompt-模板"><a href="#Prompt-模板" class="headerlink" title="Prompt 模板"></a>Prompt 模板</h3><p><strong>使用用户参数创建 Prompt 是一个很常见的需求</strong>，通常 Python 的 f 字符串就能够满足这个需求。langchain 提供了所谓的 Prompt 模板用来干同样的事情，它的方便之处在于能够使用同一个字典去给多个消息同时传递参数。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.prompts <span class="hljs-keyword">import</span> ChatPromptTemplate<br><br><span class="hljs-comment"># 从消息列表创建模板</span><br><span class="hljs-comment"># 注意这里的消息列表必须是使用元组形式的！！</span><br>template = ChatPromptTemplate.from_messages([<br>    (<span class="hljs-string">&#x27;system&#x27;</span>, <span class="hljs-string">&#x27;Translate the following content from &#123;from_lang&#125; to &#123;to_lang&#125;&#x27;</span>),<br>    (<span class="hljs-string">&#x27;human&#x27;</span>, <span class="hljs-string">&#x27;&#123;text&#125;&#x27;</span>)<br>])<br><br><span class="hljs-comment"># 注意这里也是使用 invoke</span><br>message = template.invoke(&#123;<span class="hljs-string">&#x27;from_lang&#x27;</span>: <span class="hljs-string">&#x27;chinese&#x27;</span>, <span class="hljs-string">&#x27;to_lang&#x27;</span>: <span class="hljs-string">&#x27;english&#x27;</span>, <span class="hljs-string">&#x27;text&#x27;</span>: <span class="hljs-string">&#x27;你好，世界！&#x27;</span>&#125;)<br><br>display(message)<br>display(message.to_messages())<br>model.invoke(message).text()<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">ChatPromptValue(messages=[SystemMessage(content=&#39;Translate the following content from chinese to english&#39;, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;), HumanMessage(content=&#39;你好，世界！&#39;, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;)])
+
+[SystemMessage(content=&#39;Translate the following content from chinese to english&#39;, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;),
+ HumanMessage(content=&#39;你好，世界！&#39;, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;)]
+
+&#39;Hello, world!&#39;
+</code></pre></div><p>实际上，最简单的对话功能就是这么简单，但这里还没有提供会话历史功能（虽然利用当前已有的东西可以自己实现它），这个待后面继续学。继续跟着它的步调走。</p>
+<p>以及，<strong>这些暴露像 invoke 这样的接口的类，称为 Runnable</strong>，Runnable 是 LangChain 的一个很基础的组成部分，Runnable 是一个实际存在的抽象类，见 <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/concepts/runnables/">https://python.langchain.com/docs/concepts/runnables/</a>。</p>
+<h2 id="语义检索"><a href="#语义检索" class="headerlink" title="语义检索"></a>语义检索</h2><p>好吧，上来就是重量级——从 PDF 中搜索内容（然而并没有 RAG，sad），和 PDF 对话需要利用到文档加载器，文本切分、嵌入、存储——<strong>加载文档内容，按片段切分，进行嵌入化，然后存储进向量数据库</strong>。在 LangChain 中，<strong>这些步骤都需要我们手动操作</strong>，因此显然能获得更多东西。</p>
+<p>相关术语是 document loader, embedding, vector store，langchain 对它们均有抽象，显然这提供了 langchain 进行 RAG 的能力。</p>
+<p>示例是和 PDF 对话，它需要安装两个新的包，其中<code>langchain-community</code>是第三方集成相关的包（？），pypdf 顾名思义是处理 pdf 的包。<code>langchain-community</code>中包含利用 pypdf 实现的 document loader。</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">pip install langchain-community pypdf<br></code></pre></div></td></tr></table></figure>
+<p>要和 PDF 对话是一个多步骤的事情，要加载 PDF，要切分文本，要嵌入向量化，要存储到向量数据库，要从向量数据库中查询，所以这里有必要分节。</p>
+<h3 id="Document-Document-Loader"><a href="#Document-Document-Loader" class="headerlink" title="Document, Document Loader"></a>Document, Document Loader</h3><p><strong>LangChain 对 LLM 应用的很多东西都做了抽象，上面把模型、消息模板等都抽象为 <code>Runnable</code>，而 LangChain，无论对 PDF 还是 EPUB 还是 CSV 什么玩意儿的，将它们抽象为 <code>Document</code></strong>。</p>
+<p><strong>Document 代表一个文本的单元（unit），以及相关联的元数据</strong>。</p>
+<p>Document 包括三个字段：</p>
+<ul>
+<li>page_content：<code>str</code>，表示 Document 的内容</li>
+<li>metadata：<code>dict</code>，包含任意格式的元数据</li>
+<li>id：<code>Optional[str]</code>，可选的标识符（好像没说是唯一标识符，有毛用？）</li>
+</ul>
+<p>注意到 Document 字段的命名：<strong>page_content</strong>，这暗示着每个 Document 代表实际文档的一页内容，实际上，下面的 PDF Loader 是一页加载为一个 Document。实际上，<strong>Document 是，也不是查询的最小单位</strong>。这是说，<strong>我们从实际文档中加载的 Document 需要切分才使用起来方便，但切分后的结果类型仍旧是 Document</strong>。</p>
+<p>我们可以手动创建 Document：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.documents <span class="hljs-keyword">import</span> Document<br>documents = [<br>    Document(<br>        page_content=<span class="hljs-string">&quot;Dogs are great companions, known for their loyalty and friendliness.&quot;</span>,<br>        metadata=&#123;<span class="hljs-string">&quot;source&quot;</span>: <span class="hljs-string">&quot;mammal-pets-doc&quot;</span>&#125;,<br>    ),<br>    Document(<br>        page_content=<span class="hljs-string">&quot;Cats are independent pets that often enjoy their own space.&quot;</span>,<br>        metadata=&#123;<span class="hljs-string">&quot;source&quot;</span>: <span class="hljs-string">&quot;mammal-pets-doc&quot;</span>&#125;,<br>    ),<br>]<br></code></pre></div></td></tr></table></figure>
+<p>但是，LangChain 的生态提供了诸多 <strong>Document Loader</strong>，支持从各种来源加载内容为 Document。实际上我们使用<code>langchain-community</code>中提供的<code>PyPDFLoader</code>去加载 PDF 到 Document：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_community.document_loaders <span class="hljs-keyword">import</span> PyPDFLoader<br><br>file_path = <span class="hljs-string">r&quot;D:\DESKTOP\FOLDER\STATIC\刻意练习。pdf&quot;</span><br>loader = PyPDFLoader(file_path)<br><br>docs = loader.load()<br><br><span class="hljs-built_in">print</span>(<span class="hljs-built_in">len</span>(docs))<br><span class="hljs-built_in">print</span>(docs[<span class="hljs-number">0</span>].metadata)<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">Unexpected escaped string:     
+
+
+651
+&#123;&#39;producer&#39;: &#39;calibre 2.58.0 [http://calibre-ebook.com]&#39;, &#39;creator&#39;: &#39;calibre 2.58.0 [http://calibre-ebook.com]&#39;, &#39;creationdate&#39;: &#39;2019-01-01T13:37:07+00:00&#39;, &#39;author&#39;: &#39;安德斯·艾利克森（Anders Ericsson｜ऀ\u2000☀ⁿ坏⽲礀띦湜ᓿࠀ刀漀戀攀爀琀、u2000 倀漀漀泿尉&#39;, &#39;title&#39;: &#39;刻意练习：如何从新手到大师&#39;, &#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。pdf&#39;, &#39;total_pages&#39;: 651, &#39;page&#39;: 0, &#39;page_label&#39;: &#39;1&#39;&#125;
+</code></pre></div><p>但是，你猜怎么着，我想查的东西用 EPUB 更合适。所以这里选择一个 EPUB 加载器。注意到这个 EPUB 加载器直接把整个文档处理成一个 Document 了，而上面的 PDF 加载器每一页是一个 Document。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_community.document_loaders <span class="hljs-keyword">import</span> UnstructuredEPubLoader<br><br>loader = UnstructuredEPubLoader(<span class="hljs-string">r&quot;D:\DESKTOP\FOLDER\STATIC\刻意练习。epub&quot;</span>)<br><br>docs = loader.load()<br><br>docs, <span class="hljs-built_in">len</span>(docs)<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">([Document(metadata=&#123;&#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。epub&#39;&#125;, page_content=&quot;\n\n 刻意练习：如何从新手到大师、n\nPEAK:Secrets from the New Science of Expertise\n\n（美）安德斯·艾利克森（Anders Ericsson） （美）罗伯特·普尔（Robert Pool） 著、n\n 王正林 译、n\nISBN：978-7-111-55128-7\n\n 本书纸版由机械工业出版社于 2016 年出版，电子版由华章分社（北京华章图文信息有限公司，北京奥维博世图书发行有限公司）全球范围内制作与发行。\n\n 版权所有，侵权必究、n\n 客服热线：+ 86-10-68995265\n\n 客服信箱：service@bbbvip.com\n\n 官方网址：www.hzmedi...&quot;,
+ 1)
+</code></pre></div><h3 id="Splitting"><a href="#Splitting" class="headerlink" title="Splitting"></a>Splitting</h3><p>我们查询的目的确实是要得到 Document，<strong>但 Document 粒度太大了，可能会包含太多信息</strong>，我们要对 Document 进行更细的切分得到一系列文本块 chunk，保证每块的信息是独立的，不至于被周围的信息影响，<strong>但有趣的是这里的 chunk 的类型仍旧是 Document</strong>。</p>
+<p>至于问为什么要做切分，这就必须涉及到技术细节：后面要把文本块嵌入向量化，如果文本块太大，信息太多，得到的嵌入向量可能就<strong>过于模糊，包含太多噪音</strong>，不具有特定性，难以查询到。</p>
+<p>我们把 Document 进行切分，得到更细的文本块，然后记住这些文本块对应的 Document，将文本块嵌入向量化存入数据库供查询，查询后便能够反向找到 Document，<strong>就像倒排索引</strong>，但倒排索引是关键词到文档，这个是嵌入向量到文档，嵌入向量到文档这个映射，允许实现所谓的<strong>语义搜索</strong>。</p>
+<p>所以，这里的下一步是做切分。要做切分，就要找 Text Splitter。显然，选择合适的切分算法，即合适的 Splitter，是有意义的，但这里选择<code>RecursiveCharacterTextSplitter</code>，它是一个<strong>一般用途</strong>的 Text Splitter，它递归地将文档按换行符进行拆分直到所有块达到合适的大小。</p>
+<p>下面是做切分的代码，其中 <code>add_start_index</code> 参数表示增加一个 <code>start_index</code> 的元信息，表示这个 chunk 是从所来自的 Document 的那个字符开始的。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_text_splitters <span class="hljs-keyword">import</span> RecursiveCharacterTextSplitter<br><br>text_splitter = RecursiveCharacterTextSplitter(<br>    chunk_size=<span class="hljs-number">1000</span>, chunk_overlap=<span class="hljs-number">200</span>, add_start_index=<span class="hljs-literal">True</span> <span class="hljs-comment"># add_start_index</span><br>)<br>all_splits = text_splitter.split_documents(docs)<br><br><span class="hljs-built_in">len</span>(all_splits), all_splits[<span class="hljs-number">0</span>]<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">(249,
+ Document(metadata=&#123;&#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。epub&#39;, &#39;start_index&#39;: 2&#125;, page_content=&#39;刻意练习：如何从新手到大师、n\nPEAK:Secrets from the New Science of Expertise\n\n（美）安德斯·艾利克森（Anders Ericsson） （美）罗伯特·普尔（Robert Pool） 著、n\n 王正林 译、n\nISBN：978-7-111-55128-7\n\n 本书纸版由机械工业出版社于 2016 年出版，电子版由华章分社（北京华章图文信息有限公司，北京奥维博世图书发行有限公司）全球范围内制作与发行。\n\n 版权所有，侵权必究、n\n 客服热线：+ 86-10-68995265\n\n 客服信箱：service@bbbvip.com\n\n 官方网址：www.hzmedia.com.cn\n\n 新浪微博 @华章数媒、n\n 微信公众号 华章电子书（微信号：hzebook）\n\n 目录、n\n&#123;致读者&#125;\n\n&#123;赞誉&#125;\n\n&#123;推荐序&#125;\n\n&#123;作者声明&#125;\n\n 引言 天才存在吗、n\n 莫扎特的完美音高、n\n“天才”是训练的产物、n\n 本书将告诉我们什么、n\n 第 1 章 有目的的练习、n\n 史蒂夫的超强记忆力、n\n 各领域的杰出人物都靠大量练习、n\n 从有目的的练习讲起、n\n 有目的的练习的四个特点、n\n 遇到瓶颈怎么办、n\n 有目的的练习还不够、n\n 第 2 章 大脑的适应能力、n\n 伦敦出租车司机的大脑、n\n 大脑拥有无限的适应能力、n\n 走出舒适区的重要性、n\n 练习改变大脑结构、n\n 潜能可以被构筑、n\n 第 3 章 心理表征、n\n 偶然的盲棋大师、n\n 大师比新手强在哪里、n\n 心理表征是什么、n\n 心理表征有助于找出规律、n\n 心理表征有助于解释信息、n\n 心理表征有助于组织信息、n\n 心理表征有助于制订计划、n\n 心理表征有助于高效学习、n\n 第 4 章 黄金标准、n\n 从音乐领域开始、n\n 最杰出的人，练习时间最长、n\n 刻意练习是什么、n\n 如何运用刻意练习原则、n\n1 万小时法则的错与对、n\n 第 5 章 在工作中运用刻意练习原则、n\n 王牌训练计划、n\n 让练习变成日常工作的一部分、n\n 用王牌训练方法训练医生、n\n 致力于传授知识的传统方法、n\n 致力于改进技能的新方法、n\n 第 6 章 在生活中运用刻意练习原则、n\n 首先，找位好导师、n\n 专注和投入至关重要、n\n 没有导师，怎么办、n\n 跨越停滞阶段、n\n 保持动机、n\n 第 7 章 成为杰出人物的路线图、n\n 三位女性象棋大师、n\n 第一阶段：产生兴趣、n\n 第二阶段：变得认真、n\n 第三阶段：全力投入、n\n 年龄与适应能力的关系、n\n 成年人也可培养出完美音高、n\n 第四阶段：开拓创新、n\n 第 8 章 怎样解释天生才华&#39;))
+</code></pre></div><p>注意到切分后块的数量变得更少了……因为这个 PDF 比较有病，每一页的字符数量都小于 1000，而且有的页没有文本。</p>
+<h3 id="Embedding"><a href="#Embedding" class="headerlink" title="Embedding"></a>Embedding</h3><p>现在已经加载和切分了文本，<strong>注意到直到这个阶段，深度学习模型还没有参与进来</strong>，只是把文本从 PDF 中倒出来然后做了切分。而把文本转化成嵌入向量这一步，就<strong>必须使用嵌入模型</strong>了。</p>
+<p>AI 不强迫使用同厂家的嵌入模型——嵌入向量只是高维空间中的一个点，只要<strong>存储和查询时使用同一个嵌入模型</strong>即可。实际上 DeepSeek 没有提供嵌入模型。</p>
+<p>关于嵌入向量，这时候就想提一个问题就是，在 Stable Diffusion 中，VAE 编码图像得到的潜空间向量，还能够解码回图像，那嵌入向量还能够解码成文本吗？不行，只能交给生成模型，让它生成语义类似的内容，而得不到原文本。</p>
+<p>扯远了，总之必须找个合适的嵌入模型用，用 HuggingFace 的最方便（如果能够本地部署的话，这需要本地安装 pytorch……反正安装 CPU 的 pytorch 并非难事）：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">pip install langchain-huggingface<br></code></pre></div></td></tr></table></figure>
+<p>然后导入它，第一次导入会安装，注意要配置 HuggingFace 的镜像：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_huggingface <span class="hljs-keyword">import</span> HuggingFaceEmbeddings<br><br><span class="hljs-comment"># 这里可以配置让 GPU 算，但懒得配置了，就这样吧</span><br><br><span class="hljs-comment"># 这个好像是英文的嵌入模型</span><br><span class="hljs-comment"># embeddings = HuggingFaceEmbeddings(model_name=&quot;sentence-transformers/all-mpnet-base-v2&quot;)</span><br><br><span class="hljs-comment"># 换成中文的</span><br>embeddings = HuggingFaceEmbeddings(model_name=<span class="hljs-string">&quot;shibing624/text2vec-base-chinese&quot;</span>)<br></code></pre></div></td></tr></table></figure>
+<p>然后实际使用它，其实嵌入模型也没必要用 GPU 不是？能算多少东西。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">vector_1 = embeddings.embed_query(all_splits[<span class="hljs-number">0</span>].page_content)<br>vector_2 = embeddings.embed_query(all_splits[<span class="hljs-number">1</span>].page_content)<br><br><span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(vector_1) == <span class="hljs-built_in">len</span>(vector_2)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Generated vectors of length <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(vector_1)&#125;</span>\n&quot;</span>)<br><span class="hljs-built_in">print</span>(vector_1[:<span class="hljs-number">10</span>])<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">Generated vectors of length 768
+
+[-0.00043993908911943436, -0.054469313472509384, -0.024737628176808357, 0.013423856347799301, -0.03595013916492462, -0.03884577006101608, 0.006524000782519579, 0.044536102563142776, 0.01815910078585148, 0.019278621301054955]
+</code></pre></div><p>注意到 <code>HuggingFaceEmbeddings</code> 继承自 <code>Embeddings</code> 抽象类，这是 LangChain 提供给嵌入模型的抽象，注意到 LangChain 的特定性——它把 LLM 相关的一切都包办好，你只管用。</p>
+<h3 id="Vector-Store"><a href="#Vector-Store" class="headerlink" title="Vector Store"></a>Vector Store</h3><p>now we got the embedding vector, the next step is to save it into a <strong>vector store</strong>。实际上，LangChain 给向量数据库同样提供了抽象，LangChain 支持直接把向量存在内存（InMemoryVectorStore）里，也支持存储在专门的向量数据库里，如 FAISS 等，容易意识到，<strong>Vector Store 其实就是向量数据库的客户端</strong>。</p>
+<p>LangChain 的 <strong>Vector Store 封装关于存储和查询 Document（！） 的一切操作</strong>，因此 Vector Store 必须知晓使用的是什么嵌入模型，实际上，<strong>上面的嵌入模型会直接传给 Vector Store 供它使用</strong>。</p>
+<p>百闻不如一见，为了方便直接使用内存数据库。下面把所有文档都插入进去，然后尝试进行查询。<strong>注意 Vector Store 的抽象让我们直接以 Document 为对象进行操作，插入的是 Document，查询的也是 Document</strong>。</p>
+<p>Vector Store 支持使用嵌入向量或文本去进行查询，支持异步查询，<strong>支持使用相似性或者最大边际相关性（MMR，maximum marginal relevance）查询</strong>。</p>
+<p>这个 MMR 它很有意思——相似查询时，结果之间都是有很大相关性的，而 <strong>MMR 尝试最小化结果之间的相似性</strong>，这允许 MMR 返回<strong>更多样</strong>的结果。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.vectorstores <span class="hljs-keyword">import</span> InMemoryVectorStore<br><br>vector_store = InMemoryVectorStore(embeddings) <br><br>ids = vector_store.add_documents(documents=all_splits) <span class="hljs-comment"># 风扇呼呼呼，我现在开始觉得是不是该用 GPU 了……</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 查询倒挺快的。k 即 Top-k，是查询结果的数量</span><br>vector_store.max_marginal_relevance_search(<span class="hljs-string">&#x27;有目的的练习和刻意练习的差别&#x27;</span>, k = <span class="hljs-number">10</span>) <br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">[Document(id=&#39;f3c77878-2e56-4cd9-ad80-422c4b1b1b2f&#39;, metadata=&#123;&#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。epub&#39;, &#39;start_index&#39;: 2428&#125;, page_content=&#39;——赵周（拆书帮创始人）\n\n 如何进行高效的学习？我认为需要好的方法，坚持刻意练习，保证足够的强度，加上有效的教练为学习提供反馈。这本《刻意练习》为你提供了有效的指南。\n\n——秋叶（秋叶 PPT 创始人、知识型 IP 训练营创始人）\n\n 对于每一个教育领域，最有益的学习目标是那些帮助学员创建有效心理表征的目标，这也是刻意练习方法比传统学习方法有效的地方。本书以多个真实人物的成长案例阐释了刻意练习的前景，让人耳目一。..&#39;),
+ Document(id=&#39;42b4a08d-e15d-432b-9a22-795c140051cb&#39;, metadata=&#123;&#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。epub&#39;, &#39;start_index&#39;: 85444&#125;, page_content=&#39;◆刻意练习既产生有效的心理表征，又依靠有效的心理表征。提高水平与改进心理表征是相辅相成的，两者不可偏废；随着人们水平的提升，表征也变得更加详尽和有效，反过来使得人们可能实现更大程度的改进。心理表征使人们能监测在练习中和实际的工作中做得怎么样。它们表明了做某件事的正确方法，并使得人们注意到什么时候做得不对，以及怎样来纠正。\n\n◆刻意练习通过着重关注过去获取的技能的某些特定方面，致力于有针对性地提高那些方面，并且几乎总是包括构建或修改那些过去已经获取的技能；随着时间的推移，这种逐步的改进最终将造就卓越。..&#39;)]
+</code></pre></div><p>我本以为能向 AI 提问呢，看来这个教程是没这个内容了。最后，这个教程表示，<strong>因为 Vector Store 不是 Runnable，所以它没有 Runnable 的一些方便的接口，如 batch</strong>。</p>
+<p>Vector Store 有个方法 <code>as_retriever</code>将 Vector Store 转换为 <code>Retriever</code>，这个 Retriever 就是 RAG 的 R，而 Retriever 是 Runnable，显然真到做 RAG 的时候会利用 Retriever。</p>
+<p>然后也有个<strong>土方法</strong>——有个装饰器能够把任意东西变成 Runnable（虽然不知道它是真并行执行还是怎样…）：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">display(vector_store.as_retriever().batch(<br>    [<br>        <span class="hljs-string">&quot;有目的的练习和刻意练习的差别&quot;</span>,<br>        <span class="hljs-string">&quot;什么是心理表征&quot;</span>,<br>]))<br><br><span class="hljs-comment"># home-made</span><br><br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">List</span><br><br><span class="hljs-keyword">from</span> langchain_core.documents <span class="hljs-keyword">import</span> Document<br><span class="hljs-keyword">from</span> langchain_core.runnables <span class="hljs-keyword">import</span> chain<br><br><span class="hljs-meta">@chain</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">retriever</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-type">List</span>[Document]:<br>    <span class="hljs-keyword">return</span> vector_store.similarity_search(query, k=<span class="hljs-number">5</span>)<br><br>retriever.batch(<br>    [<br>        <span class="hljs-string">&quot;有目的的练习和刻意练习的差别&quot;</span>,<br>        <span class="hljs-string">&quot;什么是心理表征&quot;</span>,<br>    ],<br>)<br></code></pre></div></td></tr></table></figure>
+<div class="hljs code-wrapper"><pre><code class="hljs">[[Document(id=&#39;f3c77878-2e56-4cd9-ad80-422c4b1b1b2f&#39;, metadata=&#123;&#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。epub&#39;, &#39;start_index&#39;: 2428&#125;, page_content=&#39;——赵周（拆书帮创始人）\n\n 如何进行高效的学习？我认为需要好的方法，坚持刻意练习，保证足够的强度，加上有效的教练为学习提供反馈。这本《刻意练习》为你提供了有效的指南。\n\n——秋叶（秋叶 PPT 创始人、知识型 IP 训练营创始人）\n\n 对于每一个教育领域，最有益的学习目标是那些帮助学员创建有效心理表征的目标，这也是刻意练习方法比传统学习方法有效的地方。本书以多个真实人物的成长案例阐释了刻意练习的前景，让人耳目一新。\n\n——邓斌（书享界发起人）\n\n“比你优秀的人比你还努力。”阅读《刻意练习》，你会发现提升努力效果的秘诀，让同样努力的你走出事倍功半的泥潭。\n\n——郭成（众阅读书会发起人）\n\n 我发现身边的高人，他们有两项高于常人的本领：一是洞察问题的本领，二是解决问题的本领。对于大多数人，很努力，却得不到希望的结果；很多事，有态度，却茫然于拿不出解决问题的具体方法。在这个社会大发展、信息大爆炸的移动互联网时代，能够通过一些碎片化的信息点迅速构建起有效的知识体系，更是摆在我们当代人面前一个绕不开的竞争技能。《刻意练习》和《学习之道》是我们提升练习效果的不错的两本书籍。\n\n——王海龙（吴晓波苏州书友会）\n\n&#123;推荐序&#125;\n\n 在提升自己技能、不断精进的道路上，没有人能否认练习的作用。但 1 万小时定律有一些什么样的问题？作者艾利克森的本意是什么？人们如何更好地学习？\n\n 超越 1 万小时定律、n\n 如何习得专业技能，没有人能否认熟能生巧的意义。生性懒惰的我们总在寻找借口，试图回避练习。有一天，畅销书《异类》作者格拉德威尔告诉你：“人们眼中的天才之所以卓越非凡，并非天资超人一等，而是付出了持续不断的努力。只要经过 1 万小时的锤炼，任何人都能从平凡变成超凡。”\n\n 只要练习 1 万小时，就有了成为领域内领先者的希望，无论天赋、无论出身。你是不是怦然心动——平凡的人生终于可以开始逆袭：立即购买格拉德威尔的图书，并且报名参加各类 1 万小时练习小组。\n\n 然而，真相是，从来不存在 1 万小时定律，它仅仅是畅销书作家对心理科学研究的一次不太严谨的演绎而已。\n\n1 万小时定律，它的来龙去脉是什么？让我们回到诺奖得主西蒙那里。&#39;),...]
+
+[[Document(id=&#39;f3c77878-2e56-4cd9-ad80-422c4b1b1b2f&#39;, metadata=&#123;&#39;source&#39;: &#39;D:\\DESKTOP\\FOLDER\\STATIC\\刻意练习。epub&#39;, &#39;start_index&#39;: 2428&#125;, page_content=&#39;——赵周（拆书帮创始人）\n\n 如何进行高效的学习？我认为需要好的方法，坚持刻意练习，保证足够的强度，加上有效的教练为学习提供反馈。这本《刻意练习》为你提供了有效的指南。\n\n——秋叶（秋叶 PPT 创始人、知识型 IP 训练营创始人）\n\n 对于每一个教育领域，最有益的学习目标是那些帮助学员创建有效心理表征的目标，这也是刻意练习方法比传统学习方法有效的地方。本书以多个真实人物的成长案例阐释了刻意练习的前景，让人耳目一新。\n\n——邓斌（书享界发起人）\n\n“比你优秀的人比你还努力。”阅读《刻意练习》，你会发现提升努力效果的秘诀，让同样努力的你走出事倍功半的泥潭。\n\n——郭成（众阅读书会发起人）\n\n 我发现身边的高人，他们有两项高于常人的本领：一是洞察问题的本领，二是解决问题的本领。对于大多数人，很努力，却得不到希望的结果；很多事，有态度，却茫然于拿不出解决问题的具体方法。在这个社会大发展、信息大爆炸的移动互联网时代，能够通过一些碎片化的信息点迅速构建起有效的知识体系，更是摆在我们当代人面前一个绕不开的竞争技能。《刻意练习》和《学习之道》是我们提升练习效果的不错的两本书籍。\n\n——王海龙（吴晓波苏州书友会）\n\n&#123;推荐序&#125;\n\n 在提升自己技能、不断精进的道路上，没有人能否认练习的作用。但 1 万小时定律有一些什么样的问题？作者艾利克森的本意是什么？人们如何更好地学习？\n\n 超越 1 万小时定律、n\n 如何习得专业技能，没有人能否认熟能生巧的意义。生性懒惰的我们总在寻找借口，试图回避练习。有一天，畅销书《异类》作者格拉德威尔告诉你：“人们眼中的天才之所以卓越非凡，并非天资超人一等，而是付出了持续不断的努力。只要经过 1 万小时的锤炼，任何人都能从平凡变成超凡。”\n\n 只要练习 1 万小时，就有了成为领域内领先者的希望，无论天赋、无论出身。你是不是怦然心动——平凡的人生终于可以开始逆袭：立即购买格拉德威尔的图书，并且报名参加各类 1 万小时练习小组。\n\n 然而，真相是，从来不存在 1 万小时定律，它仅仅是畅销书作家对心理科学研究的一次不太严谨的演绎而已。\n\n1 万小时定律，它的来龙去脉是什么？让我们回到诺奖得主西蒙那里。&#39;),...)]]
+</code></pre></div><p>结构化输出后面再学，先去看 LangGraph。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/AI/">AI</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Python/">Python</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-1/03-27%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A801%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AD%A6%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%96%E7%A8%8B%EF%BC%9F/index.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">编程入门01——为什么学编程，什么是编程？</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-1/03-26%E3%80%90%E5%AF%B9%E8%AF%9D%E8%AE%B0%E5%BD%95%E3%80%91%E4%BC%A0%E7%BB%9F%E6%96%B0%E6%80%9D.html">
+                        <span class="hidden-mobile">【对话记录】传统新思</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

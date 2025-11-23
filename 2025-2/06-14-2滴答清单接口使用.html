@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="要使用滴答清单来作为电子版任务，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="滴答清单接口使用">
+<meta property="og:url" content="http://example.com/2025-2/06-14-2%E6%BB%B4%E7%AD%94%E6%B8%85%E5%8D%95%E6%8E%A5%E5%8F%A3%E4%BD%BF%E7%94%A8.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="要使用滴答清单来作为电子版任务，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-14T10:14:00.000Z">
+<meta property="article:modified_time" content="2025-06-14T13:24:44.187Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="日记">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>滴答清单接口使用 - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="滴答清单接口使用">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-06-14 18:14" pubdate>
+        2025年6月14日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">滴答清单接口使用</h1>
+            
+            <div class="markdown-body">
+              <p>我预备使用这种方式去规划和完成我每天的任务：</p>
+<ol>
+<li>在昨天晚上或今天早上，去在滴答清单上安排任务（这一步或许也给它用脚本自动化）</li>
+<li>从滴答清单上拉取任务信息，打印下来</li>
+<li>然后今天晚上或明天早上，把任务完成情况落实到滴答清单上，继续安排任务</li>
+</ol>
+<p>关于安排任务，要参考这阶段，这周的计划，以及参考之前的每天的执行情况。但这是后话。</p>
+<hr>
+<p>这里必须要抽象出来滴答清单的接口，这里也记一下滴答清单的 Token 的获取方式。</p>
+<p>滴答清单的文档见 <a target="_blank" rel="noopener" href="https://developer.dida365.com/docs#/openapi">https://developer.dida365.com/docs#/openapi</a>。</p>
+<h1 id="关于-Token-获取"><a href="#关于-Token-获取" class="headerlink" title="关于 Token 获取"></a>关于 Token 获取</h1><p><strong>滴答清单的 Token 的有效期是六个月，所以这里直接手动获取它，等它过期后再来一次即可</strong>。滴答清单走的是 OAuth2 协议，所以还比较麻烦。本想写一下 OAuth2 协议的逻辑和设计思路的，但算了，<strong>我该换角色了</strong>。</p>
+<p>首先，作为开发者，需要创建一个“App”（OAuth2 协议中的，不是真的应用，在文档界面右上角去操作），去记录 client_id 和 client_secret，这里把 redirect url 设置成 <code>https://localhost</code>。</p>
+<p>然后，用浏览器访问这<strong>整个链接</strong>，其中替换相应内容：</p>
+<p>&lt;<a target="_blank" rel="noopener" href="https://dida365.com/oauth/authorize?scope=tasks:write">https://dida365.com/oauth/authorize?scope=tasks:write</a> tasks:read&amp;client_id=&lt;你的 clientId&gt;&amp;state=hellohello&amp;redirect_uri=<a target="_blank" rel="noopener" href="https://localhost&amp;response_type=code&gt;">https://localhost&amp;response_type=code&gt;</a></p>
+<p>访问链接后按提示操作，成功后会跳转到形如 <code>https://localhost/?code=57SyIH&amp;state=hellohello</code>这样的链接，记录这里的 code <code>57SyIH</code>。</p>
+<p>然后，执行下面的 curl：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dsconfig"><span class="hljs-string">curl</span> <span class="hljs-built_in">--location</span> <span class="hljs-built_in">--request</span> <span class="hljs-string">POST</span> <span class="hljs-string">&#x27;https://dida365.com/oauth/token&#x27;</span> \<br>-<span class="hljs-string">u</span> <span class="hljs-string">&#x27;&lt;你的 client_id&gt;:&lt;你的 client_key&gt;&#x27;</span> \<br><span class="hljs-built_in">--data-urlencode</span> <span class="hljs-string">&#x27;code=&lt;上面得到的 code&gt;&#x27;</span> \<br><span class="hljs-built_in">--data-urlencode</span> <span class="hljs-string">&#x27;grant_type=authorization_code&#x27;</span> \<br><span class="hljs-built_in">--data-urlencode</span> <span class="hljs-string">&#x27;scope=tasks:write tasks:read&#x27;</span> \<br><span class="hljs-built_in">--data-urlencode</span> <span class="hljs-string">&#x27;redirect_uri=https://localhost&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<p>结果是个 JSON，中间的<code>access_token</code>字段即 TOKEN，后续使用时直接塞到 Authorization 字段中，前缀 Bearer。</p>
+<p>这个执行似乎偶尔会失败……加<code>-v</code>后会成功。</p>
+<h1 id="接口抽象"><a href="#接口抽象" class="headerlink" title="接口抽象"></a>接口抽象</h1><p>下面使用 python 的 requests 库和 pydantic 库去定义接口抽象，学习 Spring Boot 的命名方式去定义相应的 Template。下面的代码中假设 token 存在<code>DIDA_TOKEN</code>环境变量中。</p>
+<p>观察到，有三个实体：Project 和 Task 和 ChecklistItem，Project 即特定的清单（清单文件夹不算），Task 则是特定任务，任务包含零个或多个 ChecklistItem。</p>
+<p>Project 实际上应当包含 Column，Column 才包含 Task，但……Task 没有引用 Column。容易猜想，新增的 Task 都是放在“默认”的 Task 中。</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">from</span> enum <span class="hljs-keyword">import</span> Enum, IntEnum<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Optional</span><br><br><span class="hljs-keyword">from</span> pydantic <span class="hljs-keyword">import</span> BaseModel, ConfigDict, TypeAdapter<br><span class="hljs-keyword">import</span> requests<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">to_snake</span>(<span class="hljs-params">string: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-keyword">import</span> re<br>    <span class="hljs-keyword">return</span> re.sub(<span class="hljs-string">r&#x27;(?&lt;!^)(?=[A-Z])&#x27;</span>, <span class="hljs-string">&#x27;_&#x27;</span>, string).lower()<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SubtaskStatus</span>(<span class="hljs-title class_ inherited__">IntEnum</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Subtask status enumeration.&quot;&quot;&quot;</span><br>    NORMAL = <span class="hljs-number">0</span><br>    COMPLETED = <span class="hljs-number">1</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TaskStatus</span>(<span class="hljs-title class_ inherited__">IntEnum</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Task status enumeration.&quot;&quot;&quot;</span><br>    NORMAL = <span class="hljs-number">0</span><br>    COMPLETED = <span class="hljs-number">2</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TaskPriority</span>(<span class="hljs-title class_ inherited__">IntEnum</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Task priority enumeration.&quot;&quot;&quot;</span><br>    NONE = <span class="hljs-number">0</span><br>    LOW = <span class="hljs-number">1</span><br>    MEDIUM = <span class="hljs-number">3</span><br>    HIGH = <span class="hljs-number">5</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ViewMode</span>(<span class="hljs-built_in">str</span>, Enum):<br>    <span class="hljs-string">&quot;&quot;&quot;Enumeration for project view modes.&quot;&quot;&quot;</span><br>    LIST = <span class="hljs-string">&quot;list&quot;</span><br>    KANBAN = <span class="hljs-string">&quot;kanban&quot;</span><br>    TIMELINE = <span class="hljs-string">&quot;timeline&quot;</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Permission</span>(<span class="hljs-built_in">str</span>, Enum):<br>    <span class="hljs-string">&quot;&quot;&quot;Enumeration for project permissions.&quot;&quot;&quot;</span><br>    READ = <span class="hljs-string">&quot;read&quot;</span><br>    WRITE = <span class="hljs-string">&quot;write&quot;</span><br>    COMMENT = <span class="hljs-string">&quot;comment&quot;</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ProjectKind</span>(<span class="hljs-built_in">str</span>, Enum):<br>    <span class="hljs-string">&quot;&quot;&quot;Enumeration for project kinds.&quot;&quot;&quot;</span><br>    TASK = <span class="hljs-string">&quot;TASK&quot;</span><br>    NOTE = <span class="hljs-string">&quot;NOTE&quot;</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ChecklistItem</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Model representing a subtask.&quot;&quot;&quot;</span><br><br>    model_config = ConfigDict(alias_generator=to_snake, populate_by_name=<span class="hljs-literal">True</span>)<br><br>    <span class="hljs-built_in">id</span>: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Subtask identifier</span><br>    title: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Subtask title</span><br>    status: SubtaskStatus  <span class="hljs-comment"># The completion status of subtask</span><br>    completed_time: <span class="hljs-type">Optional</span>[datetime] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Subtask completed time in &quot;yyyy-MM-dd&#x27;T&#x27;HH:mm:ssZ&quot;</span><br>    is_all_day: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span>  <span class="hljs-comment"># All day</span><br>    sort_order: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>  <span class="hljs-comment"># Subtask sort order</span><br>    start_date: <span class="hljs-type">Optional</span>[datetime] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Subtask start date time in &quot;yyyy-MM-dd&#x27;T&#x27;HH:mm:ssZ&quot;</span><br>    time_zone: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Subtask timezone</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Task</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Model representing a task.&quot;&quot;&quot;</span><br>    <span class="hljs-built_in">id</span>: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Task identifier</span><br>    title: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Task title</span><br>    project_id: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;&#x27;</span>  <span class="hljs-comment"># Task project id</span><br>    is_all_day: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span>  <span class="hljs-comment"># All day</span><br>    completed_time: <span class="hljs-type">Optional</span>[datetime] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Task completed time in &quot;yyyy-MM-dd&#x27;T&#x27;HH:mm:ssZ&quot;</span><br>    content: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Task content</span><br>    desc: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Task description of checklist</span><br>    due_date: <span class="hljs-type">Optional</span>[datetime] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Task due date time in &quot;yyyy-MM-dd&#x27;T&#x27;HH:mm:ssZ&quot;</span><br>    items: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">list</span>[ChecklistItem]] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Subtasks of Task</span><br>    priority: TaskPriority = TaskPriority.NONE  <span class="hljs-comment"># Task priority (0, 1, 3, 5)</span><br>    reminders: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># List of reminder triggers</span><br>    repeat_flag: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Recurring rules of task</span><br>    sort_order: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>  <span class="hljs-comment"># Task sort order</span><br>    start_date: <span class="hljs-type">Optional</span>[datetime] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Start date time in &quot;yyyy-MM-dd&#x27;T&#x27;HH:mm:ssZ&quot;</span><br>    status: TaskStatus = TaskStatus.NORMAL  <span class="hljs-comment"># Task completion status (0, 2)</span><br>    time_zone: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Task timezone</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Project</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Model representing a project.&quot;&quot;&quot;</span><br>    <span class="hljs-built_in">id</span>: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Project identifier</span><br>    name: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Project name</span><br>    color: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-comment"># Project color</span><br>    sort_order: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>  <span class="hljs-comment"># Order value (int64)</span><br>    closed: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span>  <span class="hljs-comment"># Project closed status</span><br>    group_id: <span class="hljs-type">Optional</span>[<span class="hljs-built_in">str</span>] = <span class="hljs-literal">None</span>  <span class="hljs-comment"># Project group identifier</span><br>    view_mode: ViewMode = ViewMode.LIST  <span class="hljs-comment"># View mode (&quot;list&quot;, &quot;kanban&quot;, &quot;timeline&quot;)</span><br>    permission: Permission = Permission.READ  <span class="hljs-comment"># Permission level (&quot;read&quot;, &quot;write&quot;, &quot;comment&quot;)</span><br>    kind: ProjectKind = ProjectKind.TASK  <span class="hljs-comment"># Project type (&quot;TASK&quot; or &quot;NOTE&quot;)</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Column</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Model representing a column in a project.&quot;&quot;&quot;</span><br>    <span class="hljs-built_in">id</span>: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Column identifier</span><br>    project_id: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Project identifier</span><br>    name: <span class="hljs-built_in">str</span>  <span class="hljs-comment"># Column name</span><br>    sort_order: <span class="hljs-built_in">int</span>  <span class="hljs-comment"># Order value (int64)</span><br><br><span class="hljs-comment"># Main ProjectData Model</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ProjectData</span>(<span class="hljs-title class_ inherited__">BaseModel</span>):<br>    project: Project<br>    tasks: <span class="hljs-built_in">list</span>[Task] = []<br>    <span class="hljs-comment"># columns: list[Column] = [] # useless and buggy</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">DidaTemplate</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Abstraction of the open API of dida365.com.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    不包含任何业务逻辑，只完全地反映它的接口，但只按照自己的需求抽象我需要用到的接口（我不会通过代码去完成任务，只添加和查询任务！）</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:<br>        self._token = os.environ[<span class="hljs-string">&#x27;DIDA_TOKEN&#x27;</span>]<br>        self._base_url = <span class="hljs-string">&#x27;https://dida365.com&#x27;</span><br>        self._headers = &#123;<br>            <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">f&#x27;Bearer <span class="hljs-subst">&#123;self._token&#125;</span>&#x27;</span>,<br>            <span class="hljs-string">&#x27;User-Agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0&#x27;</span><br>        &#125;<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_task</span>(<span class="hljs-params">self, project_id: <span class="hljs-built_in">str</span>, task_id: <span class="hljs-built_in">str</span></span>) -&gt; Task:<br>        resp = requests.get(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;self._base_url&#125;</span>/open/v1/project/<span class="hljs-subst">&#123;project_id&#125;</span>/task/<span class="hljs-subst">&#123;task_id&#125;</span>&#x27;</span>, headers=self._headers)<br>        resp.raise_for_status()<br>        <span class="hljs-keyword">return</span> Task.model_validate_json(resp.content)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_task</span>(<span class="hljs-params">self, task: Task</span>) -&gt; Task:<br>        resp = requests.post(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;self._base_url&#125;</span>/open/v1/task&#x27;</span>, headers=self._headers, json=task.model_dump_json())<br>        resp.raise_for_status()<br>        <span class="hljs-keyword">return</span> Task.model_validate_json(resp.content)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">list_project</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-built_in">list</span>[Project]:<br>        resp = requests.get(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;self._base_url&#125;</span>/open/v1/project&#x27;</span>, headers=self._headers)<br>        resp.raise_for_status()<br>        <span class="hljs-keyword">return</span> TypeAdapter(<span class="hljs-built_in">list</span>[Project]).validate_json(resp.content)<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_project</span>(<span class="hljs-params">self, project_id: <span class="hljs-built_in">str</span></span>) -&gt; ProjectData:<br>        resp = requests.get(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;self._base_url&#125;</span>/open/v1/project/<span class="hljs-subst">&#123;project_id&#125;</span>/data&#x27;</span>, headers=self._headers)<br>        resp.raise_for_status()<br>        <span class="hljs-keyword">return</span> ProjectData.model_validate_json(resp.content)<br>    <br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    template = DidaTemplate()<br>    <span class="hljs-keyword">for</span> proj <span class="hljs-keyword">in</span> template.list_project():<br>        proj_detail = template.get_project(proj.<span class="hljs-built_in">id</span>)<br>        <span class="hljs-keyword">for</span> task <span class="hljs-keyword">in</span> proj_detail.tasks:<br>            <span class="hljs-built_in">print</span>(task.title)<br></code></pre></div></td></tr></table></figure>
+<p>Over~</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%97%A5%E8%AE%B0/">日记</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-2/06-15%E5%81%A5%E8%BA%AB%E8%AE%A1%E5%88%92%E5%92%8C%E9%A5%AE%E9%A3%9F%E8%AE%A1%E5%88%92%E5%92%8C%E6%9D%82%E9%A1%B9%E8%AE%A1%E5%88%92.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">健身计划和饮食计划和杂项计划</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-2/06-14-1jinja2%E5%92%8Cdocxtpl%E5%85%89%E9%80%9F%E5%85%A5%E9%97%A8.html">
+                        <span class="hidden-mobile">jinja2 和 python-docx-template 光速入门</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

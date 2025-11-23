@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="跟着感觉走，让它带着我">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编程入门 02——为什么是 Python，表达式和语句">
+<meta property="og:url" content="http://example.com/2025-1/03-28%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A802%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFPython%EF%BC%8C%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E8%AF%AD%E5%8F%A5/index.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="跟着感觉走，让它带着我">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025-1/03-28%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A802%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFPython%EF%BC%8C%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E8%AF%AD%E5%8F%A5/image.png">
+<meta property="og:image" content="http://example.com/2025-1/03-28%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A802%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFPython%EF%BC%8C%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E8%AF%AD%E5%8F%A5/image-2.png">
+<meta property="og:image" content="http://example.com/2025-1/03-28%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A802%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFPython%EF%BC%8C%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E8%AF%AD%E5%8F%A5/image-1.png">
+<meta property="article:published_time" content="2025-03-27T23:20:00.000Z">
+<meta property="article:modified_time" content="2025-03-29T23:21:50.273Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="编程入门">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2025-1/03-28%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A802%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AFPython%EF%BC%8C%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E8%AF%AD%E5%8F%A5/image.png">
+  
+  
+  <title>编程入门 02——为什么是 Python，表达式和语句 - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="编程入门 02——为什么是 Python，表达式和语句">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-03-28 07:20" pubdate>
+        2025年3月28日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">编程入门 02——为什么是 Python，表达式和语句</h1>
+            
+            <div class="markdown-body">
+              <p>注意——学习编程和学习其他科学技术的一个最大的区别是，<strong>程序是可以实际执行的，你应当像玩一个沙盒游戏一样，去进行各种尝试。通过实验去自己发现新东西，这事情其实蛮好玩的</strong>。所谓知行合一，在编程的学习上可谓体现地淋漓尽致。</p>
+<h1 id="安装-Python，VSCode"><a href="#安装-Python，VSCode" class="headerlink" title="安装 Python，VSCode"></a>安装 Python，VSCode</h1><p>关于 Python 和 VSCode 的安装，以及如何打开 Python 的交互式执行环境，网上有现成的教程可用，我就不再重复了。切记，<strong>下面的内容一定要实操</strong>。</p>
+<p>也有一些在线环境可以让你学习 Python，比如 <a target="_blank" rel="noopener" href="https://jupyter.org/try-jupyter/lab/">https://jupyter.org/try-jupyter/lab/</a>，你点击这个按钮：</p>
+<p><img src="image.png" alt="点击这个"></p>
+<p>然后在其中编辑和执行你的代码，注意这些代码是可以分块执行的，对测试来说很方便：</p>
+<p><img src="image-2.png" alt="点击这个按钮去执行代码"></p>
+<h1 id="为什么是-Python"><a href="#为什么是-Python" class="headerlink" title="为什么是 Python"></a>为什么是 Python</h1><h2 id="Python-是解释型语言"><a href="#Python-是解释型语言" class="headerlink" title="Python 是解释型语言"></a>Python 是解释型语言</h2><p>编程语言主要可以分为两类——解释型语言和编译型语言。</p>
+<p>编译型语言的特点是，它的代码<strong>无法直接执行</strong>，而是需要经过一个被称为<strong>编译</strong>的步骤，<strong>将人类可读的代码，转换为机器可读的二进制代码</strong>。因此，编译型语言相对来说使用较麻烦。</p>
+<p>而解释型语言的特点是，它的代码<strong>是可以被一行一行地直接执行的</strong>，解释型语言相对来说会稍微慢一些，但它有一系列优点：</p>
+<ol>
+<li>解释型语言通常会提供<strong>交互式的代码执行环境</strong>——你可以输入一行代码，然后这行代码马上就执行，并输出结果给你，<strong>这使得解释型语言更加容易学习和查错（称为 debug）</strong></li>
+<li><strong>解释型语言的代码文件通常是可以直接执行的</strong>，因此可以方便地分别地测试各个代码文件；而编译型语言的代码文件则可能无法直接执行，而必须通过一个<strong>主入口</strong>去执行</li>
+</ol>
+<p>显然，这两个优点<strong>让解释型语言更容易进行学习，而 Python 就是一个解释型的语言，它很好学</strong>，而且极其适合编写那些只使用一次的代码。</p>
+<p>比如，下面就是在 Python 的交互式执行环境（称为 REPL，Read-Eval-Print-Loop，读取代码、执行代码、打印结果、循环）中玩耍的内容，其中 <code>&gt;&gt;&gt;</code> 开头的是我的输入，而其他的是 Python 给我的回应：</p>
+<p><img src="image-1.png" alt="alt text"></p>
+<p>注意到，我输入了语法错误，或者执行错误的代码时，Python 能够把错误原因（不合法的语法，除以零）告诉我，这让 Python 语言可以进行<strong>实验</strong>。</p>
+<h2 id="Python-很“明显”"><a href="#Python-很“明显”" class="headerlink" title="Python 很“明显”"></a>Python 很“明显”</h2><p>这是 Python 的优点其一，另一个优点是，<strong>Python 语言简洁且明显，Python 的代码很多时候能直接反映它要解决的问题</strong>。</p>
+<p>虽然这里假设读者还没有开始接触编程，但这里举出用 Python 解决一个实际需求的例子来积累一下对 Python 的<strong>感性经验</strong>：考虑要检查一个文本文件中有多少个空行：</p>
+<p>Python 语言可以这么写（这种写法是不优美的，实际上有更好看且实用的写法）：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">counter = <span class="hljs-number">0</span><br><br>file = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;some_file.txt&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> file:<br>    <span class="hljs-keyword">if</span> line.strip() == <span class="hljs-string">&#x27;&#x27;</span>: <span class="hljs-comment"># strip 就是去掉首尾的空白符号</span><br>        counter = counter + <span class="hljs-number">1</span><br>file.close()<br><br><span class="hljs-built_in">print</span>(counter)<br></code></pre></div></td></tr></table></figure>
+<p>我再使用<strong>伪代码</strong>（就是仅供说明用的代码，无法真的执行的）来表述一下同样的逻辑：</p>
+<figure class="highlight"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs">打开文件<br>对文件的每一行：<br>    如果这一行为空：<br>        计数器增加 1<br>关闭文件<br>打印计数器的值<br></code></pre></div></td></tr></table></figure>
+<p><strong>注意到，Python 几乎是可以和伪代码的形式完全对应上的</strong>。</p>
+<p>与之相对地，再举一下使用 Perl 语言实现同样功能的例子：</p>
+<figure class="highlight perl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs perl"><span class="hljs-keyword">use</span> strict;<br><span class="hljs-keyword">use</span> warnings;<br><br><span class="hljs-keyword">open</span> <span class="hljs-keyword">my</span> $fh, <span class="hljs-string">&quot;&lt;&quot;</span>, <span class="hljs-string">&#x27;some_file.txt&#x27;</span>;<br><span class="hljs-keyword">my</span> $counter = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">while</span> (&lt;$fh&gt;) &#123;<br>    <span class="hljs-keyword">chomp</span>; <br>    <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^\s*$/</span>) &#123;<br>        $counter++;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">close</span>($fh);<br><span class="hljs-keyword">print</span> $counter;<br></code></pre></div></td></tr></table></figure>
+<hr>
+<p>扯够了理论，来开始实操吧，在读到这里的时候，你应当已经安装和配置好了 Python。</p>
+<h1 id="表达式和语句"><a href="#表达式和语句" class="headerlink" title="表达式和语句"></a>表达式和语句</h1><p><strong>这一节的内容，尝试得到感性经验即可，不用深究</strong>。</p>
+<p>先打开 Python 的 REPL，<strong>假装 Python 是一个计算器吧</strong>！但在一切开始之前，先不要问太多，执行下面的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> *<br></code></pre></div></td></tr></table></figure>
+<p>如果你实在好奇这一行代码是什么意思，那我就告诉你——这行代码把 math 模块下的所有成员，导入到当前命名空间中。<strong>执行这一行代码是为了让三角函数和 $\pi$ 可用</strong>。</p>
+<p>尝试执行下面的内容（<strong>在执行前，先尝试思考一下它执行的结果可能是什么</strong>），注意 Python 的 REPL 是一行一行执行代码的，每次输完一行你需要按回车它才会执行：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs n1ql">42<br>- 110<br><br>1 + 2<br>3 * 4<br>4 / 2<br>3 ** 4<br>5 + -3<br><br>5 / 4 / 3<br>1 * 2 - 3 * 4<br>1 * (2 - 3) * 4<br>3 * (1 + 2)<br>3 * 1 + 2<br><br>1 / 0<br><br>1.1 / 5<br><br>10 == <span class="hljs-number">10</span><br><span class="hljs-number">10</span> &gt; <span class="hljs-number">9</span><br><span class="hljs-number">10</span> &lt; <span class="hljs-number">9</span><br><span class="hljs-literal">True</span><br><span class="hljs-number">10</span> == <span class="hljs-number">10</span> <span class="hljs-keyword">and</span> <span class="hljs-number">100</span> == <span class="hljs-number">100</span><br><span class="hljs-number">1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">2</span><br><span class="hljs-number">0</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span><br><span class="hljs-number">1</span> <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> <span class="hljs-number">3</span><br><span class="hljs-number">0</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span><br><br><span class="hljs-built_in">pi</span><br><span class="hljs-built_in">sin</span>(<span class="hljs-built_in">pi</span> / <span class="hljs-number">2</span>)<br><span class="hljs-built_in">cos</span>(<span class="hljs-built_in">pi</span> / <span class="hljs-number">2</span>)<br><span class="hljs-built_in">tan</span>(<span class="hljs-built_in">pi</span> / <span class="hljs-number">2</span>)<br><span class="hljs-built_in">radians</span>(<span class="hljs-number">90</span>) == <span class="hljs-built_in">pi</span> / <span class="hljs-number">2</span><br><span class="hljs-built_in">sin</span>(<span class="hljs-built_in">radians</span>(<span class="hljs-number">90</span>))<br><span class="hljs-built_in">sin</span>(<span class="hljs-built_in">pi</span> / <span class="hljs-number">4</span>) ** <span class="hljs-number">2</span> + <span class="hljs-built_in">cos</span>(<span class="hljs-built_in">pi</span> / <span class="hljs-number">4</span>) ** <span class="hljs-number">2</span><br><span class="hljs-built_in">sin</span>(<span class="hljs-built_in">cos</span>(<span class="hljs-built_in">sin</span>(<span class="hljs-built_in">cos</span>(<span class="hljs-built_in">sin</span>(<span class="hljs-built_in">cos</span>(<span class="hljs-number">100</span>))))))<br></code></pre></div></td></tr></table></figure>
+<p><strong>上面的每一行的，像算式一样的内容，都是合法的 Python 代码</strong>，更具体的说，这些每一行的内容，都是所谓的<strong>表达式 Expression</strong>。<strong>表达式被 Python 执行，得到值 Value</strong>。比如，<code>1 + 1</code>执行得到值<code>2</code>，<code>10 == 10</code>执行得到值<code>True</code>，<code>sin(pi / 2)</code>执行得到值 <code>1</code>。</p>
+<p>表达式就像数学算式一样，它形式多样，是可以<strong>任意组合</strong>的，比如，<code>1 + 2</code> 是表达式，而 <code>1 + 3 * (1 + 2)</code> 同样是表达式。</p>
+<p><strong>编程语言，极端简化地说，只有两个部分——表达式 Expression 和语句 Statement</strong>，所以我们已经学会了一半了，欧耶（当然是开玩笑的（（。</p>
+<p>上面说了表达式，而<strong>语句</strong>，则是编程语言中结构相对固定的那部分，语句的结构非常受编程语言语法的约束，不能乱来，比如，下面的这些就是 Python 中一些语句的示例，<strong>注意到对于语句，我们通常可以使用自然语言去描述它</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 这样以井号开头的代码称为“注释”，注释是给人看的，Python 会忽略注释</span><br><br><span class="hljs-comment"># 令 a 为 100</span><br>a = <span class="hljs-number">100</span><br><br><span class="hljs-comment"># 如果 1 + 2 + 3 为真，我就……，否则如果 2 + 3 + 4 为真，我就……，否则我就……</span><br><span class="hljs-keyword">if</span> <span class="hljs-number">1</span> + <span class="hljs-number">2</span> + <span class="hljs-number">3</span>:<br>    ...<br><span class="hljs-keyword">elif</span> <span class="hljs-number">2</span> + <span class="hljs-number">3</span> + <span class="hljs-number">4</span>:<br>    ...<br><span class="hljs-keyword">else</span>:<br>    ...<br><br><span class="hljs-comment"># 如果 True 为真，我就反复……</span><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    ...<br></code></pre></div></td></tr></table></figure>
+<p>注意到，<strong>语句就像一个框架，然后你可以在这个框架中安排表达式或者其他语句</strong>。</p>
+<p><strong>表达式执行，产生值</strong>，而语句并不产生值，<strong>语句定义程序的执行流程，或者说结构</strong>。</p>
+<p>但这里也提一嘴——<strong>表达式本身也是语句</strong>，可以独立出现，比如下面的代码也是合法的，<strong>只是无意义</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">if</span> <span class="hljs-number">1</span> + <span class="hljs-number">2</span> + <span class="hljs-number">3</span>:<br>    <span class="hljs-number">3</span> + <span class="hljs-number">4</span><br>    <span class="hljs-number">5</span> == <span class="hljs-number">6</span><br></code></pre></div></td></tr></table></figure>
+<p><strong>在学习编程语言的时候，你可以特别去注意——这是一个表达式还是一个语句</strong>？常问这个问题有助于避免犯一些根本性的错误。</p>
+<h1 id="Hello，World！"><a href="#Hello，World！" class="headerlink" title="Hello，World！"></a>Hello，World！</h1><p>上面我们把 Python 当作是一个计算器去玩耍，同时介绍了表达式和语句的概念。</p>
+<p>接下来，完成一个好玩的仪式——<strong>学习一门新语言的第一步，输出“Hello, World!”</strong>，来开始真正的学习。在 REPL 中执行，或者使用 VSCode 创建一个后缀为<code>.py</code>的文件，填入下面的代码并执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Hello, World!&#x27;</span>)<br></code></pre></div></td></tr></table></figure>
+<p>这里预先提及一下一个有趣的事情——这里的 print，和上面的 sin，cos，没有本质上的区别，尝试执行一下表达式 <code>print(print)</code>，<code>print(print(1))</code>，<code>print(100, print(1), print(2))</code>，看看会发生怎样的现象？</p>
+<p>以及，尝试修改它的内容，比如，输出自己的名字？</p>
+<p>通过这些实验，你能看出来 print <strong>函数</strong>的用途和<strong>返回值</strong>吗？看不出也不要紧，这里只是为了好玩。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A8/">编程入门</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025-1/03-29LangChain%E5%AD%A6%E4%B9%A002%E2%80%94%E2%80%94%E5%B7%A5%E4%BD%9C%E6%B5%81%EF%BC%8CChatbot/index.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">LangChain 学习 02——工作流，Chatbot</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025-1/03-27%E7%BC%96%E7%A8%8B%E5%85%A5%E9%97%A801%E2%80%94%E2%80%94%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AD%A6%E7%BC%96%E7%A8%8B%EF%BC%8C%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%96%E7%A8%8B%EF%BC%9F/index.html">
+                        <span class="hidden-mobile">编程入门01——为什么学编程，什么是编程？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
