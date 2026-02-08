@@ -192,16 +192,34 @@
         import {Pane} from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
         // ...
 
+        function getCurrentDateTime() {
+            const now = new Date();
+            
+            // 获取年、月、日
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要+1
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            // 获取时、分、秒
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 组合成 YYYY-MM-DD HH:MM:SS 格式
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+
         // 初始化参数
         const params = {
-            title: '速写底图',
-            rows: 5,
-            columns: 5,
-            cellWidth: 400,
-            cellHeight: 400,
+            title: getCurrentDateTime(),
+            rows: 4,
+            columns: 4,
+            cellWidth: 800,
+            cellHeight: 800,
             lineColor: '#3498db',
-            lineWidth: 1,
-            titleSize: 24,
+            lineWidth: 4,
+            titleSize: 48,
             titleColor: '#2c3e50',
             backgroundColor: '#ffffff',
             showNumbers: false
