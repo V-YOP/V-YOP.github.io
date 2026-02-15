@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="我其实也没想好拿这玩意儿究竟用来干啥">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 WireGuard 配置虚拟局域网">
+<meta property="og:url" content="http://example.com/2026-1/02-15%E4%BD%BF%E7%94%A8WireGuard%E9%85%8D%E7%BD%AE%E8%99%9A%E6%8B%9F%E5%B1%80%E5%9F%9F%E7%BD%91.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="我其实也没想好拿这玩意儿究竟用来干啥">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-02-15T12:56:00.000Z">
+<meta property="article:modified_time" content="2026-02-15T12:57:41.463Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>使用 WireGuard 配置虚拟局域网 - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="使用 WireGuard 配置虚拟局域网">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2026-02-15 20:56" pubdate>
+        2026年2月15日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.6k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">使用 WireGuard 配置虚拟局域网</h1>
+            
+            <div class="markdown-body">
+              <p>今天突然对内网穿透有兴趣，去在自己的云服务器上部署了 WireGuard，记录一下过程。但我其实也没想好拿这玩意儿究竟用来干啥。</p>
+<p><strong>这里只讨论使用 WireGuard 来建立虚拟局域网的用法</strong>，不讨论让所有流量都走 WireGuard 服务端即 VPN 那种用法。</p>
+<h1 id="啥是-WireGuard"><a href="#啥是-WireGuard" class="headerlink" title="啥是 WireGuard"></a>啥是 WireGuard</h1><p>WireGuard 是一种 VPN 协议——一台公网服务器作为服务端，其他设备作为客户端。服务端和客户端将处在一个虚拟局域网中并均有自己的虚拟 IP 供互相访问。</p>
+<p>WireGuard 的实现简单——所有流量均通过服务端进行<strong>加密后的中转</strong>。也就是说在这个虚拟局域网中的互相访问的流量会加密后经过互联网。因为这里被加密了，所以使用 HTTP 这样的明文协议交互是可行的（当然，只是说“明文”这部分不需要担心）。但安全问题这里就不谈了，毕竟是个人使用，能出啥事。</p>
+<p>WireGuard 的流量均通过服务端，没有 P2P，所以带宽和流量需要注意。</p>
+<p>WireGuard 的配置非常容易——<strong>没有任何认证啥的幺蛾子，服务端和客户端均使用公钥相互验证</strong>。当然这也带来不便——<strong>服务端需要手动配置所有客户端的信息，如果新增客户端的话服务端需要手动编辑并重启</strong>。</p>
+<h1 id="安装和配置过程"><a href="#安装和配置过程" class="headerlink" title="安装和配置过程"></a>安装和配置过程</h1><h2 id="安装服务端"><a href="#安装服务端" class="headerlink" title="安装服务端"></a>安装服务端</h2><p>我用的是京东云，命令是：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">apt install wireguard<br></code></pre></div></td></tr></table></figure>
+<h2 id="生成服务端的密钥，创建配置文件"><a href="#生成服务端的密钥，创建配置文件" class="headerlink" title="生成服务端的密钥，创建配置文件"></a>生成服务端的密钥，创建配置文件</h2><p>进入<code>/etc/wireguard</code>，执行下面的命令创建服务端的公私钥：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">wg genkey | <span class="hljs-built_in">tee</span> server_private.key | wg pubkey &gt; server_public.key<br></code></pre></div></td></tr></table></figure>
+<p>然后创建文件 <code>/etc/wireguard/wg0.conf</code>，编辑它：</p>
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-section">[Interface]</span><br><span class="hljs-attr">PrivateKey</span> = &lt;上面生成的私钥&gt;<br><span class="hljs-comment"># 这个地址表示服务端的虚拟 IP 是 10.0.0.1</span><br><span class="hljs-comment">#（我不知道为啥需要配置这个莫名其妙的子网掩码，但既然示例里写了我就也写）</span><br><span class="hljs-attr">Address</span> = <span class="hljs-number">10.0</span>.<span class="hljs-number">0.1</span>/<span class="hljs-number">24</span><br><span class="hljs-attr">ListenPort</span> = <span class="hljs-number">51820</span><br><span class="hljs-attr">SaveConfig</span> = <span class="hljs-literal">true</span><br><br><span class="hljs-comment"># 这里的 eth0 可能需要替换成实际的网卡名，执行 ip addr show 去找到实际的网卡</span><br><span class="hljs-attr">PostUp</span> = iptables -A FORWARD -i wg0 -j ACCEPT<span class="hljs-comment">; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span><br><span class="hljs-attr">PostDown</span> = iptables -D FORWARD -i wg0 -j ACCEPT<span class="hljs-comment">; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</span><br></code></pre></div></td></tr></table></figure>
+<h2 id="安装和配置客户端"><a href="#安装和配置客户端" class="headerlink" title="安装和配置客户端"></a>安装和配置客户端</h2><p>在<code>https://www.wireguard.com/install/</code>下载各平台的客户端。（这里虽然说是客户端，但它们其实也可以当服务端，但不提这个）</p>
+<p>图形客户端一般会自动创建自己的密钥，这里贴上参考的客户端的配置（客户端的 IP 要手动指定，下面的 IP 配置为<code>10.0.0.2</code>。</p>
+<p>注意<code>AllowedIPs</code>的配置很重要——它决定对哪些 IP 要去走 WireGuard 的线路，如果配置成<code>10.0.0.0/24</code>表示只需虚拟局域网内部访问。</p>
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-section">[Interface]</span><br><span class="hljs-attr">PrivateKey</span> = &lt;客户端的私钥（一般是自动生成）的&gt;<br><span class="hljs-comment"># 可以改为其他 IP，但要在 10.0.0.0/24 子网下</span><br><span class="hljs-attr">Address</span> = <span class="hljs-number">10.0</span>.<span class="hljs-number">0.2</span>/<span class="hljs-number">24</span><br><span class="hljs-attr">DNS</span> = <span class="hljs-number">8.8</span>.<span class="hljs-number">8.8</span><br><br><span class="hljs-section">[Peer]</span><br><span class="hljs-attr">PublicKey</span> = &lt;服务端的公钥&gt;<br><span class="hljs-comment"># 10.0.0.0/24 表示只需虚拟局域网内部访问</span><br><span class="hljs-comment"># 0.0.0.0/0 表示所有流量均走服务端（即当成 VPN 去使用）</span><br><span class="hljs-attr">AllowedIPs</span> = <span class="hljs-number">10.0</span>.<span class="hljs-number">0.0</span>/<span class="hljs-number">24</span><br><span class="hljs-attr">Endpoint</span> = &lt;服务端的公网 IP&gt;:<span class="hljs-number">51820</span><br><span class="hljs-attr">PersistentKeepalive</span> = <span class="hljs-number">25</span><br></code></pre></div></td></tr></table></figure>
+<h2 id="让服务端知晓客户端"><a href="#让服务端知晓客户端" class="headerlink" title="让服务端知晓客户端"></a>让服务端知晓客户端</h2><p>在服务端中增加客户端的信息（我把整个内容都贴上来）：</p>
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-section">[Interface]</span><br><span class="hljs-attr">PrivateKey</span> = &lt;上面生成的私钥&gt;<br><span class="hljs-comment"># 这个地址表示服务端的虚拟 IP 是 10.0.0.1</span><br><span class="hljs-comment">#（我不知道为啥需要配置这个莫名其妙的子网掩码，但既然示例里写了我就也写）</span><br><span class="hljs-attr">Address</span> = <span class="hljs-number">10.0</span>.<span class="hljs-number">0.1</span>/<span class="hljs-number">24</span><br><span class="hljs-attr">ListenPort</span> = <span class="hljs-number">51820</span><br><span class="hljs-attr">SaveConfig</span> = <span class="hljs-literal">true</span><br><br><span class="hljs-comment"># 这里的 eth0 可能需要替换成实际的网卡名，执行 ip addr show 去找到实际的网卡</span><br><span class="hljs-attr">PostUp</span> = iptables -A FORWARD -i wg0 -j ACCEPT<span class="hljs-comment">; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span><br><span class="hljs-attr">PostDown</span> = iptables -D FORWARD -i wg0 -j ACCEPT<span class="hljs-comment">; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</span><br><br><span class="hljs-section">[Peer]</span><br><span class="hljs-comment"># 第一个客户端</span><br><span class="hljs-attr">PublicKey</span> = &lt;第一个客户端的公钥&gt;<br><span class="hljs-comment"># 第一个客户端的虚拟 IP</span><br><span class="hljs-attr">AllowedIPs</span> = <span class="hljs-number">10.0</span>.<span class="hljs-number">0.2</span>/<span class="hljs-number">32</span><br><br><span class="hljs-section">[Peer]</span><br><span class="hljs-comment"># 第二个客户端</span><br><span class="hljs-attr">PublicKey</span> = &lt;第二个客户端的公钥&gt;<br><span class="hljs-comment"># 第二个客户端的虚拟 IP</span><br><span class="hljs-attr">AllowedIPs</span> = <span class="hljs-number">10.0</span>.<span class="hljs-number">0.3</span>/<span class="hljs-number">32</span><br></code></pre></div></td></tr></table></figure>
+<h2 id="启动服务端"><a href="#启动服务端" class="headerlink" title="启动服务端"></a>启动服务端</h2><p>服务端还需要开启内核转发：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;net.ipv4.ip_forward=1&quot;</span> &gt;&gt; /etc/sysctl.conf<br>sysctl -p<br></code></pre></div></td></tr></table></figure>
+<p>然后，启动服务端（我严重怀疑只执行<code>systemctl enable wg-quick@wg0</code>就够了，但我懒得再配了）</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">wg-quick up wg0<br>systemctl <span class="hljs-built_in">enable</span> wg-quick@wg0<br></code></pre></div></td></tr></table></figure>
+<h2 id="启动客户端"><a href="#启动客户端" class="headerlink" title="启动客户端"></a>启动客户端</h2><p>这个就在 GUI 中直接操作。</p>
+<h1 id="Bonus：Windows-下-KDE-Connect-无法使用的问题"><a href="#Bonus：Windows-下-KDE-Connect-无法使用的问题" class="headerlink" title="Bonus：Windows 下 KDE Connect 无法使用的问题"></a>Bonus：Windows 下 KDE Connect 无法使用的问题</h1><p>KDE Connect 有入站规则限制——只有在<code>专用</code>网络下才能有 TCP/UDP 流量，而观察 WireGuard 客户端创建的虚拟网卡，它是<code>公用</code>，结果 kdeconnect 的流量会被拦截掉……我 tm debug 半天。</p>
+<p>解决方法是编辑这个入站规则——</p>
+<ol>
+<li><code>Win+R</code>，输入<code>wf.msc</code>回车</li>
+<li>在<code>入站规则</code>中，输入 k，会找到 4 条 kdeconnectd 的规则</li>
+<li>禁用下面的两条阻止的规则</li>
+<li>编辑上面两条规则，在<code>高级</code>选项卡中的<code>配置文件</code>部分勾选所有这 3 个复选框<code>域</code>，<code>专用</code>，<code>公用</code></li>
+</ol>
+<p>这个也是记给自己看的……</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026-1/02-13%E5%B9%B2%E7%9C%BC%E7%97%87%E7%BB%B4%E6%8C%81%E6%96%B9%E6%A1%88%E5%92%8C%E7%97%85%E5%8E%86.html">
+                        <span class="hidden-mobile">干眼症维持方案和病历</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
