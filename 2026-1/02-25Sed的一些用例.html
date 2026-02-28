@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="one-liner 之路">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sed 的一些用例">
+<meta property="og:url" content="http://example.com/2026-1/02-25Sed%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E4%BE%8B.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="one-liner 之路">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-02-25T06:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-25T06:10:24.692Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Sed 的一些用例 - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Sed 的一些用例">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2026-02-25 14:00" pubdate>
+        2026年2月25日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Sed 的一些用例</h1>
+            
+            <div class="markdown-body">
+              <p>这篇笔记是一两年前写的，但是是logseq的形式，现在把neng出来。</p>
+<h1 id="snippet-shell-使用-sed-使用正则进行文件内容替换"><a href="#snippet-shell-使用-sed-使用正则进行文件内容替换" class="headerlink" title="#snippet/shell 使用 sed 使用正则进行文件内容替换"></a>#snippet/shell 使用 sed 使用正则进行文件内容替换</h1><p><code>sed</code>，即<code>stream editor</code>，流编辑器，它一行一行读取文件或流，进行删除，编辑或查询（这个还是请grep来），然后再把操作后的内容打印出来或写回去。<code>sed</code>命令极度依赖正则。编写时注意——sed操作的始终是每一<strong>行</strong>。</p>
+<p><code>sed</code>命令的一般格式为：</p>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh">sed [各种参数] &lt;sed脚本&gt; [输入文件，可以有多个]<br></code></pre></div></td></tr></table></figure>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>示例为先，但有几点需要特别注意：</p>
+<ul>
+<li><strong>注意下面的操作除非加了<code>-i</code>，否则不会真正操作文件</strong></li>
+<li><strong>注意<code>sed</code>默认使用的正则功能是不全的，需要<code>-E</code>命令让它使用扩展正则语法</strong></li>
+<li><strong>注意所有带参数的命令，它的终结标志都是且只能是换行符，任意转义都是无效的，所以单行sed大多只能用无参命令，只有最后一个命令能用有参的</strong></li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs sh"><span class="hljs-comment"># 测试文件</span><br><span class="hljs-built_in">cat</span> &gt; data &lt;&lt;<span class="hljs-string">EOF</span><br><span class="hljs-string">wtf man</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-built_in">cat</span> &gt; test.txt &lt;&lt;<span class="hljs-string">EOF</span><br><span class="hljs-string">apple rabbit roach</span><br><span class="hljs-string">orange</span><br><span class="hljs-string">hello, &quot;orange&quot;, orange!</span><br><span class="hljs-string">EOF</span><br><br><span class="hljs-comment"># 重复每一行（对每一行执行p命令，同时标准输出又会打一次）</span><br>sed <span class="hljs-string">&#x27;p&#x27;</span> test.txt <br><br><span class="hljs-comment"># 原文件内容（-n命令抑制默认输出，p命令再打印）</span><br>sed -n <span class="hljs-string">&#x27;p&#x27;</span> test.txt<br><br><span class="hljs-comment"># 筛选匹配orange的行（sed并非设计来做筛选操作的，所以它没有提供直接根据正则去筛选行的操作）</span><br>sed -n <span class="hljs-string">&#x27;/orange/p&#x27;</span> test.txt<br><br><span class="hljs-comment"># 筛选匹配orange的行，并打印它们两次</span><br>sed -n <span class="hljs-string">&#x27;/orange/&#123;p; p&#125;&#x27;</span> test.txt<br><br><span class="hljs-comment"># 打印匹配orange的行的行号</span><br>sed -n <span class="hljs-string">&#x27;/orange/=&#x27;</span> test.txt<br><br><span class="hljs-comment"># 打印不匹配orange的行</span><br>sed <span class="hljs-string">&#x27;/orange/d&#x27;</span> test.txt<br><br><span class="hljs-comment"># 原地删除（-i会修改文件）不匹配orange的行，其中给源文件做个带bak后缀的备份（可选）</span><br>sed -i.bak <span class="hljs-string">&#x27;/orange/d&#x27;</span> test.txt<br><br><span class="hljs-comment"># 在匹配apple行前（上一行）插入&#x27;hello&#x27;</span><br>sed <span class="hljs-string">&#x27;/apple/i hello&#x27;</span> test.txt<br><br><span class="hljs-comment"># 在匹配apple行后（下一行）追加&#x27;hello&#x27;</span><br>sed <span class="hljs-string">&#x27;/apple/a hello&#x27;</span> test.txt<br><br><span class="hljs-comment"># 将所有orange替换为peach（不加g命令的话只会替换一次</span><br>sed <span class="hljs-string">&#x27;s/orange/peach/g&#x27;</span> test.txt<br><br><span class="hljs-comment"># 把匹配hello，&quot;xxx&quot;的部分替换为 xxx（注意这里要用-E）</span><br>sed -E <span class="hljs-string">&#x27;s/hello, &quot;(.*?)&quot;/\1/&#x27;</span> test.txt<br><br><span class="hljs-comment"># 匹配orange的行后插入data文件内容</span><br>sed -E <span class="hljs-string">&#x27;/orange/r data&#x27;</span> test.txt<br><br><span class="hljs-comment"># 匹配orange行写入到orange.txt文件中（但仍同时打印整个test.txt文件，除非加-n）</span><br>sed -E <span class="hljs-string">&#x27;/orange/w orange.txt&#x27;</span> test.txt<br><br><span class="hljs-comment"># 对每一行，打印行号，然后另起一行打印内容</span><br>sed <span class="hljs-string">&#x27;=&#x27;</span> test.txt<br><br><span class="hljs-comment"># 对每一行，打印行号：内容</span><br>sed <span class="hljs-string">&#x27;=&#x27;</span> test.txt | sed <span class="hljs-string">&#x27;N; s/\n/: /&#x27;</span><br><br><span class="hljs-comment"># 替换并展示替换前后结果区别（相当于是dry-run了）</span><br>sed <span class="hljs-string">&#x27;/orange/peach/g&#x27;</span> test.txt | diff test.txt -<br></code></pre></div></td></tr></table></figure>
+<p><code>sed</code>脚本形式类似<code>perl</code>的正则表达式，它主要分为两类——查询<code>/oattern/ COMMAND</code>，和替换<code>s/oattern/result/option</code>。查询正则后需要加特定命令，而替换正则后可以加perl的一些选项，如g全局，i忽略大小写；命令可以独立存在也可以从属于特定正则。</p>
+<p>替换语法是<code>sed</code>常用的，而查询语法可以理解为，倘若该行满足 <code>/pattern/</code>，则执行后续命令。某些命令只能应用到查询上，如<code>d</code>删除整行。</p>
+<p>命令之间可以顺序执行，顺序执行的多个命令按<code>;</code>分割，每一行会依序地往后处理，根据命令修改自己的内容（遇到查询则不修改自身，继续往后执行，最后输出自己（<code>-n</code>命令抑制最后的输出）。</p>
+<p>命令也可以有条件地执行——可以让命令只有在行满足特定模式下才去执行操作，形式为<code>/pattern/&#123;&lt;sed脚本，可嵌套&gt;&#125;</code>。</p>
+<p>此外，sed增加了下面的命令：</p>
+<ul>
+<li><code>p</code>：打印整行</li>
+<li><code>d</code>：删除整行</li>
+<li><code>i 插入文本</code>：匹配行前插入文本（另起一行）</li>
+<li><code>a 追加文本</code>：匹配行后追加文本（另起一行）</li>
+<li><code>r 待插入文件</code>：在匹配的行后插入另一个文件的内容（另起一行）</li>
+<li><code>w 待写入文件</code>：将匹配行写入到另一个文件</li>
+<li><code>N</code>：把下一行也读进来供后续命令操作</li>
+</ul>
+<p>sed命令有如下参数：</p>
+<ul>
+<li><code>-n</code>：抑制默认输出，<code>sed</code>默认行为是总会进行打印，无论是否做了任何操作或是否匹配给定它的正则，此时只有在脚本中使用<code>p</code>命令才能使之打印出来，该参数常用于做<strong>筛选操作</strong></li>
+<li><code>-i</code>：原地操作文件</li>
+<li><code>-E</code>：使用扩展正则表达式</li>
+<li><code>-s</code>：指定如果文件之间应当是分离的而非连续，如果不指定该项，每个文件之间行号会是连续的而非从1开始</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/linux/">linux</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026-1/02-25Espanso%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E4%BE%8B.html">
+                        <span class="hidden-mobile">Espanso 的一些用例</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>

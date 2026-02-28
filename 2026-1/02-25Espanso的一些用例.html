@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="那尔">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="happy :replacement">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Espanso 的一些用例">
+<meta property="og:url" content="http://example.com/2026-1/02-25Espanso%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E4%BE%8B.html">
+<meta property="og:site_name" content="那尔">
+<meta property="og:description" content="happy :replacement">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-02-25T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-28T10:22:00.885Z">
+<meta property="article:author" content="那尔">
+<meta property="article:tag" content="Awesome">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>Espanso 的一些用例 - 那尔</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":100},"lazyload":{"enable":false,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/rss2.xml" title="那尔" type="application/rss+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>那尔的blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Espanso 的一些用例">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2026-02-25 12:00" pubdate>
+        2026年2月25日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Espanso 的一些用例</h1>
+            
+            <div class="markdown-body">
+              <p><a target="_blank" rel="noopener" href="https://espanso.org">Espanso</a> 是一个花哨玩意儿，我尝试了数次研究出来一些有趣的玩法，记录一下。</p>
+<h1 id="区分是键入调用还是-search-bar-调用"><a href="#区分是键入调用还是-search-bar-调用" class="headerlink" title="区分是键入调用还是 search bar 调用"></a>区分是键入调用还是 search bar 调用</h1><p>Espanso 的命令（其实叫 match，我习惯叫命令吧就）有两种调用方式——直接从键盘输入整个命令，或者通过 search bar，去查询和执行命令。</p>
+<p>但 Espanso 没有提供任何方式来区分一个命令究竟是从键盘输入还是通过 search bar 调用。这可能是一个伪需求，但我就是想要试试。</p>
+<p>解决方案利用 Espanso 的一个特性——命令内部的变量能够覆盖同名全局变量。正则表达式会引入变量，而如果通过 search bar 执行正则表达式命令，这个变量则不会被赋值。因此，我们这么干就行了——</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">global_vars:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">&#x27;_&#x27;</span><br>    <span class="hljs-attr">type:</span> <span class="hljs-string">echo</span><br>    <span class="hljs-attr">params:</span><br>      <span class="hljs-attr">echo:</span> <span class="hljs-string">&#x27;TRUE&#x27;</span><br><br><span class="hljs-attr">matches:</span><br>  <span class="hljs-bullet">-</span> <span class="hljs-attr">regex:</span> <span class="hljs-string">&#x27;(?P&lt;_&gt;;)hello&#x27;</span><br>    <span class="hljs-attr">replace:</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;_&#125;&#125;</span>&#x27;</span> <span class="hljs-comment"># _ 是 &#x27;TRUE&#x27; 则是 search bar 调用，否则是直接键入调用</span><br></code></pre></div></td></tr></table></figure>
+<p>使用键盘输入时，<code>_</code>会被赋值为<code>;</code>，使用 search bar 执行时，<code>_</code>没有被赋值，espanso 就去全局变量里找了。</p>
+<p>这还是在 search bar 中执行正则命令出错时意识到这个解决方法的。也尝试过能不能局部变量里也定义一个<code>_</code>，但发现行不通，会报一个莫名其妙的循环依赖，espanso 自己还崩了，笑死。</p>
+<h1 id="Windows-下执行-shell-脚本"><a href="#Windows-下执行-shell-脚本" class="headerlink" title="Windows 下执行 shell 脚本"></a>Windows 下执行 shell 脚本</h1><p>shell 脚本在 win 下默认走的是 Powershell，而且不支持配置成 git bash。</p>
+<p>但并非不能——espanso 自己不用 git bash，那我自己用。</p>
+<p>对官网的 curl 示例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-bullet">-</span> <span class="hljs-attr">trigger:</span> <span class="hljs-string">&quot;;ip&quot;</span><br>  <span class="hljs-attr">replace:</span> <span class="hljs-string">&quot;<span class="hljs-template-variable">&#123;&#123;output&#125;&#125;</span>&quot;</span><br>  <span class="hljs-attr">vars:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">output</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">shell</span><br>      <span class="hljs-attr">params:</span><br>          <span class="hljs-attr">cmd:</span> <span class="hljs-string">&quot;curl &#x27;https://api.ipify.org&#x27;&quot;</span><br></code></pre></div></td></tr></table></figure>
+<p>对应的改为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-bullet">-</span> <span class="hljs-attr">trigger:</span> <span class="hljs-string">&quot;;ip&quot;</span><br>  <span class="hljs-attr">replace:</span> <span class="hljs-string">&quot;<span class="hljs-template-variable">&#123;&#123;output&#125;&#125;</span>&quot;</span><br>  <span class="hljs-attr">vars:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">output</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">script</span><br>      <span class="hljs-attr">params:</span><br>          <span class="hljs-attr">args:</span><br>          <span class="hljs-comment"># 旧的解决方案——给定 bash 全路径</span><br>          <span class="hljs-comment"># - C:\Program Files\Git\usr\bin\bash.exe </span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">env</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">bash</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span> <span class="hljs-comment"># 还能执行多行脚本</span><br>              <span class="hljs-string">printf</span> <span class="hljs-string">&#x27;my ip: &#x27;</span><br>              <span class="hljs-comment"># 我不知道为啥 curl 需要加 -s 才能执行……不然会报莫名其妙的错</span><br>              <span class="hljs-string">curl</span> <span class="hljs-string">-s</span> <span class="hljs-string">&#x27;https://api.ipify.org&#x27;</span> <br></code></pre></div></td></tr></table></figure>
+<p>这里必须要给定 bash 的完整路径，因为：</p>
+<ol>
+<li>espanso 执行 script 时，工作目录在<code>C:\Windows\System32</code></li>
+<li><code>System32</code>下有一个不能用的 bash，疑似是 WSL 用的</li>
+<li>命令只写<code>bash</code>的时候，因为工作目录的缘故，会优先访问<code>System32</code>下面的 bash，即使 PATH 设置的时候让 git 的 bash 优先仍旧如此</li>
+</ol>
+<p>然而，有两个解决方案：</p>
+<ol>
+<li>使用<code>sh</code>，win 没有同名命令，但 sh 执行特定既有的脚本可能有问题</li>
+<li>（明显这个才是最优解）使用<code>env bash</code>，win 没有 env 这个命令，大概吧</li>
+</ol>
+<h1 id="屏蔽变量的内容（只执行命令，不返回它的结果）"><a href="#屏蔽变量的内容（只执行命令，不返回它的结果）" class="headerlink" title="屏蔽变量的内容（只执行命令，不返回它的结果）"></a>屏蔽变量的内容（只执行命令，不返回它的结果）</h1><p><strong>espanso 的变量是 lazy 的——不被引用就不执行</strong>。有时候我们想要执行一个命令，但不想要它的标准输出流被拷出来，这就很麻烦。</p>
+<p>但变量之间是可以互相依赖的，一般来说 espanso 会根据实际的依赖关系建立依赖树去按顺序执行变量，但是可以使用<code>depends_on</code>去主动指明依赖，即使没有使用它。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-bullet">-</span> <span class="hljs-attr">trigger:</span> <span class="hljs-string">&#x27;;some-test&#x27;</span><br>  <span class="hljs-attr">replace:</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;var2&#125;&#125;</span>&#x27;</span><br>  <span class="hljs-attr">vars:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">var1_hide</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">script</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">args:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">python</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">D:\some\script.py</span> <span class="hljs-comment"># 做一些带副作用的，可能操作标准输出流的操作</span><br>          <br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">var2</span><br>      <span class="hljs-attr">depends_on:</span> <br>        <span class="hljs-bullet">-</span> <span class="hljs-string">var1_hide</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">echo</span>   <br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">echo:</span> <span class="hljs-string">hello</span><br></code></pre></div></td></tr></table></figure>
+<h2 id="关于退格键"><a href="#关于退格键" class="headerlink" title="关于退格键"></a>关于退格键</h2><p>espanso 执行命令后，会使用剪切板或模拟输入去将命令的结果输出出来。不想要输出？使用上面的方法，然后变量的值设为空即可。</p>
+<p><strong>而在这个步骤之前，espanso 会模拟输入一定数量的退格键，先删除输入的命令的内容</strong>……这就出问题了。<strong>比如我用 espanso 当软件快捷键用，这时候的一系列退格键可能会造成非预期的问题</strong>。</p>
+<p>我想到的最合适的方法就是直接使用 espanso 的 search bar 去搜索和执行命令，使用这个方法似乎是不会输入退格键的……再不然就是让在 espanso 输入退格键时保证应用窗口是失焦的，不知道有啥方法更优雅地做这个。</p>
+<h1 id="把-Espanso-当作-utools-用"><a href="#把-Espanso-当作-utools-用" class="headerlink" title="把 Espanso 当作 utools 用"></a>把 Espanso 当作 utools 用</h1><p>仔细看看 Espanso，我们能发现什么？</p>
+<ol>
+<li><code>Alt+Space</code> 唤起一个 Search Bar，能匹配和选择命令去执行</li>
+<li>原生提供 Form，提供输入栏和选择框（下拉式或列表式），其中输入栏可以给定默认值，选择框可以使用脚本给定所有选项</li>
+<li>Form 可以和 Script 协同使用，Form 的值可以喂给 Script，反之亦然</li>
+<li>Script 的执行结果可以贴到当前输入框中</li>
+</ol>
+<p>这就造成了一种非常轻量的类似 utools 的工具——我调用命令，我通过表单填写参数，我通过当前输入框获取命令的执行结果，但最重要的是，定义 Espanso 的一个新命令是非常容易的，不像 utools 或类似的工具，插件上来就是什么生命周期，还可能要写前端，麻烦不死你。</p>
+<p>简单实现一个 base64 和文本互转的命令：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-bullet">-</span> <span class="hljs-attr">trigger:</span> <span class="hljs-string">&#x27;;b64&#x27;</span><br>  <span class="hljs-attr">replace:</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;result&#125;&#125;</span>&#x27;</span><br>  <span class="hljs-attr">vars:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">form</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">form</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">layout:</span> <span class="hljs-string">|</span><br><span class="hljs-string">                文本和 Base64 互相转换，只填一个</span><br><span class="hljs-string">                文本转 base64: [[original_text]]</span><br><span class="hljs-string">                base64 转文本：[[encoded_text]]</span><br><span class="hljs-string"></span>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">result</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">script</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">args:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">python</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span><br><span class="hljs-string">            import sys</span><br><span class="hljs-string">            import base64</span><br><span class="hljs-string">            def text_to_base64(text, encoding=&#x27;utf-8&#x27;):</span><br><span class="hljs-string">                &quot;&quot;&quot;文本转 Base64&quot;&quot;&quot;</span><br><span class="hljs-string">                text_bytes = text.encode(encoding)</span><br><span class="hljs-string">                base64_bytes = base64.b64encode(text_bytes)</span><br><span class="hljs-string">                return base64_bytes.decode(&#x27;ascii&#x27;)</span><br><span class="hljs-string">            def base64_to_text(base64_string, encoding=&#x27;utf-8&#x27;):</span><br><span class="hljs-string">                &quot;&quot;&quot;Base64 转文本&quot;&quot;&quot;</span><br><span class="hljs-string">                try:</span><br><span class="hljs-string">                    base64_bytes = base64_string.encode(&#x27;ascii&#x27;)</span><br><span class="hljs-string">                    text_bytes = base64.b64decode(base64_bytes)</span><br><span class="hljs-string">                    return text_bytes.decode(encoding)</span><br><span class="hljs-string">                except Exception as e:</span><br><span class="hljs-string">                    return f&quot;Base64 解码失败：&#123;e&#125;&quot;</span><br><span class="hljs-string">            if sys.argv[1]: # 文本转 base64</span><br><span class="hljs-string">                print(text_to_base64(sys.argv[1]))</span><br><span class="hljs-string">            elif sys.argv[2]:</span><br><span class="hljs-string">                print(base64_to_text(sys.argv[2]))</span><br><span class="hljs-string">            else:</span><br><span class="hljs-string">                pass # 毛都没输入，就什么也不输出</span><br><span class="hljs-string"></span>          <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;form.original_text&#125;&#125;</span>&#x27;</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;form.encoded_text&#125;&#125;</span>&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<h1 id="动态图片命令"><a href="#动态图片命令" class="headerlink" title="动态图片命令"></a>动态图片命令</h1><p>某个 Match 使用<code>image_path</code>而非<code>replace</code>时，espanso 对它的处理方式有异——不执行任何变量，直接以<code>image_path</code>原始内容作为图像路径。这事儿文档里也不写。</p>
+<p>相关 issue 中，官方的解决方案是使用 html 或 markdown 富文本来替代嵌套图片的需求，这个算是方便，但在许多时候不可用——富文本类型的剪贴板我试了手头的应用，只有 word 支持（需要使用 html 而非 markdown），qq，vscode 等都不主持，会忽略掉图片。</p>
+<p>尝试了一下，找到一个不那么完美的解决方案，仅适用于 windows 且需要利用 nircmd：</p>
+<ol>
+<li>通过某种手段获取图像路径</li>
+<li>使用<code>nircmd clipboard</code>将图像路径保存到剪切板</li>
+<li>使用<code>nircmd sendkeypress ctrl+v</code>模拟输入粘贴（这一步也可以省略，让用户自己去粘贴）</li>
+</ol>
+<p>下面是一个文本生成二维码并粘贴的完整示例（文本使用表单输入以兼容中文问题）：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-bullet">-</span> <span class="hljs-attr">trigger:</span> <span class="hljs-string">&#x27;;qrcode&#x27;</span><br>  <span class="hljs-attr">label:</span> <span class="hljs-string">文本生成二维码</span><br>  <span class="hljs-attr">replace:</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;clipboard&#125;&#125;</span>&#x27;</span> <span class="hljs-comment"># 这里引用 clipboard 只是为了让这个变量执行，没有其他意思</span><br>  <span class="hljs-attr">vars:</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">form</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">form</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">layout:</span> <span class="hljs-string">|</span><br><span class="hljs-string">                文本内容：[[text]]</span><br><span class="hljs-string"></span>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">image_path</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">script</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">args:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">python</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">-c</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span><br><span class="hljs-string">            import sys</span><br><span class="hljs-string">            import qrcode</span><br><span class="hljs-string">            import tempfile</span><br><span class="hljs-string">            import os</span><br><span class="hljs-string">            from pathlib import Path</span><br><span class="hljs-string">            def generate_qrcode_to_tempfile(data: str, file_format: str = &#x27;png&#x27;) -&gt; str:</span><br><span class="hljs-string">                qr = qrcode.QRCode(</span><br><span class="hljs-string">                    version=1,  # 控制二维码大小 (1-40)</span><br><span class="hljs-string">                    error_correction=qrcode.constants.ERROR_CORRECT_L,  # 容错率</span><br><span class="hljs-string">                    box_size=10,  # 每个小格子的像素大小</span><br><span class="hljs-string">                    border=4,  # 边框大小</span><br><span class="hljs-string">                )</span><br><span class="hljs-string">                qr.add_data(data)</span><br><span class="hljs-string">                qr.make(fit=True)</span><br><span class="hljs-string">                with tempfile.NamedTemporaryFile(</span><br><span class="hljs-string">                    suffix=f&#x27;.&#123;file_format&#125;&#x27;,</span><br><span class="hljs-string">                    prefix=&#x27;qrcode_&#x27;,</span><br><span class="hljs-string">                    delete=False,  # 不自动删除，以便返回路径</span><br><span class="hljs-string">                    dir=tempfile.gettempdir()</span><br><span class="hljs-string">                ) as tmp_file:</span><br><span class="hljs-string">                    temp_path = tmp_file.name</span><br><span class="hljs-string">                try:</span><br><span class="hljs-string">                    img = qr.make_image(fill_color=&quot;black&quot;, back_color=&quot;white&quot;)</span><br><span class="hljs-string">                    img.save(temp_path, format=file_format.upper())</span><br><span class="hljs-string">                    return temp_path</span><br><span class="hljs-string">                except Exception as e:</span><br><span class="hljs-string">                    # 如果出错，清理临时文件</span><br><span class="hljs-string">                    if os.path.exists(temp_path):</span><br><span class="hljs-string">                        os.unlink(temp_path)</span><br><span class="hljs-string">                    raise RuntimeError(f&quot;生成二维码失败：&#123;str(e)&#125;&quot;)</span><br><span class="hljs-string">            sys.argv[1] and print(generate_qrcode_to_tempfile(sys.argv[1]))</span><br><span class="hljs-string"></span>          <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;form.text&#125;&#125;</span>&#x27;</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">write_clipboard</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">script</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">args:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">nircmd</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">clipboard</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">copyimage</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">&#x27;<span class="hljs-template-variable">&#123;&#123;image_path&#125;&#125;</span>&#x27;</span><br>    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">clipboard</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">script</span><br>      <span class="hljs-attr">depends_on:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-string">write_clipboard</span><br>      <span class="hljs-attr">params:</span><br>        <span class="hljs-attr">args:</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">nircmd</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">sendkeypress</span><br>          <span class="hljs-bullet">-</span> <span class="hljs-string">ctrl+v</span><br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Awesome/">Awesome</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-NC-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026-1/02-25Sed%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E4%BE%8B.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Sed 的一些用例</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026-1/02-15%E4%BD%BF%E7%94%A8WireGuard%E9%85%8D%E7%BD%AE%E8%99%9A%E6%8B%9F%E5%B1%80%E5%9F%9F%E7%BD%91.html">
+                        <span class="hidden-mobile">使用 WireGuard 配置虚拟局域网</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<!-- hexo injector body_end start -->
+<script src="/assets/prism-bundle.js"></script>
+<script src="/assets/prism-plus.js" data-pjax=""></script>
+<!-- hexo injector body_end end --></body>
+</html>
